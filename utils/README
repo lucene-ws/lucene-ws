@@ -1,0 +1,16 @@
+CreateIndex.java README:
+========================
+
+This program pulls rows of data from a PostgreSQL database and indexes them into
+a lucene index.
+
+To compile and run this program, you will need to have the following items in your
+CLASSPATH environment variable:
+
+CLASSPATH must include:
+   ../build/WEB-INF/classes
+   lucene-1.4-final.jar
+   postgresql.jar
+
+Then, you will need to go through the source code to add the needed SQL queries and
+field defintions. Search for TODO in the source code to find places that need attention.

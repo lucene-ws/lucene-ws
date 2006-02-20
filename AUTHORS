@@ -1,0 +1,12 @@
+Credits
+=======
+
+The initial development of this web service was sponsored by CD Baby. 
+
+The following people have contributed to this program:
+
+    Matthias Friedrich <matt [at] mafr [dot] de>
+    - Initial lucene research created CreateIndex sample script
+
+    Robert Kaye <rob [at] eorbit [dot] net>
+    - Wrote initital version of web service

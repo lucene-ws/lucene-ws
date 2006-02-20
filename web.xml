@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app 
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+    <!-- General description of your web application -->
+
+    <display-name>Lucene Text Search Web-Service</display-name>
+    <description>
+         This is a Lucene text search web-service designed
+         to be a standalone-application for creating and
+         searching Lucene text indexes.
+    </description>
+
+    <context-param>
+      <param-name>webmaster</param-name>
+      <!-- TODO: Insert your the email addy of the person responsible for this
+           lucene web service. -->
+      <param-value>email@spam.com</param-value>
+      <description>
+        The EMAIL address of the administrator to whom questions
+        and comments about this application should be addressed.
+      </description>
+    </context-param>
+
+    <servlet>
+      <servlet-name>LuceneWebService</servlet-name>
+      <description>This servlet implements the Lucene Text Index/Search web service.</description>
+      <servlet-class>net.lucenews.LuceneWebService</servlet-class>
+
+      <!-- ADJUST THESE SETTINGS BELOW AS NECESSARY -->
+      <!--
+		In the presence of 'properties-file' it detected, web service will attempt to
+		repopulate parameters with those found within the file pointed to by the 'properties-file'
+		name/value pair value.
+	  -->
+      <init-param>
+		<param-name>properties-file</param-name>
+		<param-value>c:\dev\LuceneWebService\service.properties</param-value>
+      </init-param>
+      <init-param>
+          <param-name>debug</param-name>
+          <param-value>1</param-value>
+      </init-param>
+      <init-param>
+          <param-name>indexDirectory</param-name>
+          <param-value>c:\indices;c:\dev;c:\Program Files</param-value>
+      </init-param>
+      <init-param>
+		<param-name>autoStale</param-name>
+		<param-value>false</param-value>
+      </init-param>
+      <init-param>
+		<param-name>stalePeriod</param-name>
+		<param-value>5</param-value>
+      </init-param>
+      <init-param>
+		<param-name>defaultOperator</param-name>
+		<param-value>AND</param-value>
+      </init-param>
+      <init-param>
+		<param-name>defaultField</param-name>
+		<param-value>all</param-value>
+      </init-param>
+      <init-param>
+		<param-name>entriesPerPage</param-name>
+		<param-value>10</param-value>
+      </init-param>
+      <init-param>
+          <param-name>minSearchers</param-name>
+          <param-value>3</param-value>
+      </init-param>
+      <init-param>
+          <param-name>maxSearchers</param-name>
+          <param-value>10</param-value>
+      </init-param>
+      <init-param>
+          <param-name>searcherTimeout</param-name>
+          <param-value>10</param-value>
+      </init-param>
+      <init-param>
+          <param-name>writerTimeout</param-name>
+          <param-value>30</param-value>
+      </init-param>
+      <init-param>
+	      <param-name>title</param-name>
+	      <param-value>Adam Paynter's Lucene Web Service</param-value>
+      </init-param>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>LuceneWebService</servlet-name>
+      <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
