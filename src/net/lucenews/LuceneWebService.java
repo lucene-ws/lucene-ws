@@ -273,6 +273,7 @@ public class LuceneWebService extends HttpServlet
 		}
 		catch(Exception e)
 		{
+			res.setStatus( res.SC_INTERNAL_SERVER_ERROR );
 			ExceptionController.process( c, e );
 		}
 	}	
