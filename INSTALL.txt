@@ -1,0 +1,82 @@
+Lucene Web Service INSTALL
+==========================
+
+To install this Lucene Web Service you will need:
+
+1. Java J2EE Installed (tested with 1.4.2) -- http://java.sun.com
+2. Ant (tested with 1.6.2) -- http://ant.apache.org
+2. Apache's Tomcat (tested with 5.0.28) -- http://jakarta.apache.org/tomcat
+3. Lucene (tested with 1.4.2) -- http://jakarta.apache.org/lucene
+
+
+Installation:
+=============
+
+1. Setup Java, if you don't have it installed yet.
+
+2. Install Ant, Lucene and Tomcat as per their install instructions. 
+
+3. Configure Tomcat -- the instructions will assume that you installed tomcat into $(TOMCAT).
+   a. Setup a username and password for 'manager' access to install and deploy web applications.
+   Edit $(TOMCAT)/conf/tomcat-users.xml and add a line that reads like:
+
+       <user name="johndoe" password="changeme" roles="admin,manager"/>
+
+   The user should have at least the role of 'manager'.
+      
+4. Start tomcat and verify the installation worked as expected.
+
+5. Edit build.xml file in the top level directory of the lucene web service source tree:
+   a. Copy the Lucene jar file (lucene-1.4-final.jar) to the $(TOMCAT)/common/lib directory.
+   b. Edit section 'File and Directory Names' and set the
+
+       <property name="catalina.home" value="/usr/local/jakarta-tomcat-5.0"/>
+
+      line to point to where you installed tomcat.
+
+   c. Edit section 'Compilation Classpath' and set the 
+
+       <pathelement location="/usr/local/jakarta-tomcat-5.0/lucene-1.4-final.jar"/>
+
+      line to point to where you installed your Lucene jar file.
+
+6. Edit build.properties in the top directory to reflect the username/password setup in step 2.a
+
+7. Copy the catalina-ant.jar from /usr/local/jakarta-tomcat-5.0/server/lib/catalina-ant.jar to your
+   ant lib directory. (e.g. /usr/share/ant/lib)
+
+8. Build the lucene web service by typing 'ant'.
+
+9. Configure the web service by editing web.xml in the top src directory. Most of the default
+   settings should be ok, but you will need to change the indices.directories init-param to 
+   specify the directories where you want Lucene indexes to reside.
+
+   Setting:               Description:
+   ===============================================================================================
+   
+   properties-file        When present in initial parameters, service will replace all initial
+                          parameters with those contained within the file pointed to by the value.
+                          
+   service.title          The title of service. Defaults to "Lucene Web Service vX.X.X"
+                          
+   service.defaultfield   Provides a global default field to be used when searching. This value is
+                          only used as a last resort.
+                          
+   indices.directories    A comma-delimited list of directories within which will reside the indices.
+                          Left-most directories have higher priority than right-most. New indices 
+                          are created in the left-most directory.
+                          
+   service.debugging      If true, a stack trace is appended to all exceptions thrown, providing
+                          valuable information.
+
+
+
+10. Install the web service by typing 'ant install' (this will probably need to be run as root,
+    depending on how you installed Tomcat).
+
+11. Test and tinker with the web service. When you're happy with your setup, do not delete
+    the original source tree for the web service -- tomcat is using the web service 
+    right out of the original source tree.
+
+That should be it -- now read the docs to find out how to use the lucene web service to index
+and search your documents.
