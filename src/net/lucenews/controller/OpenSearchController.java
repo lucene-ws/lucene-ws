@@ -29,6 +29,7 @@ public class OpenSearchController extends Controller
 	{
 		LuceneIndexManager manager = c.service().getIndexManager();
 		LuceneRequest      req     = c.req();
+		LuceneResponse     res     = c.res();
 		
 		LuceneIndex[] indices = manager.getIndices( req.getIndexNames() );
 		
@@ -89,6 +90,7 @@ public class OpenSearchController extends Controller
 		
 		document.appendChild( desc );
 		
+		res.setContentType( "application/opensearchdescription+xml;charset=utf-8" );
 		XMLView.process( c, document );
 	}
 	
