@@ -72,18 +72,19 @@ public class ExceptionController extends Controller
 			if( doStackTrace )
 			{
 				Element div = document.createElement( "div" );
+				div.setAttribute( "xmlns", XMLController.getXHTMLNamespace() );
 				
-				Element trace = document.createElement( "trace" );
+				Element ol = document.createElement( "ol" );
 				
 				StackTraceElement[] stack = e.getStackTrace();
 				for( int i = 0; i < stack.length; i++ )
 				{
-					Element element = document.createElement( "element" );
-					element.appendChild( document.createTextNode( stack[i].toString() ) );
-					trace.appendChild( element );
+					Element li = document.createElement( "li" );
+					li.appendChild( document.createTextNode( stack[ i ].toString() ) );
+					ol.appendChild( li );
 				}
 				
-				div.appendChild( trace );
+				div.appendChild( ol );
 				
 				entry.setContent( Content.xhtml( div ) );
 			}
