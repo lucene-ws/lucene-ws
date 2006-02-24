@@ -218,9 +218,14 @@ public class LuceneWebService extends HttpServlet
 		{
 			throw se;
 		}
+		catch(ParseException pe)
+		{
+			res.setStatus( res.SC_BAD_REQUEST );
+			ExceptionController.process( c, pe );
+		}
 		catch(SAXException saxe)
 		{
-			res.setStatus( res.SC_INTERNAL_SERVER_ERROR );
+			res.setStatus( res.SC_BAD_REQUEST );
 			ExceptionController.process( c, saxe );
 		}
 		catch(LuceneException le)
