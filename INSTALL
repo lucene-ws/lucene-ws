@@ -13,7 +13,9 @@ Installation:
 =============
 
 1. Setup Java, if you don't have it installed yet.
+
 2. Install Ant, Lucene and Tomcat as per their install instructions. 
+
 3. Configure Tomcat -- the instructions will assume that you installed tomcat into $(TOMCAT).
    a. Setup a username and password for 'manager' access to install and deploy web applications.
    Edit $(TOMCAT)/conf/tomcat-users.xml and add a line that reads like:
@@ -46,22 +48,28 @@ Installation:
 8. Build the lucene web service by typing 'ant'.
 
 9. Configure the web service by editing web.xml in the top src directory. Most of the default
-   settings should be ok, but you will need to change the indexDirectory init-param to 
-   specify the directory where you want lucene indexes to be built. 
+   settings should be ok, but you will need to change the indices.directories init-param to 
+   specify the directories where you want Lucene indexes to reside.
 
-   Setting:             Description:
-   debug                When set to 1 whitespace will be added to the output XML, which will
-                        make the output XML more readable, but also more verbose.
-   indexDirectory       The location where you want Lucene to build indexes.
-   minSearchers         The minimum number of searchers to keep ready for answering search requests.
-   maxSearchers         The maximum number of searchers to keep ready for naswering search requests.
-   searcherTimeout      The maximum number of seconds to wait for a searcher, before giving up. 
-                        This setting applies only if all maxSearcher searchers are all busy and
-                        the caller needs to wait for a searcher to become available.
-   writerTimeout        The maximum number of seconds to wait for a writer, before giving up.
-                        This setting applies only if more than one writer wishes to write to the index
-                        at the same time. This determines how long a caller will wait to get a 
-                        writer before giving up.
+   Setting:               Description:
+   ===============================================================================================
+   
+   properties-file        When present in initial parameters, service will replace all initial
+                          parameters with those contained within the file pointed to by the value.
+                          
+   service.title          The title of service. Defaults to "Lucene Web Service vX.X.X"
+                          
+   service.defaultfield   Provides a global default field to be used when searching. This value is
+                          only used as a last resort.
+                          
+   indices.directories    A comma-delimited list of directories within which will reside the indices.
+                          Left-most directories have higher priority than right-most. New indices 
+                          are created in the left-most directory.
+                          
+   service.debugging      If true, a stack trace is appended to all exceptions thrown, providing
+                          valuable information.
+
+
 
 10. Install the web service by typing 'ant install' (this will probably need to be run as root,
     depending on how you installed Tomcat).
