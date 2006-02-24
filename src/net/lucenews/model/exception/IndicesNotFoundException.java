@@ -1,6 +1,8 @@
 package net.lucenews.model.exception;
 
 import java.util.List;
+import javax.servlet.http.*;
+
 
 public class IndicesNotFoundException extends LuceneException
 {
@@ -59,6 +61,11 @@ public class IndicesNotFoundException extends LuceneException
 		}
 		
 		return String.valueOf( buffer );
+	}
+	
+	public int getStatus ()
+	{
+		return HttpServletResponse.SC_NOT_FOUND;
 	}
 	
 }

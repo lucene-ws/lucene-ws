@@ -218,46 +218,6 @@ public class LuceneWebService extends HttpServlet
 		{
 			throw se;
 		}
-		catch(DocumentsAlreadyExistException daee)
-		{
-			res.setStatus( res.SC_CONFLICT );
-			ExceptionController.process( c, daee );
-		}
-		catch(DocumentsNotFoundException dnfe)
-		{
-			res.setStatus( res.SC_NOT_FOUND );
-			ExceptionController.process( c, dnfe );
-		}
-		catch(IllegalActionException iae)
-		{
-			res.setStatus( res.SC_FORBIDDEN );
-			ExceptionController.process( c, iae );
-		}
-		catch(IndicesAlreadyExistException iaee)
-		{
-			res.setStatus( res.SC_CONFLICT );
-			ExceptionController.process( c, iaee );
-		}
-		catch(IndicesNotFoundException infe)
-		{
-			res.setStatus( res.SC_NOT_FOUND );
-			ExceptionController.process( c, infe );
-		}
-		catch(InsufficientDataException ide)
-		{
-			res.setStatus( res.SC_BAD_REQUEST );
-			ExceptionController.process( c, ide );
-		}
-		catch(InvalidIdentifierException iie)
-		{
-			res.setStatus( res.SC_BAD_REQUEST );
-			ExceptionController.process( c, iie );
-		}
-		catch(MultipleValueException mve)
-		{
-			res.setStatus( res.SC_INTERNAL_SERVER_ERROR );
-			ExceptionController.process( c, mve );
-		}
 		catch(SAXException saxe)
 		{
 			res.setStatus( res.SC_INTERNAL_SERVER_ERROR );

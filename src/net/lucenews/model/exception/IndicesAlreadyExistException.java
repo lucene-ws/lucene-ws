@@ -1,6 +1,8 @@
 package net.lucenews.model.exception;
 
 import java.util.List;
+import javax.servlet.http.*;
+
 
 public class IndicesAlreadyExistException extends LuceneException
 {
@@ -78,4 +80,9 @@ public class IndicesAlreadyExistException extends LuceneException
 		return String.valueOf( buffer );
 	}
 	
+	
+	public int getStatus ()
+	{
+		return HttpServletResponse.SC_CONFLICT;
+	}
 }

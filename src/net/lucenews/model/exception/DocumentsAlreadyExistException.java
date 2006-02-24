@@ -1,5 +1,8 @@
 package net.lucenews.model.exception;
 
+import javax.servlet.http.*;
+
+
 public class DocumentsAlreadyExistException extends LuceneException
 {
 	
@@ -41,6 +44,12 @@ public class DocumentsAlreadyExistException extends LuceneException
 		}
 		
 		return String.valueOf( buffer );
+	}
+	
+	
+	public int getStatus ()
+	{
+		return HttpServletResponse.SC_CONFLICT;
 	}
 	
 }

@@ -81,7 +81,7 @@ public class ServiceController extends Controller
 			
 			Properties properties = ServletUtils.getProperties( entry.getContent() );
 			
-			File parentDirectory = c.service().getIndexManager().getCreatedIndicesDirectory();
+			File parentDirectory = manager.getCreatedIndicesDirectory();
 			File directory = new File( parentDirectory, name );
 			
 			LuceneIndex index = null;

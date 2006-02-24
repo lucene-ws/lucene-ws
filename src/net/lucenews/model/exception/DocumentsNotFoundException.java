@@ -1,6 +1,7 @@
 package net.lucenews.model.exception;
 
 import java.util.*;
+import javax.servlet.http.*;
 
 
 
@@ -52,6 +53,12 @@ public class DocumentsNotFoundException extends LuceneException
 		}
 		
 		return String.valueOf( buffer );
+	}
+	
+	
+	public int getStatus ()
+	{
+		return HttpServletResponse.SC_NOT_FOUND;
 	}
 	
 }

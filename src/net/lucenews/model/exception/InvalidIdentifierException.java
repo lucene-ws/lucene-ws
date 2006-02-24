@@ -1,5 +1,8 @@
 package net.lucenews.model.exception;
 
+import javax.servlet.http.*;
+
+
 public class InvalidIdentifierException extends LuceneException
 {
 	
@@ -13,6 +16,11 @@ public class InvalidIdentifierException extends LuceneException
 	public String getMessage ()
 	{
 		return "Identifier '" + identifier + "' is invalid.";
+	}
+	
+	public int getStatus ()
+	{
+		return HttpServletResponse.SC_BAD_REQUEST;
 	}
 	
 }
