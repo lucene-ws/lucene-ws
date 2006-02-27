@@ -528,6 +528,9 @@ public class ServletUtils
 	
 	public static Properties getProperties (Content content)
 	{
+		if( content == null || content.getData() == null )
+			return null;
+		
 		Element element = (Element) content.getData();
 		NodeList dls = element.getElementsByTagName( "dl" );
 		Element dl = (Element) dls.item( 0 );

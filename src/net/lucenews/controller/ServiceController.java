@@ -92,12 +92,14 @@ public class ServiceController extends Controller
 			try
 			{
 				index = LuceneIndex.create( directory );
-				index.setProperties( properties );
 			}
 			catch(IndexAlreadyExistsException iaee)
 			{
 				throw new IndexAlreadyExistsException( name );
 			}
+			
+			if( properties != null )
+				index.setProperties( properties );
 			
 			res.setStatus( res.SC_CREATED );
 			res.addHeader( "Location", service.getIndexURL( req, index ) );
