@@ -362,9 +362,10 @@ public class LuceneWebService extends HttpServlet
 	 */
 	
 	public void doHead (LuceneContext c)
-		throws ServletException, IOException
+		throws ParserConfigurationException, IndicesNotFoundException,
+			TransformerException, IOException, ParseException, LuceneException
 	{
-		super.doHead( c.req(), c.res() );
+		doGet( c );
 	}
 	
 	
