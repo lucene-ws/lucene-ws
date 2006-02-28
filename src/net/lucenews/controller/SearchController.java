@@ -259,7 +259,7 @@ public class SearchController extends Controller
 		response.setSearchTerms( req.getSearchString() );
 		response.setUpdated( Calendar.getInstance() );
 		response.addAuthor( new Author( "Lucene Web Service, version " + service.getVersion() ) );
-		response.setID( req.getRequestURL() + ( ( req.getQueryString() != null ) ? "?" + req.getRequestURL()  : "" ) );
+		response.setID( req.getRequestURL() + ( ( req.getQueryString() != null ) ? "?" + req.getQueryString()  : "" ) );
 		
 		
 		
