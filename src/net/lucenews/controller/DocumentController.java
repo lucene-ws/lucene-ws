@@ -57,6 +57,10 @@ public class DocumentController extends Controller
 				res.addHeader( "Location", service.getDocumentURL( req, index, document ) );
 			}
 		}
+		
+		
+		
+		XMLController.acknowledge( c );
 	}
 	
 	
