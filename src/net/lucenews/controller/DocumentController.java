@@ -31,7 +31,7 @@ public class DocumentController extends Controller
 	 */
 	
 	public static void doDelete (LuceneContext c)
-		throws IllegalActionException, IndicesNotFoundException, DocumentsNotFoundException, IOException, InsufficientDataException
+		throws IllegalActionException, IndicesNotFoundException, DocumentsNotFoundException, IOException, InsufficientDataException, TransformerException, ParserConfigurationException
 	{
 		LuceneWebService   service     = c.service();
 		LuceneIndexManager manager     = service.getIndexManager();
