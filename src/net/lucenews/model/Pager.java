@@ -138,6 +138,7 @@ public class Pager extends Limiter
 	
 	
 	public Integer getEntriesOnThisPage ()
+		throws InsufficientDataException
 	{
 		if( getTotalEntries() == null )
 			return null;
@@ -210,6 +211,7 @@ public class Pager extends Limiter
 	
 	
 	public Integer getOffset ()
+		throws InsufficientDataException
 	{
 		if( getFirst() == null )
 			return null;

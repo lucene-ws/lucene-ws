@@ -47,6 +47,7 @@ public class Limiter
 	
 	
 	public Integer getOffset ()
+		throws InsufficientDataException
 	{
 		if( m_offset == null )
 			return 0;

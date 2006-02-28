@@ -4,7 +4,7 @@ import javax.servlet.http.*;
 
 
 
-public class InsufficientDataException extends RuntimeException
+public class InsufficientDataException extends LuceneException
 {
 	
 	public InsufficientDataException (String message)

@@ -80,7 +80,7 @@ public class IndexController extends Controller
 		throws
 			ParserConfigurationException, InvalidIdentifierException, DocumentNotFoundException,
 			IndicesNotFoundException, ParserConfigurationException, TransformerException,
-			IOException, DocumentAlreadyExistsException
+			IOException, DocumentAlreadyExistsException, InsufficientDataException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
@@ -208,7 +208,7 @@ public class IndexController extends Controller
 	 */
 	
 	public static Feed asFeed (LuceneContext c)
-		throws IndexNotFoundException, ParserConfigurationException, TransformerException, IOException
+		throws IndexNotFoundException, ParserConfigurationException, TransformerException, IOException, InsufficientDataException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();

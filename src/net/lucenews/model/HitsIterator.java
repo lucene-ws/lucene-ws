@@ -22,16 +22,19 @@ public class HitsIterator implements Iterator<LuceneDocument>
 	
 	
 	public HitsIterator (Hits hits)
+		throws InsufficientDataException
 	{
 		this( hits, null );
 	}
 	
 	public HitsIterator (Hits hits, Limiter limiter)
+		throws InsufficientDataException
 	{
 		this( hits, limiter, null );
 	}
 	
 	public HitsIterator (Hits hits, Limiter limiter, LuceneIndex index)
+		throws InsufficientDataException
 	{
 		this.hits  = hits;
 		this.index = index;

@@ -240,7 +240,7 @@ public class SearchController extends Controller
 	 */
 	
 	public static OpenSearchResponse asOpenSearchResponse (LuceneContext c, HitsIterator iterator)
-		throws ParserConfigurationException, IOException, IndicesNotFoundException
+		throws ParserConfigurationException, IOException, IndicesNotFoundException, InsufficientDataException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();

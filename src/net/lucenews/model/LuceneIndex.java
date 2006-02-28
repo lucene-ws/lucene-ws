@@ -1103,9 +1103,14 @@ public class LuceneIndex
 	public boolean isDocumentCorrectlyIdentified (LuceneDocument document, String identifier)
 		throws IOException
 	{
-		if( isDocumentIdentified( document ) )
+		try
 		{
-			return getIdentifier( document ).equals( identifier );
+			if( isDocumentIdentified( document ) )
+				return getIdentifier( document ).equals( identifier );
+		}
+		catch(InsufficientDataException ide)
+		{
+			return false;
 		}
 		
 		return false;

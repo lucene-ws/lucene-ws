@@ -281,7 +281,7 @@ public class LuceneWebService extends HttpServlet
 	public void doDelete (LuceneContext c)
 		throws
 			TransformerException, ParserConfigurationException, IndicesNotFoundException,
-			IllegalActionException, DocumentsNotFoundException, IOException
+			IllegalActionException, DocumentsNotFoundException, IOException, InsufficientDataException
 	{
 		LuceneRequest req = c.req();
 		
@@ -840,7 +840,7 @@ public class LuceneWebService extends HttpServlet
 	 */
 	
 	public static String getDocumentURL (LuceneRequest request, LuceneIndex index, LuceneDocument document)
-		throws IOException
+		throws InsufficientDataException, IOException
 	{
 		return getIndexURL( request, index ) + index.getIdentifier( document ) + "/";
 	}

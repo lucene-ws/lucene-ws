@@ -25,6 +25,7 @@ public class LimitedIterator<E> implements Iterator<E>
 	}
 	
 	protected void initialize ()
+		throws InsufficientDataException
 	{
 		int skip = limiter.getSkipped();
 		for( int i = 0; i < skip; i++ )
@@ -36,7 +37,14 @@ public class LimitedIterator<E> implements Iterator<E>
 	public boolean hasNext ()
 	{
 		if( !initialized )
-			initialize();
+			try
+			{
+				initialize();
+			}
+			catch(InsufficientDataException ide)
+			{
+				return false;
+			}
 		
 		return 1 <= position && position <= limit;
 	}
@@ -44,7 +52,14 @@ public class LimitedIterator<E> implements Iterator<E>
 	public E next ()
 	{
 		if( !initialized )
-			initialize();
+			try
+			{
+				initialize();
+			}
+			catch(InsufficientDataException ide)
+			{
+				return null;
+			}
 		
 		position++;
 		return iterator.next();

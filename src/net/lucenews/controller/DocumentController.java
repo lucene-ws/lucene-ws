@@ -31,7 +31,7 @@ public class DocumentController extends Controller
 	 */
 	
 	public static void doDelete (LuceneContext c)
-		throws IllegalActionException, IndicesNotFoundException, DocumentsNotFoundException, IOException
+		throws IllegalActionException, IndicesNotFoundException, DocumentsNotFoundException, IOException, InsufficientDataException
 	{
 		LuceneWebService   service     = c.service();
 		LuceneIndexManager manager     = service.getIndexManager();
@@ -74,7 +74,7 @@ public class DocumentController extends Controller
 	public static void doGet (LuceneContext c)
 		throws
 			IndicesNotFoundException, DocumentsNotFoundException, ParserConfigurationException,
-			TransformerException, IOException
+			TransformerException, IOException, InsufficientDataException
 	{
 		LuceneWebService   service     = c.service();
 		LuceneIndexManager manager     = service.getIndexManager();
@@ -180,7 +180,7 @@ public class DocumentController extends Controller
 		throws
 			IllegalActionException, InvalidIdentifierException, IndicesNotFoundException, SAXException,
 			TransformerException, ParserConfigurationException, DocumentNotFoundException,
-			IndexNotFoundException, IOException
+			IndexNotFoundException, IOException, InsufficientDataException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
@@ -211,7 +211,7 @@ public class DocumentController extends Controller
 	
 	
 	public static Entry asEntry (LuceneContext c, LuceneIndex index, LuceneDocument document)
-		throws ParserConfigurationException, IOException
+		throws InsufficientDataException, ParserConfigurationException, IOException
 	{
 		return asEntry( c, index, document, null );
 	}
@@ -231,7 +231,7 @@ public class DocumentController extends Controller
 	 */
 	
 	public static Entry asEntry (LuceneContext c, LuceneIndex index, LuceneDocument document, Float score)
-		throws ParserConfigurationException, IOException
+		throws InsufficientDataException, ParserConfigurationException, IOException
 	{
 		LuceneWebService service = c.service();
 		LuceneRequest    req     = c.req();
