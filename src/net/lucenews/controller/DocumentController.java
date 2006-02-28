@@ -190,7 +190,6 @@ public class DocumentController extends Controller
 		LuceneIndexManager manager = service.getIndexManager();
 		LuceneRequest      req     = c.req();
 		LuceneResponse     res     = c.res();
-		System.setErr( new PrintStream( res.getOutputStream() ) );
 		
 		LuceneIndex[]    indices   = manager.getIndices( req.getIndexNames() );
 		LuceneDocument[] documents = req.getLuceneDocuments();
