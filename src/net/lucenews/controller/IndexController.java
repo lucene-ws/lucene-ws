@@ -323,7 +323,6 @@ public class IndexController extends Controller
 		// Iterate over the necessary IDs
 		for( int i = limiter.getFirst(); i <= limiter.getLast() && ids.hasNext(); i++ )
 		{
-			res.addHeader( "x-debug", "here" );
 			LuceneDocument document = new LuceneDocument( reader.document( ids.next() ) );
 			feed.addEntry( DocumentController.asEntry( c, index, document ) );
 		}
