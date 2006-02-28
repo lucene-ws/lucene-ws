@@ -255,10 +255,7 @@ public class IndexController extends Controller
 		if( !index.hasUpdatedField() )
 			return feed;
 		
-		
-		
 		IndexReader reader = index.getIndexReader();
-		
 		
 		
 		Limiter limiter = req.getLimiter();
@@ -269,7 +266,30 @@ public class IndexController extends Controller
 		
 		
 		
+		int number = 1;
+		int documentNumber = reader.maxDoc() - 1;
 		
+		// Skip over the front-most documents
+		while( number < limiter.getFirst() )
+		{
+			if( !reader.isDeleted( documentNumber ) )
+				number++;
+			documentNumber--;
+		}
+		
+		// Iterate over the documents in question
+		while( number <= limiter.getLast() )
+		{
+			if( !reader.isDeleted( documentNumber ) )
+			{
+				LuceneDocument document = new LuceneDocument( reader.document( documentNumber ) );
+				feed.addEntry( DocumentController.asEntry( c, index, document ) );
+				number++;
+			}
+			documentNumber--;
+		}
+		
+		/**
 		int documentsRequired = limiter.getLast();
 		
 		LinkedList<Integer> documentIDs = new LinkedList<Integer>();
@@ -303,10 +323,11 @@ public class IndexController extends Controller
 		// Iterate over the necessary IDs
 		for( int i = limiter.getFirst(); i <= limiter.getLast() && ids.hasNext(); i++ )
 		{
+			res.addHeader( "x-debug", "here" );
 			LuceneDocument document = new LuceneDocument( reader.document( ids.next() ) );
 			feed.addEntry( DocumentController.asEntry( c, index, document ) );
 		}
-		
+		*/
 		
 		
 		index.putIndexReader( reader );
