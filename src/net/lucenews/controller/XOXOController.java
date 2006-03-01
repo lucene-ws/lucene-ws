@@ -320,7 +320,11 @@ public class XOXOController
 					{
 						if( state == 'd' )
 						{
-							value = element.getFirstChild().getNodeValue();
+							if( element.getFirstChild() == null )
+								value = null;
+							else
+								value = element.getFirstChild().getNodeValue();
+							
 							if( name != null && value != null )
 							{
 								fields.add( asField( name, value, stored, indexed, tokenized, termVectorStored ) );
