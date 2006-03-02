@@ -1398,6 +1398,11 @@ public class LuceneIndex
 		return getProperties().getProperty( "document.defaultfield" );
 	}
 	
+	public int getDefaultOperator ()
+		throws IOException
+	{
+		return LuceneUtils.parseOperator( getProperties().getProperty( "index.defaultoperator" ) );
+	}
 	
 	
 	

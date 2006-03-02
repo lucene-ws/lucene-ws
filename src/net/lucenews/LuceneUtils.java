@@ -133,6 +133,22 @@ public class LuceneUtils
 	
 	
 	
+	public static String getOperatorName (int operator)
+	{
+		switch( operator )
+		{
+			case QueryParser.DEFAULT_OPERATOR_AND:
+				return "AND";
+				
+			case QueryParser.DEFAULT_OPERATOR_OR:
+				return "OR";
+				
+			default:
+				return null;
+		}
+	}
+	
+	
 	
 	/**
 	 * Parses a filter from the given string.

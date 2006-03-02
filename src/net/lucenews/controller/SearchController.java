@@ -143,6 +143,8 @@ public class SearchController extends Controller
 		
 		
 		
+		Integer defaultOperator = null;
+		
 		if( query == null )
 		{
 			/**
@@ -157,7 +159,21 @@ public class SearchController extends Controller
 			if( locale != null )
 				parser.setLocale( locale );
 			
-			Integer defaultOperator = req.getDefaultOperator();
+			defaultOperator = req.getDefaultOperator();
+			
+			for( int i = 0; i < indices.length; i++ )
+			{
+				if( defaultOperator != null )
+					break;
+				defaultOperator = indices[ i ].getDefaultOperator();
+			}
+			
+			if( defaultOperator == null )
+				defaultOperator = service.getDefaultOperator();
+			
+			if( defaultOperator == null )
+				defaultOperator = QueryParser.DEFAULT_OPERATOR_AND;
+			
 			if( defaultOperator != null )
 				parser.setOperator( defaultOperator );
 			
@@ -218,8 +234,6 @@ public class SearchController extends Controller
 		title.append( "Search results for query '" + req.getSearchString() + "'" );
 		title.append( " on " + ( indices.length == 1 ? "index" : "indices" ) + " " );
 		title.append( ServletUtils.joined( ServletUtils.mapped( "'[content]'", ServletUtils.objectsMapped( "getTitle", indices ) ) ) );
-		
-		
 		
 		response.setTitle( String.valueOf( title ) );
 		
