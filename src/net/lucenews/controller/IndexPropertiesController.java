@@ -105,6 +105,9 @@ public class IndexPropertiesController extends Controller
 		LuceneResponse     res     = c.res();
 		
 		
+		StringBuffer indexNamesBuffer = new StringBuffer();
+		
+		boolean updated = false;
 		
 		
 		// For each index...
@@ -124,8 +127,16 @@ public class IndexPropertiesController extends Controller
 			
 			index.setProperties( properties );
 			
-			res.addHeader( "Location", service.getIndexPropertiesURL( req, index ) );
+			updated = true;
+			
+			if( i > 0 )
+				indexNamesBuffer.append( "," );
+			indexNamesBuffer.append( index.getName() );
+			
 		}
+		
+		if( updated )
+			res.addHeader( "Location", service.getIndexPropertiesURL( req, indexNamesBuffer.toString() ) );
 		
 		XMLController.acknowledge( c );
 	}
@@ -153,6 +164,10 @@ public class IndexPropertiesController extends Controller
 		LuceneResponse     res     = c.res();
 		
 		
+		StringBuffer indexNamesBuffer = new StringBuffer();
+		
+		boolean created = false;
+		
 		
 		
 		// For each index...
@@ -172,8 +187,15 @@ public class IndexPropertiesController extends Controller
 			
 			index.addProperties( properties );
 			
-			res.addHeader( "Location", service.getIndexPropertiesURL( req, index ) );
+			created = true;
+			
+			if( i > 0 )
+				indexNamesBuffer.append( "," );
+			indexNamesBuffer.append( index.getName() );
 		}
+		
+		if( created )
+			res.addHeader( "Location", service.getIndexPropertiesURL( req, indexNamesBuffer.toString() ) );
 		
 		XMLController.acknowledge( c );
 	}

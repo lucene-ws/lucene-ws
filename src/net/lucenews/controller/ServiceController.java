@@ -68,6 +68,9 @@ public class ServiceController extends Controller
 		LuceneResponse     res       = c.res();
 		
 		
+		StringBuffer indexNamesBuffer = new StringBuffer();
+		
+		boolean created = false;
 		
 		
 		Entry[] entries = getEntries( req );
@@ -101,10 +104,17 @@ public class ServiceController extends Controller
 			if( properties != null )
 				index.setProperties( properties );
 			
+			created = true;
+			
+			if( i > 0 )
+				indexNamesBuffer.append( "," );
+			indexNamesBuffer.append( index.getName() );
+			
 			res.setStatus( res.SC_CREATED );
-			res.addHeader( "Location", service.getIndexURL( req, index ) );
 		}
 		
+		if( created )
+			res.addHeader( "Location", service.getIndexURL( req, indexNamesBuffer.toString() ) );
 		
 		
 		

@@ -41,6 +41,9 @@ public class IndexController extends Controller
 		LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
 		
 		
+		StringBuffer indexNamesBuffer = new StringBuffer();
+		
+		boolean deleted = false;
 		
 		
 		// Delete each index
@@ -51,9 +54,15 @@ public class IndexController extends Controller
 			if( !index.delete() )
 				throw new IOException( "Index '" + index.getName() + "' could not be deleted." );
 			
-			res.addHeader( "Location", service.getIndexURL( req, index ) );
+			deleted = true;
+			
+			if( i > 0 )
+				indexNamesBuffer.append( "," );
+			indexNamesBuffer.append( index.getName() );
 		}
 		
+		if( deleted )
+			res.addHeader( "Location", service.getIndexURL( req, indexNamesBuffer.toString() ) );
 		
 		
 		
@@ -106,7 +115,7 @@ public class IndexController extends Controller
 	 */
 	
 	public static void doPut (LuceneContext c)
-		throws IndicesNotFoundException, ParserConfigurationException, SAXException, IOException, LuceneException
+		throws IndicesNotFoundException, ParserConfigurationException, SAXException, IOException, LuceneException, TransformerException, ParserConfigurationException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
@@ -114,6 +123,10 @@ public class IndexController extends Controller
 		LuceneResponse     res     = c.res();
 		Entry[]            entries = req.getEntries();
 		
+		
+		StringBuffer indexNamesBuffer = new StringBuffer();
+		
+		boolean updated = false;
 		
 		
 		// For each index...
@@ -131,8 +144,17 @@ public class IndexController extends Controller
 			
 			index.setProperties( properties );
 			
-			res.addHeader( "Location", service.getIndexURL( req, index ) );
+			updated = true;
+			
+			if( i > 0 )
+				indexNamesBuffer.append( "," );
+			indexNamesBuffer.append( index.getName() );
 		}
+		
+		if( updated )
+			res.addHeader( "Location", service.getIndexURL( req, indexNamesBuffer.toString() ) );
+		
+		XMLController.acknowledge( c );
 	}
 	
 	
