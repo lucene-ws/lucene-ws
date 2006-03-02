@@ -528,6 +528,7 @@ public class LuceneIndex
 	public void putIndexSearcher (IndexSearcher searcher)
 		throws IOException
 	{
+		searcher = null;
 	}
 	
 	
@@ -1398,10 +1399,10 @@ public class LuceneIndex
 		return getProperties().getProperty( "document.defaultfield" );
 	}
 	
-	public int getDefaultOperator ()
+	public Integer getDefaultOperator ()
 		throws IOException
 	{
-		return LuceneUtils.parseOperator( getProperties().getProperty( "index.defaultoperator" ) );
+		return LuceneUtils.parseOperator( getProperty( "index.defaultoperator" ) );
 	}
 	
 	
@@ -1561,7 +1562,10 @@ public class LuceneIndex
 	public String getProperty (String name)
 		throws IOException
 	{
-		return getProperties().getProperty( name );
+		Properties properties = getProperties();
+		if( properties == null )
+			return null;
+		return properties.getProperty( name );
 	}
 	
 	
