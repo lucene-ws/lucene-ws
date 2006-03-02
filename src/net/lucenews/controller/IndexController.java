@@ -163,11 +163,19 @@ public class IndexController extends Controller
 		LuceneDocument[]   documents = req.getLuceneDocuments();
 		
 		
+		// Buffers for header location construction
+		StringBuffer indexNamesBuffer  = new StringBuffer();
+		StringBuffer documentIDsBuffer = new StringBuffer();
+		
 		
 		// For each index...
 		for( int i = 0; i < indices.length; i++ )
 		{
 			LuceneIndex index = indices[ i ];
+			
+			if( i > 0 )
+				indexNamesBuffer.append( "," );
+			indexNamesBuffer.append( index.getName() );
 			
 			// For each document...
 			for( int j = 0; j < documents.length; j++ )
@@ -176,10 +184,22 @@ public class IndexController extends Controller
 				
 				index.addDocument( document );
 				
-				res.addHeader( "Location", service.getDocumentURL( req, index, document ) );
+				if( i == 0 )
+				{
+					if( j > 0 )
+						documentIDsBuffer.append( "," );
+					documentIDsBuffer.append( index.getIdentifier( document ) );
+				}
+				
 				res.setStatus( res.SC_CREATED );
 			}
 		}
+		
+		String indexNames  = indexNamesBuffer.toString();
+		String documentIDs = documentIDsBuffer.toString();
+		
+		if( res.getStatus() == res.SC_CREATED )
+			res.addHeader( "Location", service.getDocumentURL( req, indexNames, documentIDs ) );
 		
 		XMLController.acknowledge( c );
 	}

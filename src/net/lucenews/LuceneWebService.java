@@ -817,9 +817,14 @@ public class LuceneWebService extends HttpServlet
 	 * Index URL
 	 */
 	
+	public static String getIndexURL (LuceneRequest request, String indexName)
+	{
+		return getServiceURL( request ) + indexName + "/";
+	}
+	
 	public static String getIndexURL (LuceneRequest request, LuceneIndex index)
 	{
-		return getServiceURL( request ) + index.getName() + "/";
+		return getIndexURL( request, index.getName() );
 	}
 	
 	
@@ -828,9 +833,14 @@ public class LuceneWebService extends HttpServlet
 	 * Index properties URL
 	 */
 	
+	public static String getIndexPropertiesURL (LuceneRequest request, String indexName)
+	{
+		return getIndexURL( request, indexName ) + "index.properties";
+	}
+	
 	public static String getIndexPropertiesURL (LuceneRequest request, LuceneIndex index)
 	{
-		return getIndexURL( request, index ) + "index.properties";
+		return getIndexPropertiesURL( request, index.getName() );
 	}
 	
 	
@@ -839,10 +849,16 @@ public class LuceneWebService extends HttpServlet
 	 * Document URL
 	 */
 	
+	public static String getDocumentURL (LuceneRequest request, String indexName, String documentID)
+		throws InsufficientDataException, IOException
+	{
+		return getIndexURL( request, indexName ) + documentID + "/";
+	}
+	
 	public static String getDocumentURL (LuceneRequest request, LuceneIndex index, LuceneDocument document)
 		throws InsufficientDataException, IOException
 	{
-		return getIndexURL( request, index ) + index.getIdentifier( document ) + "/";
+		return getDocumentURL( request, index.getName(), index.getIdentifier( document ) );
 	}
 	
 	

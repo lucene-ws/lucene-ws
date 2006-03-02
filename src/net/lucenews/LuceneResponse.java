@@ -11,7 +11,7 @@ public class LuceneResponse extends HttpServletResponseWrapper
 {
 	private ServletOutputStream outputStream;
 	private PrintWriter writer;
-	
+	private int status;
 	
 	
 	protected LuceneResponse (HttpServletResponse response)
@@ -85,4 +85,16 @@ public class LuceneResponse extends HttpServletResponseWrapper
 			writer.flush();
 	}*/
 	
+	
+	
+	public void setStatus (int status)
+	{
+		this.status = status;
+		super.setStatus( status );
+	}
+	
+	public int getStatus ()
+	{
+		return status;
+	}
 }

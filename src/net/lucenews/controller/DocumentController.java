@@ -42,10 +42,20 @@ public class DocumentController extends Controller
 		String[]           documentIDs = req.getDocumentIDs();
 		
 		
+		// Buffers for header location construction
+		StringBuffer indexNamesBuffer  = new StringBuffer();
+		StringBuffer documentIDsBuffer = new StringBuffer();
+		
+		boolean deleted = false;
+		
 		// For each index...
 		for( int i = 0; i < indices.length; i++ )
 		{
 			LuceneIndex index = indices[ i ];
+			
+			if( i > 0 )
+				indexNamesBuffer.append( "," );
+			indexNamesBuffer.append( index.getName() );
 			
 			// For each document...
 			for( int j = 0; j < documentIDs.length; j++ )
@@ -54,11 +64,22 @@ public class DocumentController extends Controller
 				
 				LuceneDocument document = index.removeDocument( documentID );
 				
-				res.addHeader( "Location", service.getDocumentURL( req, index, document ) );
+				deleted = true;
+				
+				if( i == 0 )
+				{
+					if( j > 0 )
+						documentIDsBuffer.append( "," );
+					documentIDsBuffer.append( index.getIdentifier( document ) );
+				}
 			}
 		}
 		
+		String indexNamesString  = indexNamesBuffer.toString();
+		String documentIDsString = documentIDsBuffer.toString();
 		
+		if( deleted )
+			res.addHeader( "Location", service.getDocumentURL( req, indexNamesString, documentIDsString ) );
 		
 		XMLController.acknowledge( c );
 	}
@@ -194,9 +215,19 @@ public class DocumentController extends Controller
 		LuceneIndex[]    indices   = manager.getIndices( req.getIndexNames() );
 		LuceneDocument[] documents = req.getLuceneDocuments();
 		
+		// Buffers for header location construction
+		StringBuffer indexNamesBuffer  = new StringBuffer();
+		StringBuffer documentIDsBuffer = new StringBuffer();
+		
+		boolean updated = false;
+		
 		for( int i = 0; i < indices.length; i++ )
 		{
 			LuceneIndex index = indices[ i ];
+			
+			if( i > 0 )
+				indexNamesBuffer.append( "," );
+			indexNamesBuffer.append( index.getName() );
 			
 			for( int j = 0; j < documents.length; j++ )
 			{
@@ -204,9 +235,21 @@ public class DocumentController extends Controller
 				
 				index.updateDocument( document );
 				
-				res.addHeader( "Location", service.getDocumentURL( req, index, document ) );
+				updated = true;
+				
+				if( i == 0 )
+				{
+					if( j > 0 )
+						documentIDsBuffer.append( "," );
+					documentIDsBuffer.append( index.getIdentifier( document ) );
+				}
 			}
 		}
+		String indexNames  = indexNamesBuffer.toString();
+		String documentIDs = documentIDsBuffer.toString();
+		
+		if( updated )
+			res.addHeader( "Location", service.getDocumentURL( req, indexNames, documentIDs ) );
 		
 		XMLController.acknowledge( c );
 	}
