@@ -933,6 +933,12 @@ public class LuceneWebService extends HttpServlet
 		return LuceneUtils.parseOperator( getProperty( "service.defaultoperator" ) );
 	}
 	
+	public boolean isDebugging ()
+        throws IOException
+    {
+        return ServletUtils.parseBoolean( getProperty( "service.debugging" ) );
+    }
+	
 	
 	
 	
