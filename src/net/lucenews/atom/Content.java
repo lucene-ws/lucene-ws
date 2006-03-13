@@ -1,10 +1,15 @@
 package net.lucenews.atom;
 
+import java.io.*;
+import java.lang.reflect.*;
+import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.*;
 
 public class Content
 {
@@ -137,6 +142,69 @@ public class Content
 	{
 		if( !element.getTagName().equals( "content" ) )
 			return null;
+		
+		
+		/**
+		 * Base64 decoding
+		 */
+		
+		String mode = element.getAttribute( "mode" );
+		if( mode != null && mode.toLowerCase().trim().equals( "base64" ) )
+		{
+			//System.err.println( "Detected a base64 encoded content block" );
+			try
+			{
+				Class base64class = Class.forName( "org.apache.commons.codec.binary.Base64" );
+				Object base64 = base64class.newInstance();
+				Method decode = base64class.getMethod( "decode", byte[].class );
+				
+				byte[] bytes = (byte[]) decode.invoke( base64, element.getFirstChild().getNodeValue().getBytes() );
+				
+				DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				
+				StringBuffer buffer = new StringBuffer();
+				buffer.append( "<div>" );
+				buffer.append( new String( bytes, "UTF-8" ) );
+				buffer.append( "</div>" );
+				
+				//System.err.println( buffer.toString() );
+				
+				Document document = builder.parse( new InputSource( new StringReader( buffer.toString() ) ) );
+				
+				//System.err.println( document.getDocumentElement() );
+				
+				if( element.getAttribute( "type" ).equals( "xhtml" ) )
+					return Content.xhtml( document.getDocumentElement() );
+			}
+			/**catch(ClassNotFoundException cnfe)
+			{
+			}
+			catch(IllegalAccessException iae)
+			{
+			}
+			catch(TransformerConfigurationException tce)
+			{
+			}
+			catch(TransformerException tce)
+			{
+			}
+			catch(InvocationTargetException ite)
+			{
+			}
+			catch(InstantiationException ie)
+			{
+			}
+			catch(NoSuchMethodException nsme)
+			{
+			}*/
+			catch(Exception eee)
+			{
+				eee.printStackTrace();
+			}
+		}
+		
+		
+		
 		
 		if( element.getAttribute( "type" ).endsWith( "xml" ) )
 		{
