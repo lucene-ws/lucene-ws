@@ -32,7 +32,9 @@ public class IndexController extends Controller
 	 */
 	
 	public static void doDelete (LuceneContext c)
-		throws TransformerException, ParserConfigurationException, IndicesNotFoundException, IllegalActionException, IOException
+		throws
+            TransformerException, ParserConfigurationException, IndicesNotFoundException,
+            IllegalActionException, IOException, InsufficientDataException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
@@ -63,6 +65,8 @@ public class IndexController extends Controller
 		
 		if( deleted )
 			res.addHeader( "Location", service.getIndexURL( req, indexNamesBuffer.toString() ) );
+		else
+			throw new InsufficientDataException( "No indices to be deleted" );
 		
 		
 		
@@ -222,6 +226,8 @@ public class IndexController extends Controller
 		
 		if( res.getStatus() == res.SC_CREATED )
 			res.addHeader( "Location", service.getDocumentURL( req, indexNames, documentIDs ) );
+		else
+			throw new InsufficientDataException( "No documents to be added" );
 		
 		XMLController.acknowledge( c );
 	}

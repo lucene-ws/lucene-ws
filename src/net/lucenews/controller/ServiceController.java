@@ -60,7 +60,9 @@ public class ServiceController extends Controller
 	 */
 	
 	public static void doPost (LuceneContext c)
-		throws IllegalActionException, IndicesAlreadyExistException, TransformerException, ParserConfigurationException, SAXException, IOException
+		throws
+            IllegalActionException, IndicesAlreadyExistException, TransformerException,
+            ParserConfigurationException, SAXException, IOException, InsufficientDataException
 	{
 		LuceneWebService   service   = c.service();
 		LuceneIndexManager manager   = service.getIndexManager();
@@ -115,6 +117,8 @@ public class ServiceController extends Controller
 		
 		if( created )
 			res.addHeader( "Location", service.getIndexURL( req, indexNamesBuffer.toString() ) );
+		else
+			throw new InsufficientDataException( "No indices to be added" );
 		
 		
 		

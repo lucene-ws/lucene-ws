@@ -80,6 +80,8 @@ public class DocumentController extends Controller
 		
 		if( deleted )
 			res.addHeader( "Location", service.getDocumentURL( req, indexNamesString, documentIDsString ) );
+		else
+			throw new InsufficientDataException( "No documents to be deleted" );
 		
 		XMLController.acknowledge( c );
 	}
@@ -250,6 +252,8 @@ public class DocumentController extends Controller
 		
 		if( updated )
 			res.addHeader( "Location", service.getDocumentURL( req, indexNames, documentIDs ) );
+		else
+			throw new InsufficientDataException( "No documents to be updated" );
 		
 		XMLController.acknowledge( c );
 	}
