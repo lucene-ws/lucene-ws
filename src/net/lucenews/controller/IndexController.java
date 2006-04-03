@@ -260,7 +260,7 @@ public class IndexController extends Controller
 	 */
 	
 	public static Feed asFeed (LuceneContext c)
-		throws IndexNotFoundException, ParserConfigurationException, TransformerException, IOException, InsufficientDataException
+		throws IndicesNotFoundException, IndexNotFoundException, ParserConfigurationException, TransformerException, IOException, InsufficientDataException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
@@ -274,7 +274,8 @@ public class IndexController extends Controller
 		// headaches. The following line will throw an exception 
 		// if many indices have been specified. Enjoy!
 		
-		LuceneIndex index = manager.getIndex( req.getIndexName() );
+		//LuceneIndex index = manager.getIndex( req.getIndexName() );
+		LuceneIndex[] indices = manager.getIndices( req.getIndexNames() );
 		
 		
 		
@@ -286,104 +287,55 @@ public class IndexController extends Controller
 		
 		
 		// Title
-		feed.setTitle( index.getTitle() );
+		//feed.setTitle( index.getTitle() );
 		
 		// ID
-		feed.setID( service.getIndexURL( req, index ) );
+		//feed.setID( service.getIndexURL( req, index ) );
 		
 		// Updated
 		feed.setUpdated( Calendar.getInstance() );
 		
 		// Author
-		if( index.hasAuthor() )
-			feed.addAuthor( new Author( index.getAuthor() ) );
-		else
-			feed.addAuthor( new Author( service.getTitle() ) );
+		//if( index.hasAuthor() )
+		//	feed.addAuthor( new Author( index.getAuthor() ) );
+		//else
+		//	feed.addAuthor( new Author( service.getTitle() ) );
 		
 		// Link
-		feed.addLink( new Link( req.getLocation(), "self", "application/atom+xml" ) );
+		//feed.addLink( new Link( req.getLocation(), "self", "application/atom+xml" ) );
 		
 		// This is critical
-		if( !index.hasUpdatedField() )
-			return feed;
+		//if( !index.hasUpdatedField() )
+		//	return feed;
 		
-		IndexReader reader = index.getIndexReader();
+		//IndexReader reader = index.getIndexReader();
 		
 		
 		Limiter limiter = req.getLimiter();
-		limiter.setTotalEntries( reader.numDocs() );
+		//limiter.setTotalEntries( reader.numDocs() );
 		
-		if( limiter.getFirst() == null || limiter.getLast() == null )
-			return feed;
+		//if( limiter.getFirst() == null || limiter.getLast() == null )
+		//	return feed;
 		
 		
+        LuceneMultiSearcher   searcher  = null;
+        IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
+        
+        for( int i = 0; i < indices.length; i++ )
+            searchers[ i ] = indices[ i ].getIndexSearcher();
+        
+        searcher = new LuceneMultiSearcher( searchers, "searcherIndex" );
+        
+        Query query = new MatchAllDocsQuery();
+        Hits hits = searcher.search( query, new Sort( new SortField( "updated", SortField.STRING, true ) ) );
+        feed.setTitle( hits.length() + " total hits" );
+        limiter.setTotalEntries( hits.length() );
+        HitsIterator iterator = new HitsIterator( hits, limiter );
 		
-		int number = 1;
-		int documentNumber = reader.maxDoc() - 1;
-		
-		// Skip over the front-most documents
-		while( number < limiter.getFirst() )
-		{
-			if( !reader.isDeleted( documentNumber ) )
-				number++;
-			documentNumber--;
+		while( iterator.hasNext() ) {
+            LuceneDocument document = iterator.next();
+            feed.addEntry( DocumentController.asEntry( c, indices[ Integer.valueOf( document.get("searcherIndex") ) ], document ) );
 		}
-		
-		// Iterate over the documents in question
-		while( number <= limiter.getLast() )
-		{
-			if( !reader.isDeleted( documentNumber ) )
-			{
-				LuceneDocument document = new LuceneDocument( reader.document( documentNumber ) );
-				feed.addEntry( DocumentController.asEntry( c, index, document ) );
-				number++;
-			}
-			documentNumber--;
-		}
-		
-		/**
-		int documentsRequired = limiter.getLast();
-		
-		LinkedList<Integer> documentIDs = new LinkedList<Integer>();
-		
-		String field = index.getUpdatedField();
-		
-		TermEnum _enum = reader.terms( new Term( field, "" ) );
-		
-		while( _enum.next() && field.equals( _enum.term().field() ) )
-		{
-			TermDocs docs = reader.termDocs( _enum.term() );
-			
-			while( docs.next() )
-			{
-				documentIDs.addFirst( new Integer( docs.doc() ) );
-				while( documentIDs.size() > documentsRequired )
-					documentIDs.removeLast();
-			}
-		}
-		
-		
-		Iterator<Integer> ids = documentIDs.iterator();
-		
-		// Iterate over the unnecessary IDs
-		int skipped = limiter.getSkipped();
-		for( int i = 1; i <= skipped; i++ )
-		{
-			ids.next();
-		}
-		
-		// Iterate over the necessary IDs
-		for( int i = limiter.getFirst(); i <= limiter.getLast() && ids.hasNext(); i++ )
-		{
-			LuceneDocument document = new LuceneDocument( reader.document( ids.next() ) );
-			feed.addEntry( DocumentController.asEntry( c, index, document ) );
-		}
-		*/
-		
-		
-		index.putIndexReader( reader );
-		
-		
 		
 		if( limiter instanceof Pager )
 		{
