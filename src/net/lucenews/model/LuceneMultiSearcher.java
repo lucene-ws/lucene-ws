@@ -30,14 +30,32 @@ public class LuceneMultiSearcher extends MultiSearcher
 			new Field(
 				subSearcherField,
 				String.valueOf( subSearcher( i ) ),
-				false,
-				false,
-				false,
-				false
+				Field.Store.YES,
+				Field.Index.NO
 			)
 		);
 		
 		return document;
+	}
+	
+	@Deprecated
+	public Explanation explain (Query query, int doc) throws IOException {
+        return super.explain( query, doc );
+	}
+	
+	@Deprecated
+	public void search (Query query, Filter filter, HitCollector results) throws IOException {
+        super.search( query, filter, results );
+	}
+	
+	@Deprecated
+	public TopDocs search (Query query, Filter filter, int n) throws IOException {
+        return super.search( query, filter, n );
+	}
+	
+	@Deprecated
+	public TopFieldDocs search (Query query, Filter filter, int n, Sort sort) throws IOException {
+        return super.search( query, filter, n, sort );
 	}
 	
 }

@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -50,7 +51,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	private String   m_defaultField;
 	
 	private boolean  m_defaultOperatorCached;
-	private Integer  m_defaultOperator;
+	private QueryParser.Operator  m_defaultOperator;
 	
 	private boolean  m_entriesPerPageCached;
 	private Integer  m_entriesPerPage;
@@ -992,7 +993,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 * Gets the default operator
 	 */
 	
-	public Integer getDefaultOperator ()
+	public QueryParser.Operator getDefaultOperator ()
 	{
 		if( m_defaultOperatorCached )
 			return m_defaultOperator;
@@ -1008,7 +1009,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	/**
 	 * Sets the default operator
 	 */
-	public void setDefaultOperator (Integer defaultOperator)
+	public void setDefaultOperator (QueryParser.Operator defaultOperator)
 	{
 		m_defaultOperator       = defaultOperator;
 		m_defaultOperatorCached = defaultOperator != null;

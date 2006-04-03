@@ -143,7 +143,7 @@ public class SearchController extends Controller
 		
 		
 		
-		Integer defaultOperator = null;
+		QueryParser.Operator defaultOperator = null;
 		
 		if( query == null )
 		{
@@ -172,10 +172,10 @@ public class SearchController extends Controller
 				defaultOperator = service.getDefaultOperator();
 			
 			if( defaultOperator == null )
-				defaultOperator = QueryParser.DEFAULT_OPERATOR_AND;
+				defaultOperator = QueryParser.AND_OPERATOR;
 			
 			if( defaultOperator != null )
-				parser.setOperator( defaultOperator );
+				parser.setDefaultOperator( defaultOperator );
 			
 			
 			

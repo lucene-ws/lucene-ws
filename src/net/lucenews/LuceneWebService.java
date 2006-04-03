@@ -940,7 +940,7 @@ public class LuceneWebService extends HttpServlet
 		return getProperty( "service.defaultfield" );
 	}
 	
-	public Integer getDefaultOperator ()
+	public QueryParser.Operator getDefaultOperator ()
 		throws IOException
 	{
 		return LuceneUtils.parseOperator( getProperty( "service.defaultoperator" ) );

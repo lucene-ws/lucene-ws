@@ -9,6 +9,7 @@ import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
+import org.apache.lucene.queryParser.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.*;
 
@@ -808,7 +809,7 @@ public class LuceneIndex
 		while( documents.next() )
 		{
 			document = new LuceneDocument( reader.document( documents.doc() ) );
-			reader.delete( documents.doc() );
+			reader.deleteDocument( documents.doc() );
 		}
 		documents.close();
 			
@@ -953,7 +954,7 @@ public class LuceneIndex
 	public Field getIdentifyingField (String value)
 		throws IOException
 	{
-		return Field.Keyword( getIdentifyingField(), value );
+        return new Field( getIdentifyingField(), value, Field.Store.YES, Field.Index.UN_TOKENIZED );
 	}
 	
 	
@@ -1269,7 +1270,7 @@ public class LuceneIndex
 		
 		IndexReader reader = getIndexReader();
 		
-		Iterator<?> indexFieldNames = reader.getFieldNames().iterator();
+		Iterator<?> indexFieldNames = reader.getFieldNames( IndexReader.FieldOption.ALL ).iterator();
 		while( indexFieldNames.hasNext() )
 		{
 			Object indexFieldName = indexFieldNames.next();
@@ -1399,7 +1400,7 @@ public class LuceneIndex
 		return getProperties().getProperty( "document.defaultfield" );
 	}
 	
-	public Integer getDefaultOperator ()
+	public QueryParser.Operator getDefaultOperator ()
 		throws IOException
 	{
 		return LuceneUtils.parseOperator( getProperty( "index.defaultoperator" ) );
@@ -1800,7 +1801,7 @@ public class LuceneIndex
 		{
 			String field = getUpdatedField();
 			document.removeFields( field );
-			document.add( Field.Keyword( field, String.valueOf( timestamp ) ) );
+			document.add( new Field( field, String.valueOf( timestamp ), Field.Store.YES, Field.Index.UN_TOKENIZED ) );
 			
 			if( update )
 				updateDocument( document );

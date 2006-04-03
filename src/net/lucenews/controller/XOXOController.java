@@ -386,10 +386,19 @@ public class XOXOController
 	
 	protected static Field asField (String name, String value, boolean stored, boolean indexed, boolean tokenized, boolean termVectorStored)
 	{
-		if( !stored && !indexed && !tokenized )
-			return Field.Text( name, value, termVectorStored );
-		else
-			return new Field( name, value, stored, indexed, tokenized, termVectorStored );
+        Field.Store store = stored ? Field.Store.YES : Field.Store.NO;
+        Field.Index index = Field.Index.NO;
+        if( indexed ) {
+            if( tokenized ) {
+                index = Field.Index.TOKENIZED;
+            }
+            else {
+                index = Field.Index.UN_TOKENIZED;
+            }
+        }
+        Field.TermVector termVector = termVectorStored ? Field.TermVector.YES : Field.TermVector.NO;
+        
+		return new Field( name, value, store, index, termVector );
 	}
 	
 	

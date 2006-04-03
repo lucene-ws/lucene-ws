@@ -572,21 +572,21 @@ public class DocumentController extends Controller
 			String type = element.getAttribute( "type" ).trim().toLowerCase();
 			
 			if( type.equals( "keyword" ) )
-				return Field.Keyword( name, value );
+				return new Field( name, value, Field.Store.YES, Field.Index.UN_TOKENIZED );
 			
 			if( type.equals( "text" ) )
-				return Field.Text( name, value );
+				return new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED );
 			
 			if( type.equals( "sort" ) )
-				return new Field( name, value, true, true, false );
+				return new Field( name, value, Field.Store.NO, Field.Index.UN_TOKENIZED );
 			
 			if( type.equals( "unindexed" ) )
-				return Field.UnIndexed( name, value );
+				return new Field( name, value, Field.Store.YES, Field.Index.NO );
 			
 			if( type.equals( "unstored" ) )
-				return Field.UnStored( name, value );
+				return new Field( name, value, Field.Store.NO, Field.Index.TOKENIZED );
 			
-			return Field.Text( name, value );
+			return new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED );
 		}
 		else
 		{
@@ -594,7 +594,19 @@ public class DocumentController extends Controller
 			boolean store = ServletUtils.parseBoolean( element.getAttribute( "store" ) );
 			boolean token = ServletUtils.parseBoolean( element.getAttribute( "tokenized" ) );
 			
-			return new Field( name, value, index, store, token );
+			Field.Store stored = store ? Field.Store.YES : Field.Store.NO;
+			
+			Field.Index indexed = Field.Index.NO;
+			if( index ) {
+                if( token ) {
+                    indexed = Field.Index.TOKENIZED;
+                }
+                else {
+                    indexed = Field.Index.UN_TOKENIZED;
+                }
+			}
+			
+			return new Field( name, value, stored, indexed );
 		}
 	}
 	

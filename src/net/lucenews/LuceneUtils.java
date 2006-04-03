@@ -109,13 +109,13 @@ public class LuceneUtils
 	
 	/**
 	 * Parses the operator described by the string provided.
-	 * This corresponds to the QueryParser.DEFAULT_OPERATOR_AND
-	 * and QueryParser.DEFAULT_OPERATOR_OR values.
+	 * This corresponds to the QueryParser.AND_OPERATOR
+	 * and QueryParser.OR_OPERATOR values.
 	 * 
 	 * @param string The string to parse
-	 * @return The int value of the operator, Null if the operator is invalid
+	 * @return The QueryParser.Operator value of the operator, Null if the operator is invalid
 	 */
-	public static Integer parseOperator (String string)
+	public static QueryParser.Operator parseOperator (String string)
 	{
 		if( string == null )
 			return null;
@@ -123,29 +123,25 @@ public class LuceneUtils
 		string = string.trim().toLowerCase();
 		
 		if( string.equals( "and" ) )
-			return QueryParser.DEFAULT_OPERATOR_AND;
+			return QueryParser.AND_OPERATOR;
 		
 		if( string.equals( "or" ) )
-			return QueryParser.DEFAULT_OPERATOR_OR;
+			return QueryParser.OR_OPERATOR;
 		
 		return null;
 	}
 	
 	
 	
-	public static String getOperatorName (int operator)
+	public static String getOperatorName (QueryParser.Operator operator)
 	{
-		switch( operator )
-		{
-			case QueryParser.DEFAULT_OPERATOR_AND:
-				return "AND";
-				
-			case QueryParser.DEFAULT_OPERATOR_OR:
-				return "OR";
-				
-			default:
-				return null;
-		}
+        if( operator == QueryParser.AND_OPERATOR )
+            return "AND";
+        
+        if( operator == QueryParser.OR_OPERATOR )
+            return "OR";
+        
+		return null;
 	}
 	
 	
