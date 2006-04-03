@@ -10,6 +10,7 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 
+import net.lucenews.atom.*;
 import net.lucenews.controller.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
@@ -223,6 +224,11 @@ public class LuceneWebService extends HttpServlet
 			res.setStatus( res.SC_BAD_REQUEST );
 			ExceptionController.process( c, pe );
 		}
+		catch(AtomParseException ape)
+		{
+			res.setStatus( res.SC_BAD_REQUEST );
+			ExceptionController.process( c, ape );
+		}
 		catch(SAXException saxe)
 		{
 			res.setStatus( res.SC_BAD_REQUEST );
@@ -398,12 +404,13 @@ public class LuceneWebService extends HttpServlet
 	 * @throws SAXException
 	 * @throws IOException
 	 * @throws LuceneException
+	 * @throws AtomParseException
 	 */
 	
 	public void doPost (LuceneContext c)
 		throws
 			IllegalActionException, DocumentsAlreadyExistException, ParserConfigurationException,
-			IndicesAlreadyExistException, TransformerException,
+			IndicesAlreadyExistException, TransformerException, AtomParseException,
 			IndicesNotFoundException, SAXException, IOException, LuceneException
 	{
 		LuceneRequest req = c.req();
@@ -447,13 +454,14 @@ public class LuceneWebService extends HttpServlet
 	 * @throws IndexNotFoundException
 	 * @throws IOException
 	 * @throws LuceneException
+	 * @throws AtomParseException
 	 */
 	
 	public void doPut (LuceneContext c)
 		throws
 			IllegalActionException, InvalidIdentifierException, IndicesNotFoundException, SAXException,
 			TransformerException, ParserConfigurationException, DocumentNotFoundException,
-			IndexNotFoundException, IOException, LuceneException
+			IndexNotFoundException, IOException, LuceneException, AtomParseException
 	{
 		LuceneRequest req = c.req();
 		

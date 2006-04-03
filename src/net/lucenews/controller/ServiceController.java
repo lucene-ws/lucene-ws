@@ -57,12 +57,13 @@ public class ServiceController extends Controller
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
+	 * @throws AtomParseException
 	 */
 	
 	public static void doPost (LuceneContext c)
 		throws
             IllegalActionException, IndicesAlreadyExistException, TransformerException,
-            ParserConfigurationException, SAXException, IOException, InsufficientDataException
+            ParserConfigurationException, SAXException, IOException, InsufficientDataException, AtomParseException
 	{
 		LuceneWebService   service   = c.service();
 		LuceneIndexManager manager   = service.getIndexManager();
@@ -129,7 +130,7 @@ public class ServiceController extends Controller
 	
 	
 	public static Entry[] getEntries (LuceneRequest request)
-		throws ParserConfigurationException, SAXException, IOException
+		throws ParserConfigurationException, SAXException, IOException, AtomParseException
 	{
 		List<Entry> entries = new LinkedList<Entry>();
 		

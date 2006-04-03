@@ -139,6 +139,7 @@ public class Content
 	
 	
 	public static Content parse (Element element)
+        throws AtomParseException
 	{
 		if( !element.getTagName().equals( "content" ) )
 			return null;

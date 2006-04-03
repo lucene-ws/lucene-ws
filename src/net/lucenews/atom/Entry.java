@@ -74,11 +74,13 @@ public class Entry extends Base
 	
 	
 	public static Entry parse (Document document)
+        throws AtomParseException
 	{
 		return parse( document.getDocumentElement() );
 	}
 	
 	public static Entry parse (Element e)
+        throws AtomParseException
 	{
 		if( !e.getTagName().equals( "entry" ) )
 			return null;

@@ -86,10 +86,13 @@ public class ServicePropertiesController extends Controller
 	 * @throws ParserConfigurationException
 	 * @throws TransformerException
 	 * @throws IOException
+	 * @throws AtomParseException
 	 */
 	
 	public static void doPut (LuceneContext c)
-		throws IllegalActionException, LuceneException, SAXException, ParserConfigurationException, TransformerException, IOException
+		throws
+            IllegalActionException, LuceneException, SAXException, ParserConfigurationException,
+            TransformerException, IOException, AtomParseException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
@@ -141,10 +144,13 @@ public class ServicePropertiesController extends Controller
 	 * @throws ParserConfigurationException
 	 * @throws TransformerException
 	 * @throws IOException
+	 * @throws AtomParseException
 	 */
 	
 	public static void doPost (LuceneContext c)
-		throws IllegalActionException, LuceneException, SAXException, ParserConfigurationException, TransformerException, IOException
+		throws
+            IllegalActionException, LuceneException, SAXException, ParserConfigurationException,
+            TransformerException, IOException, AtomParseException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();

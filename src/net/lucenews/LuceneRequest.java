@@ -566,7 +566,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 */
 	
 	public LuceneDocument[] getLuceneDocuments ()
-		throws ParserConfigurationException, SAXException, IOException
+		throws ParserConfigurationException, AtomParseException, SAXException, IOException
 	{
 		Entry[] entries = getEntries();
 		
@@ -629,7 +629,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 */
 	
 	public Feed getFeed ()
-		throws ParserConfigurationException, IOException, SAXException
+		throws ParserConfigurationException, AtomParseException, IOException, SAXException
 	{
 		return Feed.parse( getDOMDocument() );
 	}
@@ -641,7 +641,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 */
 	
 	public Entry getEntry ()
-		throws ParserConfigurationException, IOException, SAXException
+		throws ParserConfigurationException, AtomParseException, IOException, SAXException
 	{
 		return Entry.parse( getDOMDocument() );
 	}
@@ -653,11 +653,11 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 */
 	
 	public Entry[] getEntries ()
-		throws ParserConfigurationException, SAXException, IOException
+		throws ParserConfigurationException, AtomParseException, SAXException, IOException
 	{
 		List<Entry> entries = new LinkedList<Entry>();
 		
-			Feed feed = getFeed();
+		Feed feed = getFeed();
 		if( feed != null )
 			entries.addAll( feed.getEntries() );
 		

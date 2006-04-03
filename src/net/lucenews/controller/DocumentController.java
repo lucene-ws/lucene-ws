@@ -201,13 +201,14 @@ public class DocumentController extends Controller
 	 * @throws DocumentNotFoundException
 	 * @throws IndexNotFoundException
 	 * @throws IOException
+	 * @throws AtomParseException
 	 */
 	 
 	public static void doPut (LuceneContext c)
 		throws
 			IllegalActionException, InvalidIdentifierException, IndicesNotFoundException, SAXException,
 			TransformerException, ParserConfigurationException, DocumentNotFoundException,
-			IndexNotFoundException, IOException, InsufficientDataException
+			IndexNotFoundException, IOException, InsufficientDataException, AtomParseException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();

@@ -116,10 +116,13 @@ public class IndexController extends Controller
 	 * @throws SAXException
 	 * @throws IOException
 	 * @throws LuceneException
+	 * @throws AtomParseException
 	 */
 	
 	public static void doPut (LuceneContext c)
-		throws IndicesNotFoundException, ParserConfigurationException, SAXException, IOException, LuceneException, TransformerException, ParserConfigurationException
+		throws
+            IndicesNotFoundException, ParserConfigurationException, SAXException, IOException,
+            LuceneException, TransformerException, ParserConfigurationException, AtomParseException
 	{
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
@@ -174,12 +177,13 @@ public class IndexController extends Controller
 	 * @throws IOException
 	 * @throws SAXException
 	 * @throws LuceneException
+	 * @throws AtomParseException
 	 */
 	
 	public static void doPost (LuceneContext c)
 		throws
 			IllegalActionException, TransformerException, DocumentsAlreadyExistException, IndicesNotFoundException,
-			ParserConfigurationException, IOException, SAXException, LuceneException
+			ParserConfigurationException, IOException, SAXException, LuceneException, AtomParseException
 	{
 		LuceneWebService   service   = c.service();
 		LuceneIndexManager manager   = service.getIndexManager();
