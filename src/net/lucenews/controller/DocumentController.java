@@ -361,26 +361,6 @@ public class DocumentController extends Controller
 		
 		div.appendChild( XOXOController.asElement( document, doc ) );
 		
-		/**Element dl = doc.createElement( "dl" );
-		dl.setAttribute( "class", "xoxo" );
-		
-		Enumeration<Field> fields = document.fields();
-		while( fields.hasMoreElements() )
-		{
-			Field field = fields.nextElement();
-			
-			Element dt = doc.createElement( "dt" );
-			dt.setAttribute( "class", getCSSClass( field ) );
-			dt.appendChild( doc.createTextNode( String.valueOf( field.name() ) ) );
-			dl.appendChild( dt );
-		
-			Element dd = doc.createElement( "dd" );
-			dd.appendChild( doc.createTextNode( String.valueOf( field.stringValue() ) ) );
-			dl.appendChild( dd );
-		}
-		
-		div.appendChild( dl );*/
-		
 		return Content.xhtml( div );
 	}
 	
@@ -443,48 +423,84 @@ public class DocumentController extends Controller
 		return documents.toArray( new LuceneDocument[]{} );
 	}
 	
-	public static LuceneDocument[] asLuceneDocuments (Entry entry)
-	{
-		List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
-		
-		if( entry.getContent() != null )
-		{
-			if( entry.getContent().getData() != null )
-			{
-				Object content = entry.getContent().getData();
-							
-				if( content instanceof Element )
-				{
-					documents.addAll( Arrays.asList( asLuceneDocuments( (Element) content ) ) );
-				}
-				else if( content instanceof Document )
-				{
-					documents.addAll( Arrays.asList( asLuceneDocuments( (Document) content ) ) );
-				}
-							
-				else if( content instanceof NodeList )
-				{
-					documents.addAll( Arrays.asList( asLuceneDocuments( (NodeList) content ) ) );
-				}
-			}
-		}
-		
-		return documents.toArray( new LuceneDocument[]{} );
+	
+	/**
+	 * Transforms an Atom entry into Lucene documents.
+	 * Typically, this will only involve the output of one
+	 * Lucene document, however, the door may be open to multiple.
+	 * 
+	 * @param  entry
+	 * @return LuceneDocument[]
+	 */
+    
+    public static LuceneDocument[] asLuceneDocuments (Entry entry) {
+        return asLuceneDocuments( entry.getContent() );
+    }
+    
+    
+    
+    /**
+     * Transforms Atom content into Lucene documents.
+     */
+    
+    public static LuceneDocument[] asLuceneDocuments (Content content) {
+		if( content == null )
+            return new LuceneDocument[]{};
+        
+        if( content instanceof TextContent )
+            return asLuceneDocuments( (TextContent) content );
+        
+        if( content instanceof NodeContent )
+            return asLuceneDocuments( (NodeContent) content );
+        
+        return new LuceneDocument[]{};
+    }
+	
+	
+	
+	/**
+	 * Transforms Atom text content into Lucene documents
+	 */
+	
+	public static LuceneDocument[] asLuceneDocuments (TextContent content) {
+        try {
+            return asLuceneDocuments( content.asDocument() );
+        }
+        catch(Exception e) {
+            return new LuceneDocument[]{};
+        }
 	}
+	
+	
+	
+	/**
+	 * Transforms Atom node content into Lucene documents
+	 */
+	
+	public static LuceneDocument[] asLuceneDocuments (NodeContent content) {
+        return asLuceneDocuments( content.getNodes() );
+	}
+	
+	
 	
 	public static LuceneDocument[] asLuceneDocuments (Document document)
 	{
 		return asLuceneDocuments( document.getDocumentElement() );
 	}
 	
-	public static LuceneDocument[] asLuceneDocuments (NodeList nodes)
+	public static LuceneDocument[] asLuceneDocuments (NodeList nodeList) {
+        Node[] nodes = new Node[ nodeList.getLength() ];
+        for( int i = 0; i < nodes.length; i++ )
+            nodes[ i ] = nodeList.item( i );
+        return asLuceneDocuments( nodes );
+	}
+	
+	public static LuceneDocument[] asLuceneDocuments (Node[] nodes)
 	{
 		List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
-		for( int i = 0; i < nodes.getLength(); i++ )
-		{
-			if( nodes.item( i ).getNodeType() == Node.ELEMENT_NODE )
-			documents.addAll( Arrays.asList( asLuceneDocuments( (Element) nodes.item( i ) ) ) );
-		}
+		for( int i = 0; i < nodes.length; i++ )
+			if( nodes[ i ].getNodeType() == Node.ELEMENT_NODE )
+                documents.addAll( Arrays.asList( asLuceneDocuments( (Element) nodes[ i ] ) ) );
 		return documents.toArray( new LuceneDocument[]{} );
 	}
 	

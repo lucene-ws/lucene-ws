@@ -135,18 +135,40 @@ public class XOXOController
 	{
 		Content content = entry.getContent();
 		
+		System.err.println( "HERE, Content = " + content.getClass() );
+		
 		if( content == null )
 			throw new LuceneException( "Entry contains no content", LuceneResponse.SC_BAD_REQUEST );
 		
-		Object data = content.getData();
+		if( content instanceof NodeContent ) {
+            NodeContent nodeContent = (NodeContent) content;
+            Node[] nodes = nodeContent.getNodes();
+            
+            for( int i = 0; i < nodes.length; i++ ) {
+                Node node = nodes[ i ];
+                if( node.getNodeType() == Node.ELEMENT_NODE ) {
+                    Element dl = (Element) ( (Element) node ).getElementsByTagName( "dl" ).item( 0 );
+                    System.err.println( "<dl>: " + dl );
+                    return dl;
+                }
+            }
+		}
 		
-		if( data == null )
-			throw new NullPointerException();
+		if( content instanceof TextContent ) {
+            TextContent textContent = (TextContent) content;
+            System.err.println( "Type: " + textContent.getType() );
+            if( textContent.isType("xhtml") ) {
+                System.err.println("IT IS XHTML");
+                try {
+                    return (Element) textContent.asDocument().getElementsByTagName( "dl" ).item( 0 );
+                }
+                catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+		}
 		
-		NodeList dls = ( (Element) data ).getElementsByTagName( "dl" );
-		Element dl = (Element) dls.item( 0 );
-		
-		return dl;
+		return null;
 	}
 	
 	

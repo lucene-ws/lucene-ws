@@ -5,6 +5,7 @@ import java.util.*;
 import org.w3c.dom.*;
 import net.lucenews.controller.*;
 import javax.xml.parsers.*;
+import javax.xml.transform.*;
 
 public class Entry extends Base
 {
@@ -74,13 +75,13 @@ public class Entry extends Base
 	
 	
 	public static Entry parse (Document document)
-        throws AtomParseException
+        throws TransformerConfigurationException, TransformerException, AtomParseException
 	{
 		return parse( document.getDocumentElement() );
 	}
 	
 	public static Entry parse (Element e)
-        throws AtomParseException
+        throws TransformerConfigurationException, TransformerException, AtomParseException
 	{
 		if( !e.getTagName().equals( "entry" ) )
 			return null;
@@ -195,8 +196,9 @@ public class Entry extends Base
 		
 		
 		// <content>
-		if( getContent() != null )
-			entry.appendChild( getContent().asElement( document ) );
+		if( getContent() != null ) {
+            entry.appendChild( getContent().asElement( document ) );
+        }
 		
 		
 		

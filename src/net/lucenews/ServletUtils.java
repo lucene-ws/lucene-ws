@@ -525,10 +525,10 @@ public class ServletUtils
 	
 	
 	
-	
+	/**
 	public static Properties getProperties (Content content)
 	{
-		if( content == null || content.getData() == null )
+		if( content == null )
 			return null;
 		
 		Element element = (Element) content.getData();
@@ -536,7 +536,7 @@ public class ServletUtils
 		Element dl = (Element) dls.item( 0 );
 		return asProperties( dl );
 	}
-	
+	*/
 	
 	/**
 	 * Converts an XOXO list to a properties list

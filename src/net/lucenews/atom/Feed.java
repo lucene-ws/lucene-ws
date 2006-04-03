@@ -64,7 +64,7 @@ public class Feed extends Base
 	
 	
 	public static Feed parse (Document document)
-        throws AtomParseException
+        throws TransformerConfigurationException, TransformerException, AtomParseException
 	{
 		Feed feed = new Feed();
 		

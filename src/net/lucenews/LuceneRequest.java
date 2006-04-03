@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
@@ -566,7 +567,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 */
 	
 	public LuceneDocument[] getLuceneDocuments ()
-		throws ParserConfigurationException, AtomParseException, SAXException, IOException
+		throws TransformerConfigurationException, TransformerException, ParserConfigurationException, AtomParseException, SAXException, IOException
 	{
 		Entry[] entries = getEntries();
 		
@@ -629,7 +630,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 */
 	
 	public Feed getFeed ()
-		throws ParserConfigurationException, AtomParseException, IOException, SAXException
+		throws TransformerConfigurationException, TransformerException, ParserConfigurationException, AtomParseException, IOException, SAXException
 	{
 		return Feed.parse( getDOMDocument() );
 	}
@@ -641,7 +642,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 */
 	
 	public Entry getEntry ()
-		throws ParserConfigurationException, AtomParseException, IOException, SAXException
+		throws TransformerConfigurationException, TransformerException, ParserConfigurationException, AtomParseException, IOException, SAXException
 	{
 		return Entry.parse( getDOMDocument() );
 	}
@@ -653,7 +654,7 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 */
 	
 	public Entry[] getEntries ()
-		throws ParserConfigurationException, AtomParseException, SAXException, IOException
+		throws TransformerConfigurationException, TransformerException, ParserConfigurationException, AtomParseException, SAXException, IOException
 	{
 		List<Entry> entries = new LinkedList<Entry>();
 		

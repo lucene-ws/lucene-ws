@@ -58,12 +58,14 @@ public class ServiceController extends Controller
 	 * @throws SAXException
 	 * @throws IOException
 	 * @throws AtomParseException
+	 * @throws LuceneException
 	 */
 	
 	public static void doPost (LuceneContext c)
 		throws
             IllegalActionException, IndicesAlreadyExistException, TransformerException,
-            ParserConfigurationException, SAXException, IOException, InsufficientDataException, AtomParseException
+            ParserConfigurationException, SAXException, IOException, InsufficientDataException,
+            LuceneException, AtomParseException
 	{
 		LuceneWebService   service   = c.service();
 		LuceneIndexManager manager   = service.getIndexManager();
@@ -85,7 +87,8 @@ public class ServiceController extends Controller
 			// Index name
 			String name = entry.getTitle();
 			
-			Properties properties = ServletUtils.getProperties( entry.getContent() );
+			//Properties properties = ServletUtils.getProperties( entry.getContent() );
+			Properties properties = XOXOController.asProperties( entry );
 			
 			File parentDirectory = manager.getCreatedIndicesDirectory();
 			File directory = new File( parentDirectory, name );
@@ -130,7 +133,7 @@ public class ServiceController extends Controller
 	
 	
 	public static Entry[] getEntries (LuceneRequest request)
-		throws ParserConfigurationException, SAXException, IOException, AtomParseException
+		throws TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException, IOException, AtomParseException
 	{
 		List<Entry> entries = new LinkedList<Entry>();
 		

@@ -7,12 +7,19 @@ public class Text
 {
 	
 	private String m_text;
+	private String m_type;
 	
 	
 	
 	public Text (String text)
 	{
 		setText( text );
+	}
+	
+	public Text (String text, String type)
+	{
+        setText( text );
+        setType( type );
 	}
 	
 	
@@ -27,6 +34,17 @@ public class Text
 		m_text = text;
 	}
 	
+	public String getType () {
+        return m_type;
+	}
+	
+	public void setType (String type) {
+        m_type = type;
+	}
+	
+	public String toString () {
+        return getText();
+	}
 	
 	public Element asElement (Document document, String tagName)
 	{
@@ -36,5 +54,21 @@ public class Text
 		
 		return text;
 	}
+	
+    public static Text parse (Element element)
+        throws AtomParseException
+    {
+        String type = element.getAttribute( "type" );
+        
+        if( type == null || type.trim().length() == 0 )
+            type = "text";
+        
+        type = type.toLowerCase();
+        
+        if( !type.equals("text") || !type.equals("html") || !type.equals("xhtml") )
+            throw new AtomParseException( "Unknown text type: \"" + type + "\"" );
+        
+        return null;
+    }
 	
 }
