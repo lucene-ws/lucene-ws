@@ -11,6 +11,8 @@ public class OpenSearchResponse extends Feed
 	private Integer m_totalResults, m_startIndex, m_itemsPerPage;
 	private String m_searchTerms;
 	private String m_linkHREF;
+	private String m_querySuggestion;
+	private Integer m_querySuggestionCount;
 	
 	
 	
@@ -71,6 +73,24 @@ public class OpenSearchResponse extends Feed
 		m_searchTerms = searchTerms;
 	}
 	
+	
+	public String getQuerySuggestion () {
+        return m_querySuggestion;
+	}
+	
+	public void setQuerySuggestion (String querySuggestion) {
+        m_querySuggestion = querySuggestion;
+	}
+	
+	
+	public Integer getQuerySuggestionCount () {
+        return m_querySuggestionCount;
+	}
+	
+	public void setQuerySuggestionCount (Integer querySuggestionCount) {
+        m_querySuggestionCount = querySuggestionCount;
+	}
+	
 	public Document asDocument ()
 		throws ParserConfigurationException, TransformerException
 	{
@@ -104,6 +124,17 @@ public class OpenSearchResponse extends Feed
 		itemsPerPage.appendChild( document.createTextNode( String.valueOf( m_itemsPerPage ) ) );
 		//feed.insertBefore( itemsPerPage, firstEntry );
 		feed.appendChild( itemsPerPage );
+		
+		
+		
+		if( getQuerySuggestion() != null ) {
+            Element querySuggestion = document.createElementNS( openSearchURI, "opensearch:querySuggestion" );
+            querySuggestion.appendChild( document.createTextNode( String.valueOf( getQuerySuggestion() ) ) );
+            if( getQuerySuggestionCount() != null ) {
+                querySuggestion.setAttribute( "total", String.valueOf( getQuerySuggestionCount() ) );
+            }
+            feed.appendChild( querySuggestion );
+        }
 		
 		
 		

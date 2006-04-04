@@ -840,6 +840,16 @@ public class LuceneWebService extends HttpServlet
 		return getIndexURL( request, index.getName() );
 	}
 	
+	public static String getIndicesURL (LuceneRequest request, LuceneIndex[] indices) {
+        StringBuffer buffer = new StringBuffer();
+        for( int i = 0; i < indices.length; i++ ) {
+            if( i > 0 )
+                buffer.append(",");
+            buffer.append( indices[ i ].getName() );
+        }
+        return getIndexURL( request, buffer.toString() );
+	}
+	
 	
 	
 	/**

@@ -60,7 +60,8 @@ public class LuceneUtils
 		String[] possibleClassNames = new String[]
 		{
 			string,
-			ANALYSIS_NAMESPACE + "." + string
+			ANALYSIS_NAMESPACE + "." + string,
+			ANALYSIS_NAMESPACE + ".standard." + string
 		};
 		
 		for( int i = 0; i < possibleClassNames.length; i++ )

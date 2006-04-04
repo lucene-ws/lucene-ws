@@ -1,28 +1,22 @@
 package net.lucenews.controller;
 
+import java.lang.reflect.*;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.util.*;
 import net.lucenews.atom.*;
-import java.io.IOException;
-import java.util.Locale;
 import net.lucenews.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.view.*;
-import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.*;
 import org.apache.lucene.document.*;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.*;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import javax.xml.transform.TransformerException;
+import javax.xml.transform.*;
 
 
 
@@ -190,6 +184,19 @@ public class SearchController extends Controller
 		
 		
 		/**
+		 * Alternate query
+		 */
+		
+		String querySuggestion = null;
+		Integer suggestionCount = null;
+		Query alternateQuery = getSuggestedQuery( query, indices );
+		if( alternateQuery != null ) {
+            querySuggestion = alternateQuery.toString("contents");
+            suggestionCount = searcher.search(alternateQuery).length();
+        }
+		
+		
+		/**
 		 * Perform the search
 		 */
 		
@@ -228,7 +235,7 @@ public class SearchController extends Controller
 			iterator = new HitsIterator( hits, limiter );
 		}
 		
-		OpenSearchResponse response = asOpenSearchResponse( c, iterator );
+		OpenSearchResponse response = asOpenSearchResponse( c, iterator, querySuggestion, suggestionCount );
 		
 		StringBuffer title = new StringBuffer();
 		title.append( "Search results for query '" + req.getSearchString() + "'" );
@@ -253,7 +260,7 @@ public class SearchController extends Controller
 	 * @throws IndicesNotFoundException
 	 */
 	
-	public static OpenSearchResponse asOpenSearchResponse (LuceneContext c, HitsIterator iterator)
+	public static OpenSearchResponse asOpenSearchResponse (LuceneContext c, HitsIterator iterator, String querySuggestion, Integer suggestionCount)
 		throws ParserConfigurationException, IOException, IndicesNotFoundException, InsufficientDataException
 	{
 		LuceneWebService   service = c.service();
@@ -275,7 +282,10 @@ public class SearchController extends Controller
 		response.addAuthor( new Author( "Lucene Web Service, version " + service.getVersion() ) );
 		response.setID( req.getRequestURL() + ( ( req.getQueryString() != null ) ? "?" + req.getQueryString()  : "" ) );
 		
-		
+		if( querySuggestion != null ) {
+            response.setQuerySuggestion( querySuggestion );
+            response.setQuerySuggestionCount( suggestionCount );
+        }
 		
 		StringBuffer buffer = new StringBuffer();
 		
@@ -382,6 +392,58 @@ public class SearchController extends Controller
 		document.removeFields( getSearcherIndexField() );
 		
 		return index;
+	}
+	
+	
+	public static Query getSuggestedQuery (Query original, LuceneIndex[] indices)
+        throws IOException
+    {
+        IndexReader[] readers = new IndexReader[ indices.length ];
+        for( int i = 0; i < indices.length; i++ )
+            readers[ i ] = indices[ i ].getIndexReader();
+        
+        MultiReader reader = new MultiReader( readers );
+        Query alternate = getSuggestedQuery( original, reader );
+        
+        for( int i = 0; i < indices.length; i++ )
+            indices[ i ].putIndexReader( readers[ i ] );
+        
+        return alternate;
+    }
+    
+    
+	public static Query getSuggestedQuery (Query original, IndexReader reader)
+        throws IOException
+	{
+        try {
+            System.setErr(new PrintStream(new FileOutputStream(new File("c:/err.txt"))));
+        }
+        catch(Exception eeeee){
+        }
+        
+        try {
+            Class       suggestClass       = Class.forName( "org.apache.lucene.search.DidYouMeanQueryGenerator" );
+            Constructor suggestConstructor = suggestClass.getConstructor( Query.class, IndexReader.class );
+            Object      suggestObject      = suggestConstructor.newInstance( original, reader );
+            Method      suggestMethod      = suggestClass.getMethod( "getQuerySuggestion", boolean.class, boolean.class );
+            Query       alternative        = (Query) suggestMethod.invoke( suggestObject, Boolean.TRUE, Boolean.TRUE );
+            
+            System.err.println( "Original:    " + original.toString("contents") );
+            System.err.println( "Alternative: " + alternative.toString("contents"));
+            
+            if( alternative == null || alternative.equals( original ) )
+                return null;
+            
+            System.err.println( "They are different! Returning the alternative" );
+            
+            return alternative;
+        }
+        catch(Error err) {
+            return null;
+        }
+        catch(Exception e) {
+            return null;
+        }
 	}
 	
 	

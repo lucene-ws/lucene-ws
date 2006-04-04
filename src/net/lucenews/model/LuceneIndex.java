@@ -441,8 +441,7 @@ public class LuceneIndex
 	public IndexWriter getIndexWriter ()
 		throws IOException
 	{
-		if( writer == null )
-		{
+		if( writer == null ) {
 			writer = new IndexWriter( getDirectory(), getAnalyzer(), false );
 		}
 		return writer;
@@ -1207,7 +1206,10 @@ public class LuceneIndex
 	public Analyzer getAnalyzer ()
 		throws IOException
 	{
-		return new StandardAnalyzer();
+        Analyzer analyzer = LuceneUtils.parseAnalyzer( getProperty( "index.analyzer" ) );
+        if( analyzer == null )
+            return new StandardAnalyzer();
+        return analyzer;
 	}
 	
 	
@@ -1722,6 +1724,25 @@ public class LuceneIndex
 	
 	
 	
+	public long getTimestamp (LuceneDocument document)
+        throws InsufficientDataException, IOException
+    {
+		try
+		{
+			return net.lucenews.NumberTools.stringToLong( document.get( getUpdatedField() ) );
+		}
+		catch(NumberFormatException nfe)
+		{
+			throw new InsufficientDataException( "Document does not provide an updated time" );
+		}
+		catch(NullPointerException npe)
+		{
+			throw new InsufficientDataException( "Document does not provide an updated time" );
+		}
+    }
+    
+    
+    
 	/**
 	 * Gets the updated time of a document.
 	 * 
@@ -1734,26 +1755,13 @@ public class LuceneIndex
 	public Calendar getUpdated (LuceneDocument document)
 		throws InsufficientDataException, IOException
 	{
-		Calendar calendar = null;
-		
-		try
-		{
-			calendar = Calendar.getInstance();
-			long timestamp = Long.valueOf( document.get( getUpdatedField() ) );
-			calendar.setTime( new Date( timestamp ) );
-		}
-		catch(NumberFormatException nfe)
-		{
-			throw new InsufficientDataException( "Document does not provide an updated time" );
-		}
-		catch(NullPointerException npe)
-		{
-			throw new InsufficientDataException( "Document does not provide an updated time" );
-		}
-		
-		//if( calendar == null )
-		//	calendar = Calendar.getInstance();
-		
+		Calendar calendar = Calendar.getInstance();
+		try {
+            calendar.setTime( new Date( getTimestamp( document ) ) );
+        }
+        catch(NullPointerException npe) {
+            throw new InsufficientDataException( "Document does not provide a valid time stamp" );
+        }
 		return calendar;
 	}
 	
@@ -1786,27 +1794,131 @@ public class LuceneIndex
 	}
 	
 	
+	/**
+	 * Sets the updated field appropriately prior to adding document to index.
+	 */
+	
+	public void setUpdated (LuceneDocument document)
+        throws IllegalActionException, InvalidIdentifierException, DocumentNotFoundException, InsufficientDataException, IOException
+	{
+        if( !hasUpdatedField() )
+            return;
+        
+        if( hasUpdated( document ) ) {
+            setUpdated( document, getTimestamp( document ), false );
+        }
+        else {
+            setUpdated( document, new Date(), false );
+        }
+	}
+	
+	
+	
+	/**
+	 * Sets the document's updated time to the given Calendar's time.
+	 * Updates the document within the index.
+	 * 
+	 * @param document the document whose updated time is to be updated
+	 * @param calendar the calendar representing the new value of the updated field
+	 */
+	
 	public void setUpdated (LuceneDocument document, Calendar calendar)
 		throws IllegalActionException, InvalidIdentifierException, DocumentNotFoundException, InsufficientDataException, IOException
 	{
-		setUpdated( document, calendar, true );
+		setUpdated( document, calendar.getTime().getTime() );
 	}
+	
+	
+	
+	/**
+	 * Sets the document's updated time to the given Calendar's time.
+	 * Updates the document within the index if update is specified.
+	 * 
+	 * @param document the document whose updated time is to be updated
+	 * @param calendar the calendar representing the new value of the updated field
+	 * @param update   whether or not this document should be updated within the index
+	 */
 	
 	public void setUpdated (LuceneDocument document, Calendar calendar, boolean update)
 		throws IllegalActionException, InvalidIdentifierException, DocumentNotFoundException, InsufficientDataException, IOException
 	{
-		long timestamp = calendar.getTime().getTime();
-		
+        setUpdated( document, calendar.getTime().getTime(), update );
+	}
+	
+	
+	
+	/**
+	 * Sets the document's updated time to the given date's time.
+	 * Updates the document within the index.
+	 * 
+	 * @param document the document whose updated time is to be updated
+	 * @param date     the date representing the new value of the updated field
+	 */
+	
+	public void setUpdated (LuceneDocument document, Date date)
+		throws IllegalActionException, InvalidIdentifierException, DocumentNotFoundException, InsufficientDataException, IOException
+	{
+		setUpdated( document, date.getTime() );
+	}
+	
+	
+	
+	/**
+	 * Sets the document's updated time to the given date's time.
+	 * Updates the document within the index if update is specified.
+	 * 
+	 * @param document the document whose updated time is to be updated
+	 * @param date     the date representing the new value of the updated field
+	 * @param update   whether or not this document should be updated within the index
+	 */
+	
+	public void setUpdated (LuceneDocument document, Date date, boolean update)
+		throws IllegalActionException, InvalidIdentifierException, DocumentNotFoundException, InsufficientDataException, IOException
+	{
+        setUpdated( document, date.getTime(), update );
+	}
+	
+	
+	
+	/**
+	 * Sets the document's updated time to the given time stamp.
+	 * Updates the document within the index.
+	 * 
+	 * @param document  the document whose updated time is to be updated
+	 * @param timestamp the time stamp representing the new value of the updated field
+	 */
+	
+	public void setUpdated (LuceneDocument document, long timestamp)
+		throws IllegalActionException, InvalidIdentifierException, DocumentNotFoundException, InsufficientDataException, IOException
+	{
+		setUpdated( document, timestamp, true );
+	}
+	
+	
+	
+	/**
+	 * Sets the document's updated time to the given time stamp.
+	 * Updates the document within the index if update is specified.
+	 * 
+	 * @param document  the document whose updated time is to be updated
+	 * @param timestamp the time stamp representing the new value of the updated field
+	 * @param update    whether or not this document should be updated within the index
+	 */
+	
+	public void setUpdated (LuceneDocument document, long timestamp, boolean update)
+		throws IllegalActionException, InvalidIdentifierException, DocumentNotFoundException, InsufficientDataException, IOException
+	{
 		if( hasUpdatedField() )
 		{
 			String field = getUpdatedField();
 			document.removeFields( field );
-			document.add( new Field( field, String.valueOf( timestamp ), Field.Store.YES, Field.Index.UN_TOKENIZED ) );
+			document.add( new Field( field, net.lucenews.NumberTools.longToString( timestamp ), Field.Store.YES, Field.Index.UN_TOKENIZED ) );
 			
 			if( update )
 				updateDocument( document );
 		}
 	}
+	
 	
 	
 	

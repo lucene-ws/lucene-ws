@@ -389,14 +389,14 @@ public class XOXOController
         Field.Store store = stored ? Field.Store.YES : Field.Store.NO;
         Field.Index index = Field.Index.NO;
         if( indexed ) {
-            if( tokenized ) {
-                index = Field.Index.TOKENIZED;
-            }
-            else {
-                index = Field.Index.UN_TOKENIZED;
-            }
+            index = tokenized ? Field.Index.TOKENIZED : Field.Index.UN_TOKENIZED;
         }
         Field.TermVector termVector = termVectorStored ? Field.TermVector.YES : Field.TermVector.NO;
+        
+        if( store == Field.Store.NO && index == Field.Index.NO ) {
+            store = Field.Store.YES;
+            index = Field.Index.TOKENIZED;
+        }
         
 		return new Field( name, value, store, index, termVector );
 	}

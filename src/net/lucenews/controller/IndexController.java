@@ -287,22 +287,35 @@ public class IndexController extends Controller
 		
 		
 		// Title
-		//feed.setTitle( index.getTitle() );
+		StringBuffer title = new StringBuffer();
+		if( indices.length == 1 ) {
+            title.append( indices[ 0 ].getTitle() );
+		}
+		else {
+            title.append( ServletUtils.joined( ServletUtils.mapped( "[content]", ServletUtils.objectsMapped( "getTitle", indices ) ) ) );
+		}
+		feed.setTitle( title.toString() );
 		
 		// ID
-		//feed.setID( service.getIndexURL( req, index ) );
+		feed.setID( service.getIndicesURL( req, indices ) );
 		
 		// Updated
 		feed.setUpdated( Calendar.getInstance() );
 		
 		// Author
-		//if( index.hasAuthor() )
-		//	feed.addAuthor( new Author( index.getAuthor() ) );
-		//else
-		//	feed.addAuthor( new Author( service.getTitle() ) );
+		boolean authorFound = false;
+		for( int i = 0; i < indices.length; i++ ) {
+            if( indices[ i ].hasAuthor() ) {
+                feed.addAuthor( new Author( indices[ i ].getAuthor() ) );
+                authorFound = true;
+            }
+        }
+        
+		if( !authorFound )
+			feed.addAuthor( new Author( service.getTitle() ) );
 		
 		// Link
-		//feed.addLink( new Link( req.getLocation(), "self", "application/atom+xml" ) );
+		feed.addLink( new Link( req.getLocation(), "self", "application/atom+xml" ) );
 		
 		// This is critical
 		//if( !index.hasUpdatedField() )
@@ -317,6 +330,23 @@ public class IndexController extends Controller
 		//if( limiter.getFirst() == null || limiter.getLast() == null )
 		//	return feed;
 		
+		String sortField = null;
+		for( int i = 0; i < indices.length; i++ ) {
+            LuceneIndex index = indices[ i ];
+            if( index.hasUpdatedField() ) {
+                if( sortField == null ) {
+                    sortField = index.getUpdatedField();
+                }
+                else if ( !sortField.equals( index.getUpdatedField() ) ) {
+                    sortField = null;
+                }
+            }
+            else {
+                sortField = null;
+                break;
+            }
+		}
+		
 		
         LuceneMultiSearcher   searcher  = null;
         IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
@@ -324,17 +354,25 @@ public class IndexController extends Controller
         for( int i = 0; i < indices.length; i++ )
             searchers[ i ] = indices[ i ].getIndexSearcher();
         
-        searcher = new LuceneMultiSearcher( searchers, "searcherIndex" );
+        searcher = new LuceneMultiSearcher( searchers, SearchController.getSearcherIndexField() );
         
         Query query = new MatchAllDocsQuery();
-        Hits hits = searcher.search( query, new Sort( new SortField( "updated", SortField.STRING, true ) ) );
-        feed.setTitle( hits.length() + " total hits" );
+        
+        Sort sort = null;
+        if( sortField == null ) {
+            sort = new Sort( new SortField( null, SortField.DOC, true ) );
+        }
+        else {
+            sort = new Sort( new SortField( sortField, SortField.STRING, true ) );
+        }
+        
+        Hits hits = searcher.search( query, sort );
         limiter.setTotalEntries( hits.length() );
         HitsIterator iterator = new HitsIterator( hits, limiter );
 		
 		while( iterator.hasNext() ) {
             LuceneDocument document = iterator.next();
-            feed.addEntry( DocumentController.asEntry( c, indices[ Integer.valueOf( document.get("searcherIndex") ) ], document ) );
+            feed.addEntry( DocumentController.asEntry( c, indices[ SearchController.extractSearcherIndex( document ) ], document ) );
 		}
 		
 		if( limiter instanceof Pager )
