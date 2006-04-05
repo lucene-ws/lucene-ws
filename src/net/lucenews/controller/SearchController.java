@@ -191,7 +191,7 @@ public class SearchController extends Controller
 		Integer suggestionCount = null;
 		Query alternateQuery = getSuggestedQuery( query, indices );
 		if( alternateQuery != null ) {
-            querySuggestion = alternateQuery.toString("contents");
+            querySuggestion = alternateQuery.toString( defaultField );
             suggestionCount = searcher.search(alternateQuery).length();
         }
 		
