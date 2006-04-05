@@ -145,7 +145,7 @@ public class SearchController extends Controller
 			* Build the query parser
 			*/
 			
-			QueryParser parser = new QueryParser( defaultField, analyzer );
+			QueryParser parser = new CustomQueryParser( defaultField, analyzer );
 			
 			
 			
@@ -447,4 +447,27 @@ public class SearchController extends Controller
 	}
 	
 	
+}
+
+
+class CustomQueryParser extends QueryParser {
+    
+    public CustomQueryParser (String f, Analyzer a) {
+        super( f, a );
+    }
+    
+    public CustomQueryParser (CharStream stream) {
+        super( stream );
+    }
+    
+    public CustomQueryParser (QueryParserTokenManager tm) {
+        super( tm );
+    }
+    
+    protected Query getRangeQuery (String field, String part1, String part2, boolean inclusive)
+        throws ParseException
+    {
+        return new ConstantScoreRangeQuery( field, part1, part2, inclusive, inclusive );
+    }
+    
 }
