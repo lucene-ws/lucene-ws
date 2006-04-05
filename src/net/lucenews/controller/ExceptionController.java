@@ -58,7 +58,7 @@ public class ExceptionController extends Controller
 			entry.setUpdated( Calendar.getInstance() );
 			entry.setID( req.getLocation() );
 			entry.setSummary( new Text( e.getMessage() ) );
-			entry.setContent( Content.text( e.getMessage() ) );
+			entry.setContent( Content.text( String.valueOf( e.getMessage() ) ) );
 			entry.addAuthor( new Author( service.getTitle() ) );
 			
 			
