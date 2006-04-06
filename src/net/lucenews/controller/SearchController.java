@@ -40,6 +40,12 @@ public class SearchController extends Controller
 	public static void doGet (LuceneContext c)
 		throws ParserConfigurationException, TransformerException, IndicesNotFoundException, IOException, InsufficientDataException, ParseException
 	{
+        try {
+            System.setErr(new PrintStream(new FileOutputStream(new File("c:/err.txt"))));
+        }
+        catch(Exception eeeee){
+        }
+        
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
 		LuceneRequest      req     = c.req();
@@ -187,14 +193,25 @@ public class SearchController extends Controller
 		 * Alternate query
 		 */
 		
-		String querySuggestion = null;
-		Integer suggestionCount = null;
-		Query alternateQuery = getSuggestedQuery( query, indices );
-		if( alternateQuery != null ) {
-            querySuggestion = alternateQuery.toString( defaultField );
-            suggestionCount = searcher.search(alternateQuery).length();
+		int maxSuggestions = 10;
+		int maxResults = 5;
+		PriorityQueue<SearchedQuery> queue = new PriorityQueue<SearchedQuery>( maxSuggestions, new SearchedQueryComparator() );
+		Query[]  suggestedQueries      = getSuggestedQueries( query, indices );
+		String[] suggestedQueryStrings = new String[ Math.min( maxResults, suggestedQueries.length ) ];
+		int[]    suggestedQueryCounts  = new int[ Math.min( maxResults, suggestedQueries.length ) ];
+		
+		for( int i = 0; i < suggestedQueries.length && i < maxSuggestions; i++ ) {
+            Query suggestedQuery = suggestedQueries[ i ];
+            queue.add( new SearchedQuery( suggestedQuery, searcher.search( suggestedQuery ) ) );
         }
 		
+		int i = 0;
+		while( !queue.isEmpty() && i < maxResults ) {
+            SearchedQuery q = queue.poll();
+            suggestedQueryStrings[ i ] = q.getQuery().toString( defaultField );
+            suggestedQueryCounts[ i ] = q.getHits().length();
+            i++;
+		}
 		
 		/**
 		 * Perform the search
@@ -235,7 +252,7 @@ public class SearchController extends Controller
 			iterator = new HitsIterator( hits, limiter );
 		}
 		
-		OpenSearchResponse response = asOpenSearchResponse( c, iterator, querySuggestion, suggestionCount );
+		OpenSearchResponse response = asOpenSearchResponse( c, iterator, suggestedQueryStrings, suggestedQueryCounts );
 		
 		StringBuffer title = new StringBuffer();
 		title.append( "Search results for query '" + req.getSearchString() + "'" );
@@ -260,7 +277,7 @@ public class SearchController extends Controller
 	 * @throws IndicesNotFoundException
 	 */
 	
-	public static OpenSearchResponse asOpenSearchResponse (LuceneContext c, HitsIterator iterator, String querySuggestion, Integer suggestionCount)
+	public static OpenSearchResponse asOpenSearchResponse (LuceneContext c, HitsIterator iterator, String[] suggestions, int[] suggestionCounts)
 		throws ParserConfigurationException, IOException, IndicesNotFoundException, InsufficientDataException
 	{
 		LuceneWebService   service = c.service();
@@ -282,10 +299,8 @@ public class SearchController extends Controller
 		response.addAuthor( new Author( "Lucene Web Service, version " + service.getVersion() ) );
 		response.setID( req.getRequestURL() + ( ( req.getQueryString() != null ) ? "?" + req.getQueryString()  : "" ) );
 		
-		if( querySuggestion != null ) {
-            response.setQuerySuggestion( querySuggestion );
-            response.setQuerySuggestionCount( suggestionCount );
-        }
+		for( int i = 0; i < suggestions.length; i++ )
+            response.addQuerySuggestion( suggestions[ i ], suggestionCounts[ i ] );
 		
 		StringBuffer buffer = new StringBuffer();
 		
@@ -395,7 +410,7 @@ public class SearchController extends Controller
 	}
 	
 	
-	public static Query getSuggestedQuery (Query original, LuceneIndex[] indices)
+	public static Query[] getSuggestedQueries (Query original, LuceneIndex[] indices)
         throws IOException
     {
         IndexReader[] readers = new IndexReader[ indices.length ];
@@ -403,45 +418,34 @@ public class SearchController extends Controller
             readers[ i ] = indices[ i ].getIndexReader();
         
         MultiReader reader = new MultiReader( readers );
-        Query alternate = getSuggestedQuery( original, reader );
+        Query[] suggested = getSuggestedQueries( original, reader );
         
         for( int i = 0; i < indices.length; i++ )
             indices[ i ].putIndexReader( readers[ i ] );
         
-        return alternate;
+        return suggested;
     }
     
     
-	public static Query getSuggestedQuery (Query original, IndexReader reader)
+	public static Query[] getSuggestedQueries (Query original, IndexReader reader)
         throws IOException
 	{
         try {
-            System.setErr(new PrintStream(new FileOutputStream(new File("c:/err.txt"))));
-        }
-        catch(Exception eeeee){
-        }
-        
-        try {
-            Class       suggestClass       = Class.forName( "org.apache.lucene.search.DidYouMeanQueryGenerator" );
-            Constructor suggestConstructor = suggestClass.getConstructor( Query.class, IndexReader.class );
-            Object      suggestObject      = suggestConstructor.newInstance( original, reader );
-            Method      suggestMethod      = suggestClass.getMethod( "getQuerySuggestion", boolean.class, boolean.class );
-            Query       alternative        = (Query) suggestMethod.invoke( suggestObject, Boolean.TRUE, Boolean.TRUE );
+            DidYouMeanQueryGenerator generator = new DidYouMeanQueryGenerator( original, reader );
+            List<Query> suggestions = generator.getQuerySuggestions( true, true );
             
-            System.err.println( "Original:    " + original.toString("contents") );
-            System.err.println( "Alternative: " + alternative.toString("contents"));
+            System.err.println( "Original:    " + original.toString("all") );
+            Iterator<Query> iterator = suggestions.iterator();
+            while( iterator.hasNext() )
+                System.err.println( "Alternative: " + iterator.next().toString("all"));
             
-            if( alternative == null || alternative.equals( original ) )
-                return null;
-            
-            System.err.println( "They are different! Returning the alternative" );
-            
-            return alternative;
+            return suggestions.toArray( new Query[]{} );
         }
         catch(Error err) {
             return null;
         }
         catch(Exception e) {
+            e.printStackTrace();
             return null;
         }
 	}
@@ -449,6 +453,54 @@ public class SearchController extends Controller
 	
 }
 
+class SearchedQuery {
+    
+    public Query query;
+    public Hits  hits;
+    
+    public SearchedQuery (Query query, Hits hits) {
+        this.query = query;
+        this.hits  = hits;
+    }
+    
+    public Query getQuery () {
+        return query;
+    }
+    
+    public Hits getHits () {
+        return hits;
+    }
+    
+}
+
+class SearchedQueryComparator implements Comparator<SearchedQuery> {
+    
+    public int compare (SearchedQuery q1, SearchedQuery q2) {
+        Integer hits1 = q1.getHits().length();
+        Integer hits2 = q2.getHits().length();
+        return hits2.compareTo( hits1 );
+    }
+    
+}
+
+class CustomTermQuery extends TermQuery {
+    
+    private org.apache.lucene.queryParser.Token token;
+    
+    public CustomTermQuery (Term term) {
+        super( term );
+    }
+    
+    public CustomTermQuery (Term term, org.apache.lucene.queryParser.Token token) {
+        super( term );
+        this.token = token;
+    }
+    
+    public org.apache.lucene.queryParser.Token getToken () {
+        return token;
+    }
+    
+}
 
 class CustomQueryParser extends QueryParser {
     
@@ -462,6 +514,15 @@ class CustomQueryParser extends QueryParser {
     
     public CustomQueryParser (QueryParserTokenManager tm) {
         super( tm );
+    }
+    
+    protected Query getFieldQuery (String field, String queryText ) throws ParseException {
+        Query query = super.getFieldQuery( field, queryText );
+        if( query instanceof TermQuery ) {
+            TermQuery termQuery = (TermQuery) query;
+            return new CustomTermQuery( termQuery.getTerm(), getToken( 0 ) );
+        }
+        return query;
     }
     
     protected Query getRangeQuery (String field, String part1, String part2, boolean inclusive)

@@ -3,6 +3,7 @@ package net.lucenews.atom;
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
+import java.util.*;
 
 
 public class OpenSearchResponse extends Feed
@@ -11,9 +12,15 @@ public class OpenSearchResponse extends Feed
 	private Integer m_totalResults, m_startIndex, m_itemsPerPage;
 	private String m_searchTerms;
 	private String m_linkHREF;
-	private String m_querySuggestion;
-	private Integer m_querySuggestionCount;
+	private List<String> m_querySuggestions;
+	private List<Integer> m_querySuggestionCounts;
 	
+	
+	public OpenSearchResponse () {
+        super();
+        m_querySuggestions      = new ArrayList<String>();
+        m_querySuggestionCounts = new ArrayList<Integer>();
+	}
 	
 	
 	public Integer getTotalResults ()
@@ -74,23 +81,28 @@ public class OpenSearchResponse extends Feed
 	}
 	
 	
-	public String getQuerySuggestion () {
-        return m_querySuggestion;
+	public int getQuerySuggestionCount () {
+        return m_querySuggestions.size();
 	}
 	
-	public void setQuerySuggestion (String querySuggestion) {
-        m_querySuggestion = querySuggestion;
+	public String getQuerySuggestion (int i) {
+        return m_querySuggestions.get( i );
+	}
+	
+	public Integer getQuerySuggestionCount (int i) {
+        return m_querySuggestionCounts.get( i );
+	}
+	
+	public void addQuerySuggestion (String suggestion, Integer count) {
+        if( suggestion == null )
+            return;
+        
+        m_querySuggestions.add( suggestion );
+        m_querySuggestionCounts.add( count );
 	}
 	
 	
-	public Integer getQuerySuggestionCount () {
-        return m_querySuggestionCount;
-	}
-	
-	public void setQuerySuggestionCount (Integer querySuggestionCount) {
-        m_querySuggestionCount = querySuggestionCount;
-	}
-	
+		
 	public Document asDocument ()
 		throws ParserConfigurationException, TransformerException
 	{
@@ -127,13 +139,20 @@ public class OpenSearchResponse extends Feed
 		
 		
 		
-		if( getQuerySuggestion() != null ) {
-            Element querySuggestion = document.createElementNS( openSearchURI, "opensearch:querySuggestion" );
-            querySuggestion.appendChild( document.createTextNode( String.valueOf( getQuerySuggestion() ) ) );
-            if( getQuerySuggestionCount() != null ) {
-                querySuggestion.setAttribute( "total", String.valueOf( getQuerySuggestionCount() ) );
+		for( int i = 0; i < getQuerySuggestionCount(); i++ ) {
+            Integer count = getQuerySuggestionCount( i );
+            String  suggestion = getQuerySuggestion( i );
+            
+            if( suggestion == null || suggestion.trim().length() == 0 )
+                continue;
+            
+            if( count == null || count > 0 ) {
+                Element querySuggestion = document.createElementNS( openSearchURI, "opensearch:querySuggestion" );
+                querySuggestion.appendChild( document.createTextNode( String.valueOf( suggestion ) ) );
+                if( count != null )
+                    querySuggestion.setAttribute( "total", String.valueOf( count ) );
+                feed.appendChild( querySuggestion );
             }
-            feed.appendChild( querySuggestion );
         }
 		
 		
