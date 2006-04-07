@@ -228,7 +228,7 @@ public class SearchController extends Controller {
         for( int i = 0; i < suggestedQueries.length && i < maxSuggestions; i++ ) {
             Query suggestedQuery = suggestedQueries[ i ];
             Hits suggestedHits = searcher.search( suggestedQuery );
-            if( suggestedHits.length() >= hits.length() )
+            if( suggestedHits.length() > hits.length() )
                 queue.add( new SearchedQuery( suggestedQuery, suggestedHits ) );
         }
         
