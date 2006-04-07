@@ -193,35 +193,8 @@ public class SearchController extends Controller {
         
         
         /**
-         * Alternate query
-         */
-        
-        int maxSuggestions = 5;
-        int maxResults = 1;
-        PriorityQueue<SearchedQuery> queue = new PriorityQueue<SearchedQuery>( maxSuggestions, new SearchedQueryComparator() );
-        Query[]  suggestedQueries      = getSuggestedQueries( query, indices );
-        String[] suggestedQueryStrings = new String[ Math.min( maxResults, suggestedQueries.length ) ];
-        int[]    suggestedQueryCounts  = new int[ Math.min( maxResults, suggestedQueries.length ) ];
-        
-        for( int i = 0; i < suggestedQueries.length && i < maxSuggestions; i++ ) {
-            Query suggestedQuery = suggestedQueries[ i ];
-            queue.add( new SearchedQuery( suggestedQuery, searcher.search( suggestedQuery ) ) );
-        }
-        
-        int i = 0;
-        while( !queue.isEmpty() && i < maxResults ) {
-            SearchedQuery q = queue.poll();
-            suggestedQueryStrings[ i ] = q.getQuery().toString( defaultField );
-            suggestedQueryCounts[ i ] = q.getHits().length();
-            i++;
-        }
-        
-        /**
          * Perform the search
          */
-        
-        
-        
         
         Hits hits = null;
         
@@ -238,6 +211,34 @@ public class SearchController extends Controller {
             hits = searcher.search( query );
         
         
+        
+        
+        
+        /**
+         * Alternate query
+         */
+        
+        int maxSuggestions = 5;
+        int maxResults = 1;
+        PriorityQueue<SearchedQuery> queue = new PriorityQueue<SearchedQuery>( maxSuggestions, new SearchedQueryComparator() );
+        Query[]  suggestedQueries      = getSuggestedQueries( query, indices );
+        String[] suggestedQueryStrings = new String[ Math.min( maxResults, suggestedQueries.length ) ];
+        int[]    suggestedQueryCounts  = new int[ Math.min( maxResults, suggestedQueries.length ) ];
+        
+        for( int i = 0; i < suggestedQueries.length && i < maxSuggestions; i++ ) {
+            Query suggestedQuery = suggestedQueries[ i ];
+            Hits suggestedHits = searcher.search( suggestedQuery );
+            if( suggestedHits.length() >= hits.length() )
+                queue.add( new SearchedQuery( suggestedQuery, suggestedHits ) );
+        }
+        
+        int i = 0;
+        while( !queue.isEmpty() && i < maxResults ) {
+            SearchedQuery q = queue.poll();
+            suggestedQueryStrings[ i ] = q.getQuery().toString( defaultField );
+            suggestedQueryCounts[ i ] = q.getHits().length();
+            i++;
+        }
         
         Limiter limiter = req.getLimiter();
         
