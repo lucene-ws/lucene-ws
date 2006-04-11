@@ -568,16 +568,18 @@ public class LuceneRequest extends HttpServletRequestWrapper
 	 */
 	
 	public LuceneDocument[] getLuceneDocuments ()
-		throws TransformerConfigurationException, TransformerException, ParserConfigurationException, AtomParseException, SAXException, IOException
+		throws
+            TransformerConfigurationException, TransformerException, ParserConfigurationException,
+            AtomParseException, SAXException, IOException, LuceneParseException
 	{
 		Entry[] entries = getEntries();
+		System.err.println( entries.length + " entries submitted." );
 		
 		List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
 		
-			for( int i = 0; i < entries.length; i++ )
-			{
-				documents.addAll( Arrays.asList( DocumentController.asLuceneDocuments( entries[ i ] ) ) );
-			}
+		for( int i = 0; i < entries.length; i++ ) {
+			documents.addAll( Arrays.asList( DocumentController.asLuceneDocuments( entries[ i ] ) ) );
+		}
 		
 		return documents.toArray( new LuceneDocument[]{} );
 	}

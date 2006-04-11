@@ -8,7 +8,7 @@ import net.lucenews.view.*;
 import net.lucenews.atom.*;
 import java.util.*;
 import javax.xml.parsers.*;
-import javax.xml.transform.TransformerException;
+import javax.xml.transform.*;
 import org.apache.lucene.document.Field;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -197,7 +197,7 @@ public class DocumentController extends Controller {
         throws
             IllegalActionException, InvalidIdentifierException, IndicesNotFoundException, SAXException,
             TransformerException, ParserConfigurationException, DocumentNotFoundException,
-            IndexNotFoundException, IOException, InsufficientDataException, AtomParseException
+            IndexNotFoundException, IOException, InsufficientDataException, AtomParseException, LuceneParseException
     {
         LuceneWebService   service = c.service();
         LuceneIndexManager manager = service.getIndexManager();
@@ -382,7 +382,9 @@ public class DocumentController extends Controller {
      * Transforms an Atom feed into an array of Lucene documents!
      */
     
-    public static LuceneDocument[] asLuceneDocuments (Feed feed) {
+    public static LuceneDocument[] asLuceneDocuments (Feed feed)
+        throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
+    {
         return asLuceneDocuments( feed.getEntries().toArray( new Entry[]{} ) );
     }
     
@@ -394,7 +396,9 @@ public class DocumentController extends Controller {
      * @return Lucene documents
      */
     
-    public static LuceneDocument[] asLuceneDocuments (Entry... entries) {
+    public static LuceneDocument[] asLuceneDocuments (Entry... entries)
+        throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
+    {
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         
         for( int i = 0; i < entries.length; i++ )
@@ -413,7 +417,9 @@ public class DocumentController extends Controller {
      * @return LuceneDocument[]
      */
     
-    public static LuceneDocument[] asLuceneDocuments (Entry entry) {
+    public static LuceneDocument[] asLuceneDocuments (Entry entry)
+        throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
+    {
         return asLuceneDocuments( entry.getContent() );
     }
     
@@ -423,7 +429,9 @@ public class DocumentController extends Controller {
      * Transforms Atom content into Lucene documents.
      */
     
-    public static LuceneDocument[] asLuceneDocuments (Content content) {
+    public static LuceneDocument[] asLuceneDocuments (Content content)
+        throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
+    {
         if( content == null )
             return new LuceneDocument[]{};
         
@@ -442,13 +450,10 @@ public class DocumentController extends Controller {
      * Transforms Atom text content into Lucene documents
      */
     
-    public static LuceneDocument[] asLuceneDocuments (TextContent content) {
-        try {
-            return asLuceneDocuments( content.asDocument() );
-        }
-        catch(Exception e) {
-            return new LuceneDocument[]{};
-        }
+    public static LuceneDocument[] asLuceneDocuments (TextContent content)
+        throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
+    {
+        return asLuceneDocuments( content.asDocument() );
     }
     
     
@@ -457,24 +462,32 @@ public class DocumentController extends Controller {
      * Transforms Atom node content into Lucene documents
      */
     
-    public static LuceneDocument[] asLuceneDocuments (NodeContent content) {
+    public static LuceneDocument[] asLuceneDocuments (NodeContent content)
+        throws LuceneParseException
+    {
         return asLuceneDocuments( content.getNodes() );
     }
     
     
     
-    public static LuceneDocument[] asLuceneDocuments (Document document) {
+    public static LuceneDocument[] asLuceneDocuments (Document document)
+        throws LuceneParseException
+    {
         return asLuceneDocuments( document.getDocumentElement() );
     }
     
-    public static LuceneDocument[] asLuceneDocuments (NodeList nodeList) {
+    public static LuceneDocument[] asLuceneDocuments (NodeList nodeList)
+        throws LuceneParseException
+    {
         Node[] nodes = new Node[ nodeList.getLength() ];
         for( int i = 0; i < nodes.length; i++ )
             nodes[ i ] = nodeList.item( i );
         return asLuceneDocuments( nodes );
     }
     
-    public static LuceneDocument[] asLuceneDocuments (Node[] nodes) {
+    public static LuceneDocument[] asLuceneDocuments (Node[] nodes)
+        throws LuceneParseException
+    {
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         for( int i = 0; i < nodes.length; i++ )
             if( nodes[ i ].getNodeType() == Node.ELEMENT_NODE )
@@ -482,20 +495,18 @@ public class DocumentController extends Controller {
         return documents.toArray( new LuceneDocument[]{} );
     }
     
-    public static LuceneDocument[] asLuceneDocuments (Element element) {
+    public static LuceneDocument[] asLuceneDocuments (Element element)
+        throws LuceneParseException
+    {
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         
         if( element.getTagName().equals( "div" ) ) {
             documents.addAll( Arrays.asList( asLuceneDocuments( (NodeList) element.getChildNodes() ) ) );
         }
         else {
-            try {
-                LuceneDocument document = new LuceneDocument();
-                document.add( XOXOController.asFields( element ) );
-                documents.add( document );
-            }
-            catch(LuceneException le) {
-            }
+            LuceneDocument document = new LuceneDocument();
+            document.add( XOXOController.asFields( element ) );
+            documents.add( document );
         }
         
         return documents.toArray( new LuceneDocument[]{} );

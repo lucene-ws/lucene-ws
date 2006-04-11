@@ -191,7 +191,7 @@ public class IndexController extends Controller
 		LuceneResponse     res       = c.res();
 		LuceneIndex[]      indices   = manager.getIndices( req.getIndexNames() );
 		LuceneDocument[]   documents = req.getLuceneDocuments();
-		
+		System.err.println( documents.length + " documents submitted" );
 		
 		// Buffers for header location construction
 		StringBuffer indexNamesBuffer  = new StringBuffer();

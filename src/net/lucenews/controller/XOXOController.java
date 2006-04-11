@@ -270,7 +270,7 @@ public class XOXOController
 	 */
 	
 	public static Field[] asFields (Element dl)
-		throws LuceneException
+		throws LuceneParseException
 	{
 		char state = 't'; // collecting <dt> initially, will switch between 't' and 'd' (<dd>)
 		
