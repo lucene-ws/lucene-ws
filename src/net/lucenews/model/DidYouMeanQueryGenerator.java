@@ -218,7 +218,7 @@ public class DidYouMeanQueryGenerator
     private List<TermQuery> getBetterTermQueries (TermQuery tq, boolean useFreqCount, boolean useDefaultBoost)
         throws IOException
     {
-        OrderedTermsFuzzyQuery fq = new OrderedTermsFuzzyQuery( tq.getTerm() );
+        OrderedTermsFuzzyQuery fq = new OrderedTermsFuzzyQuery( tq );
         
         List<TermQuery> list = fq.bestOrderRewrite( reader, useFreqCount );
         

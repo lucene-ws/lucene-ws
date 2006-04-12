@@ -7,8 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.*;
 
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.index.*;
+import org.apache.lucene.queryParser.*;
 
 /**
  * A sibling of the FuzzyQuery class with the ability to give a score sorted
@@ -17,7 +17,21 @@ import org.apache.lucene.index.Term;
 
 public class OrderedTermsFuzzyQuery extends MultiTermQuery
 {
-    private Term term;
+    private Term  term;
+    private Token token;
+    
+    protected OrderedTermsFuzzyQuery (TermQuery termQuery) {
+        super(termQuery.getTerm());
+        term = termQuery.getTerm();
+        if( termQuery instanceof TokenTermQuery )
+            token = ( (TokenTermQuery) termQuery ).getToken();
+    }
+    
+    protected OrderedTermsFuzzyQuery (TokenTermQuery tokenTermQuery) {
+        super(tokenTermQuery.getTerm());
+        term  = tokenTermQuery.getTerm();
+        token = tokenTermQuery.getToken();
+    }
     
     protected OrderedTermsFuzzyQuery (Term term) {
         super(term);
@@ -61,7 +75,11 @@ public class OrderedTermsFuzzyQuery extends MultiTermQuery
                 
                 if( condition1 && condition2 ) {
                     // found a match
-                    TermQuery tq = new TermQuery( t );
+                    TermQuery tq = null;
+                    if( token == null )
+                        tq = new TermQuery( t );
+                    else
+                        tq = new TokenTermQuery( t, token );
                     
                     // set the boost
                     // FilteredTermEnum.difference() was protected in revisions < 150572,

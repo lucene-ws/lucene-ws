@@ -164,21 +164,20 @@ public class SearchController extends Controller {
             
             defaultOperator = req.getDefaultOperator();
             
-            for( int i = 0; i < indices.length; i++ )
-            {
-            if( defaultOperator != null )
-            break;
-            defaultOperator = indices[ i ].getDefaultOperator();
+            for( int i = 0; i < indices.length; i++ ) {
+                if( defaultOperator != null )
+                    break;
+                defaultOperator = indices[ i ].getDefaultOperator();
             }
             
             if( defaultOperator == null )
-            defaultOperator = service.getDefaultOperator();
+                defaultOperator = service.getDefaultOperator();
             
             if( defaultOperator == null )
-            defaultOperator = QueryParser.AND_OPERATOR;
+                defaultOperator = QueryParser.AND_OPERATOR;
             
             if( defaultOperator != null )
-            parser.setDefaultOperator( defaultOperator );
+                parser.setDefaultOperator( defaultOperator );
             
             
             
@@ -235,7 +234,8 @@ public class SearchController extends Controller {
         int i = 0;
         while( !queue.isEmpty() && i < maxResults ) {
             SearchedQuery q = queue.poll();
-            suggestedQueryStrings[ i ] = q.getQuery().toString( defaultField );
+            //suggestedQueryStrings[ i ] = q.getQuery().toString( defaultField );
+            suggestedQueryStrings[ i ] = rewriteQuery( searchString, q.getQuery() );
             suggestedQueryCounts[ i ] = q.getHits().length();
             i++;
         }
@@ -456,6 +456,73 @@ public class SearchController extends Controller {
         query.setBoost( 1.0f );
     }
     
+    
+    
+    public static String rewriteQuery (String original, Query alternate) {
+        StringBuffer rewritten = new StringBuffer();
+        
+        System.err.println( "Rewriting query: " + original );
+        System.err.println( "Alternate: " + alternate );
+        
+        List<TokenTermQuery> termQueries = findTokenTermQueries( alternate );
+        Iterator<TokenTermQuery> iterator = termQueries.iterator();
+        
+        System.err.println( "# of token term queries: " + termQueries.size() );
+        
+        int cursor = 0;
+        while( iterator.hasNext() ) {
+            TokenTermQuery query = iterator.next();
+            System.err.println( "Token: " + query.getToken() );
+            System.err.println( "Substring: [" + cursor + ", " + query.getToken().beginColumn + "]" );
+            rewritten.append( original.substring( cursor, query.getToken().beginColumn ) );
+            rewritten.append( query.getTerm().text() );
+            cursor = query.getToken().endColumn;
+        }
+        
+        rewritten.append( original.substring( cursor ) );
+        
+        System.err.println( "Rewritten: " + rewritten );
+        
+        return rewritten.toString();
+    }
+    
+    public static List<TokenTermQuery> findTokenTermQueries (Query query) {
+        List<TokenTermQuery> queries = new ArrayList<TokenTermQuery>();
+        if( query instanceof BooleanQuery )
+            queries.addAll( findTokenTermQueries( (BooleanQuery) query ) );
+        if( query instanceof TermQuery )
+            queries.addAll( findTokenTermQueries( (TermQuery) query ) );
+        
+        Collections.sort( queries, new TokenTermQueryComparator() );
+        return queries;
+    }
+    
+    public static List<TokenTermQuery> findTokenTermQueries (BooleanQuery query) {
+        BooleanClause[] clauses = query.getClauses();
+        List<TokenTermQuery> queries = new ArrayList<TokenTermQuery>(clauses.length);
+        for( int i = 0; i < clauses.length; i++ ) {
+            queries.addAll( findTokenTermQueries( clauses[i].getQuery() ) );
+        }
+        return queries;
+    }
+    
+    public static List<TokenTermQuery> findTokenTermQueries (TermQuery query) {
+        List<TokenTermQuery> queries = new ArrayList<TokenTermQuery>(1);
+        if( query instanceof TokenTermQuery )
+            queries.add( (TokenTermQuery) query );
+        return queries;
+    }
+    
+}
+
+class TokenTermQueryComparator implements Comparator<TokenTermQuery> {
+    
+    public int compare (TokenTermQuery query1, TokenTermQuery query2) {
+        Integer column1 = query1.getToken().beginColumn;
+        Integer column2 = query2.getToken().beginColumn;
+        return column1.compareTo(column2);
+    }
+    
 }
 
 class SearchedQuery {
@@ -488,25 +555,6 @@ class SearchedQueryComparator implements Comparator<SearchedQuery> {
     
 }
 
-class CustomTermQuery extends TermQuery {
-    
-    private org.apache.lucene.queryParser.Token token;
-    
-    public CustomTermQuery (Term term) {
-        super( term );
-    }
-    
-    public CustomTermQuery (Term term, org.apache.lucene.queryParser.Token token) {
-        super( term );
-        this.token = token;
-    }
-    
-    public org.apache.lucene.queryParser.Token getToken () {
-        return token;
-    }
-    
-}
-
 class CustomQueryParser extends QueryParser {
     
     public CustomQueryParser (String f, Analyzer a) {
@@ -525,7 +573,8 @@ class CustomQueryParser extends QueryParser {
         Query query = super.getFieldQuery( field, queryText );
         if( query instanceof TermQuery ) {
             TermQuery termQuery = (TermQuery) query;
-            return new CustomTermQuery( termQuery.getTerm(), getToken( 0 ) );
+            System.err.println( "Adding a TokenTermQuery: Term=" + termQuery.getTerm() + ", Token=[" + getToken(0).beginColumn + "," + getToken(0).endColumn + "]" );
+            return new TokenTermQuery( termQuery.getTerm(), getToken( 0 ) );
         }
         return query;
     }
