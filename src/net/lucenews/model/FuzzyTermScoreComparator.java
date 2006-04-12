@@ -1,4 +1,4 @@
-package org.apache.lucene.search;
+package net.lucenews.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.*;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.*;
 
 /**
  * Sorts terms by their boost. If two terms have equal boost, their

@@ -1,4 +1,4 @@
-package org.apache.lucene.search;
+package net.lucenews.model;
 
 /**
  * Copyright 2005 The Apache Software Foundation
@@ -25,6 +25,7 @@ import java.util.*;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.*;
 
 /**
  * <p>Generates alternative queries by examining term(s) from a TermQuery

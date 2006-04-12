@@ -1,4 +1,4 @@
-package org.apache.lucene.search;
+package net.lucenews.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.*;
 
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.*;
+import org.apache.lucene.search.*;
 
 /**
  * A sibling of the FuzzyQuery class with the ability to give a score sorted

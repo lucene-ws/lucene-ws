@@ -1,4 +1,4 @@
-package org.apache.lucene.search;
+package net.lucenews.model;
 
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.*;
