@@ -68,13 +68,10 @@ public class OrderedTermsFuzzyQuery extends MultiTermQuery
             do {
                 Term t = enumerator.term();
                 
-                // Condition 1: While we're still on the same term text
-                boolean condition1 = t != null && !t.text().equals( term.text() );
-                
-                // Condition 2:
-                boolean condition2 = ( !useFreqOrder || ( reader.docFreq( t ) > originalDocFreq ) );
-                
-                if( condition1 && condition2 ) {
+                if(
+                       ( t != null && !t.text().equals( term.text() ) )
+                    && ( !useFreqOrder || ( reader.docFreq( t ) > originalDocFreq ) )
+                  ) {
                     // found a match
                     TermQuery tq = null;
                     if( token == null )
