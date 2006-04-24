@@ -431,10 +431,11 @@ public class SearchController extends Controller {
             return suggestions.toArray( new Query[]{} );
         }
         catch(Error err) {
-            return null;
+            return new Query[]{};
         }
         catch(Exception e) {
-            return null;
+            e.printStackTrace();
+            return new Query[]{};
         }
     }
     
@@ -461,19 +462,19 @@ public class SearchController extends Controller {
     public static String rewriteQuery (String original, Query alternate) {
         StringBuffer rewritten = new StringBuffer();
         
-        System.err.println( "Rewriting query: " + original );
-        System.err.println( "Alternate: " + alternate );
+        //System.err.println( "Rewriting query: " + original );
+        //System.err.println( "Alternate: " + alternate );
         
         List<TokenTermQuery> termQueries = findTokenTermQueries( alternate );
         Iterator<TokenTermQuery> iterator = termQueries.iterator();
         
-        System.err.println( "# of token term queries: " + termQueries.size() );
+        //System.err.println( "# of token term queries: " + termQueries.size() );
         
         int cursor = 0;
         while( iterator.hasNext() ) {
             TokenTermQuery query = iterator.next();
-            System.err.println( "Token: " + query.getToken() );
-            System.err.println( "Substring: [" + cursor + ", " + query.getToken().beginColumn + "]" );
+            //System.err.println( "Token: " + query.getToken() );
+            //System.err.println( "Substring: [" + cursor + ", " + query.getToken().beginColumn + "]" );
             rewritten.append( original.substring( cursor, query.getToken().beginColumn ) );
             rewritten.append( query.getTerm().text() );
             cursor = query.getToken().endColumn;
@@ -481,7 +482,7 @@ public class SearchController extends Controller {
         
         rewritten.append( original.substring( cursor ) );
         
-        System.err.println( "Rewritten: " + rewritten );
+        //System.err.println( "Rewritten: " + rewritten );
         
         return rewritten.toString();
     }
@@ -573,7 +574,7 @@ class CustomQueryParser extends QueryParser {
         Query query = super.getFieldQuery( field, queryText );
         if( query instanceof TermQuery ) {
             TermQuery termQuery = (TermQuery) query;
-            System.err.println( "Adding a TokenTermQuery: Term=" + termQuery.getTerm() + ", Token=[" + getToken(0).beginColumn + "," + getToken(0).endColumn + "]" );
+            //System.err.println( "Adding a TokenTermQuery: Term=" + termQuery.getTerm() + ", Token=[" + getToken(0).beginColumn + "," + getToken(0).endColumn + "]" );
             return new TokenTermQuery( termQuery.getTerm(), getToken( 0 ) );
         }
         return query;
