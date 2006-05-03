@@ -573,7 +573,6 @@ public class LuceneRequest extends HttpServletRequestWrapper
             AtomParseException, SAXException, IOException, LuceneParseException
 	{
 		Entry[] entries = getEntries();
-		System.err.println( entries.length + " entries submitted." );
 		
 		List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
 		

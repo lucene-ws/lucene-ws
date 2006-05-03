@@ -172,11 +172,6 @@ public class LuceneWebService extends HttpServlet
 	public void service (HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException
 	{
-        try {
-            System.setErr( new PrintStream( new FileOutputStream( new File( "c:/err.txt" ) ) ) );
-        }
-        catch(Exception e) {}
-        
 		LuceneRequest  req = LuceneRequest.newInstance( request );
 		LuceneResponse res = LuceneResponse.newInstance( response );
 		LuceneContext  c   = new LuceneContext( req, res, this );

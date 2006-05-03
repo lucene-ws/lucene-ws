@@ -292,12 +292,6 @@ public abstract class Content {
     public static Content parse (Element element)
         throws TransformerConfigurationException, TransformerException, AtomParseException
     {
-        System.err.println( "Parsing element: " + element );
-        try {
-            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(element),new StreamResult(System.err));
-        }
-        catch(Exception eeEE){}
-        
         if( !element.getTagName().equals( "content" ) )
             throw new AtomParseException( "Invalid content tag name: \"" + element.getTagName() + "\"" );
         

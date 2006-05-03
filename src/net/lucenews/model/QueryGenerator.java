@@ -42,12 +42,6 @@ public class QueryGenerator {
     
     public String generate (Query query) {
         GenerationReport r = report( query );
-        System.err.println( query.getClass().getSimpleName() );
-        if( r == null )
-            System.err.println( "Report returned null!" );
-        else
-            System.err.println( "This is the generated report: " + r );
-        
         if( r == null )
             return query.toString( getDefaultField() );
         return r.getGenerated();
@@ -81,8 +75,6 @@ public class QueryGenerator {
         
         if( !field.equals( defaultField ) )
             asString = field + ":" + asString;
-        
-        System.err.println( "Term translated into: " + asString );
         
         return new GenerationReport( asString );
     }
@@ -126,8 +118,6 @@ public class QueryGenerator {
             
             GenerationReport rr = new GenerationReport( buffer.toString() );
             rr.setParenthesisRequired( parenthesisRequired );
-            
-            System.err.println( "Subreport: " + rr );
         }
         
         return new GenerationReport( buffer.toString() );
