@@ -1364,6 +1364,19 @@ public class LuceneIndex
 			}
 		}
 		
+		if( searcher != null )
+		{
+            try
+            {
+                searcher.close();
+                searcher = null;
+            }
+            catch(IOException ioeSearcher)
+            {
+                ioe = ioeSearcher;
+            }
+		}
+		
 		if( ioe != null )
 			throw ioe;
 	}
