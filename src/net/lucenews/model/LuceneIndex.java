@@ -483,11 +483,9 @@ public class LuceneIndex {
      */
     
     public IndexSearcher getIndexSearcher () throws IOException {
+        guaranteeFreshData();
         if (searcher == null) {
             searcher = new IndexSearcher( getDirectory().getAbsolutePath() );
-        }
-        else {
-            guaranteeFreshData();
         }
         return searcher;
     }
