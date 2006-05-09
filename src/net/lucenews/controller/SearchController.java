@@ -217,27 +217,35 @@ public class SearchController extends Controller {
          * Alternate query
          */
         
-        int maxSuggestions = 5;
-        int maxResults = 1;
-        PriorityQueue<SearchedQuery> queue = new PriorityQueue<SearchedQuery>( maxSuggestions, new SearchedQueryComparator() );
-        Query[]  suggestedQueries      = getSuggestedQueries( query, indices );
-        String[] suggestedQueryStrings = new String[ Math.min( maxResults, suggestedQueries.length ) ];
-        int[]    suggestedQueryCounts  = new int[ Math.min( maxResults, suggestedQueries.length ) ];
-        
-        for( int i = 0; i < suggestedQueries.length && i < maxSuggestions; i++ ) {
-            Query suggestedQuery = suggestedQueries[ i ];
-            Hits suggestedHits = searcher.search( suggestedQuery );
-            if( suggestedHits.length() > hits.length() )
-                queue.add( new SearchedQuery( suggestedQuery, suggestedHits ) );
+        String[] suggestedQueryStrings = new String[0];
+        int[]    suggestedQueryCounts = new int[0];
+        try {
+            int maxSuggestions = 5;
+            int maxResults = 1;
+            PriorityQueue<SearchedQuery> queue = new PriorityQueue<SearchedQuery>( maxSuggestions, new SearchedQueryComparator() );
+            Query[]  suggestedQueries      = getSuggestedQueries( query, indices );
+                     suggestedQueryStrings = new String[ Math.min( maxResults, suggestedQueries.length ) ];
+                     suggestedQueryCounts  = new int[ Math.min( maxResults, suggestedQueries.length ) ];
+            
+            for (int i = 0; i < suggestedQueries.length && i < maxSuggestions; i++) {
+                Query suggestedQuery = suggestedQueries[ i ];
+                Hits suggestedHits = searcher.search( suggestedQuery );
+                if (suggestedHits.length() > hits.length())
+                    queue.add( new SearchedQuery( suggestedQuery, suggestedHits ) );
+            }
+            
+            int i = 0;
+            while( !queue.isEmpty() && i < maxResults ) {
+                SearchedQuery q = queue.poll();
+                //suggestedQueryStrings[ i ] = q.getQuery().toString( defaultField );
+                suggestedQueryStrings[ i ] = rewriteQuery( searchString, q.getQuery() );
+                suggestedQueryCounts[ i ] = q.getHits().length();
+                i++;
+            }
         }
-        
-        int i = 0;
-        while( !queue.isEmpty() && i < maxResults ) {
-            SearchedQuery q = queue.poll();
-            //suggestedQueryStrings[ i ] = q.getQuery().toString( defaultField );
-            suggestedQueryStrings[ i ] = rewriteQuery( searchString, q.getQuery() );
-            suggestedQueryCounts[ i ] = q.getHits().length();
-            i++;
+        catch(Exception exc) {
+            suggestedQueryStrings = new String[0];
+            suggestedQueryCounts = new int[0];
         }
         
         Limiter limiter = req.getLimiter();
@@ -387,6 +395,9 @@ public class SearchController extends Controller {
     
     public static Integer extractSearcherIndex (LuceneDocument document) {
         Integer index = null;
+        
+        if (document == null)
+            return index;
         
         try {
             index = Integer.valueOf( document.get( getSearcherIndexField() ) );

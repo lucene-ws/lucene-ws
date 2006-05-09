@@ -65,6 +65,9 @@ public class XOXOController
 		Element dl = document.createElement( "dl" );
 		dl.setAttribute( "class", "xoxo" );
 		
+		if (lucenedocument == null)
+            return dl;
+		
 		Enumeration<Field> fields = luceneDocument.fields();
 		while( fields.hasMoreElements() )
 		{
