@@ -321,10 +321,10 @@ public class LuceneUtils
 			switch( fieldType )
 			{
 				case SortField.DOC:
-					return SortField.FIELD_DOC;
+					return new SortField( null, SortField.DOC, reversed );
 				
 				case SortField.SCORE:
-					return SortField.FIELD_SCORE;
+					return new SortField( null, SortField.SCORE, reversed );
 				
 				case SortField.AUTO:
 					if( locale != null )
