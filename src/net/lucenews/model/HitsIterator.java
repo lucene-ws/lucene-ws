@@ -47,11 +47,13 @@ public class HitsIterator implements Iterator<LuceneDocument>
 		}
 		else
 		{
-			limiter.setTotalEntries( hits.length() );
+            if (limiter.getTotalEntries() == null || hits.length() < limiter.getTotalEntries() ) {
+                limiter.setTotalEntries( hits.length() );
+            }
 			
 			if( limiter.getFirst() == null || limiter.getLast() == null )
 			{
-				first = 0;
+				first =  0;
 				last  = -1;
 			}
 			else

@@ -70,8 +70,8 @@ public class Pager extends Limiter
 	
 	public Integer getTotalEntries ()
 	{
-		if( m_totalEntries == null )
-			return 0;
+		//if( m_totalEntries == null )
+		//	return 0;
 		return m_totalEntries;
 	}
 	

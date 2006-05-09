@@ -82,7 +82,7 @@ public class OpenSearchController extends Controller
 			searchURL.append( indices[i].getName() );
 		}
 		
-		searchURL.append( "/?query={searchTerms}&limit={count}&offset={startIndex}&page={startPage}&locale={language?}&sort={sort?}&analyzer={analyzer?}&operator={operator?}" );
+		searchURL.append( "/?query={searchTerms}&limit={count}&offset={startIndex}&page={startPage}&locale={language?}&sort={sort?}&analyzer={analyzer?}&operator={operator?}&maximum={maximum?}" );
 		
 		url.setAttribute( "template", String.valueOf( searchURL ) );
 		desc.appendChild( url );

@@ -249,6 +249,16 @@ public class SearchController extends Controller {
         }
         
         Limiter limiter = req.getLimiter();
+        limiter.setTotalEntries( null );
+        
+        try {
+            String maximum = req.getCleanParameter("maximum");
+            if (maximum != null && maximum.trim().length() > 0) {
+                limiter.setTotalEntries( Integer.valueOf( maximum ) );
+            }
+        }
+        catch(NumberFormatException nfe) {
+        }
         
         HitsIterator iterator = null;
         try {
