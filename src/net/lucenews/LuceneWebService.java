@@ -465,12 +465,17 @@ public class LuceneWebService extends HttpServlet
 	{
 		LuceneRequest req = c.req();
 		
-		if( req.getDocumentIDs().length == 0 && req.getIndexNames().length == 1 )
+		if( req.getDocumentIDs().length == 0 )
 		{
-			if( req.getIndexName().equals( "service.properties" ) )
+            if( req.getIndexNames().length == 1 && req.getIndexName().equals( "service.properties" ) )
 			{
 				ServicePropertiesController.doPut( c );
 				return;
+			}
+			if( req.getIndexNames().length > 0 && req.getParameter( "optimize" ) != null )
+			{
+                IndexController.doOptimize( c );
+                return;
 			}
 		}
 		

@@ -400,6 +400,26 @@ public class IndexController extends Controller
 	
 	
 	
+	public static void doOptimize (LuceneContext c)
+        throws ParserConfigurationException, TransformerException, IndicesNotFoundException, IOException
+	{
+		LuceneWebService   service = c.service();
+		LuceneIndexManager manager = service.getIndexManager();
+		LuceneRequest      req     = c.req();
+		LuceneResponse     res     = c.res();
+		LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
+		
+		for( int i = 0; i < indices.length; i++ ) {
+            LuceneIndex index = indices[ i ];
+            IndexWriter writer = index.getIndexWriter();
+            writer.optimize();
+            index.putIndexWriter( writer );
+		}
+		
+		XMLController.acknowledge( c );
+	}
+	
+	
 	
 }
 
