@@ -290,8 +290,9 @@ public class LuceneIndex {
         
         LuceneIndexEvent event = new LuceneIndexEvent( this );
         Iterator<LuceneIndexListener> iterator = listeners.iterator();
-        while( iterator.hasNext() )
-        iterator.next().indexDeleted( event );
+        while( iterator.hasNext() ) {
+            iterator.next().indexDeleted( event );
+        }
         
         return wasSuccess;
     }
@@ -422,11 +423,9 @@ public class LuceneIndex {
      */
     
     public IndexWriter getIndexWriter () throws IOException {
+        guaranteeFreshData();
         if( writer == null ) {
             writer = new IndexWriter( getDirectory(), getAnalyzer(), false );
-        }
-        else {
-            guaranteeFreshData();
         }
         return writer;
     }
