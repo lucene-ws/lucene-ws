@@ -1407,7 +1407,7 @@ public class LuceneIndex {
      */
     
     public String getSummary () throws IOException {
-        return getProperties().getProperty( "index.summary" );
+        return getProperties().getProperty( "document.summary", "summary" );
     }
     
     
@@ -1423,7 +1423,7 @@ public class LuceneIndex {
      */
     
     public String getSummary (LuceneDocument document) throws IOException {
-        return document.get( getProperties().getProperty( "document.summary", "summary" ) );
+        return document.get( getSummary() );
     }
     
     

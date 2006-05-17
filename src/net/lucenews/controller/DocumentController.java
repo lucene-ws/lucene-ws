@@ -101,80 +101,80 @@ public class DocumentController extends Controller {
             IndicesNotFoundException, DocumentsNotFoundException, ParserConfigurationException,
             TransformerException, IOException, InsufficientDataException
     {
-    LuceneWebService   service     = c.service();
-    LuceneIndexManager manager     = service.getIndexManager();
-    LuceneRequest      req         = c.req();
-    LuceneResponse     res         = c.res();
-    
-    
-    
-    Author firstAuthor = null;
-    
-    
-    List<Entry> entries = new LinkedList<Entry>();
-    
-    LuceneIndex[] indices = manager.getIndices( req.getIndexNames() );
-    String[] documentIDs = req.getDocumentIDs();
-    
-    for( int i = 0; i < documentIDs.length; i++ ) {
-        String documentID = documentIDs[ i ];
+        LuceneWebService   service     = c.service();
+        LuceneIndexManager manager     = service.getIndexManager();
+        LuceneRequest      req         = c.req();
+        LuceneResponse     res         = c.res();
         
-        for( int j = 0; j < indices.length; j++ ) {
-            LuceneIndex index = indices[ j ];
+        
+        
+        Author firstAuthor = null;
+        
+        
+        List<Entry> entries = new LinkedList<Entry>();
+        
+        LuceneIndex[] indices = manager.getIndices( req.getIndexNames() );
+        String[] documentIDs = req.getDocumentIDs();
+        
+        for (int i = 0; i < documentIDs.length; i++) {
+            String documentID = documentIDs[ i ];
             
-            LuceneDocument document = null;
-            
-            try {
-                document = index.getDocument( documentID );
-            }
-                catch(DocumentNotFoundException dnfe) {
-            }
-            
-            if( document != null ) {
-                if( entries.size() == 0 ) {
-                    String name = index.getAuthor( document );
-                    if( name == null )
-                        name = service.getTitle();
-                    firstAuthor = new Author( name );
+            for( int j = 0; j < indices.length; j++ ) {
+                LuceneIndex index = indices[ j ];
+                
+                LuceneDocument document = null;
+                
+                try {
+                    document = index.getDocument( documentID );
+                }
+                    catch(DocumentNotFoundException dnfe) {
                 }
                 
-                entries.add( asEntry( c, index, document ) );
+                if( document != null ) {
+                    if( entries.size() == 0 ) {
+                        String name = index.getAuthor( document );
+                        if( name == null )
+                            name = service.getTitle();
+                        firstAuthor = new Author( name );
+                    }
+                    
+                    entries.add( asEntry( c, index, document ) );
+                }
             }
         }
-    }
-    
-    if( entries.size() == 1 ) {
-        entries.get( 0 ).addAuthor( firstAuthor );
-    }
-    
-    //if( documents.length == 1 )
-    //	AtomView.process( c, asEntry( c, documents[ 0 ] ) );
-    //else
-    //	AtomView.process( c, asFeed( c, documents ) );
-    
-    
-    if( entries.size() == 0 )
-        throw new DocumentsNotFoundException( documentIDs );
-    
-    if( entries.size() == 1 ) {
-        AtomView.process( c, entries.get( 0 ) );
-    }
-    else {
-        Feed feed = new Feed();
         
-        feed.setTitle( "Documents" );
-        feed.setUpdated( Calendar.getInstance() );
-        feed.setID( req.getLocation() );
-        feed.addLink( Link.Self( req.getLocation() ) );
-        feed.addAuthor( new Author( service.getTitle() ) );
+        if( entries.size() == 1 ) {
+            entries.get( 0 ).addAuthor( firstAuthor );
+        }
         
-        Iterator<Entry> iterator = entries.iterator();
-        while( iterator.hasNext() )
-        feed.addEntry( iterator.next() );
+        //if( documents.length == 1 )
+        //	AtomView.process( c, asEntry( c, documents[ 0 ] ) );
+        //else
+        //	AtomView.process( c, asFeed( c, documents ) );
         
-        AtomView.process( c, feed );
-    }
-    
+        
+        if( entries.size() == 0 )
+            throw new DocumentsNotFoundException( documentIDs );
+        
+        if( entries.size() == 1 ) {
+            AtomView.process( c, entries.get( 0 ) );
+        }
+        else {
+            Feed feed = new Feed();
+            
+            feed.setTitle( "Documents" );
+            feed.setUpdated( Calendar.getInstance() );
+            feed.setID( req.getLocation() );
+            feed.addLink( Link.Self( req.getLocation() ) );
+            feed.addAuthor( new Author( service.getTitle() ) );
+            
+            Iterator<Entry> iterator = entries.iterator();
+            while( iterator.hasNext() )
+            feed.addEntry( iterator.next() );
+            
+            AtomView.process( c, feed );
+        }
+        
     }
     
     
@@ -307,16 +307,19 @@ public class DocumentController extends Controller {
         }
         
         // Author
-        if( index.getAuthor( document ) != null )
+        if( index.getAuthor( document ) != null ) {
             entry.addAuthor( new Author( index.getAuthor( document ) ) );
+        }
         
         // Score
-        if( score != null )
+        if( score != null ) {
             entry.setPropertyNS( "http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance", String.valueOf( score ) );
+        }
         
         // Summary
-        if( index.getSummary( document ) != null )
+        if( index.getSummary( document ) != null ) {
             entry.setSummary( new Text( index.getSummary( document ) ) );
+        }
         
         return entry;
     }
@@ -397,12 +400,15 @@ public class DocumentController extends Controller {
      */
     
     public static LuceneDocument[] asLuceneDocuments (Entry... entries)
-        throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
+        throws
+            ParserConfigurationException, TransformerConfigurationException,
+            TransformerException, LuceneParseException
     {
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         
-        for( int i = 0; i < entries.length; i++ )
-        documents.addAll( Arrays.asList( asLuceneDocuments( entries[ i ] ) ) );
+        for (int i = 0; i < entries.length; i++) {
+            documents.addAll( Arrays.asList( asLuceneDocuments( entries[ i ] ) ) );
+        }
         
         return documents.toArray( new LuceneDocument[]{} );
     }
@@ -432,16 +438,19 @@ public class DocumentController extends Controller {
     public static LuceneDocument[] asLuceneDocuments (Content content)
         throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
     {
-        if( content == null )
-            return new LuceneDocument[]{};
+        if (content == null) {
+            throw new LuceneParseException("Cannot parse Lucene document: NULL content in entry");
+        }
         
-        if( content instanceof TextContent )
+        if (content instanceof TextContent) {
             return asLuceneDocuments( (TextContent) content );
+        }
         
-        if( content instanceof NodeContent )
+        if (content instanceof NodeContent) {
             return asLuceneDocuments( (NodeContent) content );
+        }
         
-        return new LuceneDocument[]{};
+        throw new LuceneParseException("Cannot parse Lucene document: Unknown content type in entry");
     }
     
     
@@ -480,27 +489,26 @@ public class DocumentController extends Controller {
         throws LuceneParseException
     {
         Node[] nodes = new Node[ nodeList.getLength() ];
-        for( int i = 0; i < nodes.length; i++ )
+        for( int i = 0; i < nodes.length; i++ ) {
             nodes[ i ] = nodeList.item( i );
+        }
         return asLuceneDocuments( nodes );
     }
     
-    public static LuceneDocument[] asLuceneDocuments (Node[] nodes)
-        throws LuceneParseException
-    {
+    public static LuceneDocument[] asLuceneDocuments (Node[] nodes) throws LuceneParseException {
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
-        for( int i = 0; i < nodes.length; i++ )
-            if( nodes[ i ].getNodeType() == Node.ELEMENT_NODE )
+        for( int i = 0; i < nodes.length; i++ ) {
+            if (nodes[ i ].getNodeType() == Node.ELEMENT_NODE) {
                 documents.addAll( Arrays.asList( asLuceneDocuments( (Element) nodes[ i ] ) ) );
+            }
+        }
         return documents.toArray( new LuceneDocument[]{} );
     }
     
-    public static LuceneDocument[] asLuceneDocuments (Element element)
-        throws LuceneParseException
-    {
+    public static LuceneDocument[] asLuceneDocuments (Element element) throws LuceneParseException {
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         
-        if( element.getTagName().equals( "div" ) ) {
+        if (element.getTagName().equals( "div" )) {
             documents.addAll( Arrays.asList( asLuceneDocuments( (NodeList) element.getChildNodes() ) ) );
         }
         else {
@@ -516,38 +524,45 @@ public class DocumentController extends Controller {
         LuceneDocument document = new LuceneDocument();
         
         NodeList fields = element.getElementsByTagName( "field" );
-        for( int i = 0; i < fields.getLength(); i++ )
+        for (int i = 0; i < fields.getLength(); i++) {
             document.add( asField( (Element) fields.item( i ) ) );
+        }
         
         return document;
     }
     
     
     public static Field asField (Element element) {
-        if( !element.getTagName().equals( "field" ) )
+        if (!element.getTagName().equals( "field" )) {
             throw new RuntimeException( "Must provide a <field> tag" );
+        }
         
         String name  = element.getAttribute( "name" );
         String value = ServletUtils.toString( element.getChildNodes() );
         
-        if( element.getAttribute( "type" ) != null ) {
+        if (element.getAttribute( "type" ) != null) {
             String type = element.getAttribute( "type" ).trim().toLowerCase();
             
-            if( type.equals( "keyword" ) )
-            return new Field( name, value, Field.Store.YES, Field.Index.UN_TOKENIZED );
+            if (type.equals( "keyword" )) {
+                return new Field( name, value, Field.Store.YES, Field.Index.UN_TOKENIZED );
+            }
             
-            if( type.equals( "text" ) )
-            return new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED );
+            if (type.equals( "text" )) {
+                return new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED );
+            }
             
-            if( type.equals( "sort" ) )
-            return new Field( name, value, Field.Store.NO, Field.Index.UN_TOKENIZED );
+            if (type.equals( "sort" )) {
+                return new Field( name, value, Field.Store.NO, Field.Index.UN_TOKENIZED );
+            }
             
-            if( type.equals( "unindexed" ) )
-            return new Field( name, value, Field.Store.YES, Field.Index.NO );
+            if (type.equals( "unindexed" )) {
+                return new Field( name, value, Field.Store.YES, Field.Index.NO );
+            }
             
-            if( type.equals( "unstored" ) )
-            return new Field( name, value, Field.Store.NO, Field.Index.TOKENIZED );
-            
+            if (type.equals( "unstored" )) {
+                return new Field( name, value, Field.Store.NO, Field.Index.TOKENIZED );
+            }
+                        
             return new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED );
         }
         else {
@@ -558,8 +573,8 @@ public class DocumentController extends Controller {
             Field.Store stored = store ? Field.Store.YES : Field.Store.NO;
             
             Field.Index indexed = Field.Index.NO;
-            if( index ) {
-                if( token ) {
+            if (index) {
+                if (token) {
                     indexed = Field.Index.TOKENIZED;
                 }
                 else {
