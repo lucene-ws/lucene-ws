@@ -16,6 +16,7 @@ import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.view.*;
 
+import org.apache.log4j.*;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.*;
 import org.w3c.dom.*;
@@ -38,6 +39,8 @@ public class LuceneWebService extends HttpServlet {
     
     
     
+    
+    protected Logger logger;
     
     
     /**
@@ -83,8 +86,8 @@ public class LuceneWebService extends HttpServlet {
         
         
         /**
-        * Properties
-        */
+         * Properties
+         */
         
         try {
             setProperties( getServletConfig() );
@@ -104,6 +107,20 @@ public class LuceneWebService extends HttpServlet {
     }
     
     
+    /**
+     * Logging
+     */
+    
+    public Logger getLogger () {
+        if (logger == null) {
+            logger = Logger.getRootLogger();
+        }
+        return logger;
+    }
+    
+    public void setLogger (Logger logger) {
+        this.logger = logger;
+    }
     
     
     
@@ -164,11 +181,13 @@ public class LuceneWebService extends HttpServlet {
         LuceneRequest  req = LuceneRequest.newInstance( request );
         LuceneResponse res = LuceneResponse.newInstance( response );
         LuceneContext  c   = new LuceneContext( req, res, this );
+        c.log( getLogger() );
+        c.log().info("Servicing " + req.getMethod() + " request.");
         
         try {
-            System.setErr( new PrintStream( new FileOutputStream( "c:/err.txt" ) ) );
+            System.setErr( new PrintStream( new FileOutputStream( new File( "c:/err.txt" ) ) ) );
         }
-        catch(Exception eee) {
+        catch (Exception eee) {
         }
         
         res.setContentType( "application/atom+xml; charset=utf-8" );
@@ -229,8 +248,8 @@ public class LuceneWebService extends HttpServlet {
             }
             else {
                 res.setStatus( res.SC_INTERNAL_SERVER_ERROR );
-                ExceptionController.process( c, le );
             }
+            ExceptionController.process( c, le );
         }
         catch (Exception e) {
             res.setStatus( res.SC_INTERNAL_SERVER_ERROR );
@@ -680,6 +699,11 @@ public class LuceneWebService extends HttpServlet {
     public void propertiesChanged () throws IOException {
         propertiesLastModified = new Date();
         getIndexManager().refresh();
+        
+        if (getProperty("log4j.configuration") != null) {
+            PropertyConfigurator.configureAndWatch( getProperty("log4j.configuration") );
+            setLogger( Logger.getRootLogger() );
+        }
     }
     
     
