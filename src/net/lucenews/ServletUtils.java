@@ -260,6 +260,16 @@ public class ServletUtils {
         return buffer.toString();
     }
     
+    public static String toString (Node[] nodes) {
+        StringBuffer buffer = new StringBuffer();
+        
+        for (int i = 0; i < nodes.length; i++) {
+            buffer.append( toString( nodes[ i ] ) );
+        }
+        
+        return buffer.toString();
+    }
+    
     public static String toString (Node node) {
         switch (node.getNodeType()) {
             case Node.ATTRIBUTE_NODE:

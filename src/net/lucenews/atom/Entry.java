@@ -3,6 +3,7 @@ package net.lucenews.atom;
 import javax.xml.transform.*;
 import java.util.*;
 import org.w3c.dom.*;
+import net.lucenews.*;
 import net.lucenews.controller.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
@@ -64,13 +65,17 @@ public class Entry extends Base {
     
     
     public static Entry parse (Document document)
-        throws TransformerConfigurationException, TransformerException, AtomParseException
+        throws
+            TransformerConfigurationException, TransformerException,
+            ParserConfigurationException, AtomParseException
     {
         return parse( document.getDocumentElement() );
     }
     
     public static Entry parse (Element e)
-        throws TransformerConfigurationException, TransformerException, AtomParseException
+        throws
+            TransformerConfigurationException, TransformerException,
+            ParserConfigurationException, AtomParseException
     {
         if (!e.getTagName().equals( "entry" )) {
             throw new AtomParseException("Invalid tag name for Atom entry: " + e.getTagName());

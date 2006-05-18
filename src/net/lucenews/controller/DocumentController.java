@@ -527,6 +527,7 @@ public class DocumentController extends Controller {
     
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, Node[] nodes) throws LuceneParseException {
         c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,Node[]): " + nodes.length + " nodes");
+        c.log().debug("Nodes: " + ServletUtils.toString(nodes));
         
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         for( int i = 0; i < nodes.length; i++ ) {

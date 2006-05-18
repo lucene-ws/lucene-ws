@@ -7,6 +7,7 @@ import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
+import net.lucenews.*;
 import org.apache.commons.codec.binary.*;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -219,23 +220,22 @@ public abstract class Content {
     
     
     
-    protected static Node[] childNodes (Element element) {
+    protected static Node[] childNodes (Element element)
+        throws
+            TransformerConfigurationException, ParserConfigurationException,
+            TransformerException, AtomParseException
+    {
         String mode = element.getAttribute( "mode" );
         
         if( mode != null && mode.equals( "base64" ) ) {
-            try {
-                String content = childNodesToString( element );
-                Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-                Transformer t = TransformerFactory.newInstance().newTransformer();
-                
-                t.transform( new StreamSource( new StringReader( "<wrapper>" + content + "</wrapper>" ) ), new DOMResult( d ) );
-                
-                NodeList childNodes = d.getDocumentElement().getChildNodes();
-                return toNodes( childNodes );
-            }
-            catch(Exception e) {
-                return new Node[]{};
-            }
+            String content = childNodesToString( element );
+            Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            
+            t.transform( new StreamSource( new StringReader( "<wrapper>" + content + "</wrapper>" ) ), new DOMResult( d ) );
+            
+            NodeList childNodes = d.getDocumentElement().getChildNodes();
+            return toNodes( childNodes );
         }
         else {
             return toNodes( element.getChildNodes() );
@@ -290,7 +290,9 @@ public abstract class Content {
      */
     
     public static Content parse (Element element)
-        throws TransformerConfigurationException, TransformerException, AtomParseException
+        throws
+            TransformerConfigurationException, TransformerException,
+            ParserConfigurationException, AtomParseException
     {
         if( !element.getTagName().equals( "content" ) )
             throw new AtomParseException( "Invalid content tag name: \"" + element.getTagName() + "\"" );

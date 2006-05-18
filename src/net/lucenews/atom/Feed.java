@@ -6,6 +6,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.*;
 import javax.xml.transform.*;
+import net.lucenews.*;
 
 public class Feed extends Base
 {
@@ -64,7 +65,9 @@ public class Feed extends Base
 	
 	
 	public static Feed parse (Document document)
-        throws TransformerConfigurationException, TransformerException, AtomParseException
+        throws
+            TransformerConfigurationException, TransformerException,
+            ParserConfigurationException, AtomParseException
 	{
 		Feed feed = new Feed();
 		
@@ -182,8 +185,9 @@ public class Feed extends Base
 	{
 		// <entry>
 		Iterator<Entry> entries = getEntries().iterator();
-		while( entries.hasNext() )
+		while (entries.hasNext()) {
 			feed.appendChild( asElement( entries.next(), document ) );
+        }
 	}
 	
 	protected Element asElement (Entry entry, Document document)

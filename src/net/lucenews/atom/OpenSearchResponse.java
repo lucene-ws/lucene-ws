@@ -4,6 +4,7 @@ import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import java.util.*;
+import net.lucenews.*;
 
 
 public class OpenSearchResponse extends Feed
@@ -103,7 +104,7 @@ public class OpenSearchResponse extends Feed
 	
 	
 		
-	public Document asDocument ()
+	public Document asDocument (LuceneContext c)
 		throws ParserConfigurationException, TransformerException
 	{
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
