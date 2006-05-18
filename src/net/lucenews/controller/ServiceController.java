@@ -33,6 +33,8 @@ public class ServiceController extends Controller
 	public static void doGet (LuceneContext c)
 		throws LuceneException, IndicesNotFoundException, TransformerException, ParserConfigurationException, IOException
 	{
+        c.log().debug("ServiceController.doGet(LuceneContext)");
+        
 		LuceneWebService   service   = c.service();
 		LuceneIndexManager manager   = service.getIndexManager();
 		LuceneRequest      req       = c.req();
@@ -42,7 +44,7 @@ public class ServiceController extends Controller
 		
 		
 		res.setContentType( "application/atomserv+xml; charset=utf-8" );
-		AtomView.process( c, asIntrospectionDocument( c.service(), c.req() ) );
+		AtomView.process( c, asIntrospectionDocument( c, c.service(), c.req() ) );
 	}
 	
 	
@@ -67,6 +69,8 @@ public class ServiceController extends Controller
             ParserConfigurationException, SAXException, IOException, InsufficientDataException,
             LuceneException, AtomParseException
 	{
+        c.log().debug("ServiceController.doPost(LuceneContext)");
+        
 		LuceneWebService   service   = c.service();
 		LuceneIndexManager manager   = service.getIndexManager();
 		LuceneRequest      req       = c.req();
@@ -78,7 +82,7 @@ public class ServiceController extends Controller
 		boolean created = false;
 		
 		
-		Entry[] entries = getEntries( req );
+		Entry[] entries = getEntries( c, req );
 		
 		for( int i = 0; i < entries.length; i++ )
 		{
@@ -88,7 +92,7 @@ public class ServiceController extends Controller
 			String name = entry.getTitle();
 			
 			//Properties properties = ServletUtils.getProperties( entry.getContent() );
-			Properties properties = XOXOController.asProperties( entry );
+			Properties properties = XOXOController.asProperties( c, entry );
 			
 			File parentDirectory = manager.getCreatedIndicesDirectory();
 			File directory = new File( parentDirectory, name );
@@ -132,7 +136,7 @@ public class ServiceController extends Controller
 	
 	
 	
-	public static Entry[] getEntries (LuceneRequest request)
+	public static Entry[] getEntries (LuceneContext c, LuceneRequest request)
 		throws TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException, IOException, AtomParseException
 	{
 		List<Entry> entries = new LinkedList<Entry>();
@@ -163,7 +167,7 @@ public class ServiceController extends Controller
 	 * @throws IOException
 	 */
 	
-	public static IntrospectionDocument asIntrospectionDocument (LuceneWebService service, LuceneRequest request)
+	public static IntrospectionDocument asIntrospectionDocument (LuceneContext c, LuceneWebService service, LuceneRequest request)
 		throws IndicesNotFoundException, IOException
 	{
 		IntrospectionDocument d = new IntrospectionDocument();
@@ -188,9 +192,9 @@ public class ServiceController extends Controller
 			
 			String list_template = null;
 			
-			AtomCollection c = new AtomCollection( title, href, member_type, list_template );
+			AtomCollection coll = new AtomCollection( title, href, member_type, list_template );
 			
-			w.addCollection( c );
+			w.addCollection( coll );
 		}
 		
 		d.addWorkspace( w );
@@ -209,7 +213,7 @@ public class ServiceController extends Controller
 	 * @throws IOException
 	 */
 	
-	public static Feed asFeed (LuceneWebService service, LuceneRequest request)
+	public static Feed asFeed (LuceneContext c, LuceneWebService service, LuceneRequest request)
 		throws IndicesNotFoundException, IOException
 	{
 		Feed feed = new Feed();
@@ -229,7 +233,7 @@ public class ServiceController extends Controller
 		LuceneIndex[] indices = list.toArray( new LuceneIndex[]{} );
 		
 		for( int i = 0; i < indices.length; i++ )
-			feed.addEntry( asEntry( service, request, indices[ i ] ) );
+			feed.addEntry( asEntry( c, service, request, indices[ i ] ) );
 		
 		
 		feed.addLink( Link.Alternate( service.getServiceURL( request ) ) );
@@ -249,7 +253,7 @@ public class ServiceController extends Controller
 	 * @throws IOException
 	 */
 	
-	public static Entry asEntry (LuceneWebService service, LuceneRequest request, LuceneIndex index)
+	public static Entry asEntry (LuceneContext c, LuceneWebService service, LuceneRequest request, LuceneIndex index)
 		throws IOException
 	{
 		Entry entry = new Entry();

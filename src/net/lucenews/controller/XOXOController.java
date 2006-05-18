@@ -15,7 +15,6 @@ import org.w3c.dom.*;
 public class XOXOController {
     
     
-    
     /**
      * Transforms a set of properties into an XOXO-formatted
      * &lt;dt&gt; list.
@@ -25,7 +24,9 @@ public class XOXOController {
      * @return An XOXO-formatted &lt;dl&gt; element
      */
     
-    public static Element asElement (Properties properties, Document document) {
+    public static Element asElement (LuceneContext c, Properties properties, Document document) {
+        c.log().debug("XOXOController.asElement(LuceneContext,Properties,Document)");
+        
         Element dl = document.createElement( "dl" );
         dl.setAttribute( "class", "xoxo" );
         
@@ -58,7 +59,9 @@ public class XOXOController {
      * @return An XOXO-formatted &lt;dl&gt; element
      */
     
-    public static Element asElement (LuceneDocument luceneDocument, Document document) {
+    public static Element asElement (LuceneContext c, LuceneDocument luceneDocument, Document document) {
+        c.log().debug("XOXOController.asElement(LuceneContext,LuceneDocument,Document)");
+        
         Element dl = document.createElement( "dl" );
         dl.setAttribute( "class", "xoxo" );
         
@@ -75,7 +78,7 @@ public class XOXOController {
             
             Element dt = document.createElement( "dt" );
             
-            String className = getClassName( field );
+            String className = getClassName( c, field );
             
             if (className.length() > 0) {
                 dt.setAttribute( "class", className );
@@ -101,7 +104,9 @@ public class XOXOController {
      * @return The appropriate class name for the given field
      */
     
-    public static String getClassName (Field field) {
+    public static String getClassName (LuceneContext c, Field field) {
+        c.log().debug("XOXOController.getClassName(LuceneContext,Field)");
+        
         StringBuffer classBuffer = new StringBuffer();
         
         if (field.isStored()) {
@@ -134,11 +139,13 @@ public class XOXOController {
      * @return An XOXO-formatted &lt;dl&gt; list element.
      */
     
-    public static Element asElement (Entry entry)
+    public static Element asElement (LuceneContext c, Entry entry)
         throws
             ParserConfigurationException, TransformerConfigurationException,
             TransformerException, LuceneException
     {
+        c.log().debug("XOXOController.asElement(LuceneContext,Entry)");
+        
         Content content = entry.getContent();
         
         if (content == null) {
@@ -179,12 +186,14 @@ public class XOXOController {
      * @throws LuceneException
      */
     
-    public static Field[] asFields (Entry entry)
+    public static Field[] asFields (LuceneContext c, Entry entry)
         throws
             ParserConfigurationException, TransformerConfigurationException,
             TransformerException, LuceneException
     {
-        return asFields( asElement( entry ) );
+        c.log().debug("XOXOController.asFields(LuceneContext,Entry)");
+        
+        return asFields( c, asElement( c, entry ) );
     }
     
     
@@ -200,12 +209,14 @@ public class XOXOController {
      * @throws LuceneException
      */
     
-    public static Properties asProperties (Entry entry)
+    public static Properties asProperties (LuceneContext c, Entry entry)
         throws
             ParserConfigurationException, TransformerConfigurationException,
             TransformerException, LuceneException
     {
-        return asProperties( asElement( entry ) );	
+        c.log().debug("XOXOController.asProperties(LuceneContext,Entry)");
+        
+        return asProperties( c, asElement( c, entry ) );	
     }
     
     
@@ -221,13 +232,15 @@ public class XOXOController {
      * @throws ParserConfigurationException
      */
     
-    public static Content asContent (Properties properties) throws ParserConfigurationException {
+    public static Content asContent (LuceneContext c, Properties properties) throws ParserConfigurationException {
+        c.log().debug("XOXOController.asContent(LuceneContext,Properties)");
+        
         Document document = XMLController.newDocument();
         
         Element div = document.createElement( "div" );
         div.setAttribute( "xmlns", XMLController.getXHTMLNamespace() );
         
-        div.appendChild( asElement( properties, document ) );
+        div.appendChild( asElement( c, properties, document ) );
         
         return Content.xhtml( div );
     }
@@ -242,10 +255,12 @@ public class XOXOController {
      * @throws LuceneException
      */
     
-    public static Properties asProperties (Element dl) throws LuceneException {
+    public static Properties asProperties (LuceneContext c, Element dl) throws LuceneException {
+        c.log().debug("XOXOController.asProperties(LuceneContext,Element)");
+        
         Properties properties = new Properties();
         
-        Field[] fields = asFields( dl );
+        Field[] fields = asFields( c, dl );
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[ i ];
             properties.setProperty( field.name(), field.stringValue() );
@@ -265,7 +280,9 @@ public class XOXOController {
      * @throws LuceneException
      */
     
-    public static Field[] asFields (Element dl) throws LuceneParseException {
+    public static Field[] asFields (LuceneContext c, Element dl) throws LuceneParseException {
+        c.log().debug("XOXOController.asFields(LuceneContext,Element)");
+        
         char state = 't'; // collecting <dt> initially, will switch between 't' and 'd' (<dd>)
         
         List<Field> fields = new LinkedList<Field>();
@@ -324,7 +341,7 @@ public class XOXOController {
                         }
                         else {
                             //properties.setProperty( name, value );
-                            fields.add( asField( name, value, indexed, stored, tokenized, termVectorStored ) );
+                            fields.add( asField( c, name, value, indexed, stored, tokenized, termVectorStored ) );
                             state = 't';
                         }
                     }
@@ -339,7 +356,7 @@ public class XOXOController {
                             }
                             
                             if (name != null && value != null) {
-                                fields.add( asField( name, value, stored, indexed, tokenized, termVectorStored ) );
+                                fields.add( asField( c, name, value, stored, indexed, tokenized, termVectorStored ) );
                             }
                             value = null;
                             state = 't';
@@ -373,8 +390,10 @@ public class XOXOController {
      * @return a field
      */
     
-    protected static Field asField (String name, String value, boolean stored, boolean indexed, boolean tokenized, boolean termVectorStored)
+    protected static Field asField (LuceneContext c, String name, String value, boolean stored, boolean indexed, boolean tokenized, boolean termVectorStored)
     {
+        c.log().debug("XOXOController.asField(LuceneContext,String,String,boolean,boolean,boolean,boolean)");
+        
         Field.Store store = stored ? Field.Store.YES : Field.Store.NO;
         Field.Index index = Field.Index.NO;
         if (indexed) {

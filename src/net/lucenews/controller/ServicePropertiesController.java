@@ -66,7 +66,7 @@ public class ServicePropertiesController extends Controller
 		entry.setTitle( service.getTitle() );
 		entry.setUpdated( service.getPropertiesLastModified() );
 		entry.setID( service.getServicePropertiesURL( req ) );
-		entry.setContent( XOXOController.asContent( service.getProperties() ) );
+		entry.setContent( XOXOController.asContent( c, service.getProperties() ) );
 		entry.addAuthor( new Author( service.getTitle() ) );
 		
 		AtomView.process( c, entry );
@@ -121,7 +121,7 @@ public class ServicePropertiesController extends Controller
 		
 		Entry entry = entries[ 0 ];
 		
-		Properties properties = XOXOController.asProperties( entry );
+		Properties properties = XOXOController.asProperties( c, entry );
 		
 		service.setProperties( properties );
 		
@@ -179,7 +179,7 @@ public class ServicePropertiesController extends Controller
 		
 		Entry entry = entries[ 0 ];
 		
-		Properties properties = XOXOController.asProperties( entry );
+		Properties properties = XOXOController.asProperties( c, entry );
 		
 		service.addProperties( properties );
 		

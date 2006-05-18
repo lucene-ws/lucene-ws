@@ -181,6 +181,7 @@ public class LuceneWebService extends HttpServlet {
         LuceneRequest  req = LuceneRequest.newInstance( request );
         LuceneResponse res = LuceneResponse.newInstance( response );
         LuceneContext  c   = new LuceneContext( req, res, this );
+        req.setContext( c );
         c.log( getLogger() );
         c.log().info("Servicing " + req.getMethod() + " request.");
         

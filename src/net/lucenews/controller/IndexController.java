@@ -36,6 +36,8 @@ public class IndexController extends Controller
             TransformerException, ParserConfigurationException, IndicesNotFoundException,
             IllegalActionException, IOException, InsufficientDataException
 	{
+        c.log().debug("IndexController.doDelete(LuceneContext)");
+        
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
 		LuceneRequest      req     = c.req();
@@ -95,6 +97,8 @@ public class IndexController extends Controller
 			IndicesNotFoundException, ParserConfigurationException, TransformerException,
 			IOException, DocumentAlreadyExistsException, InsufficientDataException
 	{
+        c.log().debug("IndexController.doGet(LuceneContext)");
+        
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
 		LuceneRequest      req     = c.req();
@@ -124,6 +128,8 @@ public class IndexController extends Controller
             IndicesNotFoundException, ParserConfigurationException, SAXException, IOException,
             LuceneException, TransformerException, ParserConfigurationException, AtomParseException
 	{
+        c.log().debug("IndexController.doPut(LuceneContext)");
+        
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
 		LuceneRequest      req     = c.req();
@@ -145,7 +151,7 @@ public class IndexController extends Controller
 			if( !req.hasIndexName( name ) )
 				throw new LuceneException( "Index '" + name + "' not mentioned in URL" );
 			
-			Properties properties = XOXOController.asProperties( entry );
+			Properties properties = XOXOController.asProperties( c, entry );
 			
 			LuceneIndex index = manager.getIndex( name );
 			
@@ -185,6 +191,8 @@ public class IndexController extends Controller
 			IllegalActionException, TransformerException, DocumentsAlreadyExistException, IndicesNotFoundException,
 			ParserConfigurationException, IOException, SAXException, LuceneException, AtomParseException
 	{
+        c.log().debug("IndexController.doPost(LuceneContext)");
+        
 		LuceneWebService   service   = c.service();
 		LuceneIndexManager manager   = service.getIndexManager();
 		LuceneRequest      req       = c.req();
@@ -261,6 +269,8 @@ public class IndexController extends Controller
 	public static Feed asFeed (LuceneContext c)
 		throws IndicesNotFoundException, IndexNotFoundException, ParserConfigurationException, TransformerException, IOException, InsufficientDataException
 	{
+        c.log().debug("IndexController.asFeed(LuceneContext)");
+        
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
 		LuceneRequest      req     = c.req();
@@ -403,6 +413,8 @@ public class IndexController extends Controller
 	public static void doOptimize (LuceneContext c)
         throws ParserConfigurationException, TransformerException, IndicesNotFoundException, IOException
 	{
+        c.log().debug("IndexController.doOptimize(LuceneContext)");
+        
 		LuceneWebService   service = c.service();
 		LuceneIndexManager manager = service.getIndexManager();
 		LuceneRequest      req     = c.req();

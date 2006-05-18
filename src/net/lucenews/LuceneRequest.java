@@ -39,6 +39,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
+    private LuceneContext context;
     
     private boolean  m_analyzerCached;
     private Analyzer m_analyzer;
@@ -90,6 +91,16 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     public static LuceneRequest newInstance (HttpServletRequest request) {
         return new LuceneRequest( request );
+    }
+    
+    
+    
+    public LuceneContext getContext () {
+        return context;
+    }
+    
+    public void setContext (LuceneContext context) {
+        this.context = context;
     }
     
     
@@ -561,12 +572,14 @@ public class LuceneRequest extends HttpServletRequestWrapper {
             TransformerConfigurationException, TransformerException, ParserConfigurationException,
             AtomParseException, SAXException, IOException, LuceneParseException
     {
+        getContext().log().debug("LuceneRequest.getLuceneDocuments()");
+        
         Entry[] entries = getEntries();
         
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         
         for (int i = 0; i < entries.length; i++) {
-            documents.addAll( Arrays.asList( DocumentController.asLuceneDocuments( entries[ i ] ) ) );
+            documents.addAll( Arrays.asList( DocumentController.asLuceneDocuments( getContext(), entries[ i ] ) ) );
         }
         
         return documents.toArray( new LuceneDocument[]{} );
@@ -603,6 +616,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     public Document getDOMDocument ()
         throws ParserConfigurationException, IOException, SAXException
     {
+        getContext().log().debug("LuceneRequest.getDOMDocument()");
+        
         if (m_domDocumentCached) {
             return m_domDocument;
         }
@@ -626,6 +641,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
             TransformerConfigurationException, TransformerException,
             ParserConfigurationException, AtomParseException, IOException, SAXException
     {
+        getContext().log().debug("LuceneRequest.getFeed()");
+        
         return Feed.parse( getDOMDocument() );
     }
     
@@ -640,6 +657,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
             TransformerConfigurationException, TransformerException,
             ParserConfigurationException, AtomParseException, IOException, SAXException
     {
+        getContext().log().debug("LuceneRequest.getEntry()");
+        
         return Entry.parse( getDOMDocument() );
     }
     
@@ -654,6 +673,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
             TransformerConfigurationException, TransformerException,
             ParserConfigurationException, AtomParseException, SAXException, IOException
     {
+        getContext().log().debug("LuceneRequest.getEntries()");
+        
         List<Entry> entries = new LinkedList<Entry>();
         
         Feed feed = getFeed();
@@ -698,6 +719,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     protected String clean (String string) {
+        getContext().log().debug("LuceneRequest.clean(String)");
+        
         if (string == null || string.trim().length() == 0) {
             return null;
         }
@@ -711,6 +734,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getParameterName (int key) {
+        getContext().log().debug("LuceneRequest.getParameterName(int)");
+        
         switch (key) {
             
             case LuceneKeys.ANALYZER:
@@ -753,10 +778,14 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getCleanParameter (int key) {
+        getContext().log().debug("LuceneRequest.getCleanParameter(int)");
+        
         return ServletUtils.clean( getParameter( key ) );
     }
     
     public String getCleanParameter (String name) {
+        getContext().log().debug("LuceneRequest.getCleanParameter(String)");
+        
         return ServletUtils.clean( getParameter( name ) );
     }
     
@@ -767,6 +796,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Integer getIntegerParameter (int key) {
+        getContext().log().debug("LuceneRequest.getIntegerParameter(int)");
+        
         try {
             return Integer.valueOf( getParameter( key ) );
         }
@@ -785,6 +816,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getParameter (int key) {
+        getContext().log().debug("LuceneRequest.getParameter(int)");
+        
         return getParameter( getParameterName( key ) );
     }
     
@@ -817,6 +850,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Filter getFilter () {
+        getContext().log().debug("LuceneRequest.getFilter()");
+        
         if (m_filterCached) {
             return m_filter;
         }
@@ -855,6 +890,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getDefaultField () {
+        getContext().log().debug("LuceneRequest.getDefaultField()");
+        
         if (m_defaultFieldCached) {
             return m_defaultField;
         }
@@ -872,6 +909,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setDefaultField (String defaultField) {
+        getContext().log().debug("LuceneRequest.setDefaultField(String)");
+        
         m_defaultField       = defaultField;
         m_defaultFieldCached = defaultField != null;
     }
@@ -905,6 +944,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getSearchString () {
+        getContext().log().debug("LuceneRequest.getSearchString()");
+        
         return clean( getParameter( LuceneKeys.SEARCH_STRING ) );
     }
     
@@ -937,6 +978,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Analyzer getAnalyzer () {
+        getContext().log().debug("LuceneRequest.getAnalyzer()");
+        
         if (m_analyzerCached) {
             return m_analyzer;
         }
@@ -953,6 +996,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setAnalyzer (Analyzer analyzer) {
+        getContext().log().debug("LuceneRequest.setAnalyzer(Analyzer)");
+        
         m_analyzer       = analyzer;
         m_analyzerCached = analyzer != null;
     }
@@ -986,6 +1031,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public QueryParser.Operator getDefaultOperator () {
+        getContext().log().debug("LuceneRequest.getDefaultOperator()");
+        
         if (m_defaultOperatorCached) {
             return m_defaultOperator;
         }
@@ -1002,6 +1049,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      * Sets the default operator
      */
     public void setDefaultOperator (QueryParser.Operator defaultOperator) {
+        getContext().log().debug("LuceneRequest.setDefaultOperator(QueryParser.Operator)");
+        
         m_defaultOperator       = defaultOperator;
         m_defaultOperatorCached = defaultOperator != null;
     }
@@ -1035,6 +1084,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Locale getLocale () {
+        getContext().log().debug("LuceneRequest.getLocale()");
+        
         if (m_localeCached) {
             return m_locale;
         }
@@ -1052,6 +1103,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setLocale (Locale locale) {
+        getContext().log().debug("LuceneRequest.setLocale()");
+        
         m_locale       = locale;
         m_localeCached = locale != null;
     }
@@ -1085,6 +1138,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Query getQuery () throws InsufficientDataException {
+        getContext().log().debug("LuceneRequest.getQuery()");
+        
         if (m_queryCached) {
             return m_query;
         }
@@ -1102,6 +1157,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setQuery (Query query) {
+        getContext().log().debug("LuceneRequest.setQuery(Query)");
+        
         m_query       = query;
         m_queryCached = query != null;
     }
@@ -1135,6 +1192,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Sort getSort () throws InsufficientDataException {
+        getContext().log().debug("LuceneRequest.getSort()");
+        
         if (m_sortCached) {
             return m_sort;
         }
@@ -1152,6 +1211,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setSort (Sort sort) {
+        getContext().log().debug("LuceneRequest.setSort(Sort)");
+        
         m_sort       = sort;
         m_sortCached = sort != null;
     }
@@ -1185,6 +1246,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getServletURL () {
+        getContext().log().debug("LuceneRequest.getServletURL()");
+        
         String requestURL  = String.valueOf( getRequestURL() );
         String contextPath = getContextPath();
         
@@ -1203,6 +1266,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getLocation () {
+        getContext().log().debug("LuceneRequest.getLocation()");
+        
         return getRequestURL() + ( ( getQueryString() != null ) ? "?" + getQueryString() : "" );
     }
     
@@ -1221,6 +1286,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     public String getQueryStringExcluding (String... fields) {
+        getContext().log().debug("LuceneRequest.getQueryStringExcluding(String...)");
+        
         StringBuffer buffer = new StringBuffer();
         
         Enumeration names = getParameterNames();
@@ -1282,6 +1349,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     }
     
     public String getQueryStringWithParameter (String name, String value) {
+        getContext().log().debug("LuceneRequest.getQueryStringWithParameter(String,String)");
+        
         return getQueryStringWithParameter( getQueryString(), name, value );
     }
     
@@ -1289,6 +1358,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     public boolean noneMatch (String... strings) {
+        getContext().log().debug("LuceneRequest.noneMatch(String...)");
+        
         String[] clauses = getIfNoneMatchClauses();
         
         for (int i = 0; i < strings.length; i++) {
@@ -1306,6 +1377,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     public String[] getIfNoneMatchClauses () {
+        getContext().log().debug("LuceneRequest.getIfNoneMatchClauses()");
+        
         String clause = getHeader( "If-None-Match" );
         
         if (clause == null) {
@@ -1344,6 +1417,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     public boolean shouldHandle (Calendar lastModified, String... etags) {
+        getContext().log().debug("LuceneRequest.shouldHandle(Calendar,String...)");
+        
         if (lastModified == null) {
             return true;
         }

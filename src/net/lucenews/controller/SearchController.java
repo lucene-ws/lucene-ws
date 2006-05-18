@@ -39,6 +39,8 @@ public class SearchController extends Controller {
     public static void doGet (LuceneContext c)
         throws ParserConfigurationException, TransformerException, IndicesNotFoundException, IOException, InsufficientDataException, ParseException
     {
+        c.log().debug("SearchController.doGet(LuceneContext)");
+        
         LuceneWebService   service = c.service();
         LuceneIndexManager manager = service.getIndexManager();
         LuceneRequest      req     = c.req();
@@ -299,8 +301,10 @@ public class SearchController extends Controller {
      */
     
     public static OpenSearchResponse asOpenSearchResponse (LuceneContext c, HitsIterator iterator, String[] suggestions, int[] suggestionCounts)
-    throws ParserConfigurationException, IOException, IndicesNotFoundException, InsufficientDataException
+        throws ParserConfigurationException, IOException, IndicesNotFoundException, InsufficientDataException
     {
+        c.log().debug("SearchController.asOpenSearchResponse(LuceneContext,HitsIterator,String[],int[])");
+        
         LuceneWebService   service = c.service();
         LuceneIndexManager manager = service.getIndexManager();
         LuceneRequest      req     = c.req();

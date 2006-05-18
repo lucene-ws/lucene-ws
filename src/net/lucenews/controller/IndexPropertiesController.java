@@ -126,7 +126,7 @@ public class IndexPropertiesController extends Controller
 			
 			LuceneIndex index = manager.getIndex( name );
 			
-			Properties properties = XOXOController.asProperties( entry );
+			Properties properties = XOXOController.asProperties( c, entry );
 			
 			index.setProperties( properties );
 			
@@ -189,7 +189,7 @@ public class IndexPropertiesController extends Controller
 			
 			LuceneIndex index = manager.getIndex( name );
 			
-			Properties properties = XOXOController.asProperties( entry );
+			Properties properties = XOXOController.asProperties( c, entry );
 			
 			index.addProperties( properties );
 			
@@ -233,7 +233,7 @@ public class IndexPropertiesController extends Controller
 		entry.setTitle( "Properties of '" + index.getTitle() + "'" );
 		entry.setID( c.service().getIndexURL( req, index ) + "index.properties" );
 		entry.setUpdated( new Date( index.getPropertiesFile().lastModified() ) );
-		entry.setContent( XOXOController.asContent( index.getProperties() ) );
+		entry.setContent( XOXOController.asContent( c, index.getProperties() ) );
 		if( index.hasAuthor() )
 			entry.addAuthor( new Author( index.getAuthor() ) );
 		else if( authorRequired )
