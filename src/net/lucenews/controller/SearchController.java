@@ -363,11 +363,23 @@ public class SearchController extends Controller {
         
         Limiter limiter = iterator.getLimiter();
         
+        if (limiter != null) {
+            c.log().debug( "Limiter: " + limiter.getClass().getCanonicalName() );
+        }
+        
         if( limiter != null && limiter instanceof Pager ) {
             Pager pager = (Pager) limiter;
+            c.log().debug( "pager.getTotalEntries():   " + pager.getTotalEntries() );
+            c.log().debug( "pager.getFirst():          " + pager.getFirst() );
+            c.log().debug( "pager.getEntriesPerPage(): " + pager.getEntriesPerPage() );
+            
             response.setTotalResults( pager.getTotalEntries() );
             response.setStartIndex( pager.getFirst() );
             response.setItemsPerPage( pager.getEntriesPerPage() );
+            
+            c.log().debug( "response.getTotalResults(): " + response.getTotalResults() );
+            c.log().debug( "response.getStartIndex():   " + response.getStartIndex() );
+            c.log().debug( "response.getItemsPerPage(): " + response.getItemsPerPage() );
             
             if( pager.getCurrentPage() != null )
                 response.addLink( new Link( baseURL + pager.getCurrentPage(), "self", "application/atom+xml" ) );
