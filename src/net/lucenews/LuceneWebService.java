@@ -183,13 +183,7 @@ public class LuceneWebService extends HttpServlet {
         LuceneContext  c   = new LuceneContext( req, res, this );
         req.setContext( c );
         c.log( getLogger() );
-        c.log().info("Servicing " + req.getMethod() + " request.");
-        
-        try {
-            System.setErr( new PrintStream( new FileOutputStream( new File( "c:/err.txt" ) ) ) );
-        }
-        catch (Exception eee) {
-        }
+        c.log().info("request:  " + req.getMethod() + " " + req.getLocation());
         
         res.setContentType( "application/atom+xml; charset=utf-8" );
         
@@ -256,6 +250,8 @@ public class LuceneWebService extends HttpServlet {
             res.setStatus( res.SC_INTERNAL_SERVER_ERROR );
             ExceptionController.process( c, e );
         }
+        
+        c.log().info("response: " + res.getStatus());
     }	
     
     

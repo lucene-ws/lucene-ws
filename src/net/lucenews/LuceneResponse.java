@@ -15,6 +15,7 @@ public class LuceneResponse extends HttpServletResponseWrapper {
     
     protected LuceneResponse (HttpServletResponse response) {
         super( response );
+        setStatus( HttpServletResponse.SC_OK );
     }
     
     
