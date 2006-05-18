@@ -719,8 +719,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     protected String clean (String string) {
-        getContext().log().debug("LuceneRequest.clean(String)");
-        
         if (string == null || string.trim().length() == 0) {
             return null;
         }
@@ -734,8 +732,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getParameterName (int key) {
-        getContext().log().debug("LuceneRequest.getParameterName(int)");
-        
         switch (key) {
             
             case LuceneKeys.ANALYZER:
@@ -778,14 +774,10 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getCleanParameter (int key) {
-        getContext().log().debug("LuceneRequest.getCleanParameter(int)");
-        
         return ServletUtils.clean( getParameter( key ) );
     }
     
     public String getCleanParameter (String name) {
-        getContext().log().debug("LuceneRequest.getCleanParameter(String)");
-        
         return ServletUtils.clean( getParameter( name ) );
     }
     
@@ -796,8 +788,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Integer getIntegerParameter (int key) {
-        getContext().log().debug("LuceneRequest.getIntegerParameter(int)");
-        
         try {
             return Integer.valueOf( getParameter( key ) );
         }
@@ -816,8 +806,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getParameter (int key) {
-        getContext().log().debug("LuceneRequest.getParameter(int)");
-        
         return getParameter( getParameterName( key ) );
     }
     
