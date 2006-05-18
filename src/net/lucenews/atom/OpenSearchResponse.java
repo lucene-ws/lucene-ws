@@ -104,7 +104,7 @@ public class OpenSearchResponse extends Feed
 	
 	
 		
-	public Document asDocument (LuceneContext c)
+	public Document asDocument ()
 		throws ParserConfigurationException, TransformerException
 	{
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -120,7 +120,7 @@ public class OpenSearchResponse extends Feed
 		
 		
 		Element totalResults = document.createElementNS( openSearchURI, "opensearch:totalResults" );
-		totalResults.appendChild( document.createTextNode( String.valueOf( m_totalResults ) ) );
+		totalResults.appendChild( document.createTextNode( String.valueOf( getTotalResults() ) ) );
 		//feed.insertBefore( totalResults, firstEntry );
 		feed.appendChild( totalResults );
 		
