@@ -424,7 +424,7 @@ public class LuceneIndex {
     
     public IndexWriter getIndexWriter () throws IOException {
         guaranteeFreshData();
-        if( writer == null ) {
+        if (writer == null) {
             writer = new IndexWriter( getDirectory(), getAnalyzer(), false );
         }
         return writer;
@@ -483,9 +483,9 @@ public class LuceneIndex {
     
     public IndexSearcher getIndexSearcher () throws IOException {
         guaranteeFreshData();
-        if (searcher == null) {
+        //if (searcher == null) {
             searcher = new IndexSearcher( getDirectory().getAbsolutePath() );
-        }
+        //}
         return searcher;
     }
     

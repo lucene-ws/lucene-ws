@@ -12,8 +12,9 @@ import net.lucenews.view.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
-import org.apache.lucene.search.*;
 import org.apache.lucene.queryParser.*;
+import org.apache.lucene.search.*;
+import org.apache.lucene.wordnet.*;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import javax.xml.transform.*;
@@ -49,8 +50,9 @@ public class SearchController extends Controller {
         LuceneMultiSearcher   searcher  = null;
         IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
         
-        for( int i = 0; i < indices.length; i++ )
+        for (int i = 0; i < indices.length; i++) {
             searchers[ i ] = indices[ i ].getIndexSearcher();
+        }
         
         searcher = new LuceneMultiSearcher( searchers, getSearcherIndexField() );
         
@@ -118,6 +120,13 @@ public class SearchController extends Controller {
         if( analyzer == null )
             invalidParameterNames.add( req.getParameterName( LuceneKeys.ANALYZER ) );
         
+        if (ServletUtils.parseBoolean(service.getProperty("query.expand","false"))) {
+            analyzer = new SynonymAnalyzer(
+                analyzer,
+                new SynExpand(),
+                manager.getIndex(service.getProperty("synonym.index","wordnet")).getIndexSearcher()
+            );
+        }
         
         
         
