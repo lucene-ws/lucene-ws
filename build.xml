@@ -40,7 +40,7 @@
   <path id="compile.classpath">
 
     <!-- EDIT THIS TO POINT TO YOUR INSTALL OF LUCENE! -->
-    <pathelement location="C:\Program Files\Apache Software Foundation\Tomcat 5.5\common\lib\lucene-core-1.9.1.jar"/>
+    <pathelement location="C:\Program Files\Apache Software Foundation\Tomcat 5.5\common\lib\lucene-core-2.0.0.jar"/>
 
     <pathelement location="${catalina.home}/common/classes"/>
     <fileset dir="${catalina.home}/common/endorsed">
