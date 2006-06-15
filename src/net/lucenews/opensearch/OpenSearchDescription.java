@@ -14,9 +14,15 @@ public class OpenSearchDescription {
     private Boolean adult_content;
     private String contact;
     private List<OpenSearchUrl> urls;
+    private List<String> languages;
+    private List<String> input_encodings;
+    private List<String> output_encodings;
     
     public OpenSearchDescription () {
         urls = new LinkedList<OpenSearchUrl>();
+        languages = new LinkedList<String>();
+        input_encodings  = new LinkedList<String>();
+        output_encodings = new LinkedList<String>();
     }
     
     
@@ -128,6 +134,48 @@ public class OpenSearchDescription {
     
     public void setAdultContent (Boolean adult_content) {
         this.adult_content = adult_content;
+    }
+    
+    
+    
+    public List<String> getLanguages () {
+        return languages;
+    }
+    
+    public void addLanguage (String language) {
+        languages.add( language );
+    }
+    
+    public boolean removeLanguage (String language) {
+        return languages.remove( language );
+    }
+    
+    
+    
+    public List<String> getOutputEncodings () {
+        return output_encodings;
+    }
+    
+    public void addOutputEncoding (String output_encoding) {
+        output_encodings.add( output_encoding );
+    }
+    
+    public boolean removeOutputEncoding (String output_encoding) {
+        return output_encodings.remove( output_encoding );
+    }
+    
+    
+    
+    public List<String> getInputEncodings () {
+        return input_encodings;
+    }
+    
+    public void addInputEncoding (String input_encoding) {
+        input_encodings.add( input_encoding );
+    }
+    
+    public boolean removeInputEncoding (String input_encoding) {
+        return input_encodings.remove( input_encoding );
     }
     
     
@@ -269,6 +317,26 @@ public class OpenSearchDescription {
             element.appendChild( asElement( document, "AdultContent", String.valueOf( getAdultContent() ) ) );
         }
         
+        
+        // Language
+        Iterator<String> languageIterator = getLanguages().iterator();
+        while (languageIterator.hasNext()) {
+            element.appendChild( asElement( document, "Language", languageIterator.next() ) );
+        }
+        
+        
+        // OutputEncoding
+        Iterator<String> outputEncodingIterator = getOutputEncodings().iterator();
+        while (outputEncodingIterator.hasNext()) {
+            element.appendChild( asElement( document, "OutputEncoding", outputEncodingIterator.next() ) );
+        }
+        
+        
+        // InputEncoding
+        Iterator<String> inputEncodingIterator = getInputEncodings().iterator();
+        while (inputEncodingIterator.hasNext()) {
+            element.appendChild( asElement( document, "InputEncoding", inputEncodingIterator.next() ) );
+        }
         
         
         return element;
