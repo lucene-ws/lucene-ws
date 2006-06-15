@@ -61,7 +61,11 @@ public class OpenSearchUrl {
     
     
     
-    public Element asElement (Document document) throws Exception {
+    public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {
+        return asElement(document, format, OpenSearch.STRICT);
+    }
+    
+    public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode) throws OpenSearchException {
         Element element = document.createElement("Url");
         
         Iterator<Map.Entry<String,String>> iterator = params.entrySet().iterator();
@@ -70,14 +74,26 @@ public class OpenSearchUrl {
             Element param = document.createElement("Param");
             
             if (entry.getKey() == null) {
-                throw new Exception("Param name cannot be null");
+                if (mode == OpenSearch.STRICT) {
+                    throw new OpenSearchException("Param name cannot be null");
+                }
+                else {
+                    continue;
+                }
             }
             param.setAttribute("name", entry.getKey());
             
             if (entry.getKey() == null) {
-                throw new Exception("Param value cannot be null");
+                if (mode == OpenSearch.STRICT) {
+                    throw new OpenSearchException("Param value cannot be null");
+                }
+                else {
+                    param.setAttribute("value", "");
+                }
             }
-            param.setAttribute("value", entry.getValue());
+            else {
+                param.setAttribute("value", entry.getValue());
+            }
             
             element.appendChild( param );
         }

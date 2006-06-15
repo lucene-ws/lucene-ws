@@ -143,31 +143,35 @@ public class OpenSearchDescription {
      * Transforms the OpenSearch description into a DOM Element.
      */
     
-    public Element asElement (Document document) throws Exception {
+    public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {
+        return asElement(document, format, OpenSearch.STRICT);
+    }
+    
+    public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode) throws OpenSearchException {
         Element element = document.createElement("OpenSearchDescription");
         
         
         // ShortName
-        if (getShortName() == null) {
-            throw new Exception("No short name specified");
+        if (getShortName() == null && mode == OpenSearch.STRICT) {
+            throw new OpenSearchException("No short name specified");
         }
         element.appendChild( asElement( document, "ShortName", getShortName() ) );
         
         
         // Description
-        if (getDescription() == null) {
-            throw new Exception("No description specified");
+        if (getDescription() == null && mode == OpenSearch.STRICT) {
+            throw new OpenSearchException("No description specified");
         }
         element.appendChild( asElement( document, "Description", getDescription() ) );
         
         
         // Url
-        if (urls.size() == 0) {
-            throw new Exception("Url must appear one or more times");
+        if (urls.size() == 0 && mode == OpenSearch.STRICT) {
+            throw new OpenSearchException("Url must appear one or more times");
         }
         Iterator<OpenSearchUrl> urlsIterator = urls.iterator();
         while (urlsIterator.hasNext()) {
-            element.appendChild( urlsIterator.next().asElement( document ) );
+            element.appendChild( urlsIterator.next().asElement( document, format, mode ) );
         }
         
         

@@ -26,24 +26,31 @@ public class OpenSearchQuery {
         return role;
     }
     
-    public void setRole (String role) throws Exception {
-        if (role != null) {
-            String[] valid_roles = new String[]{
-                "example",
-                "related",
-                "request",
-                "correction",
-                "superset",
-                "subset"
-            };
-            
-            for (int i = 0; i < valid_roles.length; i++) {
-                if (!role.equals(valid_roles[i])) {
-                    throw new Exception("Invalid role: " + role);
-                }
+    public void setRole (String role) {
+        this.role = role;
+    }
+    
+    public boolean hasValidRole () {
+        if (getRole() == null) {
+            return false;
+        }
+        
+        String[] valid_roles = new String[] {
+            "example",
+            "related",
+            "request",
+            "correction",
+            "superset",
+            "subset"
+        };
+        
+        for (int i = 0; i < valid_roles.length; i++) {
+            if (valid_roles[i].equals("role")) {
+                return true;
             }
         }
-        this.role = role;
+        
+        return false;
     }
     
     
@@ -53,10 +60,7 @@ public class OpenSearchQuery {
         return title;
     }
     
-    public void setTitle (String title) throws Exception {
-        if (title != null && title.length() > 256) {
-            throw new Exception("Title cannot exceed 256 characters");
-        }
+    public void setTitle (String title) {
         this.title = title;
     }
     
@@ -76,10 +80,7 @@ public class OpenSearchQuery {
         return total_results;
     }
     
-    public void setTotalResults (Integer total_results) throws Exception {
-        if (total_results != null && total_results < 0) {
-            throw new Exception("Total results must be greater than or equal to zero");
-        }
+    public void setTotalResults (Integer total_results) {
         this.total_results = total_results;
     }
     
@@ -156,11 +157,25 @@ public class OpenSearchQuery {
     
     
     
-    public Element asElement (Document document) {
-        Element element = document.createElement("Query");
+    public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {
+        return asElement(document, format, OpenSearch.STRICT);
+    }
+    
+    public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode) throws OpenSearchException {
+        Element element = document.createElementNS("http://a9.com/-/spec/opensearch/1.1/","opensearch:Query");
         
         // role
-        element.setAttribute("role", getRole());
+        if (getRole() == null) {
+            if (mode != OpenSearch.PASSIVE) {
+                throw new OpenSearchException("No role specified");
+            }
+        }
+        else {
+            if (mode == OpenSearch.STRICT && !hasValidRole()) {
+                throw new OpenSearchException("Invalid role: " + getRole());
+            }
+            element.setAttribute("role", getRole());
+        }
         
         // title
         if (getTitle() != null) {
