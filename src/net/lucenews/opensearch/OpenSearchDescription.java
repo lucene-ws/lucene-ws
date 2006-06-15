@@ -99,6 +99,27 @@ public class OpenSearchDescription {
         this.syndication_right = syndication_right;
     }
     
+    public boolean hasValidSyndicationRight () {
+        if (getSyndicationRight() == null) {
+            return true;
+        }
+        
+        String[] valid_rights = new String[] {
+            "open",
+            "limited",
+            "private",
+            "closed"
+        };
+        
+        for (int i = 0; i < valid_rights.length; i++) {
+            if (getSyndicationRight().toLowerCase().equals(valid_rights[i])) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     
     
     public Boolean getAdultContent () {
@@ -131,14 +152,14 @@ public class OpenSearchDescription {
         
         
         // ShortName
-        if (getShortName() == null && mode == OpenSearch.STRICT) {
+        if ((getShortName() == null || getShortName().length() > 16) && mode == OpenSearch.STRICT) {
             throw new OpenSearchException("No short name specified");
         }
         element.appendChild( asElement( document, "ShortName", getShortName() ) );
         
         
         // Description
-        if (getDescription() == null && mode == OpenSearch.STRICT) {
+        if ((getDescription() == null || getDescription().length() > 1024) && mode == OpenSearch.STRICT) {
             throw new OpenSearchException("No description specified");
         }
         element.appendChild( asElement( document, "Description", getDescription() ) );
@@ -156,30 +177,89 @@ public class OpenSearchDescription {
         
         // Contact
         if (getContact() != null) {
-            element.appendChild( asElement( document, "Contact", getContact() ) );
+            int maximum = 64;
+            if (getContent().length() > maximum) {
+                if (mode == OpenSearch.STRICT) {
+                    throw new OpenSearchException("Contact cannot exceed "+maximum+" characters");
+                }
+                if (mode == OpenSearch.ADAPTIVE) {
+                    element.appendChild( asElement( document, "Contact", getContact().substring(0,maximum) ) );
+                }
+                else {
+                    element.appendChild( asElement( document, "Contact", getContact() ) );
+                }
+            }
+            else {
+                element.appendChild( asElement( document, "Contact", getContact() ) );
+            }
         }
         
         
         // LongName
         if (getLongName() != null) {
-            element.appendChild( asElement( document, "LongName", getLongName() ) );
+            int maximum = 48;
+            if (getLongName().length() > maximum) {
+                if (mode == OpenSearch.STRICT) {
+                    throw new OpenSearchException("Long name cannot exceed "+maximum+" characters");
+                }
+                if (mode == OpenSearch.ADAPTIVE) {
+                    element.appendChild( asElement( document, "LongName", getLongName().substring(0,maximum) ) );
+                }
+                else {
+                    element.appendChild( asElement( document, "LongName", getLongName() ) );
+                }
+            }
+            else {
+                element.appendChild( asElement( document, "LongName", getLongName() ) );
+            }
         }
         
         
         // Developer
         if (getDeveloper() != null) {
-            element.appendChild( asElement( document, "Developer", getDeveloper() ) );
+            int maximum = 64;
+            if (getDeveloper().length() > maximum) {
+                if (mode == OpenSearch.STRICT) {
+                    throw new OpenSearchException("Developer cannot exceed "+maximum+" characters");
+                }
+                if (mode == OpenSearch.ADAPTIVE) {
+                    element.appendChild( asElement( document, "Developer", getDeveloper().substring(0,maximum) ) );
+                }
+                else {
+                    element.appendChild( asElement( document, "Developer", getDeveloper() ) );
+                }
+            }
+            else {
+                element.appendChild( asElement( document, "Developer", getDeveloper() ) );
+            }
         }
         
         
         // Attribution
         if (getAttribution() != null) {
-            element.appendChild( asElement( document, "Attribution", getAttribution() ) );
+            int maximum = 256;
+            if (getAttribution().length() > maximum) {
+                if (mode == OpenSearch.STRICT) {
+                    throw new OpenSearchException("Attribution cannot exceed "+maximum+" characters");
+                }
+                if (mode == OpenSearch.ADAPTIVE) {
+                    element.appendChild( asElement( document, "Attribution", getAttribution().substring(0,maximum) ) );
+                }
+                else {
+                    element.appendChild( asElement( document, "Attribution", getAttribution() ) );
+                }
+            }
+            else {
+                element.appendChild( asElement( document, "Attribution", getAttribution() ) );
+            }
         }
         
         
         // SyndicationRight
         if (getSyndicationRight() != null) {
+            if (mode == OpenSearch.STRICT && !hasValidSyndicationRight()) {
+                throw new OpenSearchException("Invalid Syndication Right: " + getSyndicationRight());
+            }
             element.appendChild( asElement( document, "SyndicationRight", getSyndicationRight() ) );
         }
         
