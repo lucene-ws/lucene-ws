@@ -386,8 +386,6 @@ public class SearchController extends Controller {
                 document.setIndex( index );
             }
             
-            //response.addEntry( DocumentController.asEntry( c, index, document, iterator.score() ) );
-            
             OpenSearchResult result = new OpenSearchResult();
             result.setTitle( document.getTitle() );
             result.setId( service.getDocumentURL( req, index, document ) );
@@ -416,6 +414,23 @@ public class SearchController extends Controller {
             
             response.addResult( result );
         }
+        
+        
+        /**
+         * Corrections
+         */
+        /**
+        List<Query> corrections = new LinkedList<Query>();
+        Iterator<Query> correctionIterator = corrections.iterator();
+        while (correctionIterator.hasNext()) {
+            Query correction = correctionIterator.next();
+            OpenSearchQuery correctionQuery = new OpenSearchQuery();
+            correctionQuery.setRole( "correction" );
+            correctionQuery.setTotalResults( searcher.search( correction ).length() );
+            response.addQuery( correctionQuery );
+        }
+        */
+        
         
         OpenSearchView.process( c, response, format );
     }
