@@ -69,7 +69,7 @@ public class SearchController extends Controller {
         try {
             query = req.getQuery();
         }
-        catch(InsufficientDataException ide) {
+        catch (InsufficientDataException ide) {
             query = null;
         }
         
@@ -84,8 +84,8 @@ public class SearchController extends Controller {
          */
         
         String searchString = req.getSearchString();
-        if( searchString == null ) {
-            if( sort == null ) {
+        if (searchString == null) {
+            if (sort == null) {
                 invalidParameterNames.add( req.getParameterName( LuceneKeys.SEARCH_STRING ) );
             }
             else {
@@ -103,15 +103,18 @@ public class SearchController extends Controller {
         String defaultField = req.getDefaultField();
         
         // Index-specified default field
-        for( int i = 0; i < indices.length && defaultField == null; i++ )
+        for (int i = 0; i < indices.length && defaultField == null; i++) {
             defaultField = indices[ i ].getDefaultField();
+        }
         
         // Service-specified default field
-        if( defaultField == null )
+        if (defaultField == null) {
             defaultField = service.getDefaultField();
+        }
         
-        if( defaultField == null )
+        if (defaultField == null) {
             invalidParameterNames.add( req.getParameterName( LuceneKeys.DEFAULT_FIELD ) );
+        }
         
         
         
@@ -131,10 +134,10 @@ public class SearchController extends Controller {
         
         
         
-        if( !invalidParameterNames.isEmpty() ) {
+        if (!invalidParameterNames.isEmpty()) {
             StringBuffer buffer = new StringBuffer();
             
-            if( invalidParameterNames.size() == 1 ) {
+            if (invalidParameterNames.size() == 1) {
                 buffer.append( "Valid '" + invalidParameterNames.get( 0 ) + "' parameter required." );
             }
             else {
@@ -159,7 +162,7 @@ public class SearchController extends Controller {
         
         QueryParser.Operator defaultOperator = null;
         
-        if( query == null ) {
+        if (query == null) {
             
             /**
              * Build the query parser
@@ -170,25 +173,30 @@ public class SearchController extends Controller {
             
             
             Locale locale = req.getLocale();
-            if( locale != null )
-            parser.setLocale( locale );
+            if (locale != null) {
+                parser.setLocale( locale );
+            }
             
             defaultOperator = req.getDefaultOperator();
             
-            for( int i = 0; i < indices.length; i++ ) {
-                if( defaultOperator != null )
+            for (int i = 0; i < indices.length; i++) {
+                if (defaultOperator != null) {
                     break;
+                }
                 defaultOperator = indices[ i ].getDefaultOperator();
             }
             
-            if( defaultOperator == null )
+            if (defaultOperator == null) {
                 defaultOperator = service.getDefaultOperator();
+            }
             
-            if( defaultOperator == null )
+            if (defaultOperator == null) {
                 defaultOperator = QueryParser.AND_OPERATOR;
+            }
             
-            if( defaultOperator != null )
+            if (defaultOperator != null) {
                 parser.setDefaultOperator( defaultOperator );
+            }
             
             
             
@@ -208,18 +216,18 @@ public class SearchController extends Controller {
         
         Hits hits = null;
         
-        if( filter != null && sort != null )
+        if (filter != null && sort != null) {
             hits = searcher.search( query, filter, sort );
-        
-        else if( filter != null )
+        }
+        else if (filter != null) {
             hits = searcher.search( query, filter );
-        
-        else if( sort != null )
+        }
+        else if (sort != null) {
             hits = searcher.search( query, sort );
-        
-        else
+        }
+        else {
             hits = searcher.search( query );
-        
+        }
         
         
         
@@ -246,7 +254,7 @@ public class SearchController extends Controller {
             }
             
             int i = 0;
-            while( !queue.isEmpty() && i < maxResults ) {
+            while (!queue.isEmpty() && i < maxResults) {
                 SearchedQuery q = queue.poll();
                 //suggestedQueryStrings[ i ] = q.getQuery().toString( defaultField );
                 suggestedQueryStrings[ i ] = rewriteQuery( searchString, q.getQuery() );
@@ -254,7 +262,7 @@ public class SearchController extends Controller {
                 i++;
             }
         }
-        catch(Exception exc) {
+        catch (Exception exc) {
             suggestedQueryStrings = new String[0];
             suggestedQueryCounts = new int[0];
         }
@@ -268,21 +276,21 @@ public class SearchController extends Controller {
                 limiter.setTotalEntries( Integer.valueOf( maximum ) );
             }
         }
-        catch(NumberFormatException nfe) {
+        catch (NumberFormatException nfe) {
         }
         
         HitsIterator iterator = null;
         try {
             iterator = new HitsIterator( hits, limiter, c.service().getIndexManager().getIndex( req.getIndexName() ) );
         }
-        catch(MultipleValueException mve) {
+        catch (MultipleValueException mve) {
             iterator = new HitsIterator( hits, limiter );
         }
         
         OpenSearchResponse response = asOpenSearchResponse( c, iterator, suggestedQueryStrings, suggestedQueryCounts );
         
         StringBuffer title = new StringBuffer();
-        if( query instanceof MatchAllDocsQuery ) {
+        if (query instanceof MatchAllDocsQuery) {
             title.append( "All documents in " );
         }
         else {
