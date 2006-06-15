@@ -1,3 +1,5 @@
+package net.lucenews.opensearch;
+
 public class OpenSearchResponse {
     
     private Integer total_results;

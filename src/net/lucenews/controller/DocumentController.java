@@ -548,7 +548,11 @@ public class DocumentController extends Controller {
         }
         else {
             LuceneDocument document = new LuceneDocument();
-            document.add( XOXOController.asFields( c, element ) );
+            Field[] fields = XOXOController.asFields( c, element );
+            if (fields.length == 0) {
+                throw new LuceneParseException("No fields in specified document");
+            }
+            document.add( fields );
             documents.add( document );
         }
         

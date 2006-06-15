@@ -1,3 +1,7 @@
+package net.lucenews.opensearch;
+
+import org.w3c.dom.*;
+
 public class OpenSearchQuery {
     
     private String role;
@@ -22,7 +26,7 @@ public class OpenSearchQuery {
         return role;
     }
     
-    public void setRole (String role) {
+    public void setRole (String role) throws Exception {
         if (role != null) {
             String[] valid_roles = new String[]{
                 "example",

@@ -1,3 +1,5 @@
+package net.lucenews.opensearch;
+
 public class OpenSearchLink {
     
     private String href;

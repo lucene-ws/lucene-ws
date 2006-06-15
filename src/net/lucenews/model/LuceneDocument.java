@@ -93,6 +93,14 @@ public class LuceneDocument
 		this.index = index;
 	}
 	
+	public void update ()
+        throws
+            IllegalActionException, InvalidIdentifierException,
+            DocumentNotFoundException, InsufficientDataException, IOException
+	{
+        getIndex().updateDocument(this);
+	}
+	
 	
 	
 	

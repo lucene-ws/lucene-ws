@@ -1,4 +1,7 @@
+package net.lucenews.opensearch;
+
 import java.util.*;
+import org.w3c.dom.*;
 
 public class OpenSearchUrl {
     

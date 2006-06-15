@@ -1,11 +1,18 @@
+package net.lucenews.opensearch;
+
+import java.util.*;
+import org.w3c.dom.*;
+
 public class OpenSearchDescription {
     
     private String short_name;
+    private String long_name;
     private String description;
     private String developer;
     private String attribution;
     private String syndication_right;
     private Boolean adult_content;
+    private String contact;
     private List<OpenSearchUrl> urls;
     
     public OpenSearchDescription () {
@@ -126,7 +133,7 @@ public class OpenSearchDescription {
     
     
     public static OpenSearchDescription asOpenSearchDescription (Document document) {
-        OpenSearchDescription description;
+        OpenSearchDescription description = new OpenSearchDescription();
         return description;
     }
     
@@ -136,7 +143,7 @@ public class OpenSearchDescription {
      * Transforms the OpenSearch description into a DOM Element.
      */
     
-    public void asElement (Document document) throws Exception {
+    public Element asElement (Document document) throws Exception {
         Element element = document.createElement("OpenSearchDescription");
         
         
@@ -226,7 +233,7 @@ public class OpenSearchDescription {
      */
     
     public static boolean asBoolean (String value) {
-        String negatives = new String[]{ "false", "FALSE", "0", "no", "NO" };
+        String[] negatives = new String[]{ "false", "FALSE", "0", "no", "NO" };
         for (int i = 0; i < negatives.length; i++) {
             if (value.equals(negatives[i])) {
                 return false;
