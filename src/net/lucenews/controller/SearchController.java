@@ -386,6 +386,10 @@ public class SearchController extends Controller {
             result.setUpdated( document.getUpdated() );
             result.setRelevance( iterator.score() );
             
+            OpenSearchLink resultLink = new OpenSearchLink();
+            resultLink.setHref( service.getDocumentURL( req, index, document ) );
+            result.setLink( resultLink );
+            
             String name = document.getAuthor();
             if (name != null) {
                 OpenSearchPerson author = new OpenSearchPerson();

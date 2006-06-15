@@ -135,6 +135,11 @@ public class OpenSearchResult {
                 element.appendChild( asElement( document, "updated", net.lucenews.atom.Entry.asString( getUpdated() ) ) );
             }
             
+            // link
+            if (getLink() != null) {
+                element.appendChild( getLink().asElement( document, format, mode, true ) );
+            }
+            
             // id
             if (getId() != null) {
                 element.appendChild( asElement( document, "id", getId() ) );

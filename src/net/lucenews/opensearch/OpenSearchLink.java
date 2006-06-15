@@ -68,13 +68,22 @@ public class OpenSearchLink {
     }
     
     public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode) throws OpenSearchException {
+        return asElement( document, format, mode, false );
+    }
+    
+    public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode, boolean entry) throws OpenSearchException {
         Element element = null;
         
-        if (getRel().equals("search") || format == OpenSearch.RSS) {
-            element = document.createElementNS("http://a9.com/-/spec/opensearch/1.1/","opensearch:link");
+        if (format == OpenSearch.ATOM && entry) {
+            element = document.createElement("link");
         }
         else {
-            element = document.createElement("link");
+            if (getRel().equals("search") || format == OpenSearch.RSS) {
+                element = document.createElementNS("http://a9.com/-/spec/opensearch/1.1/","opensearch:link");
+            }
+            else {
+                element = document.createElement("link");
+            }
         }
         
         if (getHref() != null) {
