@@ -6,6 +6,8 @@ import net.lucenews.controller.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
 import java.io.IOException;
+import java.net.*;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -1461,5 +1463,57 @@ public class LuceneRequest extends HttpServletRequestWrapper {
         }
     }
     
+    
+    
+    
+    
+    
+    public String getUrlWith (String name, Object... values) {
+        StringBuffer buffer = getRequestURL();
+        
+        boolean foundName = false;
+        boolean first     = true;
+        
+        Enumeration names = getParameterNames();
+        while (names.hasMoreElements()) {
+            Object element = names.nextElement();
+            if (element instanceof String) {
+                String   _name   = (String) element;
+                Object[] _values = _name.equals(name) ? values : getParameterValues(_name);
+                
+                if (_name.equals(name)) {
+                    foundName = true;
+                }
+                
+                for (int i = 0; i < _values.length; i++) {
+                    if (first) {
+                        buffer.append("?");
+                        buffer.append(_name + "=" + _values[i].toString());
+                        first = false;
+                    }
+                    else {
+                        buffer.append("&");
+                        buffer.append(_name + "=" + _values[i].toString());
+                    }
+                }
+            }
+        }
+        
+        if (!foundName) {
+            for (int i = 0; i < values.length; i++) {
+                if (first) {
+                    buffer.append("?");
+                    buffer.append(name + "=" + values[i].toString());
+                    first = false;
+                }
+                else {
+                    buffer.append("&");
+                    buffer.append(name + "=" + values[i].toString());
+                }
+            }
+        }
+        
+        return buffer.toString();
+    }
     
 }

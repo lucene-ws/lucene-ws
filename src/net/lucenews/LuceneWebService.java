@@ -14,6 +14,7 @@ import net.lucenews.atom.*;
 import net.lucenews.controller.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
+import net.lucenews.opensearch.*;
 import net.lucenews.view.*;
 
 import org.apache.log4j.*;
@@ -323,7 +324,8 @@ public class LuceneWebService extends HttpServlet {
     public void doGet (LuceneContext c)
         throws
             ParserConfigurationException, IndicesNotFoundException,
-            TransformerException, IOException, ParseException, LuceneException
+            TransformerException, IOException, ParseException, LuceneException,
+            OpenSearchException
     {
         LuceneRequest req = c.req();
         
@@ -378,7 +380,8 @@ public class LuceneWebService extends HttpServlet {
     public void doHead (LuceneContext c)
         throws
             ParserConfigurationException, IndicesNotFoundException,
-            TransformerException, IOException, ParseException, LuceneException
+            TransformerException, IOException, ParseException, LuceneException,
+            OpenSearchException
     {
         doGet( c );
     }

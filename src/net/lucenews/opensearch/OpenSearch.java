@@ -23,6 +23,18 @@ public abstract class OpenSearch {
         throw new OpenSearchException("Unknown format: " + name);
     }
     
+    public static String getContentType (OpenSearch.Format format) {
+        if (format == ATOM) {
+            return "application/atom+xml";
+        }
+        
+        if (format == RSS) {
+            return "text/xml";
+        }
+        
+        return null;
+    }
+    
     static public final class Mode {
         
         private Mode () {

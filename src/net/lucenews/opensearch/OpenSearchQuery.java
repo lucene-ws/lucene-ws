@@ -45,7 +45,7 @@ public class OpenSearchQuery {
         };
         
         for (int i = 0; i < valid_roles.length; i++) {
-            if (valid_roles[i].equals("role")) {
+            if (valid_roles[i].equals(getRole())) {
                 return true;
             }
         }
@@ -174,7 +174,12 @@ public class OpenSearchQuery {
             if (mode == OpenSearch.STRICT && !hasValidRole()) {
                 throw new OpenSearchException("Invalid role: " + getRole());
             }
-            element.setAttribute("role", getRole());
+            if (format == OpenSearch.ATOM) {
+                element.setAttribute("rel", getRole());
+            }
+            else {
+                element.setAttribute("role", getRole());
+            }
         }
         
         // title

@@ -68,7 +68,14 @@ public class OpenSearchLink {
     }
     
     public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode) throws OpenSearchException {
-        Element element = document.createElementNS("http://a9.com/-/spec/opensearch/1.1/","opensearch:link");
+        Element element = null;
+        
+        if (getRel().equals("search") || format == OpenSearch.RSS) {
+            element = document.createElementNS("http://a9.com/-/spec/opensearch/1.1/","opensearch:link");
+        }
+        else {
+            element = document.createElement("link");
+        }
         
         if (getHref() != null) {
             element.setAttribute("href", getHref());

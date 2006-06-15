@@ -94,6 +94,49 @@ public abstract class Base {
     
     
     
+    public static String asString (Calendar calendar) {
+        return asString( calendar.getTime(), calendar.getTimeZone() );
+    }
+    
+    public static String asString (Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return asString( calendar );
+    }
+    
+    public static String asString (Date date, TimeZone timezone) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        
+        StringBuffer buffer = new StringBuffer();
+        
+        formatter.format( date, buffer, new FieldPosition( DateFormat.TIMEZONE_FIELD ) );
+        
+        if (timezone == null) {
+            buffer.append("Z");
+        }
+        else {
+            int totalMinutes = timezone.getRawOffset() / 60000;
+            
+            int hours   = totalMinutes / 60;
+            int minutes = totalMinutes - hours * 60;
+            String h = Math.abs(hours) >= 10 ? String.valueOf( Math.abs( hours ) ) : "0" + Math.abs( hours );
+            String m = minutes >= 10 ? String.valueOf( minutes ) : "0" + minutes;
+            
+            if (hours < 0) {
+                buffer.append( "-" );
+            }
+            else {
+                buffer.append( "+" );
+            }
+            
+            buffer.append( h + ":" + m );
+        }
+        
+        return buffer.toString();
+    }
+    
+    
+    
     public List<Author> getAuthors () {
         return authors;
     }

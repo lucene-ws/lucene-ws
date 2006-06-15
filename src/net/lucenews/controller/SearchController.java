@@ -5,6 +5,7 @@ import javax.xml.parsers.*;
 import java.io.*;
 import java.util.*;
 import net.lucenews.atom.*;
+import net.lucenews.opensearch.*;
 import net.lucenews.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
@@ -38,23 +39,45 @@ public class SearchController extends Controller {
      */
     
     public static void doGet (LuceneContext c)
-        throws ParserConfigurationException, TransformerException, IndicesNotFoundException, IOException, InsufficientDataException, ParseException
+        throws
+            ParserConfigurationException, TransformerException, IndicesNotFoundException,
+            IOException, InsufficientDataException, ParseException, OpenSearchException
     {
         c.log().debug("SearchController.doGet(LuceneContext)");
         
-        LuceneWebService   service = c.service();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
+        LuceneWebService   service  = c.service();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      req      = c.req();
+        LuceneIndex[]      indices  = manager.getIndices( req.getIndexNames() );
+        OpenSearchResponse response = new OpenSearchResponse();
         
-        LuceneMultiSearcher   searcher  = null;
-        IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
         
-        for (int i = 0; i < indices.length; i++) {
-            searchers[ i ] = indices[ i ].getIndexSearcher();
+        /**
+         * Format
+         */
+        
+        OpenSearch.Format format = OpenSearch.ATOM;
+        try {
+            format = OpenSearch.getFormat( req.getParameter("format") );
+        }
+        catch (OpenSearchException ose) {
+            format = OpenSearch.ATOM;
+        }
+        catch (NullPointerException npe) {
+            format = OpenSearch.ATOM;
         }
         
-        searcher = new LuceneMultiSearcher( searchers, getSearcherIndexField() );
+        
+        
+        /**
+         * Searcher
+         */
+        
+        IndexSearcher[] searchers = new IndexSearcher[indices.length];
+        for (int i = 0; i < indices.length; i++) {
+            searchers[i] = indices[i].getIndexSearcher();
+        }
+        LuceneMultiSearcher searcher = new LuceneMultiSearcher( searchers, getSearcherIndexField() );
         
         
         
@@ -133,6 +156,9 @@ public class SearchController extends Controller {
         
         
         
+        /**
+         * Invalid parameter names
+         */
         
         if (!invalidParameterNames.isEmpty()) {
             StringBuffer buffer = new StringBuffer();
@@ -141,20 +167,8 @@ public class SearchController extends Controller {
                 buffer.append( "Valid '" + invalidParameterNames.get( 0 ) + "' parameter required." );
             }
             else {
-                buffer.append( "Valid" );
-                for( int i = 0; i < invalidParameterNames.size(); i++ ) {
-                    if( i > 0 )
-                        if( i == ( invalidParameterNames.size() - 1 ) )
-                            buffer.append( " and" );
-                        else
-                            buffer.append( "," );
-                    
-                    buffer.append( " '" + invalidParameterNames.get( i ) + "'" );
-                }
-                
-                buffer.append( " parameters required." );
+                buffer.append( "Valid" + ServletUtils.joined(invalidParameterNames.toArray(new String[]{})) + " parameters required." );
             }
-            
             
             throw new InsufficientDataException( String.valueOf( buffer ) );
         }
@@ -232,48 +246,16 @@ public class SearchController extends Controller {
         
         
         
-        /**
-         * Alternate query
-         */
-        
-        String[] suggestedQueryStrings = new String[0];
-        int[]    suggestedQueryCounts = new int[0];
-        try {
-            int maxSuggestions = 5;
-            int maxResults = 1;
-            PriorityQueue<SearchedQuery> queue = new PriorityQueue<SearchedQuery>( maxSuggestions, new SearchedQueryComparator() );
-            Query[]  suggestedQueries      = getSuggestedQueries( query, indices );
-                     suggestedQueryStrings = new String[ Math.min( maxResults, suggestedQueries.length ) ];
-                     suggestedQueryCounts  = new int[ Math.min( maxResults, suggestedQueries.length ) ];
-            
-            for (int i = 0; i < suggestedQueries.length && i < maxSuggestions; i++) {
-                Query suggestedQuery = suggestedQueries[ i ];
-                Hits suggestedHits = searcher.search( suggestedQuery );
-                if (suggestedHits.length() > hits.length())
-                    queue.add( new SearchedQuery( suggestedQuery, suggestedHits ) );
-            }
-            
-            int i = 0;
-            while (!queue.isEmpty() && i < maxResults) {
-                SearchedQuery q = queue.poll();
-                //suggestedQueryStrings[ i ] = q.getQuery().toString( defaultField );
-                suggestedQueryStrings[ i ] = rewriteQuery( searchString, q.getQuery() );
-                suggestedQueryCounts[ i ] = q.getHits().length();
-                i++;
-            }
-        }
-        catch (Exception exc) {
-            suggestedQueryStrings = new String[0];
-            suggestedQueryCounts = new int[0];
-        }
         
         Limiter limiter = req.getLimiter();
         limiter.setTotalEntries( null );
+        Integer max = null;
         
         try {
             String maximum = req.getCleanParameter("maximum");
             if (maximum != null && maximum.trim().length() > 0) {
-                limiter.setTotalEntries( Integer.valueOf( maximum ) );
+                max = Integer.valueOf( maximum );
+                limiter.setTotalEntries( max );
             }
         }
         catch (NumberFormatException nfe) {
@@ -287,7 +269,7 @@ public class SearchController extends Controller {
             iterator = new HitsIterator( hits, limiter );
         }
         
-        OpenSearchResponse response = asOpenSearchResponse( c, iterator, suggestedQueryStrings, suggestedQueryCounts );
+        response.setTotalResults( limiter.getTotalEntries() );
         
         StringBuffer title = new StringBuffer();
         if (query instanceof MatchAllDocsQuery) {
@@ -300,119 +282,90 @@ public class SearchController extends Controller {
         title.append( ServletUtils.joined( ServletUtils.mapped( "'[content]'", ServletUtils.objectsMapped( "getTitle", indices ) ) ) );
         
         response.setTitle( String.valueOf( title ) );
-        
-        AtomView.process( c, response );
-    }
-    
-    
-    
-    /**
-     * Transforms the given hits iterator into an OpenSearch
-     * response.
-     * 
-     * @param c The context
-     * @param iterator The hits iterator
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws IndicesNotFoundException
-     */
-    
-    public static OpenSearchResponse asOpenSearchResponse (LuceneContext c, HitsIterator iterator, String[] suggestions, int[] suggestionCounts)
-        throws ParserConfigurationException, IOException, IndicesNotFoundException, InsufficientDataException
-    {
-        c.log().debug("SearchController.asOpenSearchResponse(LuceneContext,HitsIterator,String[],int[])");
-        
-        LuceneWebService   service = c.service();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
-        LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
-        
-        
-        
-        
-        OpenSearchResponse response = new OpenSearchResponse();
-        
-        
-        
-        response.setLinkHREF( service.getOpenSearchDescriptionURL( req, req.getIndexNames() ) );
-        response.setSearchTerms( req.getSearchString() );
+        response.setId( req.getLocation() );
         response.setUpdated( Calendar.getInstance() );
-        response.addAuthor( new Author( "Lucene Web Service, version " + service.getVersion() ) );
-        response.setID( req.getRequestURL() + ( ( req.getQueryString() != null ) ? "?" + req.getQueryString()  : "" ) );
         
-        for( int i = 0; i < suggestions.length; i++ )
-            response.addQuerySuggestion( suggestions[ i ], suggestionCounts[ i ] );
+        /**
+         * Add OpenSearch Description Document information
+         */
         
-        StringBuffer buffer = new StringBuffer();
+        OpenSearchLink descriptionLink = new OpenSearchLink();
+        descriptionLink.setHref( service.getOpenSearchDescriptionURL( req, req.getIndexNames() ) );
+        descriptionLink.setRel("search");
+        descriptionLink.setType("application/opensearchdescription+xml");
+        response.setLink( descriptionLink );
         
-        buffer.append( req.getRequestURL() );
         
-        Enumeration names = req.getParameterNames();
-        boolean first = true;
-        while( names.hasMoreElements() ) {
-            String name = (String) names.nextElement();
-            
-            if( name.equals( "page" ) )
-            continue;
-            
-            String[] values = req.getParameterValues( name );
-            for( int i = 0; i < values.length; i++ ) {
-                if( first ) {
-                    buffer.append( "?" );
-                    first = false;
-                }
-                else {
-                    buffer.append( "&" );
-                }
-                buffer.append( name + "=" + values[i] );
-            }
-            
+        OpenSearchQuery requestQuery = new OpenSearchQuery();
+        requestQuery.setRole("request");
+        requestQuery.setTitle( title.toString() );
+        requestQuery.setOsd( service.getOpenSearchDescriptionURL( req, req.getIndexNames() ) );
+        requestQuery.setTotalResults( limiter.getTotalEntries() );
+        requestQuery.setSearchTerms( searchString );
+        if (max != null) {
+            requestQuery.setCount( max );
         }
+        response.addQuery( requestQuery );
         
-        buffer.append( first ? "?" : "&" );
-        buffer.append( "page=" );
-        
-        String baseURL = String.valueOf( buffer );
+        response.setDescription( title.toString() );
         
         
+        /**
+         * Apply paging information to OpenSearch response
+         */
         
-        
-        Limiter limiter = iterator.getLimiter();
-        
-        if (limiter != null) {
-            c.log().debug( "Limiter: " + limiter.getClass().getCanonicalName() );
-        }
-        
-        if( limiter != null && limiter instanceof Pager ) {
+        if (limiter != null && limiter instanceof Pager) {
             Pager pager = (Pager) limiter;
-            c.log().debug( "pager.getTotalEntries():   " + pager.getTotalEntries() );
-            c.log().debug( "pager.getFirst():          " + pager.getFirst() );
-            c.log().debug( "pager.getEntriesPerPage(): " + pager.getEntriesPerPage() );
             
             response.setTotalResults( pager.getTotalEntries() );
             response.setStartIndex( pager.getFirst() );
             response.setItemsPerPage( pager.getEntriesPerPage() );
             
-            c.log().debug( "response.getTotalResults(): " + response.getTotalResults() );
-            c.log().debug( "response.getStartIndex():   " + response.getStartIndex() );
-            c.log().debug( "response.getItemsPerPage(): " + response.getItemsPerPage() );
+            if (pager.getCurrentPage() != null) {
+                OpenSearchLink link = new OpenSearchLink();
+                link.setHref( req.getUrlWith( "page", pager.getCurrentPage() ) );
+                link.setRel("self");
+                link.setType(OpenSearch.getContentType(format));
+                response.addLink(link);
+            }
             
-            if( pager.getCurrentPage() != null )
-                response.addLink( new Link( baseURL + pager.getCurrentPage(), "self", "application/atom+xml" ) );
+            if (pager.getFirstPage() != null) {
+                OpenSearchLink link = new OpenSearchLink();
+                link.setHref( req.getUrlWith( "page", pager.getFirstPage() ) );
+                link.setRel("first");
+                link.setType(OpenSearch.getContentType(format));
+                response.addLink(link);
+            }
             
-            if( pager.getFirstPage() != null )
-                response.addLink( new Link( baseURL + pager.getFirstPage(), "first", "application/atom+xml" ) );
+            if (pager.getPreviousPage() != null) {
+                OpenSearchLink link = new OpenSearchLink();
+                link.setHref( req.getUrlWith( "page", pager.getPreviousPage() ) );
+                link.setRel("previous");
+                link.setType(OpenSearch.getContentType(format));
+                response.addLink(link);
+            }
             
-            if( pager.getPreviousPage() != null )
-                response.addLink( new Link( baseURL + pager.getPreviousPage(), "previous", "application/atom+xml" ) );
+            if (pager.getNextPage() != null) {
+                OpenSearchLink link = new OpenSearchLink();
+                link.setHref( req.getUrlWith( "page", pager.getNextPage() ) );
+                link.setRel("next");
+                link.setType(OpenSearch.getContentType(format));
+                response.addLink(link);
+            }
             
-            if( pager.getNextPage() != null )
-                response.addLink( new Link( baseURL + pager.getNextPage(), "next", "application/atom+xml" ) );
-            
-            if( pager.getLastPage() != null )
-                response.addLink( new Link( baseURL + pager.getLastPage(), "last", "application/atom+xml" ) );
+            if (pager.getLastPage() != null) {
+                OpenSearchLink link = new OpenSearchLink();
+                link.setHref( req.getUrlWith( "page", pager.getLastPage() ) );
+                link.setRel("last");
+                link.setType(OpenSearch.getContentType(format));
+                response.addLink(link);
+            }
         }
+        
+        
+        // DOM Document to produce XML later on
+        org.w3c.dom.Document domDocument = XMLController.newDocument();
+        
         
         iterator.reset();
         while( iterator.hasNext() ) {
@@ -420,13 +373,39 @@ public class SearchController extends Controller {
             Integer searcherIndex = extractSearcherIndex( document );
             
             LuceneIndex index = null;
-            if( searcherIndex != null )
+            if (searcherIndex != null) {
                 index = indices[ searcherIndex ];
+                document.setIndex( index );
+            }
             
-            response.addEntry( DocumentController.asEntry( c, index, document, iterator.score() ) );
+            //response.addEntry( DocumentController.asEntry( c, index, document, iterator.score() ) );
+            
+            OpenSearchResult result = new OpenSearchResult();
+            result.setTitle( document.getTitle() );
+            result.setId( service.getDocumentURL( req, index, document ) );
+            result.setUpdated( document.getUpdated() );
+            result.setRelevance( iterator.score() );
+            
+            String name = document.getAuthor();
+            if (name != null) {
+                OpenSearchPerson author = new OpenSearchPerson();
+                author.setRole("author");
+                author.setName( document.getAuthor() );
+                result.addPerson( author );
+            }
+            
+            
+            // content
+            Element div = domDocument.createElement("div");
+            div.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+            div.appendChild( XOXOController.asElement( c, document, domDocument ) );
+            result.setContent(div);
+            
+            
+            response.addResult( result );
         }
         
-        return response;
+        OpenSearchView.process( c, response, format );
     }
     
     
