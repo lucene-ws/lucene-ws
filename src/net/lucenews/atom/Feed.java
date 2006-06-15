@@ -13,23 +13,21 @@ public class Feed extends Base
 	
 	
 	
-	private List<Entry>       m_entries;
-	//generator
-	private String       m_icon;
-	private String       m_logo;
-	private String       m_rights;
-	private Generator m_generator;
-	private String       m_subtitle;
+	private List<Entry> entries;
+	private String      icon;
+	private String      logo;
+	private String      rights;
+	private Generator   generator;
+	private String      subtitle;
 	
 	
-	public Feed ()
-	{
+	public Feed () {
 		this( null, null, null );
 	}
 	
 	public Feed (String id, String title, String updated)
 	{
-		m_entries = new LinkedList<Entry>();
+		entries = new LinkedList<Entry>();
 		
 		setID( id );
 		setTitle( title );
@@ -44,22 +42,22 @@ public class Feed extends Base
 	
 	public List<Entry> getEntries ()
 	{
-		return m_entries;
+		return entries;
 	}
 	
 	public void addEntry (Entry entry)
 	{
-		m_entries.add( entry );
+		entries.add( entry );
 	}
 	
 	public Generator getGenerator ()
 	{
-		return m_generator;
+		return generator;
 	}
 	
 	public void setGenerator (Generator generator)
 	{
-		m_generator = generator;
+		this.generator = generator;
 	}
 	
 	

@@ -10,8 +10,8 @@ import javax.xml.transform.*;
 
 public class Entry extends Base {
     
-    private Text m_summary;
-    private Content m_content;
+    private Text summary;
+    private Content content;
     
     
     private Properties properties;
@@ -25,7 +25,7 @@ public class Entry extends Base {
     
     
     public Text getSummary () {
-        return m_summary;
+        return summary;
     }
     
     public void setSummary (String summary) {
@@ -33,15 +33,15 @@ public class Entry extends Base {
     }
     
     public void setSummary (Text summary) {
-        m_summary = summary;
+        this.summary = summary;
     }
     
     public Content getContent () {
-        return m_content;
+        return content;
     }
     
     public void setContent (Content content) {
-        m_content = content;
+        this.content = content;
     }
     
     
