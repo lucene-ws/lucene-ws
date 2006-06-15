@@ -257,13 +257,13 @@ public class SearchController extends Controller {
         
         Limiter limiter = req.getLimiter();
         limiter.setTotalEntries( null );
-        Integer max = null;
+        Integer maximum = null;
         
         try {
-            String maximum = req.getCleanParameter("maximum");
-            if (maximum != null && maximum.trim().length() > 0) {
-                max = Integer.valueOf( maximum );
-                limiter.setTotalEntries( max );
+            String maximumString = req.getCleanParameter("maximum");
+            if (maximumString != null) {
+                maximum = Integer.valueOf( maximumString );
+                limiter.setTotalEntries( maximum );
             }
         }
         catch (NumberFormatException nfe) {
@@ -310,8 +310,8 @@ public class SearchController extends Controller {
         requestQuery.setOsd( service.getOpenSearchDescriptionURL( req, req.getIndexNames() ) );
         requestQuery.setTotalResults( limiter.getTotalEntries() );
         requestQuery.setSearchTerms( searchString );
-        if (max != null) {
-            requestQuery.setCount( max );
+        if (maximum != null) {
+            requestQuery.setCount( maximum );
         }
         response.addQuery( requestQuery );
         
