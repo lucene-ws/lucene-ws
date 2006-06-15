@@ -25,10 +25,7 @@ public class OpenSearchDescription {
         return short_name;
     }
     
-    public void setShortName (String short_name) throws Exception {
-        if (short_name != null && short_name.length() > 16) {
-            throw new Exception("Short name cannot exceed 16 characters");
-        }
+    public void setShortName (String short_name) {
         this.short_name = short_name;
     }
     
@@ -38,10 +35,7 @@ public class OpenSearchDescription {
         return description;
     }
     
-    public void setDescription (String description) throws Exception {
-        if (description != null && description.length() > 1024) {
-            throw new Exception("Description cannot exceed 1024 characters");
-        }
+    public void setDescription (String description) {
         this.description = description;
     }
     
@@ -61,10 +55,7 @@ public class OpenSearchDescription {
         return contact;
     }
     
-    public void setContact (String contact) throws Exception {
-        if (contact != null && contact.length() > 64) {
-            throw new Exception("Contact cannot exceed 64 characters");
-        }
+    public void setContact (String contact) {
         this.contact = contact;
     }
     
@@ -74,10 +65,7 @@ public class OpenSearchDescription {
         return long_name;
     }
     
-    public void setLongName (String long_name) throws Exception {
-        if (long_name != null && long_name.length() > 48) {
-            throw new Exception("Long name cannot exceed 48 characters");
-        }
+    public void setLongName (String long_name) {
         this.long_name = long_name;
     }
     
@@ -87,10 +75,7 @@ public class OpenSearchDescription {
         return developer;
     }
     
-    public void setDeveloper (String developer) throws Exception {
-        if (developer != null && developer.length() > 64) {
-            throw new Exception("Developer cannot exceed 64 characters");
-        }
+    public void setDeveloper (String developer) {
         this.developer = developer;
     }
     
@@ -100,10 +85,7 @@ public class OpenSearchDescription {
         return attribution;
     }
     
-    public void setAttribution (String attribution) throws Exception {
-        if (attribution != null && attribution.length() > 256) {
-            throw new Exception("Attribution cannot exceed 256 characters");
-        }
+    public void setAttribution (String attribution) {
         this.attribution = attribution;
     }
     
@@ -113,10 +95,7 @@ public class OpenSearchDescription {
         return syndication_right;
     }
     
-    public void setSyndicationRight (String syndication_right) throws Exception {
-        if (syndication_right != null && syndication_right.length() > 256) {
-            throw new Exception("Syndication Right cannot exceed 256 characters");
-        }
+    public void setSyndicationRight (String syndication_right) {
         this.syndication_right = syndication_right;
     }
     
