@@ -10,6 +10,7 @@ import net.lucenews.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.view.*;
+import org.apache.log4j.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
@@ -143,15 +144,8 @@ public class SearchController extends Controller {
         
         
         Analyzer analyzer = req.getAnalyzer();
-        if( analyzer == null )
+        if (analyzer == null) {
             invalidParameterNames.add( req.getParameterName( LuceneKeys.ANALYZER ) );
-        
-        if (ServletUtils.parseBoolean(service.getProperty("query.expand","false"))) {
-            analyzer = new SynonymAnalyzer(
-                analyzer,
-                new SynExpand(),
-                manager.getIndex(service.getProperty("synonym.index","wordnet")).getIndexSearcher()
-            );
         }
         
         
@@ -182,7 +176,21 @@ public class SearchController extends Controller {
              * Build the query parser
              */
             
-            QueryParser parser = new CustomQueryParser( defaultField, analyzer );
+            LuceneQueryParser parser = new LuceneQueryParser( defaultField, analyzer );
+            
+            if (ServletUtils.parseBoolean(service.getProperty("query.expand","false"))) {
+                Logger.getRootLogger().debug("Expanding!");
+                try {
+                    String wordnetIndexName = service.getProperty("synonym.index","wordnet");
+                    Logger.getRootLogger().debug("Synonym index: " + wordnetIndexName);
+                    LuceneIndex wordnet = manager.getIndex( wordnetIndexName );
+                    Logger.getRootLogger().debug("Wordnet index: " + wordnet);
+                    parser.setSearcher(wordnet.getIndexSearcher());
+                }
+                catch (Exception e) {
+                    Logger.getRootLogger().trace("could not expand", e);
+                }
+            }
             
             
             
@@ -580,37 +588,6 @@ class SearchedQueryComparator implements Comparator<SearchedQuery> {
         Integer hits1 = q1.getHits().length();
         Integer hits2 = q2.getHits().length();
         return hits2.compareTo( hits1 );
-    }
-    
-}
-
-class CustomQueryParser extends QueryParser {
-    
-    public CustomQueryParser (String f, Analyzer a) {
-        super( f, a );
-    }
-    
-    public CustomQueryParser (CharStream stream) {
-        super( stream );
-    }
-    
-    public CustomQueryParser (QueryParserTokenManager tm) {
-        super( tm );
-    }
-    
-    protected Query getFieldQuery (String field, String queryText ) throws ParseException {
-        Query query = super.getFieldQuery( field, queryText );
-        if( query instanceof TermQuery ) {
-            TermQuery termQuery = (TermQuery) query;
-            return new TokenTermQuery( termQuery.getTerm(), getToken( 0 ) );
-        }
-        return query;
-    }
-    
-    protected Query getRangeQuery (String field, String part1, String part2, boolean inclusive)
-    throws ParseException
-    {
-        return new ConstantScoreRangeQuery( field, part1, part2, inclusive, inclusive );
     }
     
 }

@@ -9,21 +9,19 @@ public class SynonymAnalyzer extends Analyzer {
     
     private float boost;
     private Analyzer  analyzer;
-    private SynExpand expander;
     private Searcher searcher;
     
-    public SynonymAnalyzer (Analyzer analyzer, SynExpand expander) {
-        this( analyzer, expander, (Searcher) null );
+    public SynonymAnalyzer (Analyzer analyzer) {
+        this( analyzer, (Searcher) null );
     }
     
-    public SynonymAnalyzer (Analyzer analyzer, SynExpand expander, Searcher searcher) {
-        this( analyzer, expander, searcher, 0.0f );
+    public SynonymAnalyzer (Analyzer analyzer, Searcher searcher) {
+        this( analyzer, searcher, 0.0f );
     }
     
-    public SynonymAnalyzer (Analyzer analyzer, SynExpand expander, Searcher searcher, float boost) {
+    public SynonymAnalyzer (Analyzer analyzer, Searcher searcher, float boost) {
         setAnalyzer( analyzer );
         setBoost( boost );
-        setExpander( expander );
         setSearcher( searcher );
     }
     
@@ -35,16 +33,6 @@ public class SynonymAnalyzer extends Analyzer {
     
     public void setAnalyzer (Analyzer analyzer) {
         this.analyzer = analyzer;
-    }
-    
-    
-    
-    public SynExpand getExpander () {
-        return expander;
-    }
-    
-    public void setExpander (SynExpand expander) {
-        this.expander = expander;
     }
     
     
@@ -78,7 +66,6 @@ public class SynonymAnalyzer extends Analyzer {
     public TokenStream tokenStream (String fieldName, Reader reader) {
         return new SynonymFilter(
             getAnalyzer().tokenStream( fieldName, reader ),
-            getExpander(),
             getAnalyzer(),
             getSearcher(),
             getBoost()

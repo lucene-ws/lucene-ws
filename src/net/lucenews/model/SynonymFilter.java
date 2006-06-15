@@ -11,28 +11,26 @@ import org.apache.lucene.wordnet.*;
 public class SynonymFilter extends TokenFilter {
     
     private Analyzer analyzer;
-    private SynExpand expander;
     private Searcher searcher;
     private float boost;
     private LinkedList<Token> tokens;
     
-    public SynonymFilter (TokenStream tokenStream, SynExpand expander) {
-        this( tokenStream, expander, new KeywordAnalyzer() );
+    public SynonymFilter (TokenStream tokenStream) {
+        this( tokenStream, new KeywordAnalyzer() );
     }
     
-    public SynonymFilter (TokenStream tokenStream, SynExpand expander, Analyzer analyzer) {
-        this( tokenStream, expander, analyzer, (Searcher) null );
+    public SynonymFilter (TokenStream tokenStream, Analyzer analyzer) {
+        this( tokenStream, analyzer, (Searcher) null );
     }
     
-    public SynonymFilter (TokenStream tokenStream, SynExpand expander, Analyzer analyzer, Searcher searcher) {
-        this( tokenStream, expander, analyzer, searcher, 0.0f );
+    public SynonymFilter (TokenStream tokenStream, Analyzer analyzer, Searcher searcher) {
+        this( tokenStream, analyzer, searcher, 0.0f );
     }
     
-    public SynonymFilter (TokenStream tokenStream, SynExpand expander, Analyzer analyzer, Searcher searcher, float boost) {
+    public SynonymFilter (TokenStream tokenStream, Analyzer analyzer, Searcher searcher, float boost) {
         super( tokenStream );
         setAnalyzer( analyzer );
         setBoost( boost );
-        setExpander( expander );
         setSearcher( searcher );
         setTokenStream( tokenStream );
         tokens = new LinkedList<Token>();
@@ -56,16 +54,6 @@ public class SynonymFilter extends TokenFilter {
     
     public void setBoost (float boost) {
         this.boost = boost;
-    }
-    
-    
-    
-    public SynExpand getExpander () {
-        return expander;
-    }
-    
-    public void setExpander (SynExpand expander) {
-        this.expander = expander;
     }
     
     
@@ -94,12 +82,9 @@ public class SynonymFilter extends TokenFilter {
         if (tokens.isEmpty()) {
             Token token = getTokenStream().next();
             
-            // Add the original
-            tokens.add( token );
-            
             try {
                 // Expand the original
-                Query query = getExpander().expand(
+                Query query = SynExpand.expand(
                     token.termText(),
                     getSearcher(),
                     getAnalyzer(),
@@ -108,11 +93,13 @@ public class SynonymFilter extends TokenFilter {
                 );
                 
                 Logger.getRootLogger().debug("Query for \"" + token.termText() + "\" (" + query.getClass().getCanonicalName() + "): " + query);
+                
                 if (query instanceof BooleanQuery) {
                     BooleanClause[] clauses = ( (BooleanQuery) query ).getClauses();
                     for (int i = 0; i < clauses.length; i++) {
                         Query subQuery = clauses[ i ].getQuery();
                         
+                        Logger.getRootLogger().debug("Sub-query (" + subQuery.getClass().getCanonicalName() + "): " + subQuery);
                         if (subQuery instanceof TermQuery) {
                             Term term = ( (TermQuery) subQuery ).getTerm();
                             Token subToken = new Token(
@@ -121,13 +108,14 @@ public class SynonymFilter extends TokenFilter {
                                 token.endOffset(),
                                 token.type()
                             );
+                            Logger.getRootLogger().debug("Adding synonym: " + subToken);
                             tokens.add( subToken );
                         }
-                        Logger.getRootLogger().debug("Sub-query (" + subQuery.getClass().getCanonicalName() + "): " + subQuery);
                     }
                 }
             }
             catch (Exception exception) {
+                tokens.add( token );
             }
         }
         
