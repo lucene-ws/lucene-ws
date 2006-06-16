@@ -1,6 +1,7 @@
 package net.lucenews.opensearch;
 
 import java.util.*;
+import javax.xml.parsers.*;
 import org.w3c.dom.*;
 
 public class OpenSearchDescription {
@@ -187,23 +188,59 @@ public class OpenSearchDescription {
     
     
     
+    
+    public Document asDocument ()
+        throws OpenSearchException, ParserConfigurationException
+    {
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        document.appendChild( asElement( document ) );
+        return document;
+    }
+    
+    public Document asDocument (OpenSearch.Mode mode)
+        throws OpenSearchException, ParserConfigurationException
+    {
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        document.appendChild( asElement( document, mode ) );
+        return document;
+    }
+    
+    
     /**
      * Transforms the OpenSearch description into a DOM Element.
      */
     
-    public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {
-        return asElement(document, format, OpenSearch.STRICT);
+    public Element asElement (Document document) throws OpenSearchException {
+        return asElement(document, OpenSearch.getDefaultMode());
     }
     
-    public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode) throws OpenSearchException {
+    public Element asElement (Document document, OpenSearch.Mode mode) throws OpenSearchException {
         Element element = document.createElement("OpenSearchDescription");
         
         
         // ShortName
-        if ((getShortName() == null || getShortName().length() > 16) && mode == OpenSearch.STRICT) {
-            throw new OpenSearchException("No short name specified");
+        if (getShortName() == null) {
+            if (mode == OpenSearch.STRICT) {
+                throw new OpenSearchException("No short name specified");
+            }
+            if (mode == OpenSearch.ADAPTIVE) {
+                element.appendChild( asElement( document, "ShortName", "" ) );
+            }
         }
-        element.appendChild( asElement( document, "ShortName", getShortName() ) );
+        else if (getShortName().length() > 16) {
+            if (mode == OpenSearch.STRICT) {
+                throw new OpenSearchException("Short name cannot exceed 16 characters");
+            }
+            if (mode == OpenSearch.ADAPTIVE) {
+                element.appendChild( asElement( document, "ShortName", getShortName().substring(0,16) ) );
+            }
+            else {
+                element.appendChild( asElement( document, "ShortName", getShortName() ) );
+            }
+        }
+        else {
+            element.appendChild( asElement( document, "ShortName", getShortName() ) );
+        }
         
         
         // Description
@@ -219,14 +256,14 @@ public class OpenSearchDescription {
         }
         Iterator<OpenSearchUrl> urlsIterator = urls.iterator();
         while (urlsIterator.hasNext()) {
-            element.appendChild( urlsIterator.next().asElement( document, format, mode ) );
+            element.appendChild( urlsIterator.next().asElement( document, OpenSearch.ATOM, mode ) );
         }
         
         
         // Contact
         if (getContact() != null) {
             int maximum = 64;
-            if (getContent().length() > maximum) {
+            if (getContact().length() > maximum) {
                 if (mode == OpenSearch.STRICT) {
                     throw new OpenSearchException("Contact cannot exceed "+maximum+" characters");
                 }

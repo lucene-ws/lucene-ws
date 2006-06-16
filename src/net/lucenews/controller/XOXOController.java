@@ -7,6 +7,7 @@ import net.lucenews.*;
 import net.lucenews.atom.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
+import org.apache.log4j.*;
 import org.apache.lucene.document.Field;
 import org.w3c.dom.*;
 
@@ -25,7 +26,7 @@ public class XOXOController {
      */
     
     public static Element asElement (LuceneContext c, Properties properties, Document document) {
-        c.log().debug("XOXOController.asElement(LuceneContext,Properties,Document)");
+        Logger.getLogger(XOXOController.class).trace("asElement(LuceneContext,Properties,Document)");
         
         Element dl = document.createElement( "dl" );
         dl.setAttribute( "class", "xoxo" );
@@ -60,7 +61,7 @@ public class XOXOController {
      */
     
     public static Element asElement (LuceneContext c, LuceneDocument luceneDocument, Document document) {
-        c.log().debug("XOXOController.asElement(LuceneContext,LuceneDocument,Document)");
+        Logger.getLogger(XOXOController.class).trace("asElement(LuceneContext,LuceneDocument,Document)");
         
         Element dl = document.createElement( "dl" );
         dl.setAttribute( "class", "xoxo" );
@@ -105,7 +106,7 @@ public class XOXOController {
      */
     
     public static String getClassName (LuceneContext c, Field field) {
-        c.log().debug("XOXOController.getClassName(LuceneContext,Field)");
+        Logger.getLogger(XOXOController.class).trace("getClassName(LuceneContext,Field)");
         
         StringBuffer classBuffer = new StringBuffer();
         
@@ -144,7 +145,7 @@ public class XOXOController {
             ParserConfigurationException, TransformerConfigurationException,
             TransformerException, LuceneException
     {
-        c.log().debug("XOXOController.asElement(LuceneContext,Entry)");
+        Logger.getLogger(XOXOController.class).trace("asElement(LuceneContext,Entry)");
         
         Content content = entry.getContent();
         
@@ -191,7 +192,7 @@ public class XOXOController {
             ParserConfigurationException, TransformerConfigurationException,
             TransformerException, LuceneException
     {
-        c.log().debug("XOXOController.asFields(LuceneContext,Entry)");
+        Logger.getLogger(XOXOController.class).trace("asFields(LuceneContext,Entry)");
         
         return asFields( c, asElement( c, entry ) );
     }
@@ -214,7 +215,7 @@ public class XOXOController {
             ParserConfigurationException, TransformerConfigurationException,
             TransformerException, LuceneException
     {
-        c.log().debug("XOXOController.asProperties(LuceneContext,Entry)");
+        Logger.getLogger(XOXOController.class).trace("asProperties(LuceneContext,Entry)");
         
         return asProperties( c, asElement( c, entry ) );	
     }
@@ -233,7 +234,7 @@ public class XOXOController {
      */
     
     public static Content asContent (LuceneContext c, Properties properties) throws ParserConfigurationException {
-        c.log().debug("XOXOController.asContent(LuceneContext,Properties)");
+        Logger.getLogger(XOXOController.class).trace("asContent(LuceneContext,Properties)");
         
         Document document = XMLController.newDocument();
         
@@ -256,7 +257,7 @@ public class XOXOController {
      */
     
     public static Properties asProperties (LuceneContext c, Element dl) throws LuceneException {
-        c.log().debug("XOXOController.asProperties(LuceneContext,Element)");
+        Logger.getLogger(XOXOController.class).trace("asProperties(LuceneContext,Element)");
         
         Properties properties = new Properties();
         
@@ -281,7 +282,7 @@ public class XOXOController {
      */
     
     public static Field[] asFields (LuceneContext c, Element dl) throws LuceneParseException {
-        c.log().debug("XOXOController.asFields(LuceneContext,Element)");
+        Logger.getLogger(XOXOController.class).trace("asFields(LuceneContext,Element)");
         
         char state = 't'; // collecting <dt> initially, will switch between 't' and 'd' (<dd>)
         
@@ -392,7 +393,7 @@ public class XOXOController {
     
     protected static Field asField (LuceneContext c, String name, String value, boolean stored, boolean indexed, boolean tokenized, boolean termVectorStored)
     {
-        c.log().debug("XOXOController.asField(LuceneContext,String,String,boolean,boolean,boolean,boolean)");
+        Logger.getLogger(XOXOController.class).trace("asField(LuceneContext,String,String,boolean,boolean,boolean,boolean)");
         
         Field.Store store = stored ? Field.Store.YES : Field.Store.NO;
         Field.Index index = Field.Index.NO;

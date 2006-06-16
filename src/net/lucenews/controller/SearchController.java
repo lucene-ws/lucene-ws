@@ -44,7 +44,7 @@ public class SearchController extends Controller {
             ParserConfigurationException, TransformerException, IndicesNotFoundException,
             IOException, InsufficientDataException, ParseException, OpenSearchException
     {
-        c.log().debug("SearchController.doGet(LuceneContext)");
+        Logger.getLogger(SearchController.class).trace("doGet(LuceneContext)");
         
         LuceneWebService   service  = c.service();
         LuceneIndexManager manager  = service.getIndexManager();
@@ -179,16 +179,11 @@ public class SearchController extends Controller {
             LuceneQueryParser parser = new LuceneQueryParser( defaultField, analyzer );
             
             if (ServletUtils.parseBoolean(service.getProperty("query.expand","false"))) {
-                Logger.getRootLogger().debug("Expanding!");
                 try {
-                    String wordnetIndexName = service.getProperty("synonym.index","wordnet");
-                    Logger.getRootLogger().debug("Synonym index: " + wordnetIndexName);
-                    LuceneIndex wordnet = manager.getIndex( wordnetIndexName );
-                    Logger.getRootLogger().debug("Wordnet index: " + wordnet);
-                    parser.setSearcher(wordnet.getIndexSearcher());
+                    parser.setSearcher(manager.getIndex(service.getProperty("synonym.index","wordnet")).getIndexSearcher());
                 }
                 catch (Exception e) {
-                    Logger.getRootLogger().trace("could not expand", e);
+                    Logger.getLogger(SearchController.class).error("could not expand query", e);
                 }
             }
             

@@ -5,9 +5,11 @@ public abstract class OpenSearch {
     public static final Mode PASSIVE  = Mode.PASSIVE;
     public static final Mode ADAPTIVE = Mode.ADAPTIVE;
     public static final Mode STRICT   = Mode.STRICT;
+    private static Mode DEFAULT_MODE;
     
     public static final Format ATOM = Format.ATOM;
     public static final Format RSS  = Format.RSS;
+    private static Format DEFAULT_FORMAT;
     
     public static Format getFormat (String name) throws OpenSearchException {
         String _name = name.toLowerCase().trim();
@@ -21,6 +23,17 @@ public abstract class OpenSearch {
         }
         
         throw new OpenSearchException("Unknown format: " + name);
+    }
+    
+    public static Format getDefaultFormat () {
+        if (DEFAULT_FORMAT == null) {
+            DEFAULT_FORMAT = ATOM;
+        }
+        return DEFAULT_FORMAT;
+    }
+    
+    public static void setDefaultFormat (OpenSearch.Format default_format) {
+        DEFAULT_FORMAT = default_format;
     }
     
     public static String getContentType (OpenSearch.Format format) {
@@ -43,6 +56,17 @@ public abstract class OpenSearch {
         static public final Mode PASSIVE  = new Mode();
         static public final Mode ADAPTIVE = new Mode();
         static public final Mode STRICT   = new Mode();
+    }
+    
+    public static Mode getDefaultMode () {
+        if (DEFAULT_MODE == null) {
+            DEFAULT_MODE = STRICT;
+        }
+        return DEFAULT_MODE;
+    }
+    
+    public static void setDefaultMode (OpenSearch.Mode default_mode) {
+        DEFAULT_MODE = default_mode;
     }
     
     static public final class Format {

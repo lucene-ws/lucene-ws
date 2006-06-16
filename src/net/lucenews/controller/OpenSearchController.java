@@ -2,6 +2,7 @@ package net.lucenews.controller;
 
 import java.io.*;
 import java.nio.charset.*;
+import java.util.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import net.lucenews.*;
@@ -26,67 +27,22 @@ public class OpenSearchController extends Controller {
      */
     
     public static void doGet (LuceneContext c)
-        throws IndicesNotFoundException, ParserConfigurationException, TransformerException, IOException
+        throws
+            IndicesNotFoundException, ParserConfigurationException, TransformerException,
+            IOException, OpenSearchException
     {
         LuceneIndexManager manager = c.service().getIndexManager();
         LuceneRequest      req     = c.req();
         LuceneResponse     res     = c.res();
+        LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
         
-        LuceneIndex[] indices = manager.getIndices( req.getIndexNames() );
         
         OpenSearchDescription description = new OpenSearchDescription();
-        
-        Document document = XMLController.newDocument();
-        
-        Element desc = document.createElement( "OpenSearchDescription" );
-        desc.setAttribute("xmlns", "http://a9.com/-/spec/opensearch/1.1/");
+        description.setShortName( ServletUtils.joined(ServletUtils.mapped("'[content]'", ServletUtils.objectsMapped("getTitle", indices))) );
+        description.setDescription( "OpenSearch description for " + ServletUtils.joined(ServletUtils.mapped("'[content]'", ServletUtils.objectsMapped("getTitle", indices))));
         
         
-        /**
-         * description
-         */
-        
-        StringBuffer _description = new StringBuffer();
-        _description.append( "OpenSearch description for" );
-        for (int i = 0; i < indices.length; i++) {
-            if (i > 0) {
-                if (i == ( indices.length - 1 )) {
-                    _description.append( " and" );
-                }
-                else {
-                    _description.append( "," );
-                }
-            }
-            _description.append( " '" + indices[ i ].getTitle() + "'" );
-        }
-        description.setDescription( _description.toString() );
-        
-        String _shortName = "";
-        if (indices.length == 1) {
-            _shortName = indices[ 0 ].getTitle();
-        }
-        else {
-            _shortName = ServletUtils.joined( ServletUtils.mapped( "'[content]'", ServletUtils.objectsMapped( "getTitle", indices ) ) );
-        }
-        
-        
-        // short name
-        Element shortName = document.createElement("ShortName");
-        shortName.appendChild( document.createTextNode( _shortName ) );
-        desc.appendChild( shortName );
-        description.setShortName( shortName );
-        
-        
-        // description
-        Element description = document.createElement( "Description" );
-        description.appendChild( document.createTextNode( String.valueOf( _description ) ) );
-        desc.appendChild( description );
-        
-        
-        /**
-         * Search URL
-         */
-        
+        // Search URL
         StringBuffer searchURL = new StringBuffer();
         searchURL.append(c.service().getServiceURL( req ));
         for (int i = 0; i < indices.length; i++) {
@@ -99,42 +55,36 @@ public class OpenSearchController extends Controller {
         
         
         
-        /**
-         * Atom URL
-         */
-        
-        Element atomUrl = document.createElement("Url");
-        atomUrl.setAttribute("type", "application/atom+xml");
-        atomUrl.setAttribute("template", searchURL.toString() + "&format=atom");
-        desc.appendChild(atomUrl);
+        // Atom
+        OpenSearchUrl atomUrl = new OpenSearchUrl();
+        atomUrl.setType("application/atom+xml");
+        atomUrl.setTemplate(searchURL.toString() + "&format=atom");
+        description.addUrl( atomUrl );
         
         
-        /**
-         * RSS URL
-         */
-        
-        Element rssUrl = document.createElement("Url");
-        rssUrl.setAttribute("type", "application/rss+xml");
-        rssUrl.setAttribute("template", searchURL.toString() + "&format=rss");
-        desc.appendChild(rssUrl);
+        // RSS
+        OpenSearchUrl rssUrl = new OpenSearchUrl();
+        rssUrl.setType("application/rss+xml");
+        rssUrl.setTemplate(searchURL.toString() + "&format=rss");
+        description.addUrl( rssUrl );
         
         
         
-        /**
-         * OutputEncoding
-         */
-        Set<Map.Entry<String,Charset>> charsets = Charset.availableCharsets().entrySet();
-        Iterator<Map.Entry<String,Charset>> charsetIterator = charsets.iterator();
+        // OutputEncoding / InputEncoding
+        Iterator<Map.Entry<String,Charset>> charsetIterator = Charset.availableCharsets().entrySet().iterator();
+        
         while (charsetIterator.hasNext()) {
             Map.Entry<String,Charset> entry = charsetIterator.next();
             
             String  name    = entry.getKey();
             Charset charset = entry.getValue();
             
+            // OutputEncoding
             if (charset.canEncode()) {
                 description.addOutputEncoding( name );
             }
             
+            // InputEncoding
             try {
                 charset.newDecoder();
                 description.addInputEncoding( name );
@@ -144,10 +94,7 @@ public class OpenSearchController extends Controller {
         }
         
         
-        document.appendChild(desc);
-        
-        res.setContentType("application/opensearchdescription+xml;charset=utf-8");
-        XMLView.process( c, document );
+        OpenSearchView.process( c, description );
     }
     
 }

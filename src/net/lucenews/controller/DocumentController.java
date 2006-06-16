@@ -9,6 +9,7 @@ import net.lucenews.atom.*;
 import java.util.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
+import org.apache.log4j.*;
 import org.apache.lucene.document.Field;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -34,7 +35,7 @@ public class DocumentController extends Controller {
             IllegalActionException, IndicesNotFoundException, DocumentsNotFoundException,
             IOException, InsufficientDataException, TransformerException, ParserConfigurationException
     {
-        c.log().debug("DocumentController.doDelete(LuceneContext)");
+        Logger.getLogger(DocumentController.class).trace("doDelete(LuceneContext)");
         
         LuceneWebService   service     = c.service();
         LuceneIndexManager manager     = service.getIndexManager();
@@ -103,7 +104,7 @@ public class DocumentController extends Controller {
             IndicesNotFoundException, DocumentsNotFoundException, ParserConfigurationException,
             TransformerException, IOException, InsufficientDataException
     {
-        c.log().debug("DocumentController.doGet(LuceneContext)");
+        Logger.getLogger(DocumentController.class).trace("doGet(LuceneContext)");
         
         LuceneWebService   service     = c.service();
         LuceneIndexManager manager     = service.getIndexManager();
@@ -203,7 +204,7 @@ public class DocumentController extends Controller {
             TransformerException, ParserConfigurationException, DocumentNotFoundException,
             IndexNotFoundException, IOException, InsufficientDataException, AtomParseException, LuceneParseException
     {
-        c.log().debug("DocumentController.doPut(LuceneContext)");
+        Logger.getLogger(DocumentController.class).trace("doPut(LuceneContext)");
         
         LuceneWebService   service = c.service();
         LuceneIndexManager manager = service.getIndexManager();
@@ -256,7 +257,7 @@ public class DocumentController extends Controller {
     public static Entry asEntry (LuceneContext c, LuceneIndex index, LuceneDocument document)
         throws InsufficientDataException, ParserConfigurationException, IOException
     {
-        c.log().debug("DocumentController.asEntry(LuceneContext,LuceneIndex,LuceneDocument)");
+        Logger.getLogger(DocumentController.class).trace("asEntry(LuceneContext,LuceneIndex,LuceneDocument)");
         
         return asEntry( c, index, document, null );
     }
@@ -278,7 +279,7 @@ public class DocumentController extends Controller {
     public static Entry asEntry (LuceneContext c, LuceneIndex index, LuceneDocument document, Float score)
         throws InsufficientDataException, ParserConfigurationException, IOException
     {
-        c.log().debug("DocumentController.asEntry(LuceneContext,LuceneIndex,LuceneDocument,Float)");
+        Logger.getLogger(DocumentController.class).trace("asEntry(LuceneContext,LuceneIndex,LuceneDocument,Float)");
         
         LuceneWebService service = c.service();
         LuceneRequest    req     = c.req();
@@ -350,7 +351,7 @@ public class DocumentController extends Controller {
     public static Content asContent (LuceneContext c, LuceneIndex index, LuceneDocument document)
         throws ParserConfigurationException, IOException
     {
-        c.log().debug("DocumentController.asContent(LuceneContext,LuceneIndex,LuceneDocument)");
+        Logger.getLogger(DocumentController.class).trace("asContent(LuceneContext,LuceneIndex,LuceneDocument)");
         
         Document doc = XMLController.newDocument();
         
@@ -369,7 +370,7 @@ public class DocumentController extends Controller {
      */
     
     public static String getCSSClass (LuceneContext c, Field field) {
-        c.log().debug("DocumentController.getCSSClass(LuceneContext,Field)");
+        Logger.getLogger(DocumentController.class).trace("getCSSClass(LuceneContext,Field)");
         
         StringBuffer _class = new StringBuffer();
         
@@ -402,7 +403,7 @@ public class DocumentController extends Controller {
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, Feed feed)
         throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
     {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,Feed)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,Feed)");
         
         return asLuceneDocuments( c, feed.getEntries().toArray( new Entry[]{} ) );
     }
@@ -420,7 +421,7 @@ public class DocumentController extends Controller {
             ParserConfigurationException, TransformerConfigurationException,
             TransformerException, LuceneParseException
     {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,Entry...)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,Entry...)");
         
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         
@@ -444,7 +445,7 @@ public class DocumentController extends Controller {
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, Entry entry)
         throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
     {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,Entry)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,Entry)");
         
         return asLuceneDocuments( c, entry.getContent() );
     }
@@ -458,7 +459,7 @@ public class DocumentController extends Controller {
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, Content content)
         throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
     {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,Content)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,Content)");
         
         if (content == null) {
             throw new LuceneParseException("Cannot parse Lucene document: NULL content in entry");
@@ -484,7 +485,7 @@ public class DocumentController extends Controller {
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, TextContent content)
         throws ParserConfigurationException, TransformerConfigurationException, TransformerException, LuceneParseException
     {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,TextContent)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,TextContent)");
         
         return asLuceneDocuments( c, content.asDocument() );
     }
@@ -498,7 +499,7 @@ public class DocumentController extends Controller {
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, NodeContent content)
         throws LuceneParseException
     {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,NodeContent)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,NodeContent)");
         
         return asLuceneDocuments( c, content.getNodes() );
     }
@@ -508,7 +509,7 @@ public class DocumentController extends Controller {
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, Document document)
         throws LuceneParseException
     {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,Document)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,Document)");
         
         return asLuceneDocuments( c, document.getDocumentElement() );
     }
@@ -516,7 +517,7 @@ public class DocumentController extends Controller {
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, NodeList nodeList)
         throws LuceneParseException
     {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,NodeList)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,NodeList)");
         
         Node[] nodes = new Node[ nodeList.getLength() ];
         for( int i = 0; i < nodes.length; i++ ) {
@@ -526,8 +527,8 @@ public class DocumentController extends Controller {
     }
     
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, Node[] nodes) throws LuceneParseException {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,Node[]): " + nodes.length + " nodes");
-        c.log().debug("Nodes: " + ServletUtils.toString(nodes));
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,Node[]): " + nodes.length + " nodes");
+        Logger.getLogger(DocumentController.class).trace("Nodes: " + ServletUtils.toString(nodes));
         
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         for( int i = 0; i < nodes.length; i++ ) {
@@ -539,7 +540,7 @@ public class DocumentController extends Controller {
     }
     
     public static LuceneDocument[] asLuceneDocuments (LuceneContext c, Element element) throws LuceneParseException {
-        c.log().debug("DocumentController.asLuceneDocuments(LuceneContext,Element)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,Element)");
         
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
         
@@ -560,7 +561,7 @@ public class DocumentController extends Controller {
     }
     
     public static LuceneDocument asLuceneDocument (LuceneContext c, Element element) {
-        c.log().debug("DocumentController.asLuceneDocument(LuceneContext,Element)");
+        Logger.getLogger(DocumentController.class).trace("asLuceneDocument(LuceneContext,Element)");
         
         LuceneDocument document = new LuceneDocument();
         
@@ -574,7 +575,7 @@ public class DocumentController extends Controller {
     
     
     public static Field asField (LuceneContext c, Element element) {
-        c.log().debug("DocumentController.asField(LuceneContext,Element)");
+        Logger.getLogger(DocumentController.class).trace("asField(LuceneContext,Element)");
         
         if (!element.getTagName().equals( "field" )) {
             throw new RuntimeException( "Must provide a <field> tag" );

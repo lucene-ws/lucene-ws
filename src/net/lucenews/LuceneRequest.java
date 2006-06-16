@@ -5,6 +5,7 @@ import java.util.*;
 import net.lucenews.controller.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
+import java.nio.charset.*;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
@@ -17,6 +18,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
+import org.apache.log4j.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Filter;
@@ -574,7 +576,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
             TransformerConfigurationException, TransformerException, ParserConfigurationException,
             AtomParseException, SAXException, IOException, LuceneParseException
     {
-        getContext().log().debug("LuceneRequest.getLuceneDocuments()");
+        Logger.getLogger(this.getClass()).trace("getLuceneDocuments()");
         
         Entry[] entries = getEntries();
         
@@ -618,7 +620,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     public Document getDOMDocument ()
         throws ParserConfigurationException, IOException, SAXException
     {
-        getContext().log().debug("LuceneRequest.getDOMDocument()");
+        Logger.getLogger(this.getClass()).trace("getDOMDocument()");
         
         if (m_domDocumentCached) {
             return m_domDocument;
@@ -643,7 +645,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
             TransformerConfigurationException, TransformerException,
             ParserConfigurationException, AtomParseException, IOException, SAXException
     {
-        getContext().log().debug("LuceneRequest.getFeed()");
+        Logger.getLogger(this.getClass()).trace("getFeed()");
         
         return Feed.parse( getDOMDocument() );
     }
@@ -659,7 +661,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
             TransformerConfigurationException, TransformerException,
             ParserConfigurationException, AtomParseException, IOException, SAXException
     {
-        getContext().log().debug("LuceneRequest.getEntry()");
+        Logger.getLogger(this.getClass()).trace("getEntry()");
         
         return Entry.parse( getDOMDocument() );
     }
@@ -675,7 +677,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
             TransformerConfigurationException, TransformerException,
             ParserConfigurationException, AtomParseException, SAXException, IOException
     {
-        getContext().log().debug("LuceneRequest.getEntries()");
+        Logger.getLogger(this.getClass()).trace("getEntries()");
         
         List<Entry> entries = new LinkedList<Entry>();
         
@@ -840,7 +842,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Filter getFilter () {
-        getContext().log().debug("LuceneRequest.getFilter()");
+        Logger.getLogger(this.getClass()).trace("getFilter()");
         
         if (m_filterCached) {
             return m_filter;
@@ -880,7 +882,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getDefaultField () {
-        getContext().log().debug("LuceneRequest.getDefaultField()");
+        Logger.getLogger(this.getClass()).trace("getDefaultField()");
         
         if (m_defaultFieldCached) {
             return m_defaultField;
@@ -899,7 +901,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setDefaultField (String defaultField) {
-        getContext().log().debug("LuceneRequest.setDefaultField(String)");
+        Logger.getLogger(this.getClass()).trace("setDefaultField(String)");
         
         m_defaultField       = defaultField;
         m_defaultFieldCached = defaultField != null;
@@ -934,7 +936,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getSearchString () {
-        getContext().log().debug("LuceneRequest.getSearchString()");
+        Logger.getLogger(this.getClass()).trace("getSearchString()");
         
         return clean( getParameter( LuceneKeys.SEARCH_STRING ) );
     }
@@ -968,7 +970,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Analyzer getAnalyzer () {
-        getContext().log().debug("LuceneRequest.getAnalyzer()");
+        Logger.getLogger(this.getClass()).trace("getAnalyzer()");
         
         if (m_analyzerCached) {
             return m_analyzer;
@@ -986,7 +988,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setAnalyzer (Analyzer analyzer) {
-        getContext().log().debug("LuceneRequest.setAnalyzer(Analyzer)");
+        Logger.getLogger(this.getClass()).trace("setAnalyzer(Analyzer)");
         
         m_analyzer       = analyzer;
         m_analyzerCached = analyzer != null;
@@ -1021,7 +1023,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public QueryParser.Operator getDefaultOperator () {
-        getContext().log().debug("LuceneRequest.getDefaultOperator()");
+        Logger.getLogger(this.getClass()).trace("getDefaultOperator()");
         
         if (m_defaultOperatorCached) {
             return m_defaultOperator;
@@ -1039,7 +1041,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      * Sets the default operator
      */
     public void setDefaultOperator (QueryParser.Operator defaultOperator) {
-        getContext().log().debug("LuceneRequest.setDefaultOperator(QueryParser.Operator)");
+        Logger.getLogger(this.getClass()).trace("setDefaultOperator(QueryParser.Operator)");
         
         m_defaultOperator       = defaultOperator;
         m_defaultOperatorCached = defaultOperator != null;
@@ -1074,7 +1076,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Locale getLocale () {
-        getContext().log().debug("LuceneRequest.getLocale()");
+        Logger.getLogger(this.getClass()).trace("getLocale()");
         
         if (m_localeCached) {
             return m_locale;
@@ -1093,7 +1095,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setLocale (Locale locale) {
-        getContext().log().debug("LuceneRequest.setLocale()");
+        Logger.getLogger(this.getClass()).trace("setLocale()");
         
         m_locale       = locale;
         m_localeCached = locale != null;
@@ -1128,7 +1130,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Query getQuery () throws InsufficientDataException {
-        getContext().log().debug("LuceneRequest.getQuery()");
+        Logger.getLogger(this.getClass()).trace("getQuery()");
         
         if (m_queryCached) {
             return m_query;
@@ -1147,7 +1149,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setQuery (Query query) {
-        getContext().log().debug("LuceneRequest.setQuery(Query)");
+        Logger.getLogger(this.getClass()).trace("setQuery(Query)");
         
         m_query       = query;
         m_queryCached = query != null;
@@ -1182,7 +1184,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Sort getSort () throws InsufficientDataException {
-        getContext().log().debug("LuceneRequest.getSort()");
+        Logger.getLogger(this.getClass()).trace("getSort()");
         
         if (m_sortCached) {
             return m_sort;
@@ -1201,7 +1203,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public void setSort (Sort sort) {
-        getContext().log().debug("LuceneRequest.setSort(Sort)");
+        Logger.getLogger(this.getClass()).trace("setSort(Sort)");
         
         m_sort       = sort;
         m_sortCached = sort != null;
@@ -1236,7 +1238,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getServletURL () {
-        getContext().log().debug("LuceneRequest.getServletURL()");
+        Logger.getLogger(this.getClass()).trace("getServletURL()");
         
         String requestURL  = String.valueOf( getRequestURL() );
         String contextPath = getContextPath();
@@ -1256,7 +1258,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public String getLocation () {
-        getContext().log().debug("LuceneRequest.getLocation()");
+        Logger.getLogger(this.getClass()).trace("getLocation()");
         
         return getRequestURL() + ( ( getQueryString() != null ) ? "?" + getQueryString() : "" );
     }
@@ -1276,7 +1278,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     public String getQueryStringExcluding (String... fields) {
-        getContext().log().debug("LuceneRequest.getQueryStringExcluding(String...)");
+        Logger.getLogger(this.getClass()).trace("getQueryStringExcluding(String...)");
         
         StringBuffer buffer = new StringBuffer();
         
@@ -1339,7 +1341,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     }
     
     public String getQueryStringWithParameter (String name, String value) {
-        getContext().log().debug("LuceneRequest.getQueryStringWithParameter(String,String)");
+        Logger.getLogger(this.getClass()).trace("getQueryStringWithParameter(String,String)");
         
         return getQueryStringWithParameter( getQueryString(), name, value );
     }
@@ -1348,7 +1350,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     public boolean noneMatch (String... strings) {
-        getContext().log().debug("LuceneRequest.noneMatch(String...)");
+        Logger.getLogger(this.getClass()).trace("noneMatch(String...)");
         
         String[] clauses = getIfNoneMatchClauses();
         
@@ -1367,7 +1369,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     public String[] getIfNoneMatchClauses () {
-        getContext().log().debug("LuceneRequest.getIfNoneMatchClauses()");
+        Logger.getLogger(this.getClass()).trace("getIfNoneMatchClauses()");
         
         String clause = getHeader( "If-None-Match" );
         
@@ -1407,7 +1409,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     public boolean shouldHandle (Calendar lastModified, String... etags) {
-        getContext().log().debug("LuceneRequest.shouldHandle(Calendar,String...)");
+        Logger.getLogger(this.getClass()).trace("shouldHandle(Calendar,String...)");
         
         if (lastModified == null) {
             return true;
@@ -1514,6 +1516,43 @@ public class LuceneRequest extends HttpServletRequestWrapper {
         }
         
         return buffer.toString();
+    }
+    
+    
+    
+    
+    
+    public String getInputEncoding () {
+        String inputEncoding = getCleanParameter("inputEncoding");
+        if (inputEncoding != null) {
+            return inputEncoding;
+        }
+        else {
+            return "UTF-8";
+        }
+    }
+    
+    public String getOutputEncoding () {
+        String outputEncoding = getCleanParameter("outputEncoding");
+        if (outputEncoding != null) {
+            return outputEncoding;
+        }
+        else {
+            return "UTF-8";
+        }
+    }
+    
+    
+    public Charset getInputCharset ()
+        throws IllegalCharsetNameException, UnsupportedCharsetException
+    {
+        return Charset.forName( getInputEncoding() );
+    }
+    
+    public Charset getOutputCharset ()
+        throws IllegalCharsetNameException, UnsupportedCharsetException
+    {
+        return Charset.forName( getOutputEncoding() );
     }
     
 }

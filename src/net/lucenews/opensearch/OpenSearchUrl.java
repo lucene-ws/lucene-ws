@@ -68,6 +68,21 @@ public class OpenSearchUrl {
     public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode) throws OpenSearchException {
         Element element = document.createElement("Url");
         
+        // type
+        if (getType() != null) {
+            element.setAttribute("type", getType());
+        }
+        
+        // method
+        if (getMethod() != null) {
+            element.setAttribute("method", getMethod());
+        }
+        
+        // template
+        if (getTemplate() != null) {
+            element.setAttribute("template", getTemplate());
+        }
+        
         Iterator<Map.Entry<String,String>> iterator = params.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String,String> entry = iterator.next();

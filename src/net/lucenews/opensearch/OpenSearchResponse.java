@@ -169,7 +169,7 @@ public class OpenSearchResponse {
     
     
     public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {
-        return asElement(document, format, OpenSearch.STRICT);
+        return asElement(document, format, OpenSearch.getDefaultMode());
     }
     
     public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode) throws OpenSearchException {

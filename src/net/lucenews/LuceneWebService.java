@@ -86,6 +86,10 @@ public class LuceneWebService extends HttpServlet {
         manager = new LuceneIndexManager( this );
         
         
+        OpenSearch.setDefaultFormat( OpenSearch.ATOM );
+        OpenSearch.setDefaultMode( OpenSearch.PASSIVE );
+        
+        
         /**
          * Properties
          */
@@ -184,7 +188,7 @@ public class LuceneWebService extends HttpServlet {
         LuceneContext  c   = new LuceneContext( req, res, this );
         req.setContext( c );
         c.log( getLogger() );
-        c.log().info("request:  " + req.getMethod() + " " + req.getLocation());
+        Logger.getLogger(this.getClass()).info("request:  " + req.getMethod() + " " + req.getLocation());
         
         res.setContentType( "application/atom+xml; charset=utf-8" );
         
@@ -252,7 +256,7 @@ public class LuceneWebService extends HttpServlet {
             ExceptionController.process( c, e );
         }
         
-        c.log().info("response: " + res.getStatus());
+        Logger.getLogger(this.getClass()).info("response: " + res.getStatus());
     }	
     
     

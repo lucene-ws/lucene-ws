@@ -1,5 +1,4 @@
 package net.lucenews.controller;
 
-public class Controller
-{
+public class Controller {
 }

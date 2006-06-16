@@ -55,12 +55,9 @@ public class LuceneQueryParser extends QueryParser {
     
     protected Query getFieldQuery (String field, String queryText) throws ParseException {
         try {
-            Query query = SynExpand.expand( queryText, getSearcher(), getAnalyzer(), field, getBoost() );
-            Logger.getRootLogger().debug("expanded query: " + query);
-            return query;
+            return SynExpand.expand( queryText, getSearcher(), getAnalyzer(), field, getBoost() );
         }
         catch (Exception exception) {
-            Logger.getRootLogger().debug("exception", exception);
             Query query = super.getFieldQuery( field, queryText );
             
             if (query instanceof TermQuery) {
