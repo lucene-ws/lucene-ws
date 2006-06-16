@@ -4,13 +4,16 @@ import org.apache.log4j.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.spell.*;
 import org.apache.lucene.queryParser.*;
 import org.apache.lucene.wordnet.*;
 
 public class LuceneQueryParser extends QueryParser {
     
     
-    private Searcher searcher;
+    private Searcher synonym_searcher;
+    private SpellChecker spellchecker;
+    private int maximum_corrections;
     private float boost;
     
     
@@ -18,17 +21,20 @@ public class LuceneQueryParser extends QueryParser {
     
     public LuceneQueryParser (String f, Analyzer a) {
         super( f, a );
-        boost = 1.0f;
+        setBoost( 1.0f );
+        setMaximumCorrections( 0 );
     }
     
     public LuceneQueryParser (CharStream stream) {
         super( stream );
-        boost = 1.0f;
+        setBoost( 1.0f );
+        setMaximumCorrections( 0 );
     }
     
     public LuceneQueryParser (QueryParserTokenManager tm) {
         super( tm );
-        boost = 1.0f;
+        setBoost( 1.0f );
+        setMaximumCorrections( 0 );
     }
     
     
@@ -43,19 +49,57 @@ public class LuceneQueryParser extends QueryParser {
     
     
     
-    public Searcher getSearcher () {
-        return searcher;
+    public Searcher getSynonymSearcher () {
+        return synonym_searcher;
     }
     
-    public void setSearcher (Searcher searcher) {
-        this.searcher = searcher;
+    public void setSynonymSearcher (Searcher synonym_searcher) {
+        this.synonym_searcher = synonym_searcher;
+    }
+    
+    
+    
+    public SpellChecker getSpellChecker () {
+        return spellchecker;
+    }
+    
+    public void setSpellChecker (SpellChecker spellchecker) {
+        this.spellchecker = spellchecker;
+    }
+    
+    public int getMaximumCorrections () {
+        return maximum_corrections;
+    }
+    
+    public void setMaximumCorrections (int maximum_corrections) {
+        this.maximum_corrections = maximum_corrections;
     }
     
     
     
     protected Query getFieldQuery (String field, String queryText) throws ParseException {
         try {
-            return SynExpand.expand( queryText, getSearcher(), getAnalyzer(), field, getBoost() );
+            Logger.getLogger(this.getClass()).debug("getFieldQuery(\"" + field + "\", \"" + queryText + "\");");
+            Query query = SynExpand.expand( queryText, getSynonymSearcher(), getAnalyzer(), field, getBoost() );
+            
+            if (query instanceof BooleanQuery) {
+                BooleanQuery booleanQuery = (BooleanQuery) query;
+                BooleanClause[] clauses = booleanQuery.getClauses();
+                
+                Logger.getLogger(this.getClass()).debug("We have a boolean query");
+                
+                TokenBooleanQuery tokenBoolean = new TokenBooleanQuery( booleanQuery.isCoordDisabled(), getToken( 0 ) );
+                
+                for (int i = 0; i < clauses.length; i++) {
+                    tokenBoolean.add( clauses[ i ] );
+                }
+                
+                Logger.getLogger(this.getClass()).debug("Returning TokenBooleanQuery: " + tokenBoolean);
+                
+                return tokenBoolean;
+            }
+            
+            return query;
         }
         catch (Exception exception) {
             Query query = super.getFieldQuery( field, queryText );
@@ -68,6 +112,8 @@ public class LuceneQueryParser extends QueryParser {
             return query;
         }
     }
+    
+    
     
     protected Query getRangeQuery (String field, String part1, String part2, boolean inclusive)
     throws ParseException

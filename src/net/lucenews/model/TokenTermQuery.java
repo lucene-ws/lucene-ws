@@ -4,8 +4,6 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.*;
 import org.apache.lucene.search.*;
 
-
-
 public class TokenTermQuery extends TermQuery {
     
     private org.apache.lucene.queryParser.Token token;

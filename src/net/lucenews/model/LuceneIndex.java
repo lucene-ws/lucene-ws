@@ -314,6 +314,15 @@ public class LuceneIndex {
     
     
     
+    public org.apache.lucene.store.Directory getLuceneDirectory () throws IOException {
+        IndexReader reader = getIndexReader();
+        org.apache.lucene.store.Directory dir = reader.directory();
+        putIndexReader( reader );
+        return dir;
+    }
+    
+    
+    
     
     
     
