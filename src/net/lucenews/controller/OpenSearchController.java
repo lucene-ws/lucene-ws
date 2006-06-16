@@ -1,11 +1,13 @@
 package net.lucenews.controller;
 
 import java.io.*;
+import java.nio.charset.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import net.lucenews.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
+import net.lucenews.opensearch.*;
 import net.lucenews.view.*;
 import org.w3c.dom.*;
 
@@ -32,6 +34,7 @@ public class OpenSearchController extends Controller {
         
         LuceneIndex[] indices = manager.getIndices( req.getIndexNames() );
         
+        OpenSearchDescription description = new OpenSearchDescription();
         
         Document document = XMLController.newDocument();
         
@@ -56,6 +59,7 @@ public class OpenSearchController extends Controller {
             }
             _description.append( " '" + indices[ i ].getTitle() + "'" );
         }
+        description.setDescription( _description.toString() );
         
         String _shortName = "";
         if (indices.length == 1) {
@@ -70,6 +74,7 @@ public class OpenSearchController extends Controller {
         Element shortName = document.createElement("ShortName");
         shortName.appendChild( document.createTextNode( _shortName ) );
         desc.appendChild( shortName );
+        description.setShortName( shortName );
         
         
         // description
@@ -112,6 +117,31 @@ public class OpenSearchController extends Controller {
         rssUrl.setAttribute("type", "application/rss+xml");
         rssUrl.setAttribute("template", searchURL.toString() + "&format=rss");
         desc.appendChild(rssUrl);
+        
+        
+        
+        /**
+         * OutputEncoding
+         */
+        Set<Map.Entry<String,Charset>> charsets = Charset.availableCharsets().entrySet();
+        Iterator<Map.Entry<String,Charset>> charsetIterator = charsets.iterator();
+        while (charsetIterator.hasNext()) {
+            Map.Entry<String,Charset> entry = charsetIterator.next();
+            
+            String  name    = entry.getKey();
+            Charset charset = entry.getValue();
+            
+            if (charset.canEncode()) {
+                description.addOutputEncoding( name );
+            }
+            
+            try {
+                charset.newDecoder();
+                description.addInputEncoding( name );
+            }
+            catch (UnsupportedOperationException inputUoe) {
+            }
+        }
         
         
         document.appendChild(desc);
