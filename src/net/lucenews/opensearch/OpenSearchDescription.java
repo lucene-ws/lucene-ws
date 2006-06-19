@@ -216,6 +216,7 @@ public class OpenSearchDescription {
     
     public Element asElement (Document document, OpenSearch.Mode mode) throws OpenSearchException {
         Element element = document.createElement("OpenSearchDescription");
+        element.setAttribute("xmlns","http://a9.com/-/spec/opensearch/1.1/");
         
         
         // ShortName
