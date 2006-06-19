@@ -139,6 +139,7 @@ public class SearchController extends Controller {
                 query = new MatchAllDocsQuery();
             }
         }
+        Logger.getLogger(SearchController.class).debug("Search string: " + String.valueOf( searchString ));
         
         
         
