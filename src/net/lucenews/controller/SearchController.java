@@ -57,9 +57,47 @@ public class SearchController extends Controller {
         
         
         
-        boolean expand     = ServletUtils.parseBoolean(service.getProperty("query.expand",    "true"));
-        boolean spellcheck = ServletUtils.parseBoolean(service.getProperty("query.spellcheck","false"));
-        boolean suggest    = ServletUtils.parseBoolean(service.getProperty("query.suggest",   "true"));
+        Boolean   expand  = false;
+        Boolean[] expands = new Boolean[] {
+            req.getBooleanParameter("expand"),
+            service.getBooleanProperty("query.expand"),
+            Boolean.FALSE
+        };
+        for (int i = 0; i < expands.length; i++) {
+            if (expands[i] != null) {
+                expand = expands[i];
+                break;
+            }
+        }
+        Logger.getLogger(SearchController.class).info("Expand query: " + expand);
+        
+        Boolean   spellcheck = false;
+        Boolean[] spellchecks = new Boolean[] {
+            req.getBooleanParameter("spellcheck"),
+            service.getBooleanProperty("query.spellcheck"),
+            Boolean.FALSE
+        };
+        for (int i = 0; i < spellchecks.length; i++) {
+            if (spellchecks[i] != null) {
+                spellcheck = spellchecks[i];
+                break;
+            }
+        }
+        Logger.getLogger(SearchController.class).info("Spell check query: " + spellcheck);
+        
+        Boolean   suggest  = false;
+        Boolean[] suggests = new Boolean[] {
+            req.getBooleanParameter("suggest"),
+            service.getBooleanProperty("query.suggest"),
+            Boolean.FALSE
+        };
+        for (int i = 0; i < suggests.length; i++) {
+            if (suggests[i] != null) {
+                suggest = suggests[i];
+                break;
+            }
+        }
+        Logger.getLogger(SearchController.class).info("Suggest query: " + spellcheck);
         
         
         
@@ -260,9 +298,15 @@ public class SearchController extends Controller {
             
             
             
-                      query = parser.parse( searchString );
-              supersetQuery = parser.parse( searchString );
-            correctionQuery = parser.parse( searchString );
+            query = parser.parse( searchString );
+            if (expand) {
+                parser.setSynonymSearcher( manager.getIndex(service.getProperty("query.expand.index", "wordnet")).getIndexSearcher() );
+                supersetQuery = parser.parse( searchString );
+                parser.setSynonymSearcher( null );
+            }
+            if (spellcheck) {
+                correctionQuery = parser.parse( searchString );
+            }
         }
         
         
@@ -306,10 +350,10 @@ public class SearchController extends Controller {
          */
         
         if (expand) {
-            LuceneQueryExpander expander = new LuceneQueryExpander();
-            expander.setSearcher( manager.getIndex("wordnet").getIndexSearcher() );
-            expander.setAnalyzer( analyzer );
-            supersetQuery = expander.expand( supersetQuery );
+            //LuceneQueryExpander expander = new LuceneQueryExpander();
+            //expander.setSearcher( manager.getIndex(service.getProperty("query.expand.index", "wordnet")).getIndexSearcher() );
+            //expander.setAnalyzer( analyzer );
+            //supersetQuery = expander.expand( supersetQuery );
             
             OpenSearchQuery superset = new OpenSearchQuery();
             superset.setRole( "superset" );
@@ -334,7 +378,7 @@ public class SearchController extends Controller {
          */
         
         if (spellcheck) {
-            LuceneSpellChecker spellChecker = new LuceneSpellChecker( manager.getIndex("spelling").getLuceneDirectory() );
+            LuceneSpellChecker spellChecker = new LuceneSpellChecker( manager.getIndex(service.getProperty("query.spellcheck.index","spelling")).getLuceneDirectory() );
             spellChecker.setMaximumSuggestions(5);
             Query[] correctionQueries = spellChecker.suggestSimilar( correctionQuery );
             

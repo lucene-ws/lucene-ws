@@ -78,9 +78,22 @@ public class LuceneQueryParser extends QueryParser {
     
     
     protected Query getFieldQuery (String field, String queryText) throws ParseException {
+        Query query = super.getFieldQuery( field, queryText );
+        
+        if (query instanceof TermQuery) {
+            TermQuery termQuery = (TermQuery) query;
+            query = new TokenTermQuery( termQuery.getTerm(), getToken(0) );
+        }
+        
+        Logger.getLogger(this.getClass()).debug("Class of query: " + query.getClass());
+        
         try {
             Logger.getLogger(this.getClass()).debug("getFieldQuery(\"" + field + "\", \"" + queryText + "\");");
-            Query query = SynExpand.expand( queryText, getSynonymSearcher(), getAnalyzer(), field, getBoost() );
+            
+            LuceneQueryExpander expander = new LuceneQueryExpander();
+            expander.setSearcher(getSynonymSearcher());
+            expander.setAnalyzer(getAnalyzer());
+            query = expander.expand(query);
             
             if (query instanceof BooleanQuery) {
                 BooleanQuery booleanQuery = (BooleanQuery) query;
@@ -89,28 +102,20 @@ public class LuceneQueryParser extends QueryParser {
                 Logger.getLogger(this.getClass()).debug("We have a boolean query");
                 
                 TokenBooleanQuery tokenBoolean = new TokenBooleanQuery( booleanQuery.isCoordDisabled(), getToken( 0 ) );
-                
                 for (int i = 0; i < clauses.length; i++) {
                     tokenBoolean.add( clauses[ i ] );
                 }
                 
                 Logger.getLogger(this.getClass()).debug("Returning TokenBooleanQuery: " + tokenBoolean);
                 
-                return tokenBoolean;
+                query = tokenBoolean;
             }
-            
-            return query;
         }
         catch (Exception exception) {
-            Query query = super.getFieldQuery( field, queryText );
-            
-            if (query instanceof TermQuery) {
-                TermQuery termQuery = (TermQuery) query;
-                return new TokenTermQuery( termQuery.getTerm(), getToken( 0 ) );
-            }
-            
-            return query;
+            Logger.getLogger(this.getClass()).error("An error occured while trying to expand", exception);
         }
+        
+        return query;
     }
     
     

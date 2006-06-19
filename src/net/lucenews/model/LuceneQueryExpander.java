@@ -119,6 +119,7 @@ public class LuceneQueryExpander {
     public Query expand (TermQuery query, Searcher searcher, Analyzer analyzer, float boost)
         throws IOException
     {
+        Logger.getLogger(this.getClass()).debug("Expanding a TermQuery: " + query.getClass());
         Term term = query.getTerm();
         
         Query expanded = SynExpand.expand( term.text(), searcher, analyzer, term.field(), boost );
@@ -129,26 +130,21 @@ public class LuceneQueryExpander {
             
             Logger.getLogger(this.getClass()).debug("Expanded into a BooleanQuery: " + booleanQuery);
             
-            TokenTermQuery tokenTermQuery = null;
-            
-            for (int i = 0; i < clauses.length; i++) {
-                BooleanClause clause = clauses[ i ];
-                if (clause.getQuery() instanceof TokenTermQuery) {
-                    tokenTermQuery = (TokenTermQuery) clause.getQuery();
-                    break;
-                }
-            }
-            
-            if (tokenTermQuery != null) {
+            if (query instanceof TokenTermQuery) {
+                TokenTermQuery tokenTermQuery = (TokenTermQuery) query;
                 TokenBooleanQuery tokenBoolean = new TokenBooleanQuery( booleanQuery.isCoordDisabled(), tokenTermQuery.getToken() );
+                tokenBoolean.setMinimumNumberShouldMatch( booleanQuery.getMinimumNumberShouldMatch() );
                 
                 for (int i = 0; i < clauses.length; i++) {
                     BooleanClause clause = clauses[ i ];
+                    if (clause.getQuery() instanceof TermQuery) {
+                        TermQuery termQuery = (TermQuery) clause.getQuery();
+                        clause.setQuery( new TokenTermQuery( termQuery.getTerm(), tokenTermQuery.getToken() ) );
+                    }
                     tokenBoolean.add( clause );
-                    tokenBoolean.setMinimumNumberShouldMatch( booleanQuery.getMinimumNumberShouldMatch() );
                 }
                 
-                Logger.getLogger(this.getClass()).debug("Returning TokenBooleanQuery: " + tokenBoolean);
+                Logger.getLogger(this.getClass()).debug("Returning TokenBooleanQuery: " + tokenBoolean + ", token: " + tokenBoolean.getToken() + ", begin: " + tokenBoolean.getToken().beginColumn);
                 return tokenBoolean;
             }
         }

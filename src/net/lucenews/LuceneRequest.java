@@ -804,6 +804,14 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     }
     
     
+    public Boolean getBooleanParameter (String name) {
+        String value = getCleanParameter(name);
+        if (value == null) {
+            return null;
+        }
+        return ServletUtils.parseBoolean(value);
+    }
+    
     
     /**
      * Gets a parameter

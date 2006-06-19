@@ -722,6 +722,14 @@ public class LuceneWebService extends HttpServlet {
         return getProperties().getProperty( name );
     }
     
+    public Boolean getBooleanProperty (String name) throws IOException {
+        String value = ServletUtils.clean( getProperty( name ) );
+        if (value == null) {
+            return null;
+        }
+        return ServletUtils.parseBoolean( value );
+    }
+    
     
     
     /**
