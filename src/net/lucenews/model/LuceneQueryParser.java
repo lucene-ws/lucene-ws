@@ -85,11 +85,7 @@ public class LuceneQueryParser extends QueryParser {
             query = new TokenTermQuery( termQuery.getTerm(), getToken(0) );
         }
         
-        Logger.getLogger(this.getClass()).debug("Class of query: " + query.getClass());
-        
         try {
-            Logger.getLogger(this.getClass()).debug("getFieldQuery(\"" + field + "\", \"" + queryText + "\");");
-            
             LuceneQueryExpander expander = new LuceneQueryExpander();
             expander.setSearcher(getSynonymSearcher());
             expander.setAnalyzer(getAnalyzer());
@@ -99,20 +95,15 @@ public class LuceneQueryParser extends QueryParser {
                 BooleanQuery booleanQuery = (BooleanQuery) query;
                 BooleanClause[] clauses = booleanQuery.getClauses();
                 
-                Logger.getLogger(this.getClass()).debug("We have a boolean query");
-                
                 TokenBooleanQuery tokenBoolean = new TokenBooleanQuery( booleanQuery.isCoordDisabled(), getToken( 0 ) );
                 for (int i = 0; i < clauses.length; i++) {
                     tokenBoolean.add( clauses[ i ] );
                 }
                 
-                Logger.getLogger(this.getClass()).debug("Returning TokenBooleanQuery: " + tokenBoolean);
-                
                 query = tokenBoolean;
             }
         }
-        catch (Exception exception) {
-            Logger.getLogger(this.getClass()).error("An error occured while trying to expand", exception);
+        catch (Exception e) {
         }
         
         return query;
