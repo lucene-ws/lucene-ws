@@ -69,7 +69,7 @@ public class SearchController extends Controller {
                 break;
             }
         }
-        Logger.getLogger(SearchController.class).info("Expand query: " + expand);
+        Logger.getLogger(SearchController.class).debug("Expand query: " + expand);
         
         Boolean   spellcheck = false;
         Boolean[] spellchecks = new Boolean[] {
@@ -83,7 +83,7 @@ public class SearchController extends Controller {
                 break;
             }
         }
-        Logger.getLogger(SearchController.class).info("Spell check query: " + spellcheck);
+        Logger.getLogger(SearchController.class).debug("Spell check query: " + spellcheck);
         
         Boolean   suggest  = false;
         Boolean[] suggests = new Boolean[] {
@@ -97,7 +97,7 @@ public class SearchController extends Controller {
                 break;
             }
         }
-        Logger.getLogger(SearchController.class).info("Suggest query: " + spellcheck);
+        Logger.getLogger(SearchController.class).debug("Suggest query: " + spellcheck);
         
         
         
@@ -335,6 +335,8 @@ public class SearchController extends Controller {
         else {
             hits = searcher.search( query );
         }
+        
+        Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
         
         
         
