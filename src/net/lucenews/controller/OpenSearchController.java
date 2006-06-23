@@ -31,7 +31,8 @@ public class OpenSearchController extends Controller {
             IndicesNotFoundException, ParserConfigurationException, TransformerException,
             IOException, OpenSearchException
     {
-        LuceneIndexManager manager = c.service().getIndexManager();
+        LuceneWebService   service = c.service();
+        LuceneIndexManager manager = service.getIndexManager();
         LuceneRequest      req     = c.req();
         LuceneResponse     res     = c.res();
         LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
@@ -43,29 +44,38 @@ public class OpenSearchController extends Controller {
         
         
         // Search URL
-        StringBuffer searchURL = new StringBuffer();
-        searchURL.append(c.service().getServiceURL( req ));
+        StringBuffer template = new StringBuffer();
+        template.append( service.getServiceURL(req) );
         for (int i = 0; i < indices.length; i++) {
             if (i > 0) {
-                searchURL.append( "," );
+                template.append( "," );
             }
-            searchURL.append( indices[i].getName() );
+            template.append( indices[i].getName() );
         }
-        searchURL.append("/?query={searchTerms}&limit={count}&offset={startIndex}&page={startPage}&locale={language?}&sort={sort?}&analyzer={analyzer?}&operator={operator?}&maximum={maximum?}");
+        template.append("/");
+        template.append("?query={searchTerms}");
+        template.append("&limit={count}");
+        template.append("&offset={startIndex}");
+        template.append("&page={startPage}");
+        template.append("&locale={language?}");
+        template.append("&sort={sort?}");
+        template.append("&analyzer={analyzer?}");
+        template.append("&operator={operator?}");
+        template.append("&maximum={maximum?}");
         
         
         
         // Atom
         OpenSearchUrl atomUrl = new OpenSearchUrl();
         atomUrl.setType("application/atom+xml");
-        atomUrl.setTemplate(searchURL.toString() + "&format=atom");
+        atomUrl.setTemplate(template.toString() + "&format=atom");
         description.addUrl( atomUrl );
         
         
         // RSS
         OpenSearchUrl rssUrl = new OpenSearchUrl();
         rssUrl.setType("application/rss+xml");
-        rssUrl.setTemplate(searchURL.toString() + "&format=rss");
+        rssUrl.setTemplate(template.toString() + "&format=rss");
         description.addUrl( rssUrl );
         
         

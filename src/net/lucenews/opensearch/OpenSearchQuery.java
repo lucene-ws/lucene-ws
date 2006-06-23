@@ -106,6 +106,14 @@ public class OpenSearchQuery {
     
     
     
+    /**
+     * startIndex
+     *
+     * Description:  The offset of the first search result, starting with one.
+     * Restrictions: A positive integer.
+     * Default:      "1"
+     */
+    
     public Integer getStartIndex () {
         return start_index;
     }
@@ -115,6 +123,14 @@ public class OpenSearchQuery {
     }
     
     
+    
+    /**
+     * startPage
+     *
+     * Description:  The offset of the each group of count search results, starting with one.
+     * Restrictions: A positive integer.
+     * Default:      "1"
+     */
     
     public Integer getStartPage () {
         return start_page;
@@ -152,6 +168,66 @@ public class OpenSearchQuery {
     
     public void setInputEncoding (String input_encoding) {
         this.input_encoding = input_encoding;
+    }
+    
+    
+    
+    public Integer[] getBoundingIndices () {
+        Integer[] bounds = new Integer[]{ null, null };
+        
+        Integer totalResults = getTotalResults();
+        Integer count = getCount();
+        
+        if (totalResults == null || totalResults == 0 || count == null || count == 0) {
+            return bounds;
+        }
+        
+        Integer startIndex = getStartIndex();
+        if (startIndex == null) {
+            startIndex = 1; // default
+        }
+        
+        Integer startPage = getStartPage();
+        if (startPage == null) {
+            startPage = 1; // default
+        }
+        
+        Integer firstIndex = startIndex + (startPage - 1) * count;
+        Integer  lastIndex = startIndex + (startPage * count) - 1;
+        
+        if (firstIndex > totalResults || lastIndex < 1) {
+            return bounds;
+        }
+        
+        bounds[0] = Math.max( firstIndex, 1 );
+        bounds[1] = Math.min( lastIndex,  totalResults );
+        
+        return bounds;
+    }
+    
+    
+    /**
+     * Returns the first index of desired results
+     * in light of the total number of results
+     * specified.
+     * If either "count" or "totalResults" has not
+     * been specified, a null value is returned.
+     */
+    
+    public Integer getFirstIndex () {
+        return getBoundingIndices()[ 0 ];
+    }
+    
+    /**
+     * Returns the last index of desired results
+     * in light of the total number of results
+     * specified.
+     * If either "count" or "totalResults" has not
+     * been specified, a null value is returned.
+     */
+    
+    public Integer getLastIndex () {
+        return getBoundingIndices()[ 1 ];
     }
     
     

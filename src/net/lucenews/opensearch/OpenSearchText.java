@@ -1,7 +1,9 @@
 package net.lucenews.opensearch;
 
+import java.io.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
 import org.w3c.dom.*;
 
 public class OpenSearchText {
@@ -157,7 +159,20 @@ public class OpenSearchText {
                 element = document.createElement("description");
             }
             
-            element.appendChild( document.createTextNode( String.valueOf(content_nodes) ) );
+            try {
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                StringWriter writer = new StringWriter();
+                for (int i = 0; i < content_nodes.length; i++) {
+                    transformer.transform( new DOMSource(content_nodes[i]), new StreamResult(writer) );
+                }
+                element.appendChild( document.createTextNode(writer.toString()) );
+            }
+            catch (TransformerConfigurationException tce) {
+                throw new OpenSearchException(tce.getMessage());
+            }
+            catch (TransformerException te) {
+                throw new OpenSearchException(te.getMessage());
+            }
             
             return element;
         }
