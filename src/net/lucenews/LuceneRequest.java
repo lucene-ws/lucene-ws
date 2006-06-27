@@ -20,7 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import org.apache.log4j.*;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.*;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -849,14 +849,14 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      * Gets the filter
      */
     
-    public Filter getFilter () {
+    public Filter getFilter (QueryParser parser) throws ParseException {
         Logger.getLogger(this.getClass()).trace("getFilter()");
         
         if (m_filterCached) {
             return m_filter;
         }
         
-        m_filter = LuceneUtils.parseFilter( getCleanParameter( LuceneKeys.FILTER ) );
+        m_filter = LuceneUtils.parseFilter( getCleanParameter( LuceneKeys.FILTER ), parser );
         m_filterCached = true;
         return m_filter;
     }

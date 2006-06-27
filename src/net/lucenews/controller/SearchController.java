@@ -50,7 +50,6 @@ public class SearchController extends Controller {
         LuceneIndexManager manager  = service.getIndexManager();
         LuceneRequest      req      = c.req();
         LuceneIndex[]      indices  = manager.getIndices( req.getIndexNames() );
-        Filter             filter   = req.getFilter();
         Sort               sort     = req.getSort();
         OpenSearchResponse response = new OpenSearchResponse();
         List<String> invalidParameterNames = new LinkedList<String>();
@@ -255,14 +254,10 @@ public class SearchController extends Controller {
          */
         
         QueryParser.Operator defaultOperator = null;
+        LuceneQueryParser parser = new LuceneQueryParser( defaultField, analyzer );
         
         if (query == null) {
             
-            /**
-             * Build the query parser
-             */
-            
-            LuceneQueryParser parser = new LuceneQueryParser( defaultField, analyzer );
             
             
             Locale locale = req.getLocale();
@@ -308,6 +303,12 @@ public class SearchController extends Controller {
                 correctionQuery = parser.parse( searchString );
             }
         }
+        
+        
+        
+        
+        Filter filter = req.getFilter(parser);
+        Logger.getLogger(SearchController.class).debug("Filter: " + filter);
         
         
         
@@ -546,7 +547,7 @@ public class SearchController extends Controller {
          */
         
         iterator.reset();
-        while( iterator.hasNext() ) {
+        while (iterator.hasNext()) {
             LuceneDocument document = iterator.next();
             Integer searcherIndex = extractSearcherIndex( document );
             

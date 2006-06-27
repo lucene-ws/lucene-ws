@@ -62,6 +62,7 @@ public class OpenSearchController extends Controller {
         template.append("&analyzer={analyzer?}");
         template.append("&operator={operator?}");
         template.append("&maximum={maximum?}");
+        template.append("&filter={filter?}");
         
         
         

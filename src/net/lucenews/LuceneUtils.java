@@ -1,40 +1,18 @@
 package net.lucenews;
 
 import java.io.*;
-import net.lucenews.atom.*;
-
+import java.util.*;
+import javax.xml.parsers.*; 
 import net.lucenews.*;
+import net.lucenews.atom.*;
 import net.lucenews.model.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilder; 
-import javax.xml.parsers.DocumentBuilderFactory;  
-import javax.xml.parsers.FactoryConfigurationError;  
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortComparatorSource;
-import org.apache.lucene.search.SortField;
-
+import org.apache.log4j.*;
+import org.apache.lucene.analysis.*;
+import org.apache.lucene.document.*;
+import org.apache.lucene.queryParser.*;
+import org.apache.lucene.search.*;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -148,7 +126,19 @@ public class LuceneUtils {
      * @return The corresponding filter
      */
     
-    public static Filter parseFilter (String string) {
+    public static Filter parseFilter (String string, QueryParser parser) throws ParseException {
+        Logger.getLogger(LuceneUtils.class).debug("parsing filter: " + string);
+        
+        if (string == null) {
+            return null;
+        }
+        
+        if (string.startsWith("QueryFilter:")) {
+            Logger.getLogger(LuceneUtils.class).debug("starts with 'QueryFilter'");
+            string = string.substring( "QueryFilter:".length() );
+            return new QueryFilter(parser.parse(string));
+        }
+        
         return null;
     }
     

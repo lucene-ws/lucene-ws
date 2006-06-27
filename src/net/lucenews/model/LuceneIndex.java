@@ -1698,10 +1698,10 @@ public class LuceneIndex {
             return net.lucenews.NumberTools.stringToLong( document.get( getUpdatedField() ) );
         }
         catch(NumberFormatException nfe) {
-            throw new InsufficientDataException( "Document does not provide an updated time" );
+            throw new InsufficientDataException("Document '" + document + "' does not provide a valid updated time");
         }
         catch(NullPointerException npe) {
-            throw new InsufficientDataException( "Document does not provide an updated time" );
+            throw new InsufficientDataException("Document '" + document + "' does not provide an updated time");
         }
     }
     
@@ -1724,7 +1724,12 @@ public class LuceneIndex {
             calendar.setTime( new Date( getTimestamp( document ) ) );
         }
         catch(NullPointerException npe) {
-            throw new InsufficientDataException( "Document does not provide a valid time stamp" );
+            if (isDocumentIdentified(document)) {
+                throw new InsufficientDataException("Document '" + getIdentifier(document) + "' does not provide a valid time stamp");
+            }
+            else {
+                throw new InsufficientDataException("Document '" + document + "' does not provide a valid time stamp");
+            }
         }
         return calendar;
     }
