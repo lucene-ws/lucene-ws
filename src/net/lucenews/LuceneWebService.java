@@ -187,7 +187,6 @@ public class LuceneWebService extends HttpServlet {
         LuceneResponse res = LuceneResponse.newInstance( response );
         LuceneContext  c   = new LuceneContext( req, res, this );
         req.setContext( c );
-        c.log( getLogger() );
         Logger.getLogger(this.getClass()).info("request:  " + req.getMethod() + " " + req.getLocation());
         
         res.setContentType( "application/atom+xml; charset=utf-8" );

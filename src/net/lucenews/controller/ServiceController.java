@@ -9,6 +9,7 @@ import net.lucenews.view.*;
 import net.lucenews.atom.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
+import org.apache.log4j.*;
 import org.xml.sax.*;
 import org.w3c.dom.*;
 
@@ -34,7 +35,7 @@ public class ServiceController extends Controller {
             LuceneException, IndicesNotFoundException, TransformerException,
             ParserConfigurationException, IOException
     {
-        c.log().debug("ServiceController.doGet(LuceneContext)");
+        Logger.getLogger(ServiceController.class).trace("doGet(LuceneContext)");
         
         LuceneWebService   service   = c.service();
         LuceneIndexManager manager   = service.getIndexManager();
@@ -70,7 +71,7 @@ public class ServiceController extends Controller {
             ParserConfigurationException, SAXException, IOException, InsufficientDataException,
             LuceneException, AtomParseException
     {
-        c.log().debug("ServiceController.doPost(LuceneContext)");
+        Logger.getLogger(ServiceController.class).trace("doPost(LuceneContext)");
         
         LuceneWebService   service   = c.service();
         LuceneIndexManager manager   = service.getIndexManager();

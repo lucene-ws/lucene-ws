@@ -1,10 +1,13 @@
 package net.lucenews;
 
 import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import net.lucenews.model.*;
+import net.lucenews.opensearch.*;
 import org.apache.log4j.*;
+import org.apache.lucene.analysis.*;
+import org.apache.lucene.queryParser.*;
+import org.apache.lucene.search.*;
 
 public class LuceneContext {
     
@@ -12,7 +15,16 @@ public class LuceneContext {
     private LuceneRequest      m_request;
     private LuceneResponse     m_response;
     private LuceneWebService   m_service;
-    private Logger             m_log;
+    
+    private OpenSearchQuery requestQuery;
+    private OpenSearch.Format openSearchFormat;
+    private Analyzer analyzer;
+    private QueryParser.Operator defaultOperator;
+    private Locale locale;
+    private Filter filter;
+    private Boolean expanding;
+    private Boolean spellChecking;
+    private Boolean suggesting;
     
     
     
@@ -69,11 +81,95 @@ public class LuceneContext {
         m_service = service;
     }
     
-    public Logger log () {
-        return m_log;
+    
+    
+    public OpenSearchQuery getRequestQuery () {
+        return requestQuery;
     }
     
-    public void log (Logger p_log) {
-        m_log = p_log;
+    public void setRequestQuery (OpenSearchQuery requestQuery) {
+        this.requestQuery = requestQuery;
     }
+    
+    
+    
+    public Analyzer getAnalyzer () {
+        return analyzer;
+    }
+    
+    public void setAnalyzer (Analyzer analyzer) {
+        this.analyzer = analyzer;
+    }
+    
+    
+    
+    public QueryParser.Operator getDefaultOperator () {
+        return defaultOperator;
+    }
+    
+    public void setDefaultOperator (QueryParser.Operator defaultOperator) {
+        this.defaultOperator = defaultOperator;
+    }
+    
+    
+    
+    public Locale getLocale () {
+        return locale;
+    }
+    
+    public void setLocale (Locale locale) {
+        this.locale = locale;
+    }
+    
+    
+    
+    public Filter getFilter () {
+        return filter;
+    }
+    
+    public void setFilter (Filter filter) {
+        this.filter = filter;
+    }
+    
+    
+    
+    public Boolean isExpanding () {
+        return expanding;
+    }
+    
+    public void isExpanding (Boolean expanding) {
+        this.expanding = expanding;
+    }
+    
+    
+    
+    public Boolean isSpellChecking () {
+        return spellChecking;
+    }
+    
+    public void isSpellChecking (Boolean spellChecking) {
+        this.spellChecking = spellChecking;
+    }
+    
+    
+    
+    public Boolean isSuggesting () {
+        return suggesting;
+    }
+    
+    public void isSuggesting (Boolean suggesting) {
+        this.suggesting = suggesting;
+    }
+    
+    
+    
+    
+    public OpenSearch.Format getOpenSearchFormat () {
+        return openSearchFormat;
+    }
+    
+    public void setOpenSearchFormat (OpenSearch.Format openSearchFormat) {
+        this.openSearchFormat = openSearchFormat;
+    }
+    
 }
