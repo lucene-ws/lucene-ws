@@ -187,7 +187,15 @@ public class LuceneWebService extends HttpServlet {
         LuceneResponse res = LuceneResponse.newInstance( response );
         LuceneContext  c   = new LuceneContext( req, res, this );
         req.setContext( c );
-        Logger.getLogger(this.getClass()).info("request:  " + req.getMethod() + " " + req.getLocation());
+        Logger.getLogger(this.getClass()).info("request:  " + req.getMethod() + " " + req.getLocation() + " " + req.getProtocol());
+        
+        Logger.getLogger(this.getClass()).debug("getContextPath(): " + request.getContextPath());
+        Logger.getLogger(this.getClass()).debug("getPathInfo(): " + request.getPathInfo());
+        Logger.getLogger(this.getClass()).debug("getPathTranslated(): " + request.getPathTranslated());
+        Logger.getLogger(this.getClass()).debug("getQueryString(): " + request.getQueryString());
+        Logger.getLogger(this.getClass()).debug("getRequestURI(): " + request.getRequestURI());
+        Logger.getLogger(this.getClass()).debug("getRequestURL(): " + request.getRequestURL());
+        Logger.getLogger(this.getClass()).debug("getServletPath(): " + request.getServletPath());
         
         res.setContentType( "application/atom+xml; charset=utf-8" );
         
