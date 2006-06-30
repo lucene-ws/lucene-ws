@@ -127,16 +127,12 @@ public class LuceneUtils {
      */
     
     public static Filter parseFilter (String string, QueryParser parser) throws ParseException {
-        Logger.getLogger(LuceneUtils.class).debug("parsing filter: " + string);
-        
         if (string == null) {
             return null;
         }
         
         if (string.startsWith("QueryFilter:")) {
-            Logger.getLogger(LuceneUtils.class).debug("starts with 'QueryFilter'");
-            string = string.substring( "QueryFilter:".length() );
-            return new QueryFilter(parser.parse(string));
+            return new QueryFilter( parser.parse( string.substring( "QueryFilter:".length() ) ) );
         }
         
         return null;
