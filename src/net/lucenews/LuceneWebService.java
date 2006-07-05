@@ -867,10 +867,17 @@ public class LuceneWebService extends HttpServlet {
      * Document URL
      */
     
+    
     public static String getDocumentURL (LuceneRequest request, String indexName, String documentID)
         throws InsufficientDataException, IOException
     {
         return getIndexURL( request, indexName ) + documentID + "/";
+    }
+    
+    public static String getDocumentURL (LuceneRequest request, LuceneDocument document)
+        throws InsufficientDataException, IOException
+    {
+        return getDocumentURL( request, document.getIndex(), document );
     }
     
     public static String getDocumentURL (LuceneRequest request, LuceneIndex index, LuceneDocument document)

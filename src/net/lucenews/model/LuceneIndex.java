@@ -711,7 +711,7 @@ public class LuceneIndex {
      * @see            #updateDocuments(LuceneDocument...)
      */
     
-    public void addDocument (LuceneDocument document)
+    public LuceneDocument addDocument (LuceneDocument document)
         throws
             IllegalActionException, InvalidIdentifierException,
             DocumentAlreadyExistsException, InsufficientDataException, IOException
@@ -739,6 +739,8 @@ public class LuceneIndex {
         IndexWriter writer = getIndexWriter();
         writer.addDocument( _document );
         putIndexWriter( writer );
+        
+        return document;
     }
     
     
@@ -756,14 +758,16 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public void addDocuments (LuceneDocument... documents)
+    public LuceneDocument[] addDocuments (LuceneDocument... documents)
         throws
             IllegalActionException, InvalidIdentifierException,
             DocumentAlreadyExistsException, InsufficientDataException, IOException
     {
+        LuceneDocument[] addedDocuments = new LuceneDocument[ documents.length ];
         for (int i = 0; i < documents.length; i++) {
-            addDocument( documents[ i ] );
+            addedDocuments[ i ] = addDocument( documents[ i ] );
         }
+        return addedDocuments;
     }
     
     

@@ -3,149 +3,157 @@ package net.lucenews.atom;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class Link
-{
-	
-	private String m_href;
-	private String m_rel;
-	private String m_type;
-	private String m_hreflang;
-	private String m_title;
-	private Integer m_length;
-	
-	
-	
-	public Link (String href)
-	{
-		this( href, null );
-	}
-	
-	public Link (String href, String rel)
-	{
-		setHREF( href );
-		setRel( rel );
-	}
-	
-	public Link (String href, String rel, String type)
-	{
-		setHREF( href );
-		setRel( rel );
-		setType( type );
-	}
-	
-	
-	
-	public static Link Alternate (String href)
-	{
-		return new Link( href, "alternate" );
-	}
-	
-	public static Link Enclosure (String href)
-	{
-		return new Link( href, "enclosure" );
-	}
-	
-	public static Link Related (String href)
-	{
-		return new Link( href, "related" );
-	}
-	
-	public static Link Self (String href)
-	{
-		return new Link( href, "self" );
-	}
-	
-	public static Link Via (String href)
-	{
-		return new Link( href, "via" );
-	}
-	
-	
-	
-	public String getHREF ()
-	{
-		return m_href;
-	}
-	
-	public void setHREF (String href)
-	{
-		m_href = href;
-	}
-	
-	public String getRel ()
-	{
-		return m_rel;
-	}
-	
-	public void setRel (String rel)
-	{
-		m_rel = rel;
-	}
-	
-	public String getType ()
-	{
-		return m_type;
-	}
-	
-	public void setType (String type)
-	{
-		m_type = type;
-	}
-	
-	public String getHREFLang ()
-	{
-		return m_hreflang;
-	}
-	
-	public void setHREFLang (String hreflang)
-	{
-		m_hreflang = hreflang;
-	}
-	
-	public String getTitle ()
-	{
-		return m_title;
-	}
-	
-	public void setTitle (String title)
-	{
-		m_title = title;
-	}
-	
-	public Integer getLength ()
-	{
-		return m_length;
-	}
-	
-	public void setLength (Integer length)
-	{
-		m_length = length;
-	}
-	
-	
-	
-	public Element asElement (Document document)
-	{
-		Element link = document.createElement( "link" );
-		
-		link.setAttribute( "href", String.valueOf( getHREF() ) );
-		
-		if( getRel() != null )
-			link.setAttribute( "rel", String.valueOf( getRel() ) );
-		
-		if( getType() != null )
-			link.setAttribute( "type", String.valueOf( getType() ) );
-		
-		if( getHREFLang() != null )
-			link.setAttribute( "hreflang", String.valueOf( getHREFLang() ) );
-		
-		if( getTitle() != null )
-			link.setAttribute( "title", String.valueOf( getTitle() ) );
-		
-		if( getLength() != null )
-			link.setAttribute( "length", String.valueOf( getLength() ) );
-		
-		return link;
-	}
-	
+public class Link {
+    
+    private String  href;
+    private String  rel;
+    private String  type;
+    private String  hreflang;
+    private String  title;
+    private Integer length;
+    
+    
+    
+    public Link () {
+    }
+    
+    public Link (String href) {
+        this( href, null );
+    }
+    
+    public Link (String href, String rel) {
+        setHref( href );
+        setRel( rel );
+    }
+    
+    public Link (String href, String rel, String type) {
+        setHref( href );
+        setRel( rel );
+        setType( type );
+    }
+    
+    
+    
+    public static Link Alternate (String href) {
+        return new Link( href, "alternate" );
+    }
+    
+    public static Link Edit (String href) {
+        return new Link( href, "edit" );
+    }
+    
+    public static Link Enclosure (String href) {
+        return new Link( href, "enclosure" );
+    }
+    
+    public static Link Related (String href) {
+        return new Link( href, "related" );
+    }
+    
+    public static Link Self (String href) {
+        return new Link( href, "self" );
+    }
+    
+    public static Link Via (String href) {
+        return new Link( href, "via" );
+    }
+    
+    
+    
+    public String getHREF () {
+        return href;
+    }
+    
+    public String getHref () {
+        return href;
+    }
+    
+    public void setHREF (String href) {
+        this.href = href;
+    }
+    
+    public void setHref (String href) {
+        this.href = href;
+    }
+    
+    public String getRel () {
+        return rel;
+    }
+    
+    public void setRel (String rel) {
+        this.rel = rel;
+    }
+    
+    public String getType () {
+        return type;
+    }
+    
+    public void setType (String type) {
+        this.type = type;
+    }
+    
+    public String getHREFLang () {
+        return hreflang;
+    }
+    
+    public String getHrefLang () {
+        return hreflang;
+    }
+    
+    public void setHREFLang (String hreflang) {
+        this.hreflang = hreflang;
+    }
+    
+    public void setHrefLang (String hreflang) {
+        this.hreflang = hreflang;
+    }
+    
+    public String getTitle () {
+        return title;
+    }
+    
+    public void setTitle (String title) {
+        this.title = title;
+    }
+    
+    public Integer getLength () {
+        return length;
+    }
+    
+    public void setLength (Integer length) {
+        this.length = length;
+    }
+    
+    
+    
+    public Element asElement (Document document) {
+        Element link = document.createElement( "link" );
+        
+        if (getHref() != null) {
+            link.setAttribute( "href", String.valueOf( getHref() ) );
+        }
+        
+        if (getRel() != null) {
+            link.setAttribute( "rel", getRel() );
+        }
+        
+        if (getType() != null) {
+            link.setAttribute( "type", getType() );
+        }
+        
+        if (getHrefLang() != null) {
+            link.setAttribute( "hreflang", getHrefLang() );
+        }
+        
+        if (getTitle() != null) {
+            link.setAttribute( "title", getTitle() );
+        }
+        
+        if (getLength() != null) {
+            link.setAttribute( "length", String.valueOf( getLength() ) );
+        }
+        
+        return link;
+    }
+    
 }

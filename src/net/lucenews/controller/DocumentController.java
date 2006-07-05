@@ -263,6 +263,13 @@ public class DocumentController extends Controller {
     }
     
     
+    public static Entry asEntry (LuceneContext c, LuceneDocument document)
+        throws InsufficientDataException, ParserConfigurationException, IOException
+    {
+        Logger.getLogger(DocumentController.class).trace("asEntry(LuceneContext,LuceneDocument)");
+        return asEntry( c, document.getIndex(), document, null );
+    }
+    
     
     /**
     * Returns an Atom Entry reflecting the standard format chosen for documents.
@@ -275,6 +282,13 @@ public class DocumentController extends Controller {
     * @throws ParserConfigurationException
     * @throws IOException
     */
+    
+    public static Entry asEntry (LuceneContext c, LuceneDocument document, Float score)
+        throws InsufficientDataException, ParserConfigurationException, IOException
+    {
+        Logger.getLogger(DocumentController.class).trace("asEntry(LuceneContext,LuceneDocument,Float)");
+        return asEntry( c, document.getIndex(), document, score );
+    }
     
     public static Entry asEntry (LuceneContext c, LuceneIndex index, LuceneDocument document, Float score)
         throws InsufficientDataException, ParserConfigurationException, IOException
