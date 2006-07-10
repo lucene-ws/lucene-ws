@@ -300,6 +300,13 @@ public class LuceneIndex {
     
     
     
+    public boolean exists () {
+        return IndexReader.indexExists( getDirectory() );
+    }
+    
+    
+    
+    
     
     /**
      * Retrieves the directory within which the
