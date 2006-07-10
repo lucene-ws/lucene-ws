@@ -560,7 +560,13 @@ public class SearchController extends Controller {
             OpenSearchResult result = new OpenSearchResult();
             result.setTitle( document.getTitle() );
             result.setId( service.getDocumentURL( req, index, document ) );
-            result.setUpdated( document.getUpdated() );
+            
+            try {
+                result.setUpdated( document.getUpdated() );
+            }
+            catch (InsufficientDataException ide) {
+            }
+            
             result.setRelevance( iterator.score() );
             
             OpenSearchLink resultLink = new OpenSearchLink();
