@@ -250,6 +250,12 @@ public class IndexController extends Controller {
         }
         
         
+        String optimize = req.getCleanParameter("optimize");
+        if (optimize == null || ServletUtils.parseBoolean(optimize)) {
+            IndexController.doOptimize( c );
+        }
+        
+        
         // TODO: A representation of the added entries must be returned as per the APP
         if (addedDocuments.size() == 1) {
             LuceneDocument document = addedDocuments.iterator().next();

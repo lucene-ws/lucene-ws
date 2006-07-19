@@ -23,12 +23,12 @@ public class DocumentController extends Controller {
     
     
     /**
-    * Deletes a document
-    * 
-    * @throws IndicesNotFoundException
-    * @throws DocumentsNotFoundException
-    * @throws IOException
-    */
+     * Deletes a document
+     * 
+     * @throws IndicesNotFoundException
+     * @throws DocumentsNotFoundException
+     * @throws IOException
+     */
     
     public static void doDelete (LuceneContext c)
         throws
@@ -90,14 +90,14 @@ public class DocumentController extends Controller {
     
     
     /**
-    * Gets a document
-    * 
-    * @throws IndicesNotFoundException
-    * @throws DocumentsNotFoundException
-    * @throws ParserConfigurationException
-    * @throws TransformerException
-    * @throws IOException
-    */
+     * Gets a document
+     * 
+     * @throws IndicesNotFoundException
+     * @throws DocumentsNotFoundException
+     * @throws ParserConfigurationException
+     * @throws TransformerException
+     * @throws IOException
+     */
     
     public static void doGet (LuceneContext c)
         throws
@@ -185,18 +185,18 @@ public class DocumentController extends Controller {
     
     
     /**
-    * Updates particular documents within the index
-    * 
-    * @throws InvalidIdentifierException
-    * @throws IndicesNotFoundException
-    * @throws SAXException
-    * @throws TransformerException
-    * @throws ParserConfigurationException
-    * @throws DocumentNotFoundException
-    * @throws IndexNotFoundException
-    * @throws IOException
-    * @throws AtomParseException
-    */
+     * Updates particular documents within the index
+     * 
+     * @throws InvalidIdentifierException
+     * @throws IndicesNotFoundException
+     * @throws SAXException
+     * @throws TransformerException
+     * @throws ParserConfigurationException
+     * @throws DocumentNotFoundException
+     * @throws IndexNotFoundException
+     * @throws IOException
+     * @throws AtomParseException
+     */
     
     public static void doPut (LuceneContext c)
         throws
@@ -244,10 +244,17 @@ public class DocumentController extends Controller {
         String indexNames  = indexNamesBuffer.toString();
         String documentIDs = documentIDsBuffer.toString();
         
-        if( updated )
+        if (updated) {
             res.addHeader( "Location", service.getDocumentURL( req, indexNames, documentIDs ) );
-        else
+            
+            String optimize = req.getCleanParameter("optimize");
+            if (optimize == null || ServletUtils.parseBoolean(optimize)) {
+                IndexController.doOptimize( c );
+            }
+        }
+        else {
             throw new InsufficientDataException( "No documents to be updated" );
+        }
         
         XMLController.acknowledge( c );
     }
