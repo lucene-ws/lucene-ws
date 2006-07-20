@@ -154,18 +154,19 @@ public class LuceneDocument {
     
     
     
-    public Enumeration<Field> fields () {
-        Enumeration<?> documentFields = document.fields();
-        Vector<Field> _fields = new Vector<Field>();
+    public List<Field> getFields () {
+        List<?>     objects = document.getFields();
+        List<Field> fields  = new ArrayList<Field>( objects.size() );
         
-        while (documentFields.hasMoreElements()) {
-            Object documentField = documentFields.nextElement();
-            if (documentField instanceof Field) {
-                _fields.add( (Field) documentField );
+        Iterator<?> iterator = objects.iterator();
+        while (iterator.hasNext()) {
+            Object object = iterator.next();
+            if (object instanceof Field) {
+                fields.add( (Field) object );
             }
         }
         
-        return _fields.elements();
+        return fields;
     }
     
     

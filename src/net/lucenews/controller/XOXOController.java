@@ -70,9 +70,9 @@ public class XOXOController {
             return dl;
         }
         
-        Enumeration<Field> fields = luceneDocument.fields();
-        while (fields.hasMoreElements()) {
-            Field field = fields.nextElement();
+        Iterator<Field> fields = luceneDocument.getFields().iterator();
+        while (fields.hasNext()) {
+            Field field = fields.next();
             
             String name  = field.name();
             String value = field.stringValue();

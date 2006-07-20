@@ -9,10 +9,12 @@ public class OpenSearchUrl {
     private String type;
     private String method;
     private Map<String,String> params;
+    private Map<String,String> namespaces;
     
     
     public OpenSearchUrl () {
-        params = new LinkedHashMap<String,String>();
+        params     = new LinkedHashMap<String,String>();
+        namespaces = new LinkedHashMap<String,String>();
     }
     
     
@@ -61,6 +63,12 @@ public class OpenSearchUrl {
     
     
     
+    public void setNamespace (String namespace, String uri) {
+        namespaces.put( namespace, uri );
+    }
+    
+    
+    
     public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {
         return asElement(document, format, OpenSearch.STRICT);
     }
@@ -81,6 +89,13 @@ public class OpenSearchUrl {
         // template
         if (getTemplate() != null) {
             element.setAttribute("template", getTemplate());
+        }
+        
+        // namespaces
+        Iterator<Map.Entry<String,String>> namespaceIterator = namespaces.entrySet().iterator();
+        while (namespaceIterator.hasNext()) {
+            Map.Entry<String,String> namespace = namespaceIterator.next();
+            element.setAttribute( "xmlns:"+namespace.getKey(), namespace.getValue() );
         }
         
         Iterator<Map.Entry<String,String>> iterator = params.entrySet().iterator();

@@ -614,6 +614,19 @@ public class ServletUtils {
         return strings;
     }
     
+    public static String join (String delimiter, Object... objects) {
+        StringBuffer buffer = new StringBuffer();
+        
+        for (int i = 0; i < objects.length; i++) {
+            if (i > 0) {
+                buffer.append( delimiter );
+            }
+            buffer.append( objects[ i ].toString() );
+        }
+        
+        return buffer.toString();
+    }
+    
     public static String joined (Object... objects) {
         String[] strings = new String[ objects.length ];
         

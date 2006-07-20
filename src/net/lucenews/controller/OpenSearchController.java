@@ -34,6 +34,7 @@ public class OpenSearchController extends Controller {
         LuceneWebService   service = c.service();
         LuceneIndexManager manager = service.getIndexManager();
         LuceneRequest      req     = c.req();
+        LuceneRequest      request = c.req();
         LuceneResponse     res     = c.res();
         LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
         
@@ -43,40 +44,37 @@ public class OpenSearchController extends Controller {
         description.setDescription( "OpenSearch description for " + ServletUtils.joined(ServletUtils.mapped("'[content]'", ServletUtils.objectsMapped("getTitle", indices))));
         
         
-        // Search URL
-        StringBuffer template = new StringBuffer();
-        template.append( service.getServiceURL(req) );
-        for (int i = 0; i < indices.length; i++) {
-            if (i > 0) {
-                template.append( "," );
-            }
-            template.append( indices[i].getName() );
-        }
-        template.append("/");
-        template.append("?query={searchTerms}");
-        template.append("&limit={count}");
-        template.append("&offset={startIndex}");
-        template.append("&page={startPage}");
-        template.append("&locale={language?}");
-        template.append("&sort={sort?}");
-        template.append("&analyzer={analyzer?}");
-        template.append("&operator={operator?}");
-        template.append("&maximum={maximum?}");
-        template.append("&filter={filter?}");
-        
+        // Template
+        HttpURI template = new HttpURI( service.getServiceURL( request ) );
+        template.addPath( ServletUtils.join( ",", (Object[]) indices ) );
+        template.setParameter( "searchTerms",    "{searchTerms}" );
+        template.setParameter( "count",          "{count?}" );
+        template.setParameter( "startIndex",     "{startIndex?}" );
+        template.setParameter( "startPage",      "{startPage?}" );
+        template.setParameter( "language",       "{language?}" );
+        template.setParameter( "outputEncoding", "{outputEncoding?}" );
+        template.setParameter( "inputEncoding",  "{inputEncoding?}" );
+        template.setParameter( "totalResults",   "{totalResults?}" );
+        template.setParameter( "analyzer",       "{lucene:analyzer?}" );
+        template.setParameter( "filter",         "{lucene:filter?}" );
+        template.setParameter( "locale",         "{lucene:locale?}" );
+        template.setParameter( "operator",       "{lucene:operator?}" );
+        template.setParameter( "sort",           "{lucene:sort?}" );
         
         
         // Atom
         OpenSearchUrl atomUrl = new OpenSearchUrl();
         atomUrl.setType("application/atom+xml");
-        atomUrl.setTemplate(template.toString() + "&format=atom");
+        atomUrl.setTemplate( template.with( "format", "atom" ).toString() );
+        atomUrl.setNamespace( "lucene", "http://www.lucene-ws.net/" );
         description.addUrl( atomUrl );
         
         
         // RSS
         OpenSearchUrl rssUrl = new OpenSearchUrl();
         rssUrl.setType("application/rss+xml");
-        rssUrl.setTemplate(template.toString() + "&format=rss");
+        rssUrl.setTemplate( template.with( "format", "rss" ).toString() );
+        rssUrl.setNamespace( "lucene", "http://www.lucene-ws.net/" );
         description.addUrl( rssUrl );
         
         

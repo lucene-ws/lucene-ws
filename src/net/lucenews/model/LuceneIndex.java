@@ -2008,9 +2008,9 @@ public class LuceneIndex {
     public static Properties asProperties (LuceneDocument document) {
         Properties properties = new Properties();
         
-        Enumeration<Field> fields = document.fields();
-        while (fields.hasMoreElements()) {
-            Field field = fields.nextElement();
+        Iterator<Field> fields = document.getFields().iterator();
+        while (fields.hasNext()) {
+            Field field = fields.next();
             properties.setProperty( field.name(), field.stringValue() );
         }
         
@@ -2058,5 +2058,10 @@ public class LuceneIndex {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date( getPropertiesFile().lastModified() ) );
         return calendar;
+    }
+    
+    
+    public String toString () {
+        return getName();
     }
 }

@@ -8,6 +8,7 @@ import net.lucenews.atom.*;
 import net.lucenews.model.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
+import net.lucenews.opensearch.*;
 import org.apache.log4j.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.document.*;
@@ -23,6 +24,201 @@ import org.w3c.dom.NodeList;
 public class LuceneUtils {
     public static final String ANALYSIS_NAMESPACE = "org.apache.lucene.analysis";
     public static final String SORT_COMPARATOR_SOURCE_NAMESPACE = "org.apache.lucene.search";
+    
+    
+    
+    
+    
+    public static void prepareContext (LuceneContext c) throws Exception {
+        LuceneRequest request = c.request();
+        
+        
+        // OpenSearch query
+        if (c.getOpenSearchQuery() == null) {
+            OpenSearchQuery query = new OpenSearchQuery();
+            
+            
+            /**
+             * searchTerms
+             */
+            
+            String searchTerms = null;
+            if (searchTerms == null) { searchTerms = request.getCleanParameter("searchTerms"); }
+            if (searchTerms == null) { searchTerms = request.getCleanParameter("query");       }
+            if (searchTerms == null) { searchTerms = request.getCleanParameter("q");           }
+            query.setSearchTerms( searchTerms );
+            
+            
+            /**
+             * startIndex
+             */
+            
+            Integer startIndex = null;
+            if (startIndex == null) { startIndex = request.getIntegerParameter("startIndex");  }
+            if (startIndex == null) { startIndex = request.getIntegerParameter("start_index"); }
+            if (startIndex == null) { startIndex = request.getIntegerParameter("start");       }
+            if (startIndex == null) { startIndex = request.getIntegerParameter("offset");      }
+            query.setStartIndex( startIndex );
+            
+            
+            /**
+             * startPage
+             */
+            
+            Integer startPage = null;
+            if (startPage == null) { startPage = request.getIntegerParameter("startPage");  }
+            if (startPage == null) { startPage = request.getIntegerParameter("start_page"); }
+            if (startPage == null) { startPage = request.getIntegerParameter("page");       }
+            query.setStartPage( startPage );
+            
+            
+            /**
+             * count
+             */
+            
+            Integer count = null;
+            if (count == null) { count = request.getIntegerParameter("count");            }
+            if (count == null) { count = request.getIntegerParameter("limit");            }
+            if (count == null) { count = request.getIntegerParameter("entriesPerPage");   }
+            if (count == null) { count = request.getIntegerParameter("entries_per_page"); }
+            query.setCount( count );
+            
+            
+            /**
+             * totalResults
+             */
+            
+            Integer totalResults = null;
+            if (totalResults == null) { totalResults = request.getIntegerParameter("totalResults");  }
+            if (totalResults == null) { totalResults = request.getIntegerParameter("total_results"); }
+            if (totalResults == null) { totalResults = request.getIntegerParameter("total");         }
+            query.setTotalResults( totalResults );
+            
+            
+            /**
+             * language
+             */
+            
+            String language = null;
+            if (language == null) { language = request.getCleanParameter("language"); }
+            if (language == null) { language = request.getCleanParameter("lang");     }
+            if (language == null) { language = request.getCleanParameter("locale");   } // This needs fixing
+            query.setLanguage( language );
+            
+            
+            /**
+             * inputEncoding
+             */
+            
+            String inputEncoding = null;
+            if (inputEncoding == null) { inputEncoding = request.getCleanParameter("inputEncoding");  }
+            if (inputEncoding == null) { inputEncoding = request.getCleanParameter("input_encoding"); }
+            if (inputEncoding == null) { inputEncoding = request.getCleanParameter("input");          }
+            query.setInputEncoding( inputEncoding );
+            
+            
+            /**
+             * outputEncoding
+             */
+            
+            String outputEncoding = null;
+            if (outputEncoding == null) { outputEncoding = request.getCleanParameter("outputEncoding");  }
+            if (outputEncoding == null) { outputEncoding = request.getCleanParameter("output_encoding"); }
+            if (outputEncoding == null) { outputEncoding = request.getCleanParameter("output");          }
+            query.setOutputEncoding( outputEncoding );
+            
+            
+            /**
+             * role
+             */
+            
+            query.setRole( OpenSearchQuery.Role.REQUEST );
+            
+            
+            c.setOpenSearchQuery( query );
+        }
+        
+        
+        // analyzer
+        if (c.getAnalyzer() == null) {
+        }
+        
+        
+        // default operator
+        if (c.getDefaultOperator() == null) {
+        }
+        
+        
+        // filter
+        if (c.getFilter() == null) {
+        }
+        
+        
+        // format
+        if (c.getOpenSearchFormat() == null) {
+            OpenSearch.Format format = null;
+            
+            // "format" request parameter
+            if (format == null) {
+                try {
+                    format = OpenSearch.getFormat( request.getParameter("format") );
+                }
+                catch (Exception e) {
+                }
+            }
+            
+            // "atom" request parameter
+            if (format == null) {
+                try {
+                    if ( ServletUtils.parseBoolean( request.getParameter("atom") ) ) {
+                        format = OpenSearch.Format.ATOM;
+                    }
+                }
+                catch (Exception e) {
+                }
+            }
+            
+            // "rss" request parameter
+            if (format == null) {
+                try {
+                    if ( ServletUtils.parseBoolean( request.getParameter("rss") ) ) {
+                        format = OpenSearch.Format.RSS;
+                    }
+                }
+                catch (Exception e) {
+                }
+            }
+            
+            c.setOpenSearchFormat( format );
+        }
+        
+        
+        // locale
+        if (c.getLocale() == null) {
+        }
+        
+        
+        // is expanding
+        if (c.isExpanding() == null) {
+        }
+        
+        
+        // is spell-checking
+        if (c.isSpellChecking() == null) {
+        }
+        
+        
+        // is suggesting
+        if (c.isSuggesting() == null) {
+        }
+        
+        
+        // OpenSearch format
+        if (c.getOpenSearchFormat() == null) {
+        }
+        
+    }
+    
     
     
     

@@ -791,6 +791,18 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      * Gets an integer parameter
      */
     
+    public Integer getIntegerParameter (String name) {
+        try {
+            return Integer.valueOf( getParameter( name ) );
+        }
+        catch (NullPointerException npe) {
+            return null;
+        }
+        catch (NumberFormatException nfe) {
+            return null;
+        }
+    }
+    
     public Integer getIntegerParameter (int key) {
         try {
             return Integer.valueOf( getParameter( key ) );

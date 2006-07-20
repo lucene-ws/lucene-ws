@@ -11,84 +11,115 @@ import org.apache.lucene.search.*;
 
 public class LuceneContext {
     
-    private Map<String,Object> m_stash;
-    private LuceneRequest      m_request;
-    private LuceneResponse     m_response;
-    private LuceneWebService   m_service;
+    private Map<String,Object> stash;
+    private LuceneRequest      request;
+    private LuceneResponse     response;
+    private LuceneWebService   service;
     
-    private OpenSearchQuery requestQuery;
-    private OpenSearch.Format openSearchFormat;
-    private Analyzer analyzer;
+    private OpenSearchQuery      openSearchQuery;
+    private OpenSearch.Format    openSearchFormat;
+    private Analyzer             analyzer;
     private QueryParser.Operator defaultOperator;
-    private Locale locale;
-    private Filter filter;
-    private Boolean expanding;
-    private Boolean spellChecking;
-    private Boolean suggesting;
+    private Locale               locale;
+    private Filter               filter;
+    private Boolean              expanding;
+    private Boolean              spellChecking;
+    private Boolean              suggesting;
     
     
     
     public LuceneContext (HttpServletRequest request, HttpServletResponse response) {
-        m_request  = LuceneRequest.newInstance( request );
-        m_response = LuceneResponse.newInstance( response );
+        setRequest( LuceneRequest.newInstance( request ) );
+        setResponse( LuceneResponse.newInstance( response ) );
     }
     
     
     
     public LuceneContext (LuceneRequest request, LuceneResponse response) {
-        m_stash    = new HashMap<String,Object>();
-        m_request  = request;
-        m_response = response;
+        setStash( new HashMap<String,Object>() );
+        setRequest( request );
+        setResponse( response );
     }
     
     public LuceneContext (LuceneRequest request, LuceneResponse response, LuceneWebService service) {
-        m_stash    = new HashMap<String,Object>();
-        m_request  = request;
-        m_response = response;
-        m_service  = service;
+        setStash( new HashMap<String,Object>() );
+        setRequest( request );
+        setResponse( response );
+        setService( service );
     }
     
     
+    
+    public Map<String,Object> getStash () {
+        return stash;
+    }
+    
     public Map<String,Object> stash () {
-        return m_stash;
+        return getStash();
+    }
+    
+    public void setStash (Map<String,Object> stash) {
+        this.stash = stash;
+    }
+    
+    
+    
+    public LuceneRequest getRequest () {
+        return request;
+    }
+    
+    public void setRequest (LuceneRequest request) {
+        this.request = request;
     }
     
     public LuceneRequest request () {
-        return m_request;
+        return getRequest();
     }
     
     public LuceneRequest req () {
-        return request();
+        return getRequest();
+    }
+    
+    
+    
+    public LuceneResponse getResponse () {
+        return response;
+    }
+    
+    public void setResponse (LuceneResponse response) {
+        this.response = response;
     }
     
     public LuceneResponse response () {
-        return m_response;
+        return getResponse();
     }
     
     public LuceneResponse res () {
-        return response();
+        return getResponse();
     }
+    
+    
     
     public LuceneWebService service () {
         return getService();
     }
     
     public LuceneWebService getService () {
-        return m_service;
+        return service;
     }
     
     public void setService (LuceneWebService service) {
-        m_service = service;
+        this.service = service;
     }
     
     
     
-    public OpenSearchQuery getRequestQuery () {
-        return requestQuery;
+    public OpenSearchQuery getOpenSearchQuery () {
+        return openSearchQuery;
     }
     
-    public void setRequestQuery (OpenSearchQuery requestQuery) {
-        this.requestQuery = requestQuery;
+    public void setOpenSearchQuery (OpenSearchQuery openSearchQuery) {
+        this.openSearchQuery = openSearchQuery;
     }
     
     

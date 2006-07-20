@@ -1,20 +1,33 @@
 package net.lucenews.opensearch;
 
+import java.util.*;
 import org.w3c.dom.*;
 
 public class OpenSearchQuery {
     
-    private String role;
-    private String title;
-    private String osd;
+    
+    static public final class Role {
+        static public final String EXAMPLE    = "example";
+        static public final String RELATED    = "related";
+        static public final String REQUEST    = "request";
+        static public final String CORRECTION = "correction";
+        static public final String SUPERSET   = "superset";
+        static public final String SUBSET     = "subset";
+    }
+    
+    
+    private String  role;
+    private String  title;
+    private String  osd;
     private Integer total_results;
-    private String search_terms;
+    private String  search_terms;
     private Integer count;
     private Integer start_index;
     private Integer start_page;
-    private String language;
-    private String output_encoding;
-    private String input_encoding;
+    private String  language;
+    private String  output_encoding;
+    private String  input_encoding;
+    private Map<String,String> namespaces;
     
     
     public OpenSearchQuery () {
@@ -36,12 +49,12 @@ public class OpenSearchQuery {
         }
         
         String[] valid_roles = new String[] {
-            "example",
-            "related",
-            "request",
-            "correction",
-            "superset",
-            "subset"
+            Role.EXAMPLE,
+            Role.RELATED,
+            Role.REQUEST,
+            Role.CORRECTION,
+            Role.SUPERSET,
+            Role.SUBSET
         };
         
         for (int i = 0; i < valid_roles.length; i++) {
@@ -233,6 +246,12 @@ public class OpenSearchQuery {
     
     
     
+    public void setNamespace (String namespace, String uri) {
+        namespaces.put( namespace, uri );
+    }
+    
+    
+    
     public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {
         return asElement(document, format, OpenSearch.STRICT);
     }
@@ -306,6 +325,13 @@ public class OpenSearchQuery {
         // inputEncoding
         if (getInputEncoding() != null) {
             element.setAttribute("inputEncoding", getInputEncoding());
+        }
+        
+        // namespaces
+        Iterator<Map.Entry<String,String>> namespaceIterator = namespaces.entrySet().iterator();
+        while (namespaceIterator.hasNext()) {
+            Map.Entry<String,String> namespace = namespaceIterator.next();
+            element.setAttribute( "xmlns:"+namespace.getKey(), namespace.getValue() );
         }
         
         return element;
