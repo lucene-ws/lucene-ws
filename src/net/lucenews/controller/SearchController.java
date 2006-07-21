@@ -324,55 +324,57 @@ public class SearchController extends Controller {
          * ============================================
          */
         
-        if (totalResults > 0) {
-            int firstIndex = c.getOpenSearchQuery().getFirstIndex();
-            int lastIndex  = c.getOpenSearchQuery().getLastIndex();
+        if (c.getOpenSearchQuery().getTotalResults() > 0) {
+            Integer firstIndex = c.getOpenSearchQuery().getFirstIndex();
+            Integer lastIndex  = c.getOpenSearchQuery().getLastIndex();
             
-            for (int number = firstIndex; number <= lastIndex; number++) {
-                LuceneDocument document = new LuceneDocument( hits.doc( number - 1 ) );
-                float          score    = hits.score( number - 1 );
-                
-                Integer searcherIndex = extractSearcherIndex( document );
-                
-                LuceneIndex index = null;
-                if (searcherIndex != null) {
-                    index = indices[ searcherIndex ];
-                    document.setIndex( index );
+            if (firstIndex != null && lastIndex != null) {
+                for (int number = firstIndex; number <= lastIndex; number++) {
+                    LuceneDocument document = new LuceneDocument( hits.doc( number - 1 ) );
+                    float          score    = hits.score( number - 1 );
+                    
+                    Integer searcherIndex = extractSearcherIndex( document );
+                    
+                    LuceneIndex index = null;
+                    if (searcherIndex != null) {
+                        index = indices[ searcherIndex ];
+                        document.setIndex( index );
+                    }
+                    
+                    OpenSearchResult result = new OpenSearchResult();
+                    result.setTitle( document.getTitle() );
+                    result.setId( service.getDocumentURL( request, index, document ) );
+                    
+                    try {
+                        result.setUpdated( document.getUpdated() );
+                    }
+                    catch (InsufficientDataException ide) {
+                    }
+                    
+                    result.setRelevance( score );
+                    
+                    OpenSearchLink resultLink = new OpenSearchLink();
+                    resultLink.setHref( service.getDocumentURL( request, index, document ) );
+                    result.setLink( resultLink );
+                    
+                    
+                    if (document.getAuthor() != null) {
+                        OpenSearchPerson author = new OpenSearchPerson();
+                        author.setRole( "author" );
+                        author.setName( document.getAuthor() );
+                        result.addPerson( author );
+                    }
+                    
+                    
+                    // content
+                    Element div = domDocument.createElement("div");
+                    div.setAttribute( "xmlns", "http://www.w3.org/1999/xhtml" );
+                    div.appendChild( XOXOController.asElement( c, document, domDocument ) );
+                    result.setContent( div );
+                    
+                    
+                    response.addResult( result );
                 }
-                
-                OpenSearchResult result = new OpenSearchResult();
-                result.setTitle( document.getTitle() );
-                result.setId( service.getDocumentURL( request, index, document ) );
-                
-                try {
-                    result.setUpdated( document.getUpdated() );
-                }
-                catch (InsufficientDataException ide) {
-                }
-                
-                result.setRelevance( score );
-                
-                OpenSearchLink resultLink = new OpenSearchLink();
-                resultLink.setHref( service.getDocumentURL( request, index, document ) );
-                result.setLink( resultLink );
-                
-                
-                if (document.getAuthor() != null) {
-                    OpenSearchPerson author = new OpenSearchPerson();
-                    author.setRole( "author" );
-                    author.setName( document.getAuthor() );
-                    result.addPerson( author );
-                }
-                
-                
-                // content
-                Element div = domDocument.createElement("div");
-                div.setAttribute( "xmlns", "http://www.w3.org/1999/xhtml" );
-                div.appendChild( XOXOController.asElement( c, document, domDocument ) );
-                result.setContent( div );
-                
-                
-                response.addResult( result );
             }
         }
         

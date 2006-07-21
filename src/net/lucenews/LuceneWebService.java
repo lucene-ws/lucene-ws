@@ -367,7 +367,7 @@ public class LuceneWebService extends HttpServlet {
             if (req.hasDocumentIDs()) {
                 DocumentController.doGet( c );
             }
-            else if (req.getParameter( LuceneKeys.SEARCH_STRING ) != null) {
+            else if (c.getOpenSearchQuery() != null && c.getOpenSearchQuery().getSearchTerms() != null) {
                 SearchController.doGet( c );
             }
             else {

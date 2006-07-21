@@ -32,6 +32,7 @@ public class OpenSearchQuery {
     
     
     public OpenSearchQuery () {
+        namespaces = new LinkedHashMap<String,String>();
     }
     
     
@@ -271,12 +272,18 @@ public class OpenSearchQuery {
             startPage = 1; // default
         }
         
+        Logger.getLogger(this.getClass()).debug("startIndex: " + startIndex);
+        Logger.getLogger(this.getClass()).debug("startPage:  " + startPage);
+        
         if (totalResults < startIndex) {
             return boundaries;
         }
         
         boundaries[ 0 ] = 1;
         boundaries[ 1 ] = (int) Math.ceil( ( totalResults - startIndex + 1 ) / count );
+        
+        //Logger.getLogger(this.getClass()).debug("previousPage: " + boundaries[ 0 ]);
+        //Logger.getLogger(this.getClass()).debug("nextPage:     " + boundaries[ 1 ]);
         
         return boundaries;
     }
@@ -289,7 +296,11 @@ public class OpenSearchQuery {
         Integer startPage = getStartPage();
         Integer firstPage = getFirstPage();
         
-        if (startPage == null || firstPage == null || startPage == firstPage) {
+        if (startPage == null) { startPage = 1; }
+        
+        Logger.getLogger(this.getClass()).debug("startPage: " + startPage);
+        Logger.getLogger(this.getClass()).debug("firstPage: " + firstPage);
+        if (firstPage == null || startPage.equals( firstPage )) {
             return null;
         }
         
@@ -300,7 +311,9 @@ public class OpenSearchQuery {
         Integer startPage = getStartPage();
         Integer lastPage  = getLastPage();
         
-        if (startPage == null || lastPage == null || startPage == lastPage) {
+        if (startPage == null) { startPage = 1; }
+        
+        if (lastPage == null || startPage.equals( lastPage )) {
             return null;
         }
         

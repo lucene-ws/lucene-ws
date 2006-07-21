@@ -21,36 +21,24 @@ public class HttpURI {
     
     public HttpURI (HttpServletRequest request) {
         this();
-
-        String path = request.getRequestURI() == null ? request.getRequestURI() : "";
-        Logger.getLogger( HttpURI.class ).debug("STARTING TO SET PATH TO " + path);
-        setPath( path );
-        Logger.getLogger( HttpURI.class ).debug("FINISHED TO SET PATH TO " + path);
         
+        StringBuffer url = request.getRequestURL();
         
-        /**
-         * Clone the query string parameters
-         */
-        
-        Map genericMap = request.getParameterMap();
-        Iterator genericIterator = genericMap.entrySet().iterator();
-        while (genericIterator.hasNext()) {
-            Object object = genericIterator.next();
-            if (object instanceof Map.Entry) {
-                Map.Entry genericEntry = (Map.Entry) object;
-                
-                if (genericEntry.getKey() instanceof String && genericEntry.getValue() instanceof String[]) {
-                    String   name   = (String)   genericEntry.getKey();
-                    String[] values = (String[]) genericEntry.getValue();
-                    setParameter( name, values );
-                }
-            }
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            url.append("?");
+            url.append(queryString);
         }
+        
+        setUri(url.toString());
     }
     
     public HttpURI (String uri) {
         this();
-        
+        setUri( uri );
+    }
+    
+    protected void setUri (String uri) {
         Logger.getLogger( HttpURI.class ).debug( "STARTED SETTING URI TO " + uri );
         
         String protocol = "http://";
@@ -230,7 +218,7 @@ public class HttpURI {
                 if (name != null) {
                     String[] currentValue = parameters.get( name );
                     if (currentValue == null) {
-                        parameters.put( name, new String[]{ name } );
+                        parameters.put( name, new String[]{ value } );
                     }
                     else {
                         List<String> list = new LinkedList<String>();
@@ -344,6 +332,47 @@ public class HttpURI {
     
     
     
+    public static String uriFormatted (String string) {
+        byte[] bytes = string.getBytes();
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < bytes.length; i++) {
+            buffer.append( uriFormatted( bytes[ i ] ) );
+        }
+        return buffer.toString();
+    }
+    
+    public static String uriFormatted (byte b) {
+        if ( ( b & 0x80 ) > 0) {
+            // Escape it!
+            return escape( b );
+        }
+        else {
+            String s = "";
+            s += (char) b;
+            return s;
+        }
+    }
+    
+    public static String escape (byte b) {
+        
+        String[] alphabet = {
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+            "A", "B", "C", "D", "E", "F"
+        };
+        
+        String escaped = "%";
+        
+        byte ch = (byte) (b & 0xF0); // Strip off high nibble
+        ch = (byte) (ch >>> 4); // shift the bits down
+        ch = (byte) (ch & 0x0F); // must do this is high order bit is on!
+        escaped += alphabet[ (int) ch ]; // convert the nibble to a String Character
+        
+        ch = (byte) (b & 0x0F); // Strip off low nibble 
+        escaped += alphabet[ (int) ch ]; // convert the nibble to a String Character
+        
+        return escaped;
+    }
+    
     public String toString () {
         StringBuffer buffer = new StringBuffer();
         
@@ -379,9 +408,9 @@ public class HttpURI {
                     else {
                         buffer.append("&");
                     }
-                    buffer.append(name);
+                    buffer.append( uriFormatted( name ) );
                     buffer.append("=");
-                    buffer.append(values[i]);
+                    buffer.append( uriFormatted( values[i] ) );
                 }
             }
         }
