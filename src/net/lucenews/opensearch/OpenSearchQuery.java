@@ -1,6 +1,7 @@
 package net.lucenews.opensearch;
 
 import java.util.*;
+import org.apache.log4j.*;
 import org.w3c.dom.*;
 
 public class OpenSearchQuery {
@@ -243,6 +244,72 @@ public class OpenSearchQuery {
         return getBoundingIndices()[ 1 ];
     }
     
+    
+    
+    public Integer[] getPagingBoundaries () {
+        Integer[] boundaries = new Integer[ 2 ];
+        
+        Logger.getLogger(this.getClass()).debug("getting paging boundaries");
+        
+        Integer totalResults = getTotalResults();
+        Integer count        = getCount();
+        
+        Logger.getLogger(this.getClass()).debug("totalResults: " + totalResults);
+        Logger.getLogger(this.getClass()).debug("count:        " + count);
+        
+        if (totalResults == null || totalResults == 0 || count == null || count == 0) {
+            return boundaries;
+        }
+        
+        Integer startIndex = getStartIndex();
+        if (startIndex == null) {
+            startIndex = 1; // default
+        }
+        
+        Integer startPage = getStartPage();
+        if (startPage == null) {
+            startPage = 1; // default
+        }
+        
+        if (totalResults < startIndex) {
+            return boundaries;
+        }
+        
+        boundaries[ 0 ] = 1;
+        boundaries[ 1 ] = (int) Math.ceil( ( totalResults - startIndex + 1 ) / count );
+        
+        return boundaries;
+    }
+    
+    public Integer getFirstPage () {
+        return getPagingBoundaries()[ 0 ];
+    }
+    
+    public Integer getPreviousPage () {
+        Integer startPage = getStartPage();
+        Integer firstPage = getFirstPage();
+        
+        if (startPage == null || firstPage == null || startPage == firstPage) {
+            return null;
+        }
+        
+        return startPage - 1;
+    }
+    
+    public Integer getNextPage () {
+        Integer startPage = getStartPage();
+        Integer lastPage  = getLastPage();
+        
+        if (startPage == null || lastPage == null || startPage == lastPage) {
+            return null;
+        }
+        
+        return startPage + 1;
+    }
+    
+    public Integer getLastPage () {
+        return getPagingBoundaries()[ 1 ];
+    }
     
     
     

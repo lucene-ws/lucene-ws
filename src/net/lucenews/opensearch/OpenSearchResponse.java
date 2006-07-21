@@ -118,10 +118,36 @@ public class OpenSearchResponse {
         return links.remove( link );
     }
     
+    public OpenSearchLink getRelatedLink (String rel) {
+        Iterator<OpenSearchLink> iterator = getLinks().iterator();
+        while ( iterator.hasNext() ) {
+            OpenSearchLink link = iterator.next();
+            if (link.getRel() != null && link.getRel().toLowerCase().trim().equals(rel.toLowerCase().trim())) {
+                return link;
+            }
+        }
+        return null;
+    }
+    
     
     
     public List<OpenSearchQuery> getQueries () {
         return queries;
+    }
+    
+    public OpenSearchQuery getRequestQuery () {
+        return getRelatedQuery("request");
+    }
+    
+    public OpenSearchQuery getRelatedQuery (String role) {
+        Iterator<OpenSearchQuery> iterator = getQueries().iterator();
+        while ( iterator.hasNext() ) {
+            OpenSearchQuery query = iterator.next();
+            if (query.getRole() != null && query.getRole().toLowerCase().trim().equals(role.toLowerCase().trim())) {
+                return query;
+            }
+        }
+        return null;
     }
     
     public void addQuery (OpenSearchQuery query) {
@@ -174,6 +200,7 @@ public class OpenSearchResponse {
     
     public Element asElement (Document document, OpenSearch.Format format, OpenSearch.Mode mode) throws OpenSearchException {
         
+        OpenSearchQuery requestQuery = getRequestQuery();
         
         /**
          * Atom
@@ -238,18 +265,24 @@ public class OpenSearchResponse {
             }
             
             // totalResults
-            if (getTotalResults() != null) {
-                element.appendChild(asElementNS(document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:totalResults", String.valueOf(getTotalResults())));
+            Integer totalResults = getTotalResults();
+            if (totalResults == null && requestQuery != null) { totalResults = requestQuery.getTotalResults(); }
+            if (totalResults != null) {
+                element.appendChild(asElementNS(document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:totalResults", String.valueOf(totalResults)));
             }
             
             // startIndex
-            if (getStartIndex() != null) {
-                element.appendChild(asElementNS(document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:startIndex", String.valueOf(getStartIndex())));
+            Integer startIndex = getStartIndex();
+            if (startIndex == null && requestQuery != null) { startIndex = requestQuery.getStartIndex(); }
+            if (startIndex != null) {
+                element.appendChild(asElementNS(document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:startIndex", String.valueOf(startIndex)));
             }
             
             // itemsPerPage
-            if (getItemsPerPage() != null) {
-                element.appendChild(asElementNS(document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:itemsPerPage", String.valueOf(getItemsPerPage())));
+            Integer itemsPerPage = getItemsPerPage();
+            if (itemsPerPage == null && requestQuery != null) { itemsPerPage = requestQuery.getCount(); }
+            if (itemsPerPage != null) {
+                element.appendChild(asElementNS(document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:itemsPerPage", String.valueOf(itemsPerPage)));
             }
             
             // Links

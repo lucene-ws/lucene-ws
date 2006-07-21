@@ -64,19 +64,19 @@ public class LuceneSpellChecker extends SpellChecker {
     
     
     
-    public Query[] suggestSimilar (Query query)
+    public List<Query> suggestSimilar (Query query)
         throws IOException
     {
         return suggestSimilar( query, getMaximumSuggestions() );
     }
     
-    public Query[] suggestSimilar (Query query, int num_sug)
+    public List<Query> suggestSimilar (Query query, int num_sug)
         throws IOException
     {
         return suggestSimilar( query, num_sug, getIndexReader() );
     }
     
-    public Query[] suggestSimilar (Query query, int num_sug, IndexReader ir)
+    public List<Query> suggestSimilar (Query query, int num_sug, IndexReader ir)
         throws IOException
     {
         return suggestSimilar( query, num_sug, ir, getMorePopular() );
@@ -86,7 +86,7 @@ public class LuceneSpellChecker extends SpellChecker {
     
     
     
-    public Query[] suggestSimilar (Query query, int num_sug, IndexReader ir, boolean morePopular)
+    public List<Query> suggestSimilar (Query query, int num_sug, IndexReader ir, boolean morePopular)
         throws IOException
     {
         Logger.getLogger(this.getClass()).trace("suggestSimilar(Query,int,IndexReader,boolean);");
@@ -101,12 +101,12 @@ public class LuceneSpellChecker extends SpellChecker {
             return suggestSimilar( (TermQuery) query, num_sug, ir, morePopular );
         }
         
-        return new Query[]{ query };
+        return queries;
     }
     
     
     
-    public Query[] suggestSimilar (BooleanQuery query, int num_sug, IndexReader ir, boolean morePopular)
+    public List<Query> suggestSimilar (BooleanQuery query, int num_sug, IndexReader ir, boolean morePopular)
         throws IOException
     {
         Logger.getLogger(this.getClass()).trace("suggestSimilar(BooleanQuery,int,IndexReader,boolean);");
@@ -118,7 +118,7 @@ public class LuceneSpellChecker extends SpellChecker {
         
         for (int i = 0; i < clauses.length; i++) {
             BooleanClause clause = clauses[ i ];
-            clauseQuerySuggestions[ i ] = suggestSimilar( clause.getQuery(), num_sug, ir, morePopular );
+            clauseQuerySuggestions[ i ] = suggestSimilar( clause.getQuery(), num_sug, ir, morePopular ).toArray( new Query[]{} );
         }
         
         
@@ -156,11 +156,11 @@ public class LuceneSpellChecker extends SpellChecker {
             }
         }
         
-        return queries.toArray( new Query[]{} );
+        return queries;
     }
     
     
-    public Query[] suggestSimilar (TermQuery query, int num_sug, IndexReader ir, boolean morePopular)
+    public List<Query> suggestSimilar (TermQuery query, int num_sug, IndexReader ir, boolean morePopular)
         throws IOException
     {
         Logger.getLogger(this.getClass()).trace("suggestSimilar(TermQuery,int,IndexReader,boolean);");
@@ -180,7 +180,7 @@ public class LuceneSpellChecker extends SpellChecker {
         
         Logger.getLogger(this.getClass()).debug("Returning: " + queries);
         
-        return queries.toArray( new Query[]{} );
+        return queries;
     }
     
     

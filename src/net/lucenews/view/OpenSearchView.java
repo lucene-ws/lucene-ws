@@ -21,6 +21,13 @@ import org.w3c.dom.Document;
 public class OpenSearchView extends View {
     
     
+    public static void process (LuceneContext c)
+        throws OpenSearchException, ParserConfigurationException, TransformerException, IOException
+    {
+        process( c, c.getOpenSearchResponse(), c.getOpenSearchFormat() );
+    }
+    
+    
     public static void process (LuceneContext c, OpenSearchResponse response, OpenSearch.Format format)
         throws OpenSearchException, ParserConfigurationException, TransformerException, IOException
     {

@@ -1,40 +1,290 @@
 package net.lucenews;
 
-import net.lucenews.atom.*;
-import net.lucenews.*;
-import net.lucenews.model.event.*;
-import net.lucenews.model.exception.*;
-
-import java.io.File;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.reflect.*;
 import java.text.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.List;
 import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-
-import javax.xml.parsers.DocumentBuilder; 
-import javax.xml.parsers.DocumentBuilderFactory;  
-import javax.xml.parsers.FactoryConfigurationError;  
-import javax.xml.parsers.ParserConfigurationException;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerConfigurationException;
-
-import javax.xml.transform.dom.DOMSource;
-
-import javax.xml.transform.stream.StreamResult;
-
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.xml.parsers.*; 
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+import net.lucenews.atom.*;
+import net.lucenews.*;
+import net.lucenews.model.*;
+import net.lucenews.model.event.*;
+import net.lucenews.model.exception.*;
+import net.lucenews.opensearch.*;
+import org.apache.lucene.queryParser.*;
 import org.w3c.dom.*;
 
 public class ServletUtils {
+    
+    public static void prepareContext (LuceneContext c)
+        throws IndicesNotFoundException, IOException
+    {
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
+        
+        
+        // OpenSearch query
+        if (c.getOpenSearchQuery() == null) {
+            OpenSearchQuery query = new OpenSearchQuery();
+            
+            
+            /**
+             * searchTerms
+             */
+            
+            String searchTerms = null;
+            if (searchTerms == null) { searchTerms = request.getCleanParameter("searchTerms"); }
+            if (searchTerms == null) { searchTerms = request.getCleanParameter("query");       }
+            if (searchTerms == null) { searchTerms = request.getCleanParameter("q");           }
+            query.setSearchTerms( searchTerms );
+            
+            
+            /**
+             * startIndex
+             */
+            
+            Integer startIndex = null;
+            if (startIndex == null) { startIndex = request.getIntegerParameter("startIndex");  }
+            if (startIndex == null) { startIndex = request.getIntegerParameter("start_index"); }
+            if (startIndex == null) { startIndex = request.getIntegerParameter("start");       }
+            if (startIndex == null) { startIndex = request.getIntegerParameter("offset");      }
+            query.setStartIndex( startIndex );
+            
+            
+            /**
+             * startPage
+             */
+            
+            Integer startPage = null;
+            if (startPage == null) { startPage = request.getIntegerParameter("startPage");  }
+            if (startPage == null) { startPage = request.getIntegerParameter("start_page"); }
+            if (startPage == null) { startPage = request.getIntegerParameter("page");       }
+            query.setStartPage( startPage );
+            
+            
+            /**
+             * count
+             */
+            
+            Integer count = null;
+            if (count == null) { count = request.getIntegerParameter("count");            }
+            if (count == null) { count = request.getIntegerParameter("limit");            }
+            if (count == null) { count = request.getIntegerParameter("entriesPerPage");   }
+            if (count == null) { count = request.getIntegerParameter("entries_per_page"); }
+            query.setCount( count );
+            
+            
+            /**
+             * totalResults
+             */
+            
+            Integer totalResults = null;
+            if (totalResults == null) { totalResults = request.getIntegerParameter("totalResults");  }
+            if (totalResults == null) { totalResults = request.getIntegerParameter("total_results"); }
+            if (totalResults == null) { totalResults = request.getIntegerParameter("total");         }
+            query.setTotalResults( totalResults );
+            
+            
+            /**
+             * language
+             */
+            
+            String language = null;
+            if (language == null) { language = request.getCleanParameter("language"); }
+            if (language == null) { language = request.getCleanParameter("lang");     }
+            if (language == null) { language = request.getCleanParameter("locale");   } // This needs fixing
+            query.setLanguage( language );
+            
+            
+            /**
+             * inputEncoding
+             */
+            
+            String inputEncoding = null;
+            if (inputEncoding == null) { inputEncoding = request.getCleanParameter("inputEncoding");  }
+            if (inputEncoding == null) { inputEncoding = request.getCleanParameter("input_encoding"); }
+            if (inputEncoding == null) { inputEncoding = request.getCleanParameter("input");          }
+            query.setInputEncoding( inputEncoding );
+            
+            
+            /**
+             * outputEncoding
+             */
+            
+            String outputEncoding = null;
+            if (outputEncoding == null) { outputEncoding = request.getCleanParameter("outputEncoding");  }
+            if (outputEncoding == null) { outputEncoding = request.getCleanParameter("output_encoding"); }
+            if (outputEncoding == null) { outputEncoding = request.getCleanParameter("output");          }
+            query.setOutputEncoding( outputEncoding );
+            
+            
+            /**
+             * role
+             */
+            
+            query.setRole( OpenSearchQuery.Role.REQUEST );
+            
+            
+            c.setOpenSearchQuery( query );
+        }
+        
+        
+        // analyzer
+        if (c.getAnalyzer() == null) {
+            c.setAnalyzer( request.getAnalyzer() );
+        }
+        
+        
+        // default operator
+        if (c.getDefaultOperator() == null) {
+            QueryParser.Operator defaultOperator = null;
+            
+            // defaultOperator
+            if (defaultOperator == null) {
+                defaultOperator = LuceneUtils.parseOperator(request.getCleanParameter("defaultOperator"));
+            }
+            
+            // default_operator
+            if (defaultOperator == null) {
+                defaultOperator = LuceneUtils.parseOperator(request.getCleanParameter("default_operator"));
+            }
+            
+            // operator
+            if (defaultOperator == null) {
+                defaultOperator = LuceneUtils.parseOperator(request.getCleanParameter("operator"));
+            }
+            
+            // indices' default operators
+            for (int i = 0; i < indices.length; i++) {
+                if (defaultOperator != null) {
+                    break;
+                }
+                defaultOperator = indices[ i ].getDefaultOperator();
+            }
+            
+            // service's default operator
+            if (defaultOperator == null) {
+                defaultOperator = service.getDefaultOperator();
+            }
+            
+            c.setDefaultOperator( defaultOperator );
+        }
+        
+        
+        // default field
+        if (c.getDefaultField() == null) {
+            String defaultField = null;
+            
+            if (defaultField == null) { defaultField = request.getCleanParameter("defaultField");  }
+            if (defaultField == null) { defaultField = request.getCleanParameter("default_field"); }
+            if (defaultField == null) { defaultField = request.getCleanParameter("default");       }
+            
+            // index-specified default field
+            for (int i = 0; i < indices.length && defaultField == null; i++) {
+                defaultField = indices[ i ].getDefaultField();
+            }
+            
+            // service-specified default field
+            if (defaultField == null) { defaultField = service.getDefaultField(); }
+            
+            c.setDefaultField( defaultField );
+        }
+        
+        
+        // filter
+        if (c.getFilter() == null) {
+        }
+        
+        
+        // OpenSearch format
+        if (c.getOpenSearchFormat() == null) {
+            OpenSearch.Format format = null;
+            
+            // "format" request parameter
+            if (format == null) {
+                try {
+                    format = OpenSearch.getFormat( request.getParameter("format") );
+                }
+                catch (Exception e) {
+                }
+            }
+            
+            // "atom" request parameter
+            if (format == null) {
+                try {
+                    if ( ServletUtils.parseBoolean( request.getParameter("atom") ) ) {
+                        format = OpenSearch.Format.ATOM;
+                    }
+                }
+                catch (Exception e) {
+                }
+            }
+            
+            // "rss" request parameter
+            if (format == null) {
+                try {
+                    if ( ServletUtils.parseBoolean( request.getParameter("rss") ) ) {
+                        format = OpenSearch.Format.RSS;
+                    }
+                }
+                catch (Exception e) {
+                }
+            }
+            
+            c.setOpenSearchFormat( format );
+        }
+        
+        
+        // locale
+        if (c.getLocale() == null) {
+            c.setLocale( request.getLocale() );
+        }
+        
+        
+        // is expanding
+        if (c.isExpanding() == null) {
+            Boolean isExpanding = null;
+            if (isExpanding == null) { isExpanding = request.getBooleanParameter("expand");      }
+            if (isExpanding == null) { isExpanding = service.getBooleanProperty("query.expand"); }
+            c.isExpanding( isExpanding );
+        }
+        
+        
+        // is spell-checking
+        if (c.isSpellChecking() == null) {
+            Boolean isSpellChecking = null;
+            if (isSpellChecking == null) { isSpellChecking = request.getBooleanParameter("spellcheck");      }
+            if (isSpellChecking == null) { isSpellChecking = service.getBooleanProperty("query.spellcheck"); }
+            c.isSpellChecking( isSpellChecking );
+        }
+        
+        
+        // is suggesting
+        if (c.isSuggesting() == null) {
+            Boolean isSuggesting = null;
+            if (isSuggesting == null) { isSuggesting = request.getBooleanParameter("suggest");      }
+            if (isSuggesting == null) { isSuggesting = service.getBooleanProperty("query.suggest"); }
+            c.isSuggesting( isSuggesting );
+        }
+        
+        
+        // QueryParser
+        if (c.getQueryParser() == null) {
+            if (c.getDefaultField() != null && c.getAnalyzer() != null) {
+                QueryParser queryParser = new LuceneQueryParser( c.getDefaultField(), c.getAnalyzer() );
+            }
+        }
+    }
+    
+    
+    
     
     public static Integer parseDateFormatStyle (String string) {
         if (clean( string ) == null) {
@@ -213,22 +463,27 @@ public class ServletUtils {
         return directories;
     }
     
+    
+    /**
+     * Converts a string into a Boolean value.
+     */
+    
     public static Boolean parseBoolean (String string) {
         if (string == null) {
-            return false;
+            return null;
         }
         
         string = string.trim().toLowerCase();
         
-        if (string.equals( "1" )) {
+        if ( string.equals("1") ) {
             return true;
         }
         
-        if (string.equals( "yes" )) {
+        if ( string.equals("yes") ) {
             return true;
         }
         
-        if (string.equals( "true" )) {
+        if ( string.equals("true") ) {
             return true;
         }
         

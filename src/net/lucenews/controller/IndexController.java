@@ -298,14 +298,14 @@ public class IndexController extends Controller {
     {
         Logger.getLogger(IndexController.class).trace("asFeed(LuceneContext)");
         
-        LuceneWebService   service = c.service();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
         
         
-        LuceneIndex[] indices = manager.getIndices( req.getIndexNames() );
+        LuceneIndex[] indices = manager.getIndices( request.getIndexNames() );
         
         
         
@@ -327,7 +327,7 @@ public class IndexController extends Controller {
         feed.setTitle( title.toString() );
         
         // ID
-        feed.setID( service.getIndicesURL( req, indices ) );
+        feed.setID( service.getIndicesURL( request, indices ) );
         
         // Updated
         feed.setUpdated( Calendar.getInstance() );
@@ -346,7 +346,7 @@ public class IndexController extends Controller {
         }
         
         // Link
-        feed.addLink( new Link( req.getLocation(), "self", "application/atom+xml" ) );
+        feed.addLink( new Link( request.getLocation(), "self", "application/atom+xml" ) );
         
         // This is critical
         //if( !index.hasUpdatedField() )
@@ -355,7 +355,7 @@ public class IndexController extends Controller {
         //IndexReader reader = index.getIndexReader();
         
         
-        Limiter limiter = req.getLimiter();
+        Limiter limiter = request.getLimiter();
         //limiter.setTotalEntries( reader.numDocs() );
         
         //if( limiter.getFirst() == null || limiter.getLast() == null )
@@ -410,22 +410,22 @@ public class IndexController extends Controller {
         if (limiter instanceof Pager) {
             Pager pager = (Pager) limiter;
             
-            String qs = req.getQueryStringExcluding( "page" );
+            String qs = request.getQueryStringExcluding( "page" );
             
             if (pager.getFirstPage() != null) {
-                feed.addLink( new Link( req.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getFirstPage() ), "first", "application/atom+xml" ) );
+                feed.addLink( new Link( request.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getFirstPage() ), "first", "application/atom+xml" ) );
             }
             
             if (pager.getPreviousPage() != null) {
-                feed.addLink( new Link( req.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getPreviousPage() ), "previous", "application/atom+xml" ) );
+                feed.addLink( new Link( request.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getPreviousPage() ), "previous", "application/atom+xml" ) );
             }
             
             if (pager.getNextPage() != null) {
-                feed.addLink( new Link( req.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getNextPage() ), "next", "application/atom+xml" ) );
+                feed.addLink( new Link( request.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getNextPage() ), "next", "application/atom+xml" ) );
             }
             
             if (pager.getLastPage() != null) {
-                feed.addLink( new Link( req.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getLastPage() ), "last", "application/atom+xml" ) );
+                feed.addLink( new Link( request.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getLastPage() ), "last", "application/atom+xml" ) );
             }
         }
         

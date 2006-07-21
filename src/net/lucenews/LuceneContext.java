@@ -16,13 +16,21 @@ public class LuceneContext {
     private LuceneResponse     response;
     private LuceneWebService   service;
     
+    private Searcher searcher;
+    private IndexSearcher indexSearcher;
+    private MultiSearcher multiSearcher;
+    
     private OpenSearchQuery      openSearchQuery;
+    private OpenSearchResponse   openSearchResponse;
     private OpenSearch.Format    openSearchFormat;
     private Analyzer             analyzer;
+    private String               defaultField;
     private QueryParser.Operator defaultOperator;
     private Locale               locale;
     private Filter               filter;
     private Boolean              expanding;
+    private QueryParser          queryParser;
+    private Sort                 sort;
     private Boolean              spellChecking;
     private Boolean              suggesting;
     
@@ -114,6 +122,34 @@ public class LuceneContext {
     
     
     
+    public Searcher getSearcher () {
+        return searcher;
+    }
+    
+    public void setSearcher (Searcher searcher) {
+        this.searcher = searcher;
+    }
+    
+    public IndexSearcher getIndexSearcher () {
+        return indexSearcher;
+    }
+    
+    public void setIndexSearcher (IndexSearcher indexSearcher) {
+        this.indexSearcher = indexSearcher;
+    }
+    
+    public MultiSearcher getMultiSearcher () {
+        return multiSearcher;
+    }
+    
+    public void setMultiSearcher (MultiSearcher multiSearcher) {
+        this.multiSearcher = multiSearcher;
+    }
+    
+    
+    
+    
+    
     public OpenSearchQuery getOpenSearchQuery () {
         return openSearchQuery;
     }
@@ -124,12 +160,32 @@ public class LuceneContext {
     
     
     
+    public OpenSearchResponse getOpenSearchResponse () {
+        return openSearchResponse;
+    }
+    
+    public void setOpenSearchResponse (OpenSearchResponse openSearchResponse) {
+        this.openSearchResponse = openSearchResponse;
+    }
+    
+    
+    
     public Analyzer getAnalyzer () {
         return analyzer;
     }
     
     public void setAnalyzer (Analyzer analyzer) {
         this.analyzer = analyzer;
+    }
+    
+    
+    
+    public String getDefaultField () {
+        return defaultField;
+    }
+    
+    public void setDefaultField (String defaultField) {
+        this.defaultField = defaultField;
     }
     
     
@@ -170,6 +226,26 @@ public class LuceneContext {
     
     public void isExpanding (Boolean expanding) {
         this.expanding = expanding;
+    }
+    
+    
+    
+    public QueryParser getQueryParser () {
+        return queryParser;
+    }
+    
+    public void setQueryParser (QueryParser queryParser) {
+        this.queryParser = queryParser;
+    }
+    
+    
+    
+    public Sort getSort () {
+        return sort;
+    }
+    
+    public void setSort (Sort sort) {
+        this.sort = sort;
     }
     
     

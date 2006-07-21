@@ -47,19 +47,20 @@ public class OpenSearchController extends Controller {
         // Template
         HttpURI template = new HttpURI( service.getServiceURL( request ) );
         template.addPath( ServletUtils.join( ",", (Object[]) indices ) );
-        template.setParameter( "searchTerms",    "{searchTerms}" );
-        template.setParameter( "count",          "{count?}" );
-        template.setParameter( "startIndex",     "{startIndex?}" );
-        template.setParameter( "startPage",      "{startPage?}" );
-        template.setParameter( "language",       "{language?}" );
-        template.setParameter( "outputEncoding", "{outputEncoding?}" );
-        template.setParameter( "inputEncoding",  "{inputEncoding?}" );
-        template.setParameter( "totalResults",   "{totalResults?}" );
-        template.setParameter( "analyzer",       "{lucene:analyzer?}" );
-        template.setParameter( "filter",         "{lucene:filter?}" );
-        template.setParameter( "locale",         "{lucene:locale?}" );
-        template.setParameter( "operator",       "{lucene:operator?}" );
-        template.setParameter( "sort",           "{lucene:sort?}" );
+        template.setParameter( "searchTerms",     "{searchTerms}" );
+        template.setParameter( "count",           "{count?}" );
+        template.setParameter( "startIndex",      "{startIndex?}" );
+        template.setParameter( "startPage",       "{startPage?}" );
+        template.setParameter( "language",        "{language?}" );
+        template.setParameter( "outputEncoding",  "{outputEncoding?}" );
+        template.setParameter( "inputEncoding",   "{inputEncoding?}" );
+        template.setParameter( "totalResults",    "{totalResults?}" );
+        template.setParameter( "analyzer",        "{lucene:analyzer?}" );
+        template.setParameter( "defaultField",    "{lucene:defaultField?}" );
+        template.setParameter( "defaultOperator", "{lucene:defaultOperator?}" );
+        template.setParameter( "filter",          "{lucene:filter?}" );
+        template.setParameter( "locale",          "{lucene:locale?}" );
+        template.setParameter( "sort",            "{lucene:sort?}" );
         
         
         // Atom

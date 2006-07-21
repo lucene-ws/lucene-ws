@@ -33,6 +33,8 @@ import org.xml.sax.SAXException;
 
 public class LuceneRequest extends HttpServletRequestWrapper {
     
+    private HttpURI uri;
+    
     public static final int DELETE  = 1;
     public static final int GET     = 2;
     public static final int HEAD    = 3;
@@ -114,6 +116,18 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
+    
+    
+    public HttpURI getUri () {
+        if (uri == null) {
+            uri = new HttpURI( this );
+        }
+        return uri;
+    }
+    
+    public HttpURI uri () {
+        return getUri();
+    }
     
     
     

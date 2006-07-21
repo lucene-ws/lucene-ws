@@ -12,6 +12,7 @@ import net.lucenews.model.exception.*;
 import net.lucenews.view.*;
 import org.apache.log4j.*;
 import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.*;
@@ -42,296 +43,95 @@ public class SearchController extends Controller {
     public static void doGet (LuceneContext c)
         throws
             ParserConfigurationException, TransformerException, IndicesNotFoundException,
-            IOException, InsufficientDataException, ParseException, OpenSearchException
+            IOException, InsufficientDataException, org.apache.lucene.queryParser.ParseException, OpenSearchException
     {
         Logger.getLogger(SearchController.class).trace("doGet(LuceneContext)");
         
         LuceneWebService   service  = c.service();
         LuceneIndexManager manager  = service.getIndexManager();
-        LuceneRequest      req      = c.req();
-        LuceneIndex[]      indices  = manager.getIndices( req.getIndexNames() );
-        Sort               sort     = req.getSort();
-        OpenSearchResponse response = new OpenSearchResponse();
+        LuceneRequest      request  = c.getRequest();
+        LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
+        Sort               sort     = request.getSort();
         List<String> invalidParameterNames = new LinkedList<String>();
         
         
         
-        Boolean   expand  = false;
-        Boolean[] expands = new Boolean[] {
-            req.getBooleanParameter("expand"),
-            service.getBooleanProperty("query.expand"),
-            Boolean.FALSE
-        };
-        for (int i = 0; i < expands.length; i++) {
-            if (expands[i] != null) {
-                expand = expands[i];
-                break;
-            }
-        }
-        Logger.getLogger(SearchController.class).debug("Expand query: " + expand);
-        
-        Boolean   spellcheck = false;
-        Boolean[] spellchecks = new Boolean[] {
-            req.getBooleanParameter("spellcheck"),
-            service.getBooleanProperty("query.spellcheck"),
-            Boolean.FALSE
-        };
-        for (int i = 0; i < spellchecks.length; i++) {
-            if (spellchecks[i] != null) {
-                spellcheck = spellchecks[i];
-                break;
-            }
-        }
-        Logger.getLogger(SearchController.class).debug("Spell check query: " + spellcheck);
-        
-        Boolean   suggest  = false;
-        Boolean[] suggests = new Boolean[] {
-            req.getBooleanParameter("suggest"),
-            service.getBooleanProperty("query.suggest"),
-            Boolean.FALSE
-        };
-        for (int i = 0; i < suggests.length; i++) {
-            if (suggests[i] != null) {
-                suggest = suggests[i];
-                break;
-            }
-        }
-        Logger.getLogger(SearchController.class).debug("Suggest query: " + spellcheck);
-        
-        
-        
-        
         /**
-         * ============================================
-         *               OpenSearch Format
-         * ============================================
+         * Prepare searcher
          */
         
-        OpenSearch.Format format = OpenSearch.ATOM;
-        try {
-            format = OpenSearch.getFormat( req.getParameter("format") );
-        }
-        catch (OpenSearchException ose) {
-            format = OpenSearch.ATOM;
-        }
-        catch (NullPointerException npe) {
-            format = OpenSearch.ATOM;
-        }
-        
-        
-        
-        
-        
-        /**
-         * ============================================
-         *              CREATE SEARCHER
-         * ============================================
-         */
-        
-        IndexSearcher[] searchers = new IndexSearcher[indices.length];
+        IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
         for (int i = 0; i < indices.length; i++) {
-            searchers[i] = indices[i].getIndexSearcher();
+            searchers[ i ] = indices[ i ].getIndexSearcher();
         }
         LuceneMultiSearcher searcher = new LuceneMultiSearcher( searchers, getSearcherIndexField() );
-        
-        
-        
-        
-        
-        /**
-         * ============================================
-         *              PREPARE THE QUERY
-         * ============================================
-         */
-        
-        Query           query = null;
-        Query   supersetQuery = null;
-        Query correctionQuery = null;
-        
-        try {
-                      query = req.getQuery();
-              supersetQuery = req.getQuery();
-            correctionQuery = req.getQuery();
-        }
-        catch (InsufficientDataException ide) {
-            query = null;
-        }
-        
-        
+        c.setMultiSearcher( searcher );
         
         
         
         /**
-         * ============================================
-         *              SEARCH STRING
-         * ============================================
+         * Apply defaults
          */
         
-        String searchString = req.getSearchString();
-        if (searchString == null) {
-            if (sort == null) {
-                invalidParameterNames.add( req.getParameterName( LuceneKeys.SEARCH_STRING ) );
-            }
-            else {
-                query = new MatchAllDocsQuery();
-            }
+        if (c.getAnalyzer() == null)           { c.setAnalyzer( new StandardAnalyzer() ); }
+        if (c.isExpanding() == null)           { c.isExpanding( false ); }
+        if (c.isSpellChecking() == null)       { c.isSpellChecking( false ); }
+        if (c.isSuggesting() == null)          { c.isSuggesting( false ); }
+        if (c.getOpenSearchFormat() == null)   { c.setOpenSearchFormat( OpenSearch.ATOM ); }
+        if (c.getOpenSearchResponse() == null) { c.setOpenSearchResponse( new OpenSearchResponse() ); }
+        OpenSearchResponse response = c.getOpenSearchResponse();
+        
+        if (c.getOpenSearchQuery() == null) {
+            throw new InsufficientDataException("No OpenSearch Query provided");
         }
-        Logger.getLogger(SearchController.class).debug("Search string: " + String.valueOf( searchString ));
         
+        if (c.getOpenSearchQuery().getCount() == null) {
+            c.getOpenSearchQuery().setCount( 10 );
+        }
         
+        if (c.getDefaultField() == null) {
+            throw new InsufficientDataException("No default field specified");
+        }
         
+        if (c.getQueryParser() == null) {
+            QueryParser queryParser = new LuceneQueryParser( c.getDefaultField(), c.getAnalyzer() );
+            if (c.getLocale() != null)          { queryParser.setLocale( c.getLocale() ); }
+            if (c.getDefaultOperator() != null) { queryParser.setDefaultOperator( c.getDefaultOperator() ); }
+            c.setQueryParser( queryParser );
+        }
         
         
         /**
-         * ============================================
-         *              DEFAULT FIELD
-         * ============================================
+         * Prepare query
          */
         
-        // User-specified default field
-        String defaultField = req.getDefaultField();
-        
-        // Index-specified default field
-        for (int i = 0; i < indices.length && defaultField == null; i++) {
-            defaultField = indices[ i ].getDefaultField();
-        }
-        
-        // Service-specified default field
-        if (defaultField == null) {
-            defaultField = service.getDefaultField();
-        }
-        
-        if (defaultField == null) {
-            invalidParameterNames.add( req.getParameterName( LuceneKeys.DEFAULT_FIELD ) );
-        }
-        
-        
-        
-        
-        
-        /**
-         * ============================================
-         *                  ANALYZER
-         * ============================================
-         */
-        
-        Analyzer analyzer = req.getAnalyzer();
-        if (analyzer == null) {
-            invalidParameterNames.add( req.getParameterName( LuceneKeys.ANALYZER ) );
-        }
-        
-        
-        
-        
-        
-        /**
-         * ============================================
-         *      INFORM USER OF INVALID PARAMETERS
-         * ============================================
-         */
-        
-        if (!invalidParameterNames.isEmpty()) {
-            StringBuffer buffer = new StringBuffer();
-            
-            if (invalidParameterNames.size() == 1) {
-                buffer.append( "Valid '" + invalidParameterNames.get( 0 ) + "' parameter required." );
-            }
-            else {
-                buffer.append( "Valid" + ServletUtils.joined(invalidParameterNames.toArray(new String[]{})) + " parameters required." );
-            }
-            
-            throw new InsufficientDataException( String.valueOf( buffer ) );
-        }
-        
-        
-        
-        
-        
-        /**
-         * ============================================
-         *              PARSE THE QUERY
-         * ============================================
-         */
-        
-        QueryParser.Operator defaultOperator = null;
-        LuceneQueryParser parser = new LuceneQueryParser( defaultField, analyzer );
+        Query  query       = null;
+        String searchTerms = c.getOpenSearchQuery().getSearchTerms();
         
         if (query == null) {
-            
-            
-            
-            Locale locale = req.getLocale();
-            if (locale != null) {
-                parser.setLocale( locale );
+            if (searchTerms == null) {
+                query = new MatchAllDocsQuery();
             }
-            
-            
-            /**
-             * Resolve the default operator
-             */
-            
-            defaultOperator = req.getDefaultOperator();
-            
-            for (int i = 0; i < indices.length; i++) {
-                if (defaultOperator != null) {
-                    break;
-                }
-                defaultOperator = indices[ i ].getDefaultOperator();
-            }
-            
-            if (defaultOperator == null) {
-                defaultOperator = service.getDefaultOperator();
-            }
-            
-            if (defaultOperator == null) {
-                defaultOperator = QueryParser.AND_OPERATOR;
-            }
-            
-            if (defaultOperator != null) {
-                parser.setDefaultOperator( defaultOperator );
-            }
-            
-            
-            
-            query = parser.parse( searchString );
-            if (expand) {
-                parser.setSynonymSearcher( manager.getIndex(service.getProperty("query.expand.index", "wordnet")).getIndexSearcher() );
-                supersetQuery = parser.parse( searchString );
-                parser.setSynonymSearcher( null );
-            }
-            if (spellcheck) {
-                correctionQuery = parser.parse( searchString );
+            else {
+                query = c.getQueryParser().parse( searchTerms );
             }
         }
         
         
-        
-        
-        Filter filter = req.getFilter(parser);
-        Logger.getLogger(SearchController.class).debug("Filter: " + filter);
-        
-        
-        
-        
-        
-        
-        
         /**
-         * ============================================
-         *              PERFORM SEARCH
-         * ============================================
+         * Perform search
          */
         
         Hits hits = null;
         
-        if (filter != null && sort != null) {
-            hits = searcher.search( query, filter, sort );
+        if (c.getFilter() != null && c.getSort() != null) {
+            hits = searcher.search( query, c.getFilter(), c.getSort() );
         }
-        else if (filter != null) {
-            hits = searcher.search( query, filter );
+        else if (c.getFilter() != null) {
+            hits = searcher.search( query, c.getFilter() );
         }
-        else if (sort != null) {
-            hits = searcher.search( query, sort );
+        else if (c.getSort() != null) {
+            hits = searcher.search( query, c.getSort() );
         }
         else {
             hits = searcher.search( query );
@@ -352,7 +152,7 @@ public class SearchController extends Controller {
          * ============================================
          */
         
-        if (expand) {
+        if (c.isExpanding()) {
             //LuceneQueryExpander expander = new LuceneQueryExpander();
             //expander.setSearcher( manager.getIndex(service.getProperty("query.expand.index", "wordnet")).getIndexSearcher() );
             //expander.setAnalyzer( analyzer );
@@ -360,14 +160,16 @@ public class SearchController extends Controller {
             
             OpenSearchQuery superset = new OpenSearchQuery();
             superset.setRole( "superset" );
-            superset.setSearchTerms( rewriteExpandedQuery( searchString, supersetQuery ) );
-            superset.setTotalResults( searcher.search( supersetQuery, filter ).length() );
+            //superset.setSearchTerms( rewriteExpandedQuery( searchString, supersetQuery ) );
+            //superset.setTotalResults( searcher.search( supersetQuery, c.getFilter() ).length() );
+            /**
             if (!supersetQuery.equals(query)) {
                 if (superset.getTotalResults() > maximumCorrectedTotalResults) {
                     maximumCorrectedTotalResults = superset.getTotalResults();
                 }
                 response.addQuery( superset );
             }
+            */
         }
         
         
@@ -380,16 +182,18 @@ public class SearchController extends Controller {
          * ============================================
          */
         
-        if (spellcheck) {
+        if (c.isSpellChecking()) {
             LuceneSpellChecker spellChecker = new LuceneSpellChecker( manager.getIndex(service.getProperty("query.spellcheck.index","spelling")).getLuceneDirectory() );
             spellChecker.setMaximumSuggestions(5);
-            Query[] correctionQueries = spellChecker.suggestSimilar( correctionQuery );
+            List<Query> correctionQueries = spellChecker.suggestSimilar( query );
             
-            for (int i = 0; i < correctionQueries.length; i++) {
+            Iterator<Query> iterator = correctionQueries.iterator();
+            while (iterator.hasNext()) {
+                Query correctionQuery = iterator.next();
                 OpenSearchQuery correction = new OpenSearchQuery();
                 correction.setRole( "correction" );
-                correction.setSearchTerms( correctionQueries[ i ].toString() );
-                correction.setTotalResults( searcher.search( correctionQueries[ i ], filter ).length() );
+                correction.setSearchTerms( correctionQuery.toString() );
+                correction.setTotalResults( searcher.search( correctionQuery, c.getFilter() ).length() );
                 
                 if (correction.getTotalResults() > 0) {
                     if (correction.getTotalResults() > maximumCorrectedTotalResults) {
@@ -410,10 +214,11 @@ public class SearchController extends Controller {
          * ============================================
          */
         
-        if (suggest) {
-            Query[] suggestedQueries = getSuggestedQueries( query, indices );
-            for (int i = 0; i < suggestedQueries.length; i++) {
-                Query suggestedQuery = suggestedQueries[ i ];
+        if (c.isSuggesting()) {
+            List<Query> suggestedQueries = getSuggestedQueries( c, query );
+            Iterator<Query> iterator = suggestedQueries.iterator();
+            while (iterator.hasNext()) {
+                Query suggestedQuery = iterator.next();
                 
                 if (suggestedQuery.equals(query)) {
                     continue;
@@ -421,8 +226,8 @@ public class SearchController extends Controller {
                 
                 OpenSearchQuery correction = new OpenSearchQuery();
                 correction.setRole( "correction" );
-                correction.setSearchTerms( rewriteQuery( searchString, suggestedQuery ) );
-                correction.setTotalResults( searcher.search( suggestedQueries[ i ], filter ).length() );
+                correction.setSearchTerms( rewriteQuery( c.getOpenSearchQuery().getSearchTerms(), suggestedQuery ) );
+                correction.setTotalResults( searcher.search( suggestedQuery, c.getFilter() ).length() );
                 
                 if (correction.getTotalResults() > 0) {
                     if (correction.getTotalResults() > maximumCorrectedTotalResults) {
@@ -456,35 +261,13 @@ public class SearchController extends Controller {
         
         
         
-        
-        
-        /**
-         * ============================================
-         *              LIMITER / ITERATOR
-         * ============================================
-         */
-        
-        Limiter limiter = req.getLimiter();
-        limiter.setTotalEntries( null );
-        Integer maximum = null;
-        
-        try {
-            String maximumString = req.getCleanParameter("maximum");
-            if (maximumString != null) {
-                maximum = Integer.valueOf( maximumString );
-                limiter.setTotalEntries( maximum );
-            }
+        Integer totalResults = c.getOpenSearchQuery().getTotalResults();
+        if (totalResults == null || hits.length() < totalResults) {
+            totalResults = hits.length();
+            c.getOpenSearchQuery().setTotalResults( totalResults );
         }
-        catch (NumberFormatException nfe) {
-        }
+        Logger.getLogger(SearchController.class).debug("totalResults: " + c.getOpenSearchQuery().getTotalResults());
         
-        HitsIterator iterator = null;
-        try {
-            iterator = new HitsIterator( hits, limiter, c.service().getIndexManager().getIndex( req.getIndexName() ) );
-        }
-        catch (MultipleValueException mve) {
-            iterator = new HitsIterator( hits, limiter );
-        }
         
         
         
@@ -501,36 +284,31 @@ public class SearchController extends Controller {
             title.append( "All documents in " );
         }
         else {
-            title.append( "Search results for query '" + req.getSearchString() + "' on " );
+            title.append( "Search results for query '" + request.getSearchString() + "' on " );
         }
         title.append( ( indices.length == 1 ? "index" : "indices" ) + " " );
         title.append( ServletUtils.joined( ServletUtils.mapped( "'[content]'", ServletUtils.objectsMapped( "getTitle", indices ) ) ) );
         
         
         response.setTitle( String.valueOf( title ) );
-        response.setId( req.getLocation() );
+        response.setId( request.getLocation() );
         response.setUpdated( Calendar.getInstance() );
-        response.setTotalResults( limiter.getTotalEntries() );
+        //response.setTotalResults( limiter.getTotalEntries() );
         
         
         OpenSearchLink descriptionLink = new OpenSearchLink();
-        descriptionLink.setHref( service.getOpenSearchDescriptionURL( req, req.getIndexNames() ) );
+        descriptionLink.setHref( service.getOpenSearchDescriptionURL( request, request.getIndexNames() ) );
         descriptionLink.setRel("search");
         descriptionLink.setType("application/opensearchdescription+xml");
         response.setLink( descriptionLink );
         
         
-        OpenSearchQuery requestQuery = new OpenSearchQuery();
-        requestQuery.setRole("request");
-        requestQuery.setTotalResults( limiter.getTotalEntries() );
-        requestQuery.setSearchTerms( searchString );
-        if (maximum != null) {
-            requestQuery.setCount( maximum );
-        }
-        response.addQuery( requestQuery );
+        response.addQuery( c.getOpenSearchQuery() );
+        
         
         response.setDescription( title.toString() );
-        addPagingInformation( c, response, limiter, format );
+        
+        addLinks( c );
         
         
         // DOM Document to produce XML later on
@@ -546,120 +324,157 @@ public class SearchController extends Controller {
          * ============================================
          */
         
-        iterator.reset();
-        while (iterator.hasNext()) {
-            LuceneDocument document = iterator.next();
-            Integer searcherIndex = extractSearcherIndex( document );
+        if (totalResults > 0) {
+            int firstIndex = c.getOpenSearchQuery().getFirstIndex();
+            int lastIndex  = c.getOpenSearchQuery().getLastIndex();
             
-            LuceneIndex index = null;
-            if (searcherIndex != null) {
-                index = indices[ searcherIndex ];
-                document.setIndex( index );
+            for (int number = firstIndex; number <= lastIndex; number++) {
+                LuceneDocument document = new LuceneDocument( hits.doc( number - 1 ) );
+                float          score    = hits.score( number - 1 );
+                
+                Integer searcherIndex = extractSearcherIndex( document );
+                
+                LuceneIndex index = null;
+                if (searcherIndex != null) {
+                    index = indices[ searcherIndex ];
+                    document.setIndex( index );
+                }
+                
+                OpenSearchResult result = new OpenSearchResult();
+                result.setTitle( document.getTitle() );
+                result.setId( service.getDocumentURL( request, index, document ) );
+                
+                try {
+                    result.setUpdated( document.getUpdated() );
+                }
+                catch (InsufficientDataException ide) {
+                }
+                
+                result.setRelevance( score );
+                
+                OpenSearchLink resultLink = new OpenSearchLink();
+                resultLink.setHref( service.getDocumentURL( request, index, document ) );
+                result.setLink( resultLink );
+                
+                
+                if (document.getAuthor() != null) {
+                    OpenSearchPerson author = new OpenSearchPerson();
+                    author.setRole( "author" );
+                    author.setName( document.getAuthor() );
+                    result.addPerson( author );
+                }
+                
+                
+                // content
+                Element div = domDocument.createElement("div");
+                div.setAttribute( "xmlns", "http://www.w3.org/1999/xhtml" );
+                div.appendChild( XOXOController.asElement( c, document, domDocument ) );
+                result.setContent( div );
+                
+                
+                response.addResult( result );
             }
-            
-            OpenSearchResult result = new OpenSearchResult();
-            result.setTitle( document.getTitle() );
-            result.setId( service.getDocumentURL( req, index, document ) );
-            
-            try {
-                result.setUpdated( document.getUpdated() );
-            }
-            catch (InsufficientDataException ide) {
-            }
-            
-            result.setRelevance( iterator.score() );
-            
-            OpenSearchLink resultLink = new OpenSearchLink();
-            resultLink.setHref( service.getDocumentURL( req, index, document ) );
-            result.setLink( resultLink );
-            
-            String name = document.getAuthor();
-            if (name != null) {
-                OpenSearchPerson author = new OpenSearchPerson();
-                author.setRole("author");
-                author.setName( document.getAuthor() );
-                result.addPerson( author );
-            }
-            
-            
-            // content
-            Element div = domDocument.createElement("div");
-            div.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-            div.appendChild( XOXOController.asElement( c, document, domDocument ) );
-            result.setContent(div);
-            
-            
-            response.addResult( result );
         }
         
         
         
-        
-        OpenSearchView.process( c, response, format );
+        OpenSearchView.process( c );
+    }
+
+    
+    
+    public static List<Query> getExpandedQueries (LuceneContext c) {
+        return new LinkedList<Query>();
+    }
+    
+    public static List<Query> getSpellCheckedQueries (LuceneContext c) {
+        return new LinkedList<Query>();
+    }
+    
+    public static List<Query> getSuggestedQueries (LuceneContext c) {
+        return new LinkedList<Query>();
     }
     
     
     
-    
     /**
-     * Adds paging information to the given OpenSearch response.
+     * Adds paging related links to the given OpenSearch response.
      * @param c        the Lucene context
-     * @param response the OpenSearch response
-     * @param limiter  the limiter
      */
     
-    public static void addPagingInformation (LuceneContext c, OpenSearchResponse response, Limiter limiter, OpenSearch.Format format)
-        throws InsufficientDataException
-    {
-        LuceneRequest req = c.req();
+    public static void addLinks (LuceneContext c) throws InsufficientDataException {
+        LuceneRequest      request         = c.getRequest();
+        OpenSearchQuery    openSearchQuery = c.getOpenSearchQuery();
+        HttpURI            uri             = request.getUri();
+        OpenSearch.Format  format          = c.getOpenSearchFormat();
+        OpenSearchResponse response        = c.getOpenSearchResponse();
         
-        if (limiter != null && limiter instanceof Pager) {
-            Pager pager = (Pager) limiter;
-            
-            response.setTotalResults( pager.getTotalEntries() );
-            response.setStartIndex( pager.getFirst() );
-            response.setItemsPerPage( pager.getEntriesPerPage() );
-            
-            if (pager.getCurrentPage() != null) {
-                OpenSearchLink link = new OpenSearchLink();
-                link.setHref( req.getUrlWith( "page", pager.getCurrentPage() ) );
-                link.setRel("self");
-                link.setType(OpenSearch.getContentType(format));
-                response.addLink(link);
-            }
-            
-            if (pager.getFirstPage() != null) {
-                OpenSearchLink link = new OpenSearchLink();
-                link.setHref( req.getUrlWith( "page", pager.getFirstPage() ) );
-                link.setRel("first");
-                link.setType(OpenSearch.getContentType(format));
-                response.addLink(link);
-            }
-            
-            if (pager.getPreviousPage() != null) {
-                OpenSearchLink link = new OpenSearchLink();
-                link.setHref( req.getUrlWith( "page", pager.getPreviousPage() ) );
-                link.setRel("previous");
-                link.setType(OpenSearch.getContentType(format));
-                response.addLink(link);
-            }
-            
-            if (pager.getNextPage() != null) {
-                OpenSearchLink link = new OpenSearchLink();
-                link.setHref( req.getUrlWith( "page", pager.getNextPage() ) );
-                link.setRel("next");
-                link.setType(OpenSearch.getContentType(format));
-                response.addLink(link);
-            }
-            
-            if (pager.getLastPage() != null) {
-                OpenSearchLink link = new OpenSearchLink();
-                link.setHref( req.getUrlWith( "page", pager.getLastPage() ) );
-                link.setRel("last");
-                link.setType(OpenSearch.getContentType(format));
-                response.addLink(link);
-            }
+        
+        /**
+         * First
+         */
+        
+        if ( response.getRelatedLink("first") == null && openSearchQuery.getFirstPage() != null ) {
+            OpenSearchLink link = new OpenSearchLink();
+            link.setHref( uri.with( "page", openSearchQuery.getFirstPage() ).toString() );
+            link.setRel( "first" );
+            link.setType( OpenSearch.getContentType( format ) );
+            response.addLink( link );
         }
+        
+        
+        /**
+         * Previous
+         */
+        
+        if ( response.getRelatedLink("previous") == null && openSearchQuery.getPreviousPage() != null ) {
+            OpenSearchLink link = new OpenSearchLink();
+            link.setHref( uri.with( "page", openSearchQuery.getPreviousPage() ).toString() );
+            link.setRel( "previous" );
+            link.setType( OpenSearch.getContentType( format ) );
+            response.addLink( link );
+        }
+        
+        
+        /**
+         * Self
+         */
+        
+        if ( response.getRelatedLink("self") == null && openSearchQuery.getStartPage() != null ) {
+            OpenSearchLink link = new OpenSearchLink();
+            link.setHref( uri.with( "page", openSearchQuery.getStartPage() ).toString() );
+            link.setRel( "self" );
+            link.setType( OpenSearch.getContentType( format ) );
+            response.addLink( link );
+        }
+        
+        
+        /**
+         * Next
+         */
+        
+        if ( response.getRelatedLink("next") == null && openSearchQuery.getNextPage() != null ) {
+            OpenSearchLink link = new OpenSearchLink();
+            link.setHref( uri.with( "page", openSearchQuery.getNextPage() ).toString() );
+            link.setRel( "next" );
+            link.setType( OpenSearch.getContentType( format ) );
+            response.addLink( link );
+        }
+        
+        
+        /**
+         * Last
+         */
+        
+        if ( response.getRelatedLink("last") == null && openSearchQuery.getLastPage() != null ) {
+            OpenSearchLink link = new OpenSearchLink();
+            link.setHref( uri.with( "page", openSearchQuery.getLastPage() ).toString() );
+            link.setRel( "last" );
+            link.setType( OpenSearch.getContentType( format ) );
+            response.addLink( link );
+        }
+        
+        
     }
     
     
@@ -690,46 +505,105 @@ public class SearchController extends Controller {
     }
     
     
-    public static Query[] getSuggestedQueries (Query original, LuceneIndex[] indices)
-        throws IOException
+    
+    public static List<Query> getExpandedQueries (LuceneContext c, Query original) throws Exception {
+        List<Query> expanded = new LinkedList<Query>();
+        return expanded;
+    }
+    
+    
+    
+    /**
+     * Retrieves a list of queries which reflect the current query as 
+     * examined by the spell checking system.
+     */
+    
+    public static List<Query> getSpellCheckedQueries (LuceneContext c, Query original) throws Exception {
+        LuceneWebService   service = c.getService();
+        LuceneIndexManager manager = service.getIndexManager();
+        
+        OpenSearchResponse response = c.getOpenSearchResponse();
+        
+        List<Query> spellChecked = new LinkedList<Query>();
+        
+        LuceneSpellChecker spellChecker = new LuceneSpellChecker( manager.getIndex(service.getProperty("query.spellcheck.index","spelling")).getLuceneDirectory() );
+        spellChecker.setMaximumSuggestions( 5 );
+        spellChecked.addAll( spellChecker.suggestSimilar( original ) );
+        
+        Iterator<Query> iterator = spellChecked.iterator();
+        while (iterator.hasNext()) {
+            Query suggestedQuery = iterator.next();
+            
+            OpenSearchQuery correction = new OpenSearchQuery();
+            correction.setRole( "correction" );
+            correction.setSearchTerms( suggestedQuery.toString() );
+            correction.setTotalResults( c.getIndexSearcher().search( suggestedQuery, c.getFilter() ).length() );
+            
+            if (correction.getTotalResults() > 0) {
+                //if (correction.getTotalResults() > maximumCorrectedTotalResults) {
+                //    maximumCorrectedTotalResults = correction.getTotalResults();
+                //}
+                response.addQuery( correction );
+            }
+        }
+        
+        return spellChecked;
+    }
+    
+    
+    
+    public static List<Query> getSuggestedQueries (LuceneContext c, Query original)
+        throws IndicesNotFoundException, IOException
     {
+        List<Query> suggested = new LinkedList<Query>();
+        
+        LuceneIndex[] indices = c.getService().getIndexManager().getIndices( c.req().getIndexNames() );
+        
         IndexReader[] readers = new IndexReader[ indices.length ];
-        for( int i = 0; i < indices.length; i++ )
+        
+        for (int i = 0; i < indices.length; i++) {
             readers[ i ] = indices[ i ].getIndexReader();
+        }
         
         MultiReader reader = new MultiReader( readers );
-        Query[] suggested = getSuggestedQueries( original, reader );
         
-        for( int i = 0; i < indices.length; i++ )
+        suggested.addAll( getSuggestedQueries( original, reader ) );
+        
+        for (int i = 0; i < indices.length; i++) {
             indices[ i ].putIndexReader( readers[ i ] );
+        }
         
         return suggested;
     }
     
     
-    public static Query[] getSuggestedQueries (Query original, IndexReader reader)
+    public static List<Query> getSuggestedQueries (Query original, IndexReader reader)
         throws IOException
     {
+        List<Query> suggestions = new LinkedList<Query>();
+        
         try {
             DidYouMeanQueryGenerator generator = new DidYouMeanQueryGenerator( original, reader );
-            List<Query> suggestions = generator.getQuerySuggestions( true, true );
+            suggestions.addAll( generator.getQuerySuggestions( true, true ) );
+            
             Iterator<Query> iterator = suggestions.iterator();
-            while( iterator.hasNext() )
+            while (iterator.hasNext()) {
                 setDefaultBoost( iterator.next() );
-            return suggestions.toArray( new Query[]{} );
+            }
+            
+            return suggestions;
         }
-        catch(Error err) {
-            return new Query[]{};
+        catch (Error err) {
         }
-        catch(Exception e) {
-            e.printStackTrace();
-            return new Query[]{};
+        catch (Exception e) {
         }
+        
+        return suggestions;
     }
     
     
     public static void setDefaultBoost (Query query) {
-        if( query instanceof BooleanQuery ) {
+        if (query instanceof BooleanQuery) {
             setDefaultBoost( (BooleanQuery) query );
         }
         else {
@@ -739,7 +613,7 @@ public class SearchController extends Controller {
     
     public static void setDefaultBoost (BooleanQuery query) {
         BooleanClause[] clauses = query.getClauses();
-        for( int i = 0; i < clauses.length; i++ ) {
+        for (int i = 0; i < clauses.length; i++) {
             setDefaultBoost( clauses[ i ].getQuery() );
         }
         query.setBoost( 1.0f );
