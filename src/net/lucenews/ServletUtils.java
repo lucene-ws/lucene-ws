@@ -76,6 +76,8 @@ public class ServletUtils {
             Integer count = null;
             if (count == null) { count = request.getIntegerParameter("count");            }
             if (count == null) { count = request.getIntegerParameter("limit");            }
+            if (count == null) { count = request.getIntegerParameter("itemsPerPage");     }
+            if (count == null) { count = request.getIntegerParameter("items_per_page");   }
             if (count == null) { count = request.getIntegerParameter("entriesPerPage");   }
             if (count == null) { count = request.getIntegerParameter("entries_per_page"); }
             query.setCount( count );
