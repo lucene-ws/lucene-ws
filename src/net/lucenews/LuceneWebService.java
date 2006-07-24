@@ -201,8 +201,6 @@ public class LuceneWebService extends HttpServlet {
         res.setContentType("application/atom+xml; charset=utf-8");
         
         try {
-            ServletUtils.prepareContext( c );
-            
             switch (req.getMethodType()) {
                 
                 case LuceneRequest.DELETE:
@@ -307,6 +305,7 @@ public class LuceneWebService extends HttpServlet {
             TransformerException, ParserConfigurationException, IndicesNotFoundException,
             IllegalActionException, DocumentsNotFoundException, IOException, InsufficientDataException
     {
+        Logger.getLogger( this.getClass() ).trace( "doDelete" );
         LuceneRequest req = c.req();
         
         if (req.hasIndexNames()) {
@@ -339,15 +338,21 @@ public class LuceneWebService extends HttpServlet {
             TransformerException, IOException, ParseException, LuceneException,
             OpenSearchException
     {
+        Logger.getLogger( this.getClass() ).trace( "doGet" );
         LuceneRequest req = c.req();
         
         
+        Logger.getLogger(this.getClass()).debug("request has " + req.getIndexNames().length + " index names");
+        
         if (req.getIndexNames().length == 1) {
+            Logger.getLogger(this.getClass()).debug("request has 1 index name");
             if (req.getIndexName().equals( "service.properties" )) {
                 ServicePropertiesController.doGet( c );
                 return;
             }
         }
+        
+        ServletUtils.prepareContext( c );
         
         if (req.getDocumentIDs().length == 1) {
             if (req.getDocumentID().equals( "opensearchdescription.xml" )) {
@@ -395,6 +400,7 @@ public class LuceneWebService extends HttpServlet {
             TransformerException, IOException, ParseException, LuceneException,
             OpenSearchException
     {
+        Logger.getLogger( this.getClass() ).trace( "doHead" );
         doGet( c );
     }
     
@@ -409,6 +415,7 @@ public class LuceneWebService extends HttpServlet {
      */
     
     public void doOptions (LuceneContext c) throws ServletException, IOException {
+        Logger.getLogger( this.getClass() ).trace( "doOptions" );
         super.doOptions( c.req(), c.res() );
     }
     
@@ -435,6 +442,7 @@ public class LuceneWebService extends HttpServlet {
             IndicesAlreadyExistException, TransformerException, AtomParseException,
             IndicesNotFoundException, SAXException, IOException, LuceneException
     {
+        Logger.getLogger( this.getClass() ).trace( "doPost" );
         LuceneRequest req = c.req();
         
         if (req.hasIndexName() && !req.hasDocumentIDs()) {
@@ -483,6 +491,7 @@ public class LuceneWebService extends HttpServlet {
             TransformerException, ParserConfigurationException, DocumentNotFoundException,
             IndexNotFoundException, IOException, LuceneException, AtomParseException
     {
+        Logger.getLogger( this.getClass() ).trace( "doPut" );
         LuceneRequest req = c.req();
         
         if (req.getDocumentIDs().length == 0) {
@@ -519,6 +528,7 @@ public class LuceneWebService extends HttpServlet {
      */
     
     public void doTrace (LuceneContext c) throws ServletException, IOException {
+        Logger.getLogger( this.getClass() ).trace( "doTrace" );
         super.doTrace( c.req(), c.res() );
     }
     
