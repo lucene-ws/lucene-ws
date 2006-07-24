@@ -997,7 +997,13 @@ public class LuceneWebService extends HttpServlet {
     }
     
     
-    
+    public OpenSearchImage getImage () {
+        OpenSearchImage image = new OpenSearchImage("http://www.lucene-ws.net/images/magnifying_glass.png");
+        image.setType( "image/png" );
+        image.setHeight( 53 );
+        image.setWidth( 63 );
+        return image;
+    }
     
     
     

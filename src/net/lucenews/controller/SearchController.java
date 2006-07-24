@@ -329,6 +329,8 @@ public class SearchController extends Controller {
             Integer lastIndex  = c.getOpenSearchQuery().getLastIndex();
             
             if (firstIndex != null && lastIndex != null) {
+                response.setStartIndex( firstIndex );
+                
                 for (int number = firstIndex; number <= lastIndex; number++) {
                     LuceneDocument document = new LuceneDocument( hits.doc( number - 1 ) );
                     float          score    = hits.score( number - 1 );

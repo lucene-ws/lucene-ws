@@ -5,6 +5,7 @@ import java.util.*;
 import net.lucenews.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
+import net.lucenews.opensearch.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.document.*;
@@ -2059,6 +2060,40 @@ public class LuceneIndex {
         calendar.setTime( new Date( getPropertiesFile().lastModified() ) );
         return calendar;
     }
+    
+    
+    
+    public OpenSearchImage getImage () throws NumberFormatException, IOException {
+        OpenSearchImage image = null;
+        
+        String url = getProperty("index.image");
+        
+        if (url == null || url.length() == 0) {
+            return image;
+        }
+        
+        image = new OpenSearchImage();
+        
+        image.setUrl( url );
+        
+        String height = getProperty("index.image.height");
+        if ( height != null && height.trim().length() > 0 ) {
+            image.setHeight( Integer.valueOf( height ) );
+        }
+        
+        String width = getProperty("index.image.width");
+        if ( width != null && width.trim().length() > 0 ) {
+            image.setWidth( Integer.valueOf( width ) );
+        }
+        
+        String type = getProperty("index.image.type");
+        if ( type != null && type.trim().length() > 0 ) {
+            image.setType( type );
+        }
+        
+        return image;
+    }
+    
     
     
     public String toString () {

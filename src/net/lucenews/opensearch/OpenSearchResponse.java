@@ -4,15 +4,32 @@ import java.util.*;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
 
+/**
+ * OpenSearch™ Response elements are used to add search data to 
+ * existing XML-based syndication formats, such as RSS 2.0 and 
+ * Atom 1.0. These extensions are designed to work with OpenSearch 
+ * Description files, another of the components of OpenSearch, to 
+ * provide rich search syndication with a minimal amount of overhead.
+ * 
+ * OpenSearch Response introduces several elements that provide the 
+ * necessary information for syndicating search results. Additionally, 
+ * OpenSearch Response recommends clean extensibility guidelines, and 
+ * suggests that clients and servers recognize certain other common 
+ * extensions to enhance search results. 
+ * 
+ *  Source: http://opensearch.a9.com/spec/1.1/response/
+ * 
+ */
+
 public class OpenSearchResponse {
     
     private String   title;
     private String   id;
     private Calendar updated;
     private String   description;
-    private Integer  total_results;
-    private Integer  start_index;
-    private Integer  items_per_page;
+    private Integer  totalResults;
+    private Integer  startIndex;
+    private Integer  itemsPerPage;
     private OpenSearchLink link;
     private List<OpenSearchLink>   links;
     private List<OpenSearchQuery>  queries;
@@ -69,31 +86,31 @@ public class OpenSearchResponse {
     
     
     public Integer getTotalResults () {
-        return total_results;
+        return totalResults;
     }
     
-    public void setTotalResults (Integer total_results) {
-        this.total_results = total_results;
+    public void setTotalResults (Integer totalResults) {
+        this.totalResults = totalResults;
     }
     
     
     
     public Integer getStartIndex () {
-        return start_index;
+        return startIndex;
     }
     
-    public void setStartIndex (Integer start_index) {
-        this.start_index = start_index;
+    public void setStartIndex (Integer startIndex) {
+        this.startIndex = startIndex;
     }
     
     
     
     public Integer getItemsPerPage () {
-        return items_per_page;
+        return itemsPerPage;
     }
     
-    public void setItemsPerPage (Integer items_per_page) {
-        this.items_per_page = items_per_page;
+    public void setItemsPerPage (Integer itemsPerPage) {
+        this.itemsPerPage = itemsPerPage;
     }
     
     

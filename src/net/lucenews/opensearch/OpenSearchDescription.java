@@ -4,36 +4,61 @@ import java.util.*;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
 
+/**
+ * OpenSearch Description files are used by search engines to describe 
+ * themselves and how they can be queried (using OpenSearch Query 
+ * Syntax). They are published as simple XML files over the web, and 
+ * can be used by search clients to integrate third-party searches. 
+ * Search results may be in the form of OpenSearch Response, another of 
+ * the components of OpenSearch.
+ *
+ *  Source: http://opensearch.a9.com/spec/1.1/description/
+ *
+ */
+
 public class OpenSearchDescription {
     
-    private String short_name;
-    private String long_name;
+    private String shortName;
+    private String longName;
     private String description;
     private String developer;
     private String attribution;
-    private String syndication_right;
-    private Boolean adult_content;
+    private String syndicationRight;
+    private Boolean adultContent;
     private String contact;
     private List<OpenSearchUrl> urls;
+    private List<OpenSearchImage> images;
     private List<String> languages;
-    private List<String> input_encodings;
-    private List<String> output_encodings;
+    private List<String> inputEncodings;
+    private List<String> outputEncodings;
+    
+    
+    
+    static public final class SyndicationRight {
+        static public final String OPEN    = "open";
+        static public final String LIMITED = "limited";
+        static public final String PRIVATE = "private";
+        static public final String CLOSED  = "closed";
+    }
+    
+    
     
     public OpenSearchDescription () {
         urls = new LinkedList<OpenSearchUrl>();
+        images  = new LinkedList<OpenSearchImage>();
         languages = new LinkedList<String>();
-        input_encodings  = new LinkedList<String>();
-        output_encodings = new LinkedList<String>();
+        inputEncodings  = new LinkedList<String>();
+        outputEncodings = new LinkedList<String>();
     }
     
     
     
     public String getShortName () {
-        return short_name;
+        return shortName;
     }
     
-    public void setShortName (String short_name) {
-        this.short_name = short_name;
+    public void setShortName (String shortName) {
+        this.shortName = shortName;
     }
     
     
@@ -69,11 +94,11 @@ public class OpenSearchDescription {
     
     
     public String getLongName () {
-        return long_name;
+        return longName;
     }
     
-    public void setLongName (String long_name) {
-        this.long_name = long_name;
+    public void setLongName (String longName) {
+        this.longName = longName;
     }
     
     
@@ -99,11 +124,11 @@ public class OpenSearchDescription {
     
     
     public String getSyndicationRight () {
-        return syndication_right;
+        return syndicationRight;
     }
     
-    public void setSyndicationRight (String syndication_right) {
-        this.syndication_right = syndication_right;
+    public void setSyndicationRight (String syndicationRight) {
+        this.syndicationRight = syndicationRight;
     }
     
     public boolean hasValidSyndicationRight () {
@@ -112,10 +137,10 @@ public class OpenSearchDescription {
         }
         
         String[] valid_rights = new String[] {
-            "open",
-            "limited",
-            "private",
-            "closed"
+            SyndicationRight.OPEN,
+            SyndicationRight.LIMITED,
+            SyndicationRight.PRIVATE,
+            SyndicationRight.CLOSED
         };
         
         for (int i = 0; i < valid_rights.length; i++) {
@@ -130,11 +155,25 @@ public class OpenSearchDescription {
     
     
     public Boolean getAdultContent () {
-        return adult_content;
+        return adultContent;
     }
     
-    public void setAdultContent (Boolean adult_content) {
-        this.adult_content = adult_content;
+    public void setAdultContent (Boolean adultContent) {
+        this.adultContent = adultContent;
+    }
+    
+    
+    
+    public List<OpenSearchImage> getImages () {
+        return images;
+    }
+    
+    public void addImage (OpenSearchImage image) {
+        images.add( image );
+    }
+    
+    public boolean removeImage (OpenSearchImage image) {
+        return images.remove( image );
     }
     
     
@@ -154,29 +193,29 @@ public class OpenSearchDescription {
     
     
     public List<String> getOutputEncodings () {
-        return output_encodings;
+        return outputEncodings;
     }
     
     public void addOutputEncoding (String output_encoding) {
-        output_encodings.add( output_encoding );
+        outputEncodings.add( output_encoding );
     }
     
     public boolean removeOutputEncoding (String output_encoding) {
-        return output_encodings.remove( output_encoding );
+        return outputEncodings.remove( output_encoding );
     }
     
     
     
     public List<String> getInputEncodings () {
-        return input_encodings;
+        return inputEncodings;
     }
     
     public void addInputEncoding (String input_encoding) {
-        input_encodings.add( input_encoding );
+        inputEncodings.add( input_encoding );
     }
     
     public boolean removeInputEncoding (String input_encoding) {
-        return input_encodings.remove( input_encoding );
+        return inputEncodings.remove( input_encoding );
     }
     
     
@@ -299,6 +338,17 @@ public class OpenSearchDescription {
                 element.appendChild( asElement( document, "LongName", getLongName() ) );
             }
         }
+        
+        
+        // Image
+        if (getImages() != null) {
+            Iterator<OpenSearchImage> images = getImages().iterator();
+            while ( images.hasNext() ) {
+                OpenSearchImage image = images.next();
+                element.appendChild( image.asElement( document, mode ) );
+            }
+        }
+        
         
         
         // Developer

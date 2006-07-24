@@ -10,6 +10,7 @@ import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.opensearch.*;
 import net.lucenews.view.*;
+import org.apache.log4j.*;
 import org.w3c.dom.*;
 
 
@@ -80,6 +81,35 @@ public class OpenSearchController extends Controller {
         
         
         
+        // Images
+        
+        boolean addedImage = false;
+        for (int i = 0; i < indices.length; i++) {
+            LuceneIndex index = indices[ i ];
+            OpenSearchImage indexImage = null;
+            
+            try {
+                indexImage = index.getImage();
+            }
+            catch (NumberFormatException nfe) {
+                Logger.getLogger(OpenSearchController.class).debug( nfe );
+            }
+            
+            if (indexImage != null) {
+                description.addImage( indexImage );
+                addedImage = true;
+            }
+        }
+        
+        if ( !addedImage ) {
+            OpenSearchImage serviceImage = service.getImage();
+            if ( serviceImage != null ) {
+                description.addImage( serviceImage );
+            }
+        }
+        
+        
+        
         // OutputEncoding / InputEncoding
         Iterator<Map.Entry<String,Charset>> charsetIterator = Charset.availableCharsets().entrySet().iterator();
         
@@ -91,13 +121,13 @@ public class OpenSearchController extends Controller {
             
             // OutputEncoding
             if (charset.canEncode()) {
-                description.addOutputEncoding( name );
+                //description.addOutputEncoding( name );
             }
             
             // InputEncoding
             try {
                 charset.newDecoder();
-                description.addInputEncoding( name );
+                //description.addInputEncoding( name );
             }
             catch (UnsupportedOperationException inputUoe) {
             }

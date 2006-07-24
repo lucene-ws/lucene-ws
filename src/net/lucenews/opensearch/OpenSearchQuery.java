@@ -1,8 +1,17 @@
 package net.lucenews.opensearch;
 
 import java.util.*;
-import org.apache.log4j.*;
 import org.w3c.dom.*;
+
+/**
+ * OpenSearch Query provides a way of referring to a specific set of 
+ * search results. It is simple, powerful and flexible, and has a wide 
+ * variety of uses. In combination with an OpenSearch Description file 
+ * (another of the components of OpenSearch), it can be used to 
+ * generate a request for search results.
+ *
+ * Source: http://opensearch.a9.com/spec/1.1/query/
+ */
 
 public class OpenSearchQuery {
     
@@ -250,13 +259,8 @@ public class OpenSearchQuery {
     public Integer[] getPagingBoundaries () {
         Integer[] boundaries = new Integer[ 2 ];
         
-        Logger.getLogger(this.getClass()).debug("getting paging boundaries");
-        
         Integer totalResults = getTotalResults();
         Integer count        = getCount();
-        
-        Logger.getLogger(this.getClass()).debug("totalResults: " + totalResults);
-        Logger.getLogger(this.getClass()).debug("count:        " + count);
         
         if (totalResults == null || totalResults == 0 || count == null || count == 0) {
             return boundaries;
@@ -272,18 +276,12 @@ public class OpenSearchQuery {
             startPage = 1; // default
         }
         
-        Logger.getLogger(this.getClass()).debug("startIndex: " + startIndex);
-        Logger.getLogger(this.getClass()).debug("startPage:  " + startPage);
-        
         if (totalResults < startIndex) {
             return boundaries;
         }
         
         boundaries[ 0 ] = 1;
         boundaries[ 1 ] = (int) Math.ceil( ( totalResults - startIndex + 1 ) / count );
-        
-        //Logger.getLogger(this.getClass()).debug("previousPage: " + boundaries[ 0 ]);
-        //Logger.getLogger(this.getClass()).debug("nextPage:     " + boundaries[ 1 ]);
         
         return boundaries;
     }
@@ -298,8 +296,6 @@ public class OpenSearchQuery {
         
         if (startPage == null) { startPage = 1; }
         
-        Logger.getLogger(this.getClass()).debug("startPage: " + startPage);
-        Logger.getLogger(this.getClass()).debug("firstPage: " + firstPage);
         if (firstPage == null || startPage.equals( firstPage )) {
             return null;
         }
