@@ -56,12 +56,12 @@ public class OpenSearchController extends Controller {
         template.setParameter( "outputEncoding",  "{outputEncoding?}" );
         template.setParameter( "inputEncoding",   "{inputEncoding?}" );
         template.setParameter( "totalResults",    "{totalResults?}" );
-        template.setParameter( "analyzer",        "{lucene:analyzer?}" );
-        template.setParameter( "defaultField",    "{lucene:defaultField?}" );
-        template.setParameter( "defaultOperator", "{lucene:defaultOperator?}" );
-        template.setParameter( "filter",          "{lucene:filter?}" );
-        template.setParameter( "locale",          "{lucene:locale?}" );
-        template.setParameter( "sort",            "{lucene:sort?}" );
+        template.setParameter( "analyzer",        "{analyzer?}" );
+        template.setParameter( "defaultField",    "{defaultField?}" );
+        template.setParameter( "defaultOperator", "{defaultOperator?}" );
+        template.setParameter( "filter",          "{filter?}" );
+        template.setParameter( "locale",          "{locale?}" );
+        template.setParameter( "sort",            "{sort?}" );
         
         
         // Atom
