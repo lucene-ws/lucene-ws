@@ -5,6 +5,7 @@ import java.io.*;
 import net.lucenews.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
+import net.lucenews.opensearch.*;
 import net.lucenews.view.*;
 import net.lucenews.atom.*;
 import javax.xml.parsers.ParserConfigurationException;
@@ -12,6 +13,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.*;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.*;
+import org.apache.lucene.queryParser.*;
 import org.apache.lucene.search.*;
 import org.w3c.dom.*;
 import org.xml.sax.*;
@@ -98,18 +100,19 @@ public class IndexController extends Controller {
         throws
             ParserConfigurationException, InvalidIdentifierException, DocumentNotFoundException,
             IndicesNotFoundException, ParserConfigurationException, TransformerException,
-            IOException, DocumentAlreadyExistsException, InsufficientDataException
+            IOException, DocumentAlreadyExistsException, InsufficientDataException, ParseException,
+            OpenSearchException
     {
         Logger.getLogger(IndexController.class).trace("doGet(LuceneContext)");
         
-        LuceneWebService   service = c.service();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
+        c.setSort( new Sort( new SortField( null, SortField.DOC, true ) ) );
         
-        
-        AtomView.process( c, asFeed( c ) );
+        SearchController.doGet( c );
     }
     
     
