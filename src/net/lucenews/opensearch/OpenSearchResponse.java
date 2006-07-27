@@ -5,7 +5,7 @@ import javax.xml.parsers.*;
 import org.w3c.dom.*;
 
 /**
- * OpenSearch™ Response elements are used to add search data to 
+ * OpenSearch Response elements are used to add search data to 
  * existing XML-based syndication formats, such as RSS 2.0 and 
  * Atom 1.0. These extensions are designed to work with OpenSearch 
  * Description files, another of the components of OpenSearch, to 
