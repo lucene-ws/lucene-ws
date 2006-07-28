@@ -16,13 +16,18 @@ import net.lucenews.model.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.opensearch.*;
+import org.apache.log4j.*;
+import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.queryParser.*;
 import org.w3c.dom.*;
 
 public class ServletUtils {
     
     public static void prepareContext (LuceneContext c)
-        throws IndicesNotFoundException, IOException
+        throws
+            IndicesNotFoundException,
+            org.apache.lucene.queryParser.ParseException, IOException
     {
         LuceneWebService   service  = c.getService();
         LuceneIndexManager manager  = service.getIndexManager();
@@ -140,7 +145,12 @@ public class ServletUtils {
         
         // analyzer
         if (c.getAnalyzer() == null) {
-            c.setAnalyzer( request.getAnalyzer() );
+            Analyzer analyzer = null;
+            
+            if (analyzer == null) { analyzer = request.getAnalyzer();  }
+            if (analyzer == null) { analyzer = new StandardAnalyzer(); }
+            
+            c.setAnalyzer( analyzer );
         }
         
         
@@ -197,11 +207,6 @@ public class ServletUtils {
             if (defaultField == null) { defaultField = service.getDefaultField(); }
             
             c.setDefaultField( defaultField );
-        }
-        
-        
-        // filter
-        if (c.getFilter() == null) {
         }
         
         
@@ -281,6 +286,23 @@ public class ServletUtils {
         if (c.getQueryParser() == null) {
             if (c.getDefaultField() != null && c.getAnalyzer() != null) {
                 QueryParser queryParser = new LuceneQueryParser( c.getDefaultField(), c.getAnalyzer() );
+                c.setQueryParser( queryParser );
+            }
+        }
+        
+        
+        // filter
+        if (c.getFilter() == null && c.getQueryParser() != null) {
+            String filterString = null;
+            
+            if (filterString == null) { filterString = request.getCleanParameter("searchFilter");  };
+            if (filterString == null) { filterString = request.getCleanParameter("search_filter"); };
+            if (filterString == null) { filterString = request.getCleanParameter("filter");        };
+            
+            Logger.getLogger(ServletUtils.class).debug("filter string: " + filterString);
+            
+            if (filterString != null) {
+                c.setFilter( LuceneUtils.parseFilter( filterString, c.getQueryParser() ) );
             }
         }
     }
