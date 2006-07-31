@@ -253,8 +253,7 @@ public class IndexController extends Controller {
         }
         
         
-        String optimize = req.getCleanParameter("optimize");
-        if (optimize == null || ServletUtils.parseBoolean(optimize)) {
+        if ( c.isOptimizing() ) {
             IndexController.doOptimize( c );
         }
         

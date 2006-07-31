@@ -30,6 +30,7 @@ public class LuceneContext {
     private Filter               filter;
     private Boolean              expanding;
     private QueryParser          queryParser;
+    private Boolean              optimizing;
     private Sort                 sort;
     private Boolean              spellChecking;
     private Boolean              suggesting;
@@ -246,6 +247,16 @@ public class LuceneContext {
     
     public void setSort (Sort sort) {
         this.sort = sort;
+    }
+    
+    
+    
+    public Boolean isOptimizing () {
+        return optimizing;
+    }
+    
+    public void isOptimizing (Boolean optimizing) {
+        this.optimizing = optimizing;
     }
     
     

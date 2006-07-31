@@ -79,10 +79,15 @@ public class DocumentController extends Controller {
         String indexNamesString  = indexNamesBuffer.toString();
         String documentIDsString = documentIDsBuffer.toString();
         
-        if( deleted )
+        if( deleted ) {
+            if ( c.isOptimizing() ) {
+                IndexController.doOptimize( c );
+            }
             res.addHeader( "Location", service.getDocumentURL( req, indexNamesString, documentIDsString ) );
-        else
+        }
+        else {
             throw new InsufficientDataException( "No documents to be deleted" );
+        }
         
         XMLController.acknowledge( c );
     }
@@ -247,8 +252,7 @@ public class DocumentController extends Controller {
         if (updated) {
             res.addHeader( "Location", service.getDocumentURL( req, indexNames, documentIDs ) );
             
-            String optimize = req.getCleanParameter("optimize");
-            if (optimize == null || ServletUtils.parseBoolean(optimize)) {
+            if ( c.isOptimizing() ) {
                 IndexController.doOptimize( c );
             }
         }

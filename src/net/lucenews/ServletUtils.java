@@ -264,6 +264,19 @@ public class ServletUtils {
         }
         
         
+        // is optimizing
+        if (c.isOptimizing() == null) {
+            String optimize = request.getCleanParameter("optimize");
+            
+            if (optimize == null) {
+                c.isOptimizing( true );
+            }
+            else {
+                c.isOptimizing( ServletUtils.parseBoolean( optimize ) );
+            }
+        }
+        
+        
         // is spell-checking
         if (c.isSpellChecking() == null) {
             Boolean isSpellChecking = null;
