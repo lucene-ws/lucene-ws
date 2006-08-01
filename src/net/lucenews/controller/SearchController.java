@@ -119,6 +119,7 @@ public class SearchController extends Controller {
         
         
         Logger.getLogger(SearchController.class).info("Filter: " + c.getFilter());
+        Logger.getLogger(SearchController.class).info("Sort: " + c.getSort());
         
         
         /**

@@ -318,6 +318,18 @@ public class ServletUtils {
                 c.setFilter( LuceneUtils.parseFilter( filterString, c.getQueryParser() ) );
             }
         }
+        
+        
+        // sort
+        if (c.getSort() == null) {
+            String sortString = null;
+            
+            if (sortString == null) { sortString = request.getCleanParameter("sort"); }
+            
+            if (sortString != null) {
+                c.setSort( LuceneUtils.parseSort( sortString ) );
+            }
+        }
     }
     
     
