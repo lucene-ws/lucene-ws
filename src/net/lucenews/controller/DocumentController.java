@@ -80,7 +80,7 @@ public class DocumentController extends Controller {
         String documentIDsString = documentIDsBuffer.toString();
         
         if( deleted ) {
-            if ( c.isOptimizing() ) {
+            if ( c.isOptimizing() == null || c.isOptimizing() ) {
                 IndexController.doOptimize( c );
             }
             res.addHeader( "Location", service.getDocumentURL( req, indexNamesString, documentIDsString ) );
@@ -252,7 +252,7 @@ public class DocumentController extends Controller {
         if (updated) {
             res.addHeader( "Location", service.getDocumentURL( req, indexNames, documentIDs ) );
             
-            if ( c.isOptimizing() ) {
+            if ( c.isOptimizing() == null || c.isOptimizing() ) {
                 IndexController.doOptimize( c );
             }
         }

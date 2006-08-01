@@ -253,7 +253,7 @@ public class IndexController extends Controller {
         }
         
         
-        if ( c.isOptimizing() ) {
+        if ( c.isOptimizing() == null || c.isOptimizing() ) {
             IndexController.doOptimize( c );
         }
         
