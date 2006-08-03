@@ -41,8 +41,8 @@ public class OpenSearchController extends Controller {
         
         
         OpenSearchDescription description = new OpenSearchDescription();
-        description.setShortName( ServletUtils.joined(ServletUtils.mapped("'[content]'", ServletUtils.objectsMapped("getTitle", indices))) );
-        description.setDescription( "OpenSearch description for " + ServletUtils.joined(ServletUtils.mapped("'[content]'", ServletUtils.objectsMapped("getTitle", indices))));
+        description.setShortName( ServletUtils.joined( ServletUtils.objectsMapped("getTitle", indices) ) );
+        description.setDescription( "OpenSearch description for " + description.getShortName() );
         
         
         // Template
@@ -56,19 +56,19 @@ public class OpenSearchController extends Controller {
         template.setParameter( "outputEncoding",  "{outputEncoding?}" );
         template.setParameter( "inputEncoding",   "{inputEncoding?}" );
         template.setParameter( "totalResults",    "{totalResults?}" );
-        template.setParameter( "analyzer",        "{analyzer?}" );
-        template.setParameter( "defaultField",    "{defaultField?}" );
-        template.setParameter( "defaultOperator", "{defaultOperator?}" );
-        template.setParameter( "filter",          "{filter?}" );
-        template.setParameter( "locale",          "{locale?}" );
-        template.setParameter( "sort",            "{sort?}" );
+        template.setParameter( "analyzer",        "{lucene:analyzer?}" );
+        template.setParameter( "defaultField",    "{lucene:defaultField?}" );
+        template.setParameter( "defaultOperator", "{lucene:defaultOperator?}" );
+        template.setParameter( "filter",          "{lucene:filter?}" );
+        template.setParameter( "locale",          "{lucene:locale?}" );
+        template.setParameter( "sort",            "{lucene:sort?}" );
         
         
         // Atom
         OpenSearchUrl atomUrl = new OpenSearchUrl();
         atomUrl.setType("application/atom+xml");
         atomUrl.setTemplate( template.with( "format", "atom" ).toString() );
-        atomUrl.setNamespace( "lucene", "http://www.lucene-ws.net/" );
+        atomUrl.setNamespace( "lucene", "http://www.lucene-ws.net/spec/1.0/" );
         description.addUrl( atomUrl );
         
         
@@ -76,7 +76,7 @@ public class OpenSearchController extends Controller {
         OpenSearchUrl rssUrl = new OpenSearchUrl();
         rssUrl.setType("application/rss+xml");
         rssUrl.setTemplate( template.with( "format", "rss" ).toString() );
-        rssUrl.setNamespace( "lucene", "http://www.lucene-ws.net/" );
+        rssUrl.setNamespace( "lucene", "http://www.lucene-ws.net/spec/1.0/" );
         description.addUrl( rssUrl );
         
         

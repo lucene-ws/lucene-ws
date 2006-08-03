@@ -28,20 +28,24 @@ import org.xml.sax.*;
 
 public class LuceneWebService extends HttpServlet {
     
+    
+    
+    public static final String VERSION = "0.75";
+    
+    
+    
+    
     /**
      * The current version of the web service
      */
     
     public String getVersion () {
-        return "0.0.6";
+        return VERSION;
     }
     
     
     
     
-    
-    
-    protected Logger logger;
     
     
     /**
@@ -112,20 +116,6 @@ public class LuceneWebService extends HttpServlet {
     }
     
     
-    /**
-     * Logging
-     */
-    
-    public Logger getLogger () {
-        if (logger == null) {
-            logger = Logger.getRootLogger();
-        }
-        return logger;
-    }
-    
-    public void setLogger (Logger logger) {
-        this.logger = logger;
-    }
     
     
     
@@ -724,7 +714,6 @@ public class LuceneWebService extends HttpServlet {
         
         if (getProperty("log4j.configuration") != null) {
             PropertyConfigurator.configureAndWatch( getProperty("log4j.configuration") );
-            setLogger( Logger.getRootLogger() );
         }
     }
     
@@ -738,6 +727,10 @@ public class LuceneWebService extends HttpServlet {
     
     public String getProperty (String name) throws IOException {
         return getProperties().getProperty( name );
+    }
+    
+    public String getCleanProperty (String name) throws IOException {
+        return ServletUtils.clean( getProperty( name ) );
     }
     
     public Boolean getBooleanProperty (String name) throws IOException {
@@ -920,7 +913,7 @@ public class LuceneWebService extends HttpServlet {
         url.append( "/" );
         
         for (int i = 0; i < indices.length; i++) {
-            if (i > 0) {
+            if ( i > 0 ) {
                 url.append( "," );
             }
             url.append( indices[i] );
@@ -931,39 +924,93 @@ public class LuceneWebService extends HttpServlet {
         return String.valueOf( url );
     }
     
-    public Calendar getLastModified () {
-        Calendar lastModified = null;
+    
+    
+    
+    /**
+     * Determines the last time any of this service's indices have 
+     * been updated.
+     * 
+     * @throws IndicesNotFoundException
+     * @throws IOException
+     */
+    
+    public Calendar getUpdated () throws IndicesNotFoundException, IOException {
+        Calendar updated = null;
         
-        /**Iterator<LuceneIndex> indices = getIndexManager().getIndices().iterator();
-        while( indices.hasNext() )
-        {
-        LuceneIndex index = indices.next();
+        LuceneIndex[] indices = getIndexManager().getIndices();
+        for ( int i = 0; i < indices.length; i++ ) {
+            LuceneIndex index = indices[ i ];
+            if ( updated == null || updated.compareTo( index.getUpdated() ) < 0 ) {
+                updated = index.getUpdated();
+            }
+        }
         
-        if( lastModified == null || lastModified.compareTo( index.getLastModified() ) < 0 )
-        lastModified = index.getLastModified();
-        }*/
-        
-        if (lastModified == null)
+        if ( updated == null ) {
             return Calendar.getInstance();
+        }
         
-        return lastModified;
+        return updated;
     }
     
+    
+    
+    /**
+     * Determines the title of this service as specified by the 
+     * service.title service property. Defaults to "Lucene Web Service 
+     * (vX.X.X)".
+     */
     public String getTitle () throws IOException {
-        return getProperty( "service.title", getProperty( "title", "Lucene Web Service (v" + getVersion() + ")" ) );
+        String defaultTitle = "Lucene Web Service (v"+getVersion()+")";
+        
+        String title = null;
+        if ( title == null ) { title = getProperty("service.title"); }
+        if ( title == null ) { title = getProperty("title");         }
+        if ( title == null ) { title = defaultTitle;                 }
+        
+        return title;
     }
+    
+    
+    
+    /**
+     * Determines the service-wide default field to be used as a last 
+     * resort when searching.
+     * 
+     * @throws IOException
+     */
     
     public String getDefaultField () throws IOException {
         return getProperty( "service.defaultfield" );
     }
     
-    public QueryParser.Operator getDefaultOperator () throws IOException {
-        return LuceneUtils.parseOperator( getProperty( "service.defaultoperator" ) );
-    }
     
-    public boolean isDebugging () throws IOException
+    
+    /**
+     * Determines the service-wide default operator to be used as a 
+     * last resort when searching.
+     * 
+     * @throws IOException
+     */
+    
+    public QueryParser.Operator getDefaultOperator ()
+        throws IOException
     {
-        return ServletUtils.parseBoolean( getProperty( "service.debugging" ) );
+        String defaultOperator = getProperty("service.defaultoperator");
+        return LuceneUtils.parseOperator( defaultOperator );
+    }
+    
+    
+    
+    /**
+     * Determines whether or not the service is in a state of debugging.
+     * 
+     * @throws IOException
+     */
+    
+    public boolean isDebugging () throws IOException {
+        String debugging = getProperty("service.debugging");
+        return ServletUtils.parseBoolean( debugging );
     }
     
     
@@ -972,39 +1019,42 @@ public class LuceneWebService extends HttpServlet {
     
     
     
-    public void applyDefaults (LuceneRequest req) throws IOException {
-        if (req.getAnalyzer() == null) {
-            req.setAnalyzer( new StandardAnalyzer() );
-        }
-        //	req.setAnalyzer( getLuceneConfig().getAnalyzer() );
-        
-        
-        //if( req.getDefaultField() == null )
-        //	req.setDefaultField( getProperty( "service.defaultfield", "all" ) );
-        
-        if (req.getPage() == null) {
-            req.setPage( 1 );
-        }
-        //if( getLuceneConfig().getDefaultPage() == null )
-        //	req.setPage( 1 );
-        //else
-        //	req.setPage( getLuceneConfig().getDefaultPage() );
-        
-        if (req.getEntriesPerPage() == null) {
-            req.setEntriesPerPage( 10 );
-        }
-        //req.setEntriesPerPage( getLuceneConfig().getEntriesPerPage() );
-    }
     
+    /**
+     * Retrieves an OpenSearch image corresponding to this service.
+     */
     
-    public OpenSearchImage getImage () {
-        OpenSearchImage image = new OpenSearchImage("http://www.lucene-ws.net/images/magnifying_glass.png");
-        image.setType( "image/png" );
-        image.setHeight( 53 );
-        image.setWidth( 63 );
+    public OpenSearchImage getImage () throws NumberFormatException, IOException {
+        OpenSearchImage image = null;
+        
+        String url = getCleanProperty("service.image");
+        
+        if (url == null) {
+            image.setUrl("http://www.lucene-ws.net/images/magnifying_glass.png");
+            return image;
+        }
+        
+        image = new OpenSearchImage();
+        
+        image.setUrl( url );
+        
+        String height = getCleanProperty("service.image.height");
+        if ( height != null ) {
+            image.setHeight( Integer.valueOf( height ) );
+        }
+        
+        String width = getCleanProperty("service.image.width");
+        if ( width != null ) {
+            image.setWidth( Integer.valueOf( width ) );
+        }
+        
+        String type = getCleanProperty("service.image.type");
+        if ( type != null ) {
+            image.setType( type );
+        }
+        
         return image;
     }
-    
     
     
 }

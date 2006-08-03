@@ -82,100 +82,83 @@ public class LuceneIndexManager implements LuceneIndexListener {
     
     
     public File[] getIndicesDirectories ()
-    throws IOException
+        throws IOException
     {
-    String pathsString = service.getProperty( "indices.directories", service.getProperty( "indexDirectory", "c:/indices" ) );
-    String[] paths = pathsString.split( ";" );
-    
-    List<File> directories = new LinkedList<File>();
-    for( int i = 0; i < paths.length; i++ )
-    {
-    String path = ServletUtils.clean( paths[ i ] );
-    if( path != null )
-    {
-    directories.add( new File( path ) );
-    }
-    }
-    
-    return directories.toArray( new File[]{} );
+        String pathsString = service.getProperty( "indices.directories", service.getProperty( "indexDirectory", "c:/indices" ) );
+        String[] paths = pathsString.split( ";" );
+        
+        List<File> directories = new LinkedList<File>();
+        for ( int i = 0; i < paths.length; i++ ) {
+            String path = ServletUtils.clean( paths[ i ] );
+            if ( path != null ) {
+                directories.add( new File( path ) );
+            }
+        }
+        
+        return directories.toArray( new File[]{} );
     }
     
-    public File getCreatedIndicesDirectory ()
-    throws IOException
-    {
-    return getIndicesDirectories()[ 0 ];
+    public File getCreatedIndicesDirectory () throws IOException {
+        return getIndicesDirectories()[ 0 ];
     }
     
     
-    public void guaranteeFreshDirectories ()
-    throws IOException
-    {
-    loadDirectories();
+    public void guaranteeFreshDirectories () throws IOException {
+        loadDirectories();
     }
     
-    public void loadDirectories ()
-    throws IOException
-    {
-    directories.clear();
-    
-    File[] indicesDirectories = getIndicesDirectories();
-    for( int i = 0; i < indicesDirectories.length; i++ )
-    {
-    if( !indicesDirectories[ i ].isDirectory() )
-    continue;
-    
-    File indicesDirectory = indicesDirectories[ i ];
-    
-    File[] files = indicesDirectory.listFiles();
-    for( int j = 0; j < files.length; j++ )
-    {
-    if( !files[ j ].isDirectory() )
-    continue;
-    
-    File directory = files[ j ];
-    
-    if( IndexReader.indexExists( directory ) )
-    {
-    String name = directory.getName();
-    if( !directories.containsKey( name ) )
-    directories.put( name, directory );
-    }
-    }
-    }
+    public void loadDirectories () throws IOException {
+        directories.clear();
+        
+        File[] indicesDirectories = getIndicesDirectories();
+        for ( int i = 0; i < indicesDirectories.length; i++ ) {
+            if ( !indicesDirectories[ i ].isDirectory() ) {
+                continue;
+            }
+            
+            File indicesDirectory = indicesDirectories[ i ];
+            
+            File[] files = indicesDirectory.listFiles();
+            for ( int j = 0; j < files.length; j++ ) {
+                if ( !files[ j ].isDirectory() ) {
+                    continue;
+                }
+                
+                File directory = files[ j ];
+                
+                if ( IndexReader.indexExists( directory ) ) {
+                    String name = directory.getName();
+                    if ( !directories.containsKey( name ) ) {
+                        directories.put( name, directory );
+                    }
+                }
+            }
+        }
     }
     
     
-    public void indexCreated (LuceneIndexEvent e)
-    {
-    try
-    {
-    refresh();
-    }
-    catch(IOException ioe)
-    {
-    }
+    public void indexCreated (LuceneIndexEvent e) {
+        try {
+            refresh();
+        }
+        catch (IOException ioe) {
+        }
     }
     
-    public void indexDeleted (LuceneIndexEvent e)
-    {
-    try
-    {
-    refresh();
-    }
-    catch(IOException ioe)
-    {
-    }
+    public void indexDeleted (LuceneIndexEvent e) {
+        try {
+            refresh();
+        }
+        catch (IOException ioe) {
+        }
     }
     
-    public void indexModified (LuceneIndexEvent e)
-    {
+    public void indexModified (LuceneIndexEvent e) {
     }
     
     
-    public void refresh ()
-    throws IOException
-    {
-    loadDirectories();
+    public void refresh () throws IOException {
+        loadDirectories();
     }
     
     

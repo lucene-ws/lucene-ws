@@ -806,35 +806,33 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Integer getIntegerParameter (String name) {
-        try {
-            return Integer.valueOf( getParameter( name ) );
-        }
-        catch (NullPointerException npe) {
+        String value = getCleanParameter( name );
+        
+        if ( value == null ) {
             return null;
         }
-        catch (NumberFormatException nfe) {
-            return null;
-        }
+        
+        return Integer.valueOf( value );
     }
     
     public Integer getIntegerParameter (int key) {
-        try {
-            return Integer.valueOf( getParameter( key ) );
-        }
-        catch (NullPointerException npe) {
+        String value = getCleanParameter( key );
+        
+        if ( value == null ) {
             return null;
         }
-        catch (NumberFormatException nfe) {
-            return null;
-        }
+        
+        return Integer.valueOf( getParameter( key ) );
     }
     
     
     public Boolean getBooleanParameter (String name) {
         String value = getCleanParameter(name);
-        if (value == null) {
+        
+        if ( value == null ) {
             return null;
         }
+        
         return ServletUtils.parseBoolean(value);
     }
     

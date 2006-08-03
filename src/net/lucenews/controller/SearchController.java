@@ -287,13 +287,12 @@ public class SearchController extends Controller {
         if ( c.getTitle() == null ) {
             StringBuffer title = new StringBuffer();
             if (query instanceof MatchAllDocsQuery) {
-                title.append( "All documents in " );
+                title.append( "All documents within " );
             }
             else {
-                title.append( "Search results for query '" + request.getSearchString() + "' on " );
+                title.append( "Search results for '" + c.getOpenSearchQuery().getSearchTerms() + "' within " );
             }
-            title.append( ( indices.length == 1 ? "index" : "indices" ) + " " );
-            title.append( ServletUtils.joined( ServletUtils.mapped( "'[content]'", ServletUtils.objectsMapped( "getTitle", indices ) ) ) );
+            title.append( ServletUtils.joined( ServletUtils.objectsMapped( "getTitle", indices ) ) );
             
             response.setTitle( String.valueOf( title ) );
         }
