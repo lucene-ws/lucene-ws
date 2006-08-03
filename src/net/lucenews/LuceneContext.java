@@ -34,6 +34,7 @@ public class LuceneContext {
     private Sort                 sort;
     private Boolean              spellChecking;
     private Boolean              suggesting;
+    private String               title;
     
     
     
@@ -247,6 +248,16 @@ public class LuceneContext {
     
     public void setSort (Sort sort) {
         this.sort = sort;
+    }
+    
+    
+    
+    public String getTitle () {
+        return title;
+    }
+    
+    public void setTitle (String title) {
+        this.title = title;
     }
     
     

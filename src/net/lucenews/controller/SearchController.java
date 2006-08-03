@@ -284,18 +284,23 @@ public class SearchController extends Controller {
          * ============================================
          */
         
-        StringBuffer title = new StringBuffer();
-        if (query instanceof MatchAllDocsQuery) {
-            title.append( "All documents in " );
+        if ( c.getTitle() == null ) {
+            StringBuffer title = new StringBuffer();
+            if (query instanceof MatchAllDocsQuery) {
+                title.append( "All documents in " );
+            }
+            else {
+                title.append( "Search results for query '" + request.getSearchString() + "' on " );
+            }
+            title.append( ( indices.length == 1 ? "index" : "indices" ) + " " );
+            title.append( ServletUtils.joined( ServletUtils.mapped( "'[content]'", ServletUtils.objectsMapped( "getTitle", indices ) ) ) );
+            
+            response.setTitle( String.valueOf( title ) );
         }
         else {
-            title.append( "Search results for query '" + request.getSearchString() + "' on " );
+            response.setTitle( c.getTitle() );
         }
-        title.append( ( indices.length == 1 ? "index" : "indices" ) + " " );
-        title.append( ServletUtils.joined( ServletUtils.mapped( "'[content]'", ServletUtils.objectsMapped( "getTitle", indices ) ) ) );
         
-        
-        response.setTitle( String.valueOf( title ) );
         response.setId( request.getLocation() );
         response.setUpdated( Calendar.getInstance() );
         //response.setTotalResults( limiter.getTotalEntries() );
@@ -311,7 +316,7 @@ public class SearchController extends Controller {
         response.addQuery( c.getOpenSearchQuery() );
         
         
-        response.setDescription( title.toString() );
+        response.setDescription( response.getTitle() );
         
         addLinks( c );
         

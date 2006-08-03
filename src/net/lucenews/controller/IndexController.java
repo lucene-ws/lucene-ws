@@ -109,8 +109,20 @@ public class IndexController extends Controller {
         LuceneIndexManager manager  = service.getIndexManager();
         LuceneRequest      request  = c.getRequest();
         LuceneResponse     response = c.getResponse();
+        LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
         
         c.setSort( new Sort( new SortField( null, SortField.DOC, true ) ) );
+        
+        String[] titles = new String[ indices.length ];
+        for ( int i = 0; i < indices.length; i++ ) {
+            LuceneIndex index = indices[ i ];
+            
+            String title = null;
+            if ( title == null ) { title = index.getTitle(); }
+            if ( title == null ) { title = index.getName();  }
+            titles[ i ] = title;
+        }
+        c.setTitle( ServletUtils.joined( titles ) );
         
         SearchController.doGet( c );
     }
