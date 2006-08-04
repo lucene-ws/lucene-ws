@@ -111,7 +111,9 @@ public class IndexController extends Controller {
         LuceneResponse     response = c.getResponse();
         LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
         
-        c.setSort( new Sort( new SortField( null, SortField.DOC, true ) ) );
+        if ( c.getSort() == null ) {
+            c.setSort( new Sort( new SortField( null, SortField.DOC, true ) ) );
+        }
         
         String[] titles = new String[ indices.length ];
         for ( int i = 0; i < indices.length; i++ ) {
