@@ -18,19 +18,21 @@ import org.w3c.dom.*;
 
 public class OpenSearchDescription {
     
-    private String shortName;
-    private String longName;
-    private String description;
-    private String developer;
-    private String attribution;
-    private String syndicationRight;
-    private Boolean adultContent;
-    private String contact;
-    private List<OpenSearchUrl> urls;
+    private String                shortName;
+    private String                description;
+    private List<OpenSearchUrl>   urls;
+    private String                contact;
+    private String                tags;
+    private String                longName;
     private List<OpenSearchImage> images;
-    private List<String> languages;
-    private List<String> inputEncodings;
-    private List<String> outputEncodings;
+    private List<OpenSearchQuery> queries;
+    private String                developer;
+    private String                attribution;
+    private String                syndicationRight;
+    private Boolean               adultContent;
+    private List<String>          languages;
+    private List<String>          inputEncodings;
+    private List<String>          outputEncodings;
     
     
     
@@ -46,12 +48,22 @@ public class OpenSearchDescription {
     public OpenSearchDescription () {
         urls = new LinkedList<OpenSearchUrl>();
         images  = new LinkedList<OpenSearchImage>();
+        queries = new LinkedList<OpenSearchQuery>();
         languages = new LinkedList<String>();
         inputEncodings  = new LinkedList<String>();
         outputEncodings = new LinkedList<String>();
     }
     
     
+    
+    /**
+     * ShortName - A brief name that will appear in buttons, UI 
+     * controls, etc., that reference this search content provider.
+     * 
+     * Parent: OpenSearchDescription
+     * Restrictions: Must contain 16 or fewer characters (no HTML).
+     * Requirements: Must appear exactly once.
+     */
     
     public String getShortName () {
         return shortName;
@@ -63,6 +75,16 @@ public class OpenSearchDescription {
     
     
     
+    /**
+     * Description - A human readable text description of the search 
+     * content provider.
+     * 
+     * Parent: OpenSearchDescription
+     * Restrictions: Must contain 1024 or fewer characters of text (no 
+     *               HTML).
+     * Requirements: Must appear exactly once.
+     */
+    
     public String getDescription () {
         return description;
     }
@@ -73,6 +95,16 @@ public class OpenSearchDescription {
     
     
     
+    /**
+     * Url - Please see the OpenSearch Query Syntax specification for 
+     * documentation on the Url element, its attributes, and its 
+     * contents.
+     * 
+     * Parent: OpenSearchDescription
+     * Note: Updated in version 1.1.
+     * Requirements: Must appear one or more times.
+     */
+    
     public List<OpenSearchUrl> getUrls () {
         return urls;
     }
@@ -81,8 +113,22 @@ public class OpenSearchDescription {
         urls.add( url );
     }
     
+    public boolean removeUrl (OpenSearchUrl url) {
+        return urls.remove( url );
+    }
     
     
+    
+    /**
+     * Contact - An email address at which the developer can be reached.
+     * 
+     * Parent: OpenSearchDescription
+     * Note: Updated in version 1.1.
+     * Restrictions: Must contain 64 or fewer characters of text (no 
+     *               HTML).
+     * Requirements: May appear zero or one time.
+     */
+        
     public String getContact () {
         return contact;
     }
@@ -92,6 +138,38 @@ public class OpenSearchDescription {
     }
     
     
+    
+    /**
+     * Tags – A space-delimited set of words that are used as keywords 
+     * to identify and categorize this search content.
+     *
+     * Parent: OpenSearchDescription
+     * Note: Updated in version 1.1.
+     * Restrictions: Total length of all tags, including spaces, must 
+     *               contain 256 or fewer characters of text (no HTML).
+     * Requirements: May appear zero or one time.
+     */
+    
+    public String getTags () {
+        return tags;
+    }
+    
+    public void setTags (String tags) {
+        this.tags = tags;
+    }
+    
+    
+    
+    /**
+     * LongName - The name by which this search content provider is 
+     * referred to in hypertext links, etc.
+     * 
+     * Parent: OpenSearchDescription
+     * Restrictions: Must contain 48 or fewer characters of text (no 
+     *               HTML).
+     * Default:      The same value as the ShortName element.
+     * Requirements: May appear zero or one time.
+     */
     
     public String getLongName () {
         return longName;
@@ -103,6 +181,77 @@ public class OpenSearchDescription {
     
     
     
+    /**
+     * Image - A URL that identifies the location of an image that can 
+     * be used in association with this search content.
+     *
+     * Parent: OpenSearchDescription
+     * Attributes:
+     *     o height – height, in pixels, of this image. Optional.
+     *     o width – width, in pixels, of this image. Optional.
+     *     o type – the MIME-type of this image. Optional.
+     * Note: Valid types correspond to those that can be displayed 
+     *       using the HTML <img src=""> element.
+     * Note: If more than one image is available, clients will choose 
+     *       the most suitable for the given application, giving 
+     *       preference to those listed first.
+     * Note: 64x64 JPEG/PNGs and 16x16 ICO files are recommended.
+     * Note: Updated in version 1.1.
+     * Requirements: May appear zero, one, or more times.
+     */
+    
+    public List<OpenSearchImage> getImages () {
+        return images;
+    }
+    
+    public void addImage (OpenSearchImage image) {
+        images.add( image );
+    }
+    
+    public boolean removeImage (OpenSearchImage image) {
+        return images.remove( image );
+    }
+    
+    
+    
+    /**
+     * Query - used to indicate an example search; please see the 
+     * OpenSearch Query specification for more information.
+     * 
+     * Parent: OpenSearchDescription
+     * Restrictions: The role attribute must equal example.
+     * Requirements: May appear zero or more times.
+     * Example: <Query role="example" searchTerms="cat" />
+     */
+    
+    public List<OpenSearchQuery> getQueries () {
+        return queries;
+    }
+    
+    public void addQuery (OpenSearchQuery query) {
+        queries.add( query );
+    }
+    
+    public boolean removeQuery (OpenSearchQuery query) {
+        return queries.remove( query );
+    }
+    
+    
+    
+    /**
+     * The developer or maintainer of the OpenSearch feed.
+     * 
+     * Parent: OpenSearchDescription
+     * Restrictions: Must contain 64 or fewer characters of text 
+     *               (no HTML).
+     * Note: The Developer is not always the same as the owner, author, 
+     *       or copyright holder of the source of the content itself. 
+     *       The developer is simply the person or entity that created 
+     *       the feed, though they must have permission of the 
+     *       appropriate copyright holders.
+     * Requirements: May appear zero or one time.
+     */
+    
     public String getDeveloper () {
         return developer;
     }
@@ -113,6 +262,17 @@ public class OpenSearchDescription {
     
     
     
+    /**
+     * A list of all content sources or platforms that should be credited.
+     *
+     * Parent: OpenSearchDescription
+     * Restrictions: Must contain 256 or fewer characters of text 
+     *               (no HTML).
+     * Note: Please include any copyright symbols or descriptive text 
+     *       as desired.
+     * Requirements: May appear zero or one time.
+     */
+    
     public String getAttribution () {
         return attribution;
     }
@@ -122,6 +282,27 @@ public class OpenSearchDescription {
     }
     
     
+    
+    /**
+     * The degree to which the search results provided by this search 
+     * engine can be distributed.
+     *
+     * Parent: OpenSearchDescription
+     * Values: This element must contain one of the following values 
+     *         (case insensitive):
+     *     o open – search results can be published or re-published 
+     *              without restriction. This is the default.
+     *     o limited – search results can be published on the client 
+     *                 site, but not further republished.
+     *     o private – search feed may be queried, but the results may 
+     *                 not be displayed at the client site.
+     *     o closed – search feed should not be queried, and will 
+     *                disable the column for searches.
+     * Note: The SyndicationRight must be either open or limited for 
+     *       the content to appear on a public search aggregation site.
+     * Default: "open"
+     * Requirements: May appear zero or one time.
+     */
     
     public String getSyndicationRight () {
         return syndicationRight;
@@ -154,6 +335,18 @@ public class OpenSearchDescription {
     
     
     
+    /**
+     * A boolean flag that must be set if the content provided is not 
+     * suitable for minors
+     *
+     * Parent: OpenSearchDescription
+     * Values: "false", "FALSE", "0", "no", and "NO" will all be 
+     *         considered FALSE, all other strings will be 
+     *         considered TRUE
+     * Default: "FALSE"
+     * Requirements: May appear zero or one time.
+     */
+    
     public Boolean getAdultContent () {
         return adultContent;
     }
@@ -162,21 +355,33 @@ public class OpenSearchDescription {
         this.adultContent = adultContent;
     }
     
-    
-    
-    public List<OpenSearchImage> getImages () {
-        return images;
-    }
-    
-    public void addImage (OpenSearchImage image) {
-        images.add( image );
-    }
-    
-    public boolean removeImage (OpenSearchImage image) {
-        return images.remove( image );
+    public void setAdultContent (String adultContent) {
+        if ( adultContent == null ) {
+            this.adultContent = null;
+        }
+        else {
+            this.adultContent = asBoolean( adultContent );
+        }
     }
     
     
+    
+    /**
+     * Indicates that the server is capable of returning results in 
+     * the specified language.
+     *
+     * Parent: OpenSearchDescription
+     * Restrictions: Values conform those of the XML 1.0 Language 
+     *               Identification, as specified by RFC 3066.
+     * Note: Please refer to the language parameter in the 
+     *       Query Syntax specification for more information 
+     *       on how clients can request a particular language 
+     *       for the search results.
+     * Note: New in version 1.1.
+     * Default: "*". Indicates that all languages may appear in the 
+     *          results.
+     * Requirements: May appear zero, one, or more times.
+     */
     
     public List<String> getLanguages () {
         return languages;
@@ -192,6 +397,23 @@ public class OpenSearchDescription {
     
     
     
+    /**
+     * Indicates that the server is capable of returning results with 
+     * the specified character encoding.
+     *
+     * Parent: OpenSearchDescription
+     * Restrictions: Values conform those of the XML 1.0 Character 
+     *               Encodings, as specified by the IANA Character Set 
+     *               Assignments.
+     * Note: Please refer to the outputEncoding parameter in the Query 
+     *       Syntax specification for more information on how clients 
+     *       can request a particular character encoding for the 
+     *       response.
+     * Note: New in version 1.1.
+     * Default: "UTF-8".
+     * Requirements: May appear zero, one, or more times.
+     */
+    
     public List<String> getOutputEncodings () {
         return outputEncodings;
     }
@@ -205,6 +427,23 @@ public class OpenSearchDescription {
     }
     
     
+    
+    /**
+     * Indicates that the server is capable of reading queries with the 
+     * specified character encoding.
+     *
+     * Parent: OpenSearchDescription
+     * Restrictions: Values conform those of the XML 1.0 Character 
+     *               Encodings, as specified by the IANA Character Set 
+     *               Assignments.
+     * Note: Please refer to the inputEncoding parameter in the Query 
+     *       Syntax specification for more information on how clients 
+     *       can indicate a particular character encoding in the 
+     *       request.
+     * Note: New in version 1.1.
+     * Default: "UTF-8".
+     * Requirements: May appear zero, one, or more times.
+     */
     
     public List<String> getInputEncodings () {
         return inputEncodings;
@@ -220,13 +459,87 @@ public class OpenSearchDescription {
     
     
     
+    /**
+     * Parses a DOM Document into an OpenSearch Description.
+     */
+    
     public static OpenSearchDescription asOpenSearchDescription (Document document) {
         OpenSearchDescription description = new OpenSearchDescription();
+        
+        // ShortName
+        description.setShortName( asValue( document, "ShortName" ) );
+        
+        // Description
+        description.setDescription( asValue( document, "Description" ) );
+        
+        // Url
+        NodeList urls = document.getElementsByTagName("Url");
+        for ( int i = 0; i < urls.getLength(); i++ ) {
+            description.addUrl( OpenSearchUrl.asOpenSearchUrl( (Element) urls.item( i ) ) );
+        }
+        
+        // Contact
+        description.setContact( asValue( document, "Contact" ) );
+        
+        // Tags
+        description.setTags( asValue( document, "Tags" ) );
+        
+        // LongName
+        description.setLongName( asValue( document, "LongName" ) );
+        
+        // Image
+        NodeList images = document.getElementsByTagName("Image");
+        for ( int i = 0; i < images.getLength(); i++ ) {
+            description.addImage( OpenSearchImage.asOpenSearchImage( (Element) images.item( i ) ) );
+        }
+        
+        // Query
+        NodeList queries = document.getElementsByTagName("Query");
+        for ( int i = 0; i < queries.getLength(); i++ ) {
+            description.addQuery( OpenSearchQuery.asOpenSearchQuery( (Element) queries.item( i ) ) );
+        }
+        
+        // Developer
+        description.setDeveloper( asValue( document, "Developer" ) );
+        
+        // Attribution
+        description.setAttribution( asValue( document, "Attribution" ) );
+        
+        // SyndicationRight
+        description.setSyndicationRight( asValue( document, "SyndicationRight" ) );
+        
+        // AdultContent
+        description.setAdultContent( asValue( document, "AdultContent" ) );
+        
+        // Language
+        String[] languages = asValues( document, "Language" );
+        for ( int i = 0; i < languages.length; i++ ) {
+            description.addLanguage( languages[ i ] );
+        }
+        
+        // OutputEncoding
+        String[] outputEncodings = asValues( document, "OutputEncoding" );
+        for ( int i = 0; i < outputEncodings.length; i++ ) {
+            description.addOutputEncoding( outputEncodings[ i ] );
+        }
+        
+        // InputEncoding
+        String[] inputEncodings = asValues( document, "InputEncoding" );
+        for ( int i = 0; i < inputEncodings.length; i++ ) {
+            description.addInputEncoding( inputEncodings[ i ] );
+        }
+        
         return description;
     }
     
     
     
+    /**
+     * Transforms the OpenSearch description into a DOM Document.
+     * 
+     * @throws OpenSearchException
+     * @throws ParserConfigurationException
+     */
     
     public Document asDocument ()
         throws OpenSearchException, ParserConfigurationException
@@ -235,6 +548,16 @@ public class OpenSearchDescription {
         document.appendChild( asElement( document ) );
         return document;
     }
+    
+    
+    
+    /**
+     * Transforms the OpenSearch description into a DOM Document.
+     * 
+     * @param  mode
+     * @throws OpenSearchException
+     * @throws ParserConfigurationException
+     */
     
     public Document asDocument (OpenSearch.Mode mode)
         throws OpenSearchException, ParserConfigurationException
@@ -245,13 +568,27 @@ public class OpenSearchDescription {
     }
     
     
+    
     /**
-     * Transforms the OpenSearch description into a DOM Element.
+     * Transforms the OpenSearch Description into a DOM Element.
+     * 
+     * @param document the parent DOM Document
+     * @throws OpenSearchException
      */
     
     public Element asElement (Document document) throws OpenSearchException {
         return asElement(document, OpenSearch.getDefaultMode());
     }
+    
+    
+    
+    /**
+     * Transforms the OpenSearch Description into a DOM Element.
+     * 
+     * @param document the parent DOM Document
+     * @param mode     the mode with which we are transforming
+     * @throws OpenSearchException
+     */
     
     public Element asElement (Document document, OpenSearch.Mode mode) throws OpenSearchException {
         Element element = document.createElement("OpenSearchDescription");
@@ -316,6 +653,26 @@ public class OpenSearchDescription {
             }
             else {
                 element.appendChild( asElement( document, "Contact", getContact() ) );
+            }
+        }
+        
+        
+        // Tags
+        if ( getTags() != null ) {
+            int maximum = 256;
+            if (getTags().length() > maximum) {
+                if (mode == OpenSearch.STRICT) {
+                    throw new OpenSearchException("Tags cannot exceed "+maximum+" characters");
+                }
+                if (mode == OpenSearch.ADAPTIVE) {
+                    element.appendChild( asElement( document, "Tags", getTags().substring(0,maximum) ) );
+                }
+                else {
+                    element.appendChild( asElement( document, "Tags", getTags() ) );
+                }
+            }
+            else {
+                element.appendChild( asElement( document, "Tags", getTags() ) );
             }
         }
         
@@ -440,6 +797,40 @@ public class OpenSearchDescription {
         Element element = document.createElement(name);
         element.appendChild(document.createTextNode(value));
         return element;
+    }
+    
+    
+    
+    protected static String asValue (Element element) {
+        return element.getChildNodes().item( 0 ).getNodeValue();
+    }
+    
+    protected static String asValue (Document parent, String name) {
+        return asValue( parent.getDocumentElement(), name );
+    }
+    
+    protected static String asValue (Element parent, String name) {
+        String[] values = asValues( parent, name );
+        if ( values.length > 0 ) {
+            return values[ 0 ];
+        }
+        return null;
+    }
+    
+    protected static String[] asValues (Document parent, String name) {
+        return asValues( parent.getDocumentElement(), name );
+    }
+    
+    protected static String[] asValues (Element parent, String name) {
+        List<String> values = new LinkedList<String>();
+        
+        NodeList nodes = parent.getElementsByTagName( name );
+        for ( int i = 0; i < nodes.getLength(); i++ ) {
+            Element element = (Element) nodes.item( i );
+            values.add( asValue( element ) );
+        }
+        
+        return values.toArray( new String[]{} );
     }
     
     

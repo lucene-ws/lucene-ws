@@ -3,6 +3,27 @@ package net.lucenews.opensearch;
 import java.util.*;
 import org.w3c.dom.*;
 
+/**
+ * OpenSearch Query Syntax is a simple way of specifying HTTP queries 
+ * for the purpose of requesting search results. Search engines can 
+ * publish a URL in Query Syntax, which can then be used by a search 
+ * client to make requests. This is usually done in an OpenSearch 
+ * Description file, another of the components of OpenSearch.
+ *
+ * Query Syntax essentially consists of a template, which contains one 
+ * or more search parameters. With a simple substitution grammar, the 
+ * parameters are replaced with actual values to form a request. 
+ * Several search parameters are defined here, others may be used in a 
+ * fashion similar to XML namespaces.
+ * 
+ * When found in an OpenSearch Description, the Url element may appear 
+ * more than once, listed in order of priority according to the search 
+ * provider. Clients will also take into account the response format 
+ * when selecting which to use. 
+ *
+ * Source: http://opensearch.a9.com/spec/1.1/querysyntax/
+ */
+
 public class OpenSearchUrl {
     
     private String template;
@@ -19,6 +40,14 @@ public class OpenSearchUrl {
     
     
     
+    /**
+     * template – a value containing the URL that will undergo 
+     * parameter substitution.
+     * 
+     * Note: New in version 1.1.
+     * Requirements: Must appear one time.
+     */
+    
     public String getTemplate () {
         return template;
     }
@@ -28,6 +57,15 @@ public class OpenSearchUrl {
     }
     
     
+    
+    /**
+     * type – the MIME type of the search results.
+     *
+     * Note: New in version 1.1.
+     * Restrictions: MIME types must conform to the values defined in 
+     *               the IANA MIME Media Type Registry.
+     * Requirements: Must appear one time.
+     */
     
     public String getType () {
         return type;
@@ -39,6 +77,15 @@ public class OpenSearchUrl {
     
     
     
+    /**
+     * method – a value indicating the HTTP request method.s
+     * 
+     * Note: New in version 1.1.
+     * Restrictions: A case insensitive value of either "get" or "post".
+     * Default: "get"
+     * Requirements: May appear one time.
+     */
+    
     public String getMethod () {
         return method;
     }
@@ -48,6 +95,25 @@ public class OpenSearchUrl {
     }
     
     
+    
+    /**
+     * Param – An empty node that is used to describe HTTP POST 
+     * parameters to be passed along with a query of method="post".
+     * 
+     * Parent: Url
+     * Attributes:
+     *     o name – the name of the HTTP POST parameter.
+     *           + Requirements: Must appear one time.
+     *     o value – the value of the HTTP POST parameter. Will 
+     *               undergo parameter substitution before being sent.
+     *           + Requirements: Must appear one time.
+     * Note: New in version 1.1.
+     * Note: The Param element is ignored if the method of the parent 
+     *       <Url> is anything other than "post".
+     * Note: If the parameter substitution results in an empty string, 
+     *       the parameter may still be sent with the query.
+     * Requirements: May appear zero, one, or more times.
+     */
     
     public void addParam (String name, String value) {
         params.put( name, value );
@@ -67,6 +133,34 @@ public class OpenSearchUrl {
         namespaces.put( namespace, uri );
     }
     
+    
+    
+    public static OpenSearchUrl asOpenSearchUrl (Element element) {
+        OpenSearchUrl url = new OpenSearchUrl();
+        
+        // template
+        String template = element.getAttribute("template");
+        url.setTemplate( template );
+        
+        // type
+        String type = element.getAttribute("type");
+        url.setType( type );
+        
+        // method
+        String method = element.getAttribute("method");
+        url.setMethod( method );
+        
+        // Param
+        NodeList params = element.getElementsByTagName("Param");
+        for ( int i = 0; i < params.getLength(); i++ ) {
+            Element param = (Element) params.item( i );
+            String name   = param.getAttribute("name");
+            String value  = param.getAttribute("value");
+            url.addParam( name, value );
+        }
+        
+        return url;
+    }
     
     
     public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {

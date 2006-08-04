@@ -328,6 +328,67 @@ public class OpenSearchQuery {
     
     
     
+    
+    public static OpenSearchQuery asOpenSearchQuery (Element element) {
+        OpenSearchQuery query = new OpenSearchQuery();
+        
+        // role
+        String role = element.getAttribute("role");
+        query.setRole( role );
+        
+        // title
+        String title = element.getAttribute("title");
+        query.setTitle( title );
+        
+        // osd
+        String osd = element.getAttribute("osd");
+        query.setOsd( osd );
+        
+        // totalResults
+        String totalResults = element.getAttribute("totalResults");
+        if ( totalResults != null ) {
+            query.setTotalResults( Integer.valueOf( totalResults ) );
+        }
+        
+        // searchTerms
+        String searchTerms = element.getAttribute("searchTerms");
+        query.setSearchTerms( searchTerms );
+        
+        // count
+        String count = element.getAttribute("count");
+        if ( count != null ) {
+            query.setCount( Integer.valueOf( count ) );
+        }
+        
+        // startIndex
+        String startIndex = element.getAttribute("startIndex");
+        if ( startIndex != null ) {
+            query.setStartIndex( Integer.valueOf( startIndex ) );
+        }
+        
+        // startPage
+        String startPage = element.getAttribute("startPage");
+        if ( startPage != null ) {
+            query.setStartPage( Integer.valueOf( startPage ) );
+        }
+        
+        // language
+        String language = element.getAttribute("language");
+        query.setLanguage( language );
+        
+        // outputEncoding
+        String outputEncoding = element.getAttribute("outputEncoding");
+        query.setOutputEncoding( outputEncoding );
+        
+        // inputEncoding
+        String inputEncoding = element.getAttribute("inputEncoding");
+        query.setInputEncoding( inputEncoding );
+        
+        return query;
+    }
+    
+    
+    
     public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {
         return asElement(document, format, OpenSearch.STRICT);
     }

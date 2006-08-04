@@ -1025,7 +1025,7 @@ public class LuceneWebService extends HttpServlet {
      */
     
     public OpenSearchImage getImage () throws NumberFormatException, IOException {
-        OpenSearchImage image = null;
+        OpenSearchImage image = new OpenSearchImage();
         
         String url = getCleanProperty("service.image");
         

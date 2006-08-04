@@ -41,13 +41,28 @@ public class OpenSearchController extends Controller {
         
         
         OpenSearchDescription description = new OpenSearchDescription();
-        description.setShortName( ServletUtils.joined( ServletUtils.objectsMapped("getTitle", indices) ) );
-        description.setDescription( "OpenSearch description for " + description.getShortName() );
+        
+        
+        // If only one index exists, add its defaults first
+        if ( indices.length == 1 ) {
+            addDefaults( description, indices[ 0 ] );
+        }
+        
+        // ShortName
+        if ( description.getShortName() == null ) {
+            description.setShortName( ServletUtils.joined( ServletUtils.objectsMapped("getTitle", indices) ) );
+        }
+        
+        // Description
+        if ( description.getDescription() == null ) {
+            description.setDescription( "OpenSearch description for " + description.getShortName() );
+        }
         
         
         // Template
         HttpURI template = new HttpURI( service.getServiceURL( request ) );
         template.addPath( ServletUtils.join( ",", (Object[]) indices ) );
+        /**
         template.setParameter( "searchTerms",     "{searchTerms}" );
         template.setParameter( "count",           "{count?}" );
         template.setParameter( "startIndex",      "{startIndex?}" );
@@ -62,6 +77,7 @@ public class OpenSearchController extends Controller {
         template.setParameter( "filter",          "{lucene:filter?}" );
         template.setParameter( "locale",          "{lucene:locale?}" );
         template.setParameter( "sort",            "{lucene:sort?}" );
+        */
         
         
         // Atom
@@ -69,6 +85,20 @@ public class OpenSearchController extends Controller {
         atomUrl.setType("application/atom+xml");
         atomUrl.setTemplate( template.with( "format", "atom" ).toString() );
         atomUrl.setNamespace( "lucene", "http://www.lucene-ws.net/spec/1.0/" );
+        atomUrl.addParam( "searchTerms",     "{searchTerms}" );
+        atomUrl.addParam( "count",           "{count?}" );
+        atomUrl.addParam( "startIndex",      "{startIndex?}" );
+        atomUrl.addParam( "startPage",       "{startPage?}" );
+        atomUrl.addParam( "language",        "{language?}" );
+        atomUrl.addParam( "outputEncoding",  "{outputEncoding?}" );
+        atomUrl.addParam( "inputEncoding",   "{inputEncoding?}" );
+        atomUrl.addParam( "totalResults",    "{totalResults?}" );
+        atomUrl.addParam( "analyzer",        "{lucene:analyzer?}" );
+        atomUrl.addParam( "defaultField",    "{lucene:defaultField?}" );
+        atomUrl.addParam( "defaultOperator", "{lucene:defaultOperator?}" );
+        atomUrl.addParam( "filter",          "{lucene:filter?}" );
+        atomUrl.addParam( "locale",          "{lucene:locale?}" );
+        atomUrl.addParam( "sort",            "{lucene:sort?}" );
         description.addUrl( atomUrl );
         
         
@@ -77,6 +107,20 @@ public class OpenSearchController extends Controller {
         rssUrl.setType("application/rss+xml");
         rssUrl.setTemplate( template.with( "format", "rss" ).toString() );
         rssUrl.setNamespace( "lucene", "http://www.lucene-ws.net/spec/1.0/" );
+        rssUrl.addParam( "searchTerms",     "{searchTerms}" );
+        rssUrl.addParam( "count",           "{count?}" );
+        rssUrl.addParam( "startIndex",      "{startIndex?}" );
+        rssUrl.addParam( "startPage",       "{startPage?}" );
+        rssUrl.addParam( "language",        "{language?}" );
+        rssUrl.addParam( "outputEncoding",  "{outputEncoding?}" );
+        rssUrl.addParam( "inputEncoding",   "{inputEncoding?}" );
+        rssUrl.addParam( "totalResults",    "{totalResults?}" );
+        rssUrl.addParam( "analyzer",        "{lucene:analyzer?}" );
+        rssUrl.addParam( "defaultField",    "{lucene:defaultField?}" );
+        rssUrl.addParam( "defaultOperator", "{lucene:defaultOperator?}" );
+        rssUrl.addParam( "filter",          "{lucene:filter?}" );
+        rssUrl.addParam( "locale",          "{lucene:locale?}" );
+        rssUrl.addParam( "sort",            "{lucene:sort?}" );
         description.addUrl( rssUrl );
         
         
@@ -135,6 +179,38 @@ public class OpenSearchController extends Controller {
         
         
         OpenSearchView.process( c, description );
+    }    
+    
+    
+    public static void addDefaults (OpenSearchDescription description, LuceneIndex index) throws IOException {
+        String ns = "opensearch.description.";
+        
+        // ShortName
+        description.setShortName( index.getProperty( ns + "shortname" ) );
+        
+        // Description
+        description.setDescription( index.getProperty( ns + "description" ) );
+        
+        // Contact
+        description.setContact( index.getProperty( ns + "contact" ) );
+        
+        // Tags
+        description.setTags( index.getProperty( ns + "tags" ) );
+        
+        // LongName
+        description.setLongName( index.getProperty( ns + "longname" ) );
+        
+        // Developer
+        description.setDeveloper( index.getProperty( ns + "developer" ) );
+        
+        // Attribution
+        description.setAttribution( index.getProperty( ns + "attribution" ) );
+        
+        // SyndicationRight
+        description.setSyndicationRight( index.getProperty( ns + "syndicationright" ) );
+        
+        // AdultContent
+        description.setAdultContent( index.getProperty( ns + "adultcontent" ) );
     }
     
 }

@@ -60,6 +60,32 @@ public class OpenSearchImage {
     
     
     
+    
+    public static OpenSearchImage asOpenSearchImage (Element element) {
+        OpenSearchImage image = new OpenSearchImage();
+        
+        String url = element.getChildNodes().item( 0 ).getNodeValue();
+        
+        String width = element.getAttribute("width");
+        if ( width != null ) {
+            image.setWidth( Integer.valueOf( width ) );
+        }
+        
+        String height = element.getAttribute("height");
+        if ( height != null ) {
+            image.setWidth( Integer.valueOf( height ) );
+        }
+        
+        String type = element.getAttribute("type");
+        if ( type != null ) {
+            image.setType( type );
+        }
+        
+        return image;
+    }
+    
+    
+    
     /**
      * Transforms the OpenSearch image into a DOM Element.
      */
