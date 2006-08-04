@@ -37,16 +37,13 @@ public class ServiceController extends Controller {
     {
         Logger.getLogger(ServiceController.class).trace("doGet(LuceneContext)");
         
-        LuceneWebService   service   = c.service();
-        LuceneIndexManager manager   = service.getIndexManager();
-        LuceneRequest      req       = c.req();
-        LuceneResponse     res       = c.res();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
-        
-        
-        
-        res.setContentType( "application/atomserv+xml; charset=utf-8" );
-        AtomView.process( c, asIntrospectionDocument( c, c.service(), c.req() ) );
+        response.setContentType( "application/atomserv+xml; charset=utf-8" );
+        AtomView.process( c, asIntrospectionDocument( c, service, request ) );
     }
     
     
@@ -73,10 +70,10 @@ public class ServiceController extends Controller {
     {
         Logger.getLogger(ServiceController.class).trace("doPost(LuceneContext)");
         
-        LuceneWebService   service   = c.service();
-        LuceneIndexManager manager   = service.getIndexManager();
-        LuceneRequest      req       = c.req();
-        LuceneResponse     res       = c.res();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
         
         StringBuffer indexNamesBuffer = new StringBuffer();
@@ -84,7 +81,7 @@ public class ServiceController extends Controller {
         boolean created = false;
         
         
-        Entry[] entries = getEntries( c, req );
+        Entry[] entries = getEntries( c, request );
         
         for (int i = 0; i < entries.length; i++) {
             Entry entry = entries[ i ];
@@ -121,11 +118,11 @@ public class ServiceController extends Controller {
             }
             indexNamesBuffer.append( index.getName() );
             
-            res.setStatus( res.SC_CREATED );
+            response.setStatus( response.SC_CREATED );
         }
         
         if (created) {
-            res.addHeader( "Location", service.getIndexURL( req, indexNamesBuffer.toString() ) );
+            response.addHeader( "Location", service.getIndexURL( request, indexNamesBuffer.toString() ) );
         }
         else {
             throw new InsufficientDataException( "No indices to be added" );

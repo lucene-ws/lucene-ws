@@ -40,11 +40,11 @@ public class IndexController extends Controller {
     {
         Logger.getLogger(IndexController.class).trace("doDelete(LuceneContext)");
         
-        LuceneWebService   service = c.service();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
-        LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
+        LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
         
         
         StringBuffer indexNamesBuffer = new StringBuffer();
@@ -70,7 +70,7 @@ public class IndexController extends Controller {
         
         
         if (deleted) {
-            res.addHeader( "Location", service.getIndexURL( req, indexNamesBuffer.toString() ) );
+            response.addHeader( "Location", service.getIndexURL( request, indexNamesBuffer.toString() ) );
         }
         else {
             throw new InsufficientDataException( "No indices to be deleted" );
@@ -150,11 +150,11 @@ public class IndexController extends Controller {
     {
         Logger.getLogger(IndexController.class).trace("doPut(LuceneContext)");
         
-        LuceneWebService   service = c.service();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
-        Entry[]            entries = req.getEntries();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
+        Entry[]            entries  = request.getEntries();
         
         
         StringBuffer indexNamesBuffer = new StringBuffer();
@@ -167,7 +167,7 @@ public class IndexController extends Controller {
             Entry entry = entries[ i ];
             
             String name = entry.getTitle();
-            if (!req.hasIndexName( name )) {
+            if (!request.hasIndexName( name )) {
                 throw new LuceneException( "Index '" + name + "' not mentioned in URL" );
             }
             
@@ -186,7 +186,7 @@ public class IndexController extends Controller {
         }
         
         if (updated) {
-            res.addHeader( "Location", service.getIndexURL( req, indexNamesBuffer.toString() ) );
+            response.addHeader( "Location", service.getIndexURL( request, indexNamesBuffer.toString() ) );
         }
         
         XMLController.acknowledge( c );
@@ -215,12 +215,12 @@ public class IndexController extends Controller {
     {
         Logger.getLogger(IndexController.class).trace("doPost(LuceneContext)");
         
-        LuceneWebService   service   = c.service();
+        LuceneWebService   service   = c.getService();
         LuceneIndexManager manager   = service.getIndexManager();
-        LuceneRequest      req       = c.req();
-        LuceneResponse     res       = c.res();
-        LuceneIndex[]      indices   = manager.getIndices( req.getIndexNames() );
-        LuceneDocument[]   documents = req.getLuceneDocuments();
+        LuceneRequest      request   = c.getRequest();
+        LuceneResponse     response  = c.getResponse();
+        LuceneIndex[]      indices   = manager.getIndices( request.getIndexNames() );
+        LuceneDocument[]   documents = request.getLuceneDocuments();
         
         List<LuceneDocument> addedDocuments = new LinkedList<LuceneDocument>();
         
@@ -251,16 +251,16 @@ public class IndexController extends Controller {
                     documentIDsBuffer.append( index.getIdentifier( document ) );
                 }
                 
-                res.setStatus( res.SC_CREATED );
+                response.setStatus( response.SC_CREATED );
             }
         }
         
         String indexNames  = indexNamesBuffer.toString();
         String documentIDs = documentIDsBuffer.toString();
         
-        if (res.getStatus() == res.SC_CREATED) {
-            res.addHeader( "Location", service.getDocumentURL( req, indexNames, documentIDs ) );
-            res.addHeader( "Content-Location", service.getDocumentURL( req, indexNames, documentIDs ) );
+        if (response.getStatus() == response.SC_CREATED) {
+            response.addHeader( "Location", service.getDocumentURL( request, indexNames, documentIDs ) );
+            response.addHeader( "Content-Location", service.getDocumentURL( request, indexNames, documentIDs ) );
         }
         else {
             throw new InsufficientDataException( "No documents to be added" );
@@ -277,7 +277,7 @@ public class IndexController extends Controller {
             LuceneDocument document = addedDocuments.iterator().next();
             
             Entry entry = DocumentController.asEntry( c, document );
-            entry.addLink( Link.Edit( service.getDocumentURL( req, document ) ) );
+            entry.addLink( Link.Edit( service.getDocumentURL( request, document ) ) );
             AtomView.process( c, entry );
         }
         else {
@@ -287,7 +287,7 @@ public class IndexController extends Controller {
             while (iterator.hasNext()) {
                 LuceneDocument document = iterator.next();
                 Entry entry = DocumentController.asEntry( c, document );
-                entry.addLink( Link.Edit( service.getDocumentURL( req, document ) ) );
+                entry.addLink( Link.Edit( service.getDocumentURL( request, document ) ) );
                 feed.addEntry( entry );
             }
             
@@ -298,170 +298,25 @@ public class IndexController extends Controller {
     
     
     /**
-     * Transforms the currently selected index into an Atom feed.
-     * Feed includes the most recently modified documents.
+     * Optimizes the current indices.
      * 
-     * @param c The context
-     * @return An Atom feed
-     * @throws IndexNotFoundException
+     * @param c
      * @throws ParserConfigurationException
      * @throws TransformerException
+     * @throws IndicesNotFoundException
      * @throws IOException
      */
-    
-    public static Feed asFeed (LuceneContext c)
-        throws IndicesNotFoundException, IndexNotFoundException, ParserConfigurationException, TransformerException, IOException, InsufficientDataException
-    {
-        Logger.getLogger(IndexController.class).trace("asFeed(LuceneContext)");
-        
-        LuceneWebService   service  = c.getService();
-        LuceneIndexManager manager  = service.getIndexManager();
-        LuceneRequest      request  = c.getRequest();
-        LuceneResponse     response = c.getResponse();
-        
-        
-        
-        LuceneIndex[] indices = manager.getIndices( request.getIndexNames() );
-        
-        
-        
-        /**
-         * Feed
-         */
-        Feed feed = new Feed();
-        
-        
-        
-        // Title
-        StringBuffer title = new StringBuffer();
-        if (indices.length == 1) {
-            title.append( indices[ 0 ].getTitle() );
-        }
-        else {
-            title.append( ServletUtils.joined( ServletUtils.mapped( "[content]", ServletUtils.objectsMapped( "getTitle", indices ) ) ) );
-        }
-        feed.setTitle( title.toString() );
-        
-        // ID
-        feed.setID( service.getIndicesURL( request, indices ) );
-        
-        // Updated
-        feed.setUpdated( Calendar.getInstance() );
-        
-        // Author
-        boolean authorFound = false;
-        for (int i = 0; i < indices.length; i++) {
-            if (indices[ i ].hasAuthor()) {
-                feed.addAuthor( new Author( indices[ i ].getAuthor() ) );
-                authorFound = true;
-            }
-        }
-        
-        if (!authorFound) {
-            feed.addAuthor( new Author( service.getTitle() ) );
-        }
-        
-        // Link
-        feed.addLink( new Link( request.getLocation(), "self", "application/atom+xml" ) );
-        
-        // This is critical
-        //if( !index.hasUpdatedField() )
-        //	return feed;
-        
-        //IndexReader reader = index.getIndexReader();
-        
-        
-        Limiter limiter = request.getLimiter();
-        //limiter.setTotalEntries( reader.numDocs() );
-        
-        //if( limiter.getFirst() == null || limiter.getLast() == null )
-        //	return feed;
-        
-        String sortField = null;
-        for (int i = 0; i < indices.length; i++) {
-            LuceneIndex index = indices[ i ];
-            if (index.hasUpdatedField()) {
-                if (sortField == null) {
-                    sortField = index.getUpdatedField();
-                }
-                else if (!sortField.equals( index.getUpdatedField() )) {
-                    sortField = null;
-                }
-            }
-            else {
-                sortField = null;
-                break;
-            }
-        }
-        
-        
-        LuceneMultiSearcher   searcher  = null;
-        IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
-        
-        for (int i = 0; i < indices.length; i++) {
-            searchers[ i ] = indices[ i ].getIndexSearcher();
-        }
-        
-        searcher = new LuceneMultiSearcher( searchers, SearchController.getSearcherIndexField() );
-        
-        Query query = new MatchAllDocsQuery();
-        
-        Sort sort = null;
-        if (sortField == null) {
-            sort = new Sort( new SortField( null, SortField.DOC, true ) );
-        }
-        else {
-            sort = new Sort( new SortField( sortField, SortField.STRING, true ) );
-        }
-        
-        Hits hits = searcher.search( query, sort );
-        limiter.setTotalEntries( hits.length() );
-        HitsIterator iterator = new HitsIterator( hits, limiter );
-        
-        while (iterator.hasNext()) {
-            LuceneDocument document = iterator.next();
-            feed.addEntry( DocumentController.asEntry( c, indices[ SearchController.extractSearcherIndex( document ) ], document ) );
-        }
-        
-        if (limiter instanceof Pager) {
-            Pager pager = (Pager) limiter;
-            
-            String qs = request.getQueryStringExcluding( "page" );
-            
-            if (pager.getFirstPage() != null) {
-                feed.addLink( new Link( request.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getFirstPage() ), "first", "application/atom+xml" ) );
-            }
-            
-            if (pager.getPreviousPage() != null) {
-                feed.addLink( new Link( request.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getPreviousPage() ), "previous", "application/atom+xml" ) );
-            }
-            
-            if (pager.getNextPage() != null) {
-                feed.addLink( new Link( request.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getNextPage() ), "next", "application/atom+xml" ) );
-            }
-            
-            if (pager.getLastPage() != null) {
-                feed.addLink( new Link( request.getRequestURL() + LuceneRequest.getQueryStringWithParameter( qs, "page", pager.getLastPage() ), "last", "application/atom+xml" ) );
-            }
-        }
-        
-        
-        
-        return feed;
-    }
-    
-    
     
     public static void doOptimize (LuceneContext c)
         throws ParserConfigurationException, TransformerException, IndicesNotFoundException, IOException
     {
         Logger.getLogger(IndexController.class).trace("doOptimize(LuceneContext)");
         
-        LuceneWebService   service = c.service();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
-        LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
+        LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
         
         for (int i = 0; i < indices.length; i++) {
             LuceneIndex index = indices[ i ];

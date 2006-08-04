@@ -82,10 +82,12 @@ public class LuceneContext {
         this.request = request;
     }
     
+    @Deprecated
     public LuceneRequest request () {
         return getRequest();
     }
     
+    @Deprecated
     public LuceneRequest req () {
         return getRequest();
     }
@@ -100,16 +102,19 @@ public class LuceneContext {
         this.response = response;
     }
     
+    @Deprecated
     public LuceneResponse response () {
         return getResponse();
     }
     
+    @Deprecated
     public LuceneResponse res () {
         return getResponse();
     }
     
     
     
+    @Deprecated
     public LuceneWebService service () {
         return getService();
     }
