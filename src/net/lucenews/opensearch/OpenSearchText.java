@@ -14,6 +14,7 @@ public class OpenSearchText {
     
     private String type;
     private String role;
+    private String mode;
     
     
     public OpenSearchText () {
@@ -89,6 +90,48 @@ public class OpenSearchText {
     
     public void setRole (String role) {
         this.role = role;
+    }
+    
+    
+    
+    public String getMode () {
+        return mode;
+    }
+    
+    public void setMode (String mode) {
+        this.mode = mode;
+    }
+    
+    
+    
+    public OpenSearchText asOpenSearchText (Element element) {
+        OpenSearchText text = new OpenSearchText();
+        
+        // mode
+        String mode = element.getAttribute("mode");
+        text.setMode( mode );
+        
+        if ( mode != null && mode.equals("base64") ) {
+            // base64 encoding
+            String content = null;
+            setContent( content );
+        }
+        else {
+            // standard encoding
+            setContent( element.getChildNodes() );
+        }
+        
+        
+        // role
+        String role = element.getTagName();
+        text.setRole( role );
+        
+        // type
+        String type = element.getAttribute("type");
+        text.setType( type );
+        
+        
+        return text;
     }
     
     
