@@ -61,10 +61,10 @@ public class XMLController extends Controller {
             TransformerException, ParserConfigurationException,
             TransformerException, IOException
     {
-        LuceneWebService   service = c.service();
+        LuceneWebService   service = c.getService();
         LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
+        LuceneRequest      req     = c.getRequest();
+        LuceneResponse     res     = c.getResponse();
         
         
         

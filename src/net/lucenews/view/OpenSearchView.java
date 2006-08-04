@@ -45,7 +45,7 @@ public class OpenSearchView extends View {
     public static void process (LuceneContext c, OpenSearchDescription description)
         throws OpenSearchException, ParserConfigurationException, TransformerException, IOException
     {
-        c.res().setContentType("application/opensearchdescription+xml;charset=utf-8");
+        c.getResponse().setContentType("application/opensearchdescription+xml;charset=utf-8");
         XMLView.process(c, description.asDocument());
     }
     
@@ -53,7 +53,7 @@ public class OpenSearchView extends View {
         throws
             OpenSearchException, ParserConfigurationException, TransformerException, IOException
     {
-        c.res().setContentType("application/opensearchdescription+xml;charset=utf-8");
+        c.getResponse().setContentType("application/opensearchdescription+xml;charset=utf-8");
         XMLView.process(c, description.asDocument(mode));
     }
     

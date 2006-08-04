@@ -47,7 +47,7 @@ public class SearchController extends Controller {
     {
         Logger.getLogger(SearchController.class).trace("doGet(LuceneContext)");
         
-        LuceneWebService   service  = c.service();
+        LuceneWebService   service  = c.getService();
         LuceneIndexManager manager  = service.getIndexManager();
         LuceneRequest      request  = c.getRequest();
         LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
@@ -570,7 +570,7 @@ public class SearchController extends Controller {
     {
         List<Query> suggested = new LinkedList<Query>();
         
-        LuceneIndex[] indices = c.getService().getIndexManager().getIndices( c.req().getIndexNames() );
+        LuceneIndex[] indices = c.getService().getIndexManager().getIndices( c.getRequest().getIndexNames() );
         
         IndexReader[] readers = new IndexReader[ indices.length ];
         

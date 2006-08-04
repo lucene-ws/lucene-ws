@@ -33,10 +33,10 @@ public class IndexPropertiesController extends Controller
 	public static void doGet (LuceneContext c)
 		throws IndicesNotFoundException, ParserConfigurationException, TransformerException, IOException
 	{
-		LuceneWebService   service      = c.service();
+		LuceneWebService   service      = c.getService();
 		LuceneIndexManager manager      = service.getIndexManager();
-		LuceneRequest      req          = c.req();
-		LuceneResponse     res          = c.res();
+		LuceneRequest      req          = c.getRequest();
+		LuceneResponse     res          = c.getResponse();
 		LuceneIndex[]      indices      = manager.getIndices( req.getIndexNames() );
 		
 		
@@ -102,10 +102,10 @@ public class IndexPropertiesController extends Controller
             SAXException, TransformerException, ParserConfigurationException, IOException,
             IndexNotFoundException, LuceneException, AtomParseException
 	{
-		LuceneWebService   service = c.service();
+		LuceneWebService   service = c.getService();
 		LuceneIndexManager manager = service.getIndexManager();
-		LuceneRequest      req     = c.req();
-		LuceneResponse     res     = c.res();
+		LuceneRequest      req     = c.getRequest();
+		LuceneResponse     res     = c.getResponse();
 		
 		
 		StringBuffer indexNamesBuffer = new StringBuffer();
@@ -164,10 +164,10 @@ public class IndexPropertiesController extends Controller
             SAXException, TransformerException, ParserConfigurationException, IOException,
             IndexNotFoundException, LuceneException, AtomParseException
 	{
-		LuceneWebService   service = c.service();
+		LuceneWebService   service = c.getService();
 		LuceneIndexManager manager = service.getIndexManager();
-		LuceneRequest      req     = c.req();
-		LuceneResponse     res     = c.res();
+		LuceneRequest      req     = c.getRequest();
+		LuceneResponse     res     = c.getResponse();
 		
 		
 		StringBuffer indexNamesBuffer = new StringBuffer();
@@ -221,17 +221,17 @@ public class IndexPropertiesController extends Controller
 	public static Entry asEntry (LuceneContext c, LuceneIndex index, boolean authorRequired)
 		throws ParserConfigurationException, IOException
 	{
-		LuceneWebService   service = c.service();
+		LuceneWebService   service = c.getService();
 		LuceneIndexManager manager = service.getIndexManager();
-		LuceneRequest      req     = c.req();
-		LuceneResponse     res     = c.res();
+		LuceneRequest      req     = c.getRequest();
+		LuceneResponse     res     = c.getResponse();
 		
 		
 		
 		Entry entry = new Entry();
 		
 		entry.setTitle( "Properties of '" + index.getTitle() + "'" );
-		entry.setID( c.service().getIndexURL( req, index ) + "index.properties" );
+		entry.setID( c.getService().getIndexURL( req, index ) + "index.properties" );
 		entry.setUpdated( new Date( index.getPropertiesFile().lastModified() ) );
 		entry.setContent( XOXOController.asContent( c, index.getProperties() ) );
 		if( index.hasAuthor() )

@@ -296,7 +296,7 @@ public class LuceneWebService extends HttpServlet {
             IllegalActionException, DocumentsNotFoundException, IOException, InsufficientDataException
     {
         Logger.getLogger( this.getClass() ).trace( "doDelete" );
-        LuceneRequest req = c.req();
+        LuceneRequest req = c.getRequest();
         
         if (req.hasIndexNames()) {
             if (req.hasDocumentIDs()) {
@@ -329,7 +329,7 @@ public class LuceneWebService extends HttpServlet {
             OpenSearchException
     {
         Logger.getLogger( this.getClass() ).trace( "doGet" );
-        LuceneRequest req = c.req();
+        LuceneRequest req = c.getRequest();
         
         
         Logger.getLogger(this.getClass()).debug("request has " + req.getIndexNames().length + " index names");
@@ -406,7 +406,7 @@ public class LuceneWebService extends HttpServlet {
     
     public void doOptions (LuceneContext c) throws ServletException, IOException {
         Logger.getLogger( this.getClass() ).trace( "doOptions" );
-        super.doOptions( c.req(), c.res() );
+        super.doOptions( c.getRequest(), c.getResponse() );
     }
     
     
@@ -433,7 +433,7 @@ public class LuceneWebService extends HttpServlet {
             IndicesNotFoundException, SAXException, IOException, LuceneException
     {
         Logger.getLogger( this.getClass() ).trace( "doPost" );
-        LuceneRequest req = c.req();
+        LuceneRequest req = c.getRequest();
         
         if (req.hasIndexName() && !req.hasDocumentIDs()) {
             if (req.getIndexName().equals( "service.properties" )) {
@@ -482,7 +482,7 @@ public class LuceneWebService extends HttpServlet {
             IndexNotFoundException, IOException, LuceneException, AtomParseException
     {
         Logger.getLogger( this.getClass() ).trace( "doPut" );
-        LuceneRequest req = c.req();
+        LuceneRequest req = c.getRequest();
         
         if (req.getDocumentIDs().length == 0) {
             if (req.getIndexNames().length == 1 && req.getIndexName().equals( "service.properties" )) {
@@ -519,7 +519,7 @@ public class LuceneWebService extends HttpServlet {
     
     public void doTrace (LuceneContext c) throws ServletException, IOException {
         Logger.getLogger( this.getClass() ).trace( "doTrace" );
-        super.doTrace( c.req(), c.res() );
+        super.doTrace( c.getRequest(), c.getResponse() );
     }
     
     

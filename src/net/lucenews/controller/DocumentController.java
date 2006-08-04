@@ -37,10 +37,10 @@ public class DocumentController extends Controller {
     {
         Logger.getLogger(DocumentController.class).trace("doDelete(LuceneContext)");
         
-        LuceneWebService   service     = c.service();
+        LuceneWebService   service     = c.getService();
         LuceneIndexManager manager     = service.getIndexManager();
-        LuceneRequest      req         = c.req();
-        LuceneResponse     res         = c.res();
+        LuceneRequest      req         = c.getRequest();
+        LuceneResponse     res         = c.getResponse();
         String[]           indexNames  = req.getIndexNames();
         LuceneIndex[]      indices     = manager.getIndices( indexNames );
         String[]           documentIDs = req.getDocumentIDs();
@@ -111,10 +111,10 @@ public class DocumentController extends Controller {
     {
         Logger.getLogger(DocumentController.class).trace("doGet(LuceneContext)");
         
-        LuceneWebService   service     = c.service();
+        LuceneWebService   service     = c.getService();
         LuceneIndexManager manager     = service.getIndexManager();
-        LuceneRequest      req         = c.req();
-        LuceneResponse     res         = c.res();
+        LuceneRequest      req         = c.getRequest();
+        LuceneResponse     res         = c.getResponse();
         
         
         
@@ -211,10 +211,10 @@ public class DocumentController extends Controller {
     {
         Logger.getLogger(DocumentController.class).trace("doPut(LuceneContext)");
         
-        LuceneWebService   service = c.service();
+        LuceneWebService   service = c.getService();
         LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
+        LuceneRequest      req     = c.getRequest();
+        LuceneResponse     res     = c.getResponse();
         
         LuceneIndex[]    indices   = manager.getIndices( req.getIndexNames() );
         LuceneDocument[] documents = req.getLuceneDocuments();
@@ -306,8 +306,8 @@ public class DocumentController extends Controller {
     {
         Logger.getLogger(DocumentController.class).trace("asEntry(LuceneContext,LuceneIndex,LuceneDocument,Float)");
         
-        LuceneWebService service = c.service();
-        LuceneRequest    req     = c.req();
+        LuceneWebService service = c.getService();
+        LuceneRequest    req     = c.getRequest();
         
         
         

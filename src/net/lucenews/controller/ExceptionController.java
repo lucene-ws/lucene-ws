@@ -24,17 +24,17 @@ public class ExceptionController extends Controller {
     
     public static void process (LuceneContext c, Exception e) {
         try {
-            process( c, e, ServletUtils.parseBoolean( c.service().getProperty( "service.debugging" ) ) );
+            process( c, e, ServletUtils.parseBoolean( c.getService().getProperty( "service.debugging" ) ) );
         }
         catch (IOException ioe) {
         }
     }
     
     public static void process (LuceneContext c, Exception e, boolean doStackTrace) {
-        LuceneWebService   service = c.service();
+        LuceneWebService   service = c.getService();
         LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
+        LuceneRequest      req     = c.getRequest();
+        LuceneResponse     res     = c.getResponse();
         
         
         Logger.getLogger(ExceptionController.class).error("Catching an exception", e);

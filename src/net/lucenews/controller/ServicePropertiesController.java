@@ -34,10 +34,10 @@ public class ServicePropertiesController extends Controller {
             IndicesNotFoundException, ParserConfigurationException,
             TransformerException, IOException
     {
-        LuceneWebService   service      = c.service();
+        LuceneWebService   service      = c.getService();
         LuceneIndexManager manager      = service.getIndexManager();
-        LuceneRequest      req          = c.req();
-        LuceneResponse     res          = c.res();
+        LuceneRequest      req          = c.getRequest();
+        LuceneResponse     res          = c.getResponse();
         Calendar           lastModified = service.getPropertiesLastModified();
         String             httpDate     = ServletUtils.asHTTPDate( lastModified );
         
@@ -93,10 +93,10 @@ public class ServicePropertiesController extends Controller {
             IllegalActionException, LuceneException, SAXException, ParserConfigurationException,
             TransformerException, IOException, AtomParseException
     {
-        LuceneWebService   service = c.service();
+        LuceneWebService   service = c.getService();
         LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
+        LuceneRequest      req     = c.getRequest();
+        LuceneResponse     res     = c.getResponse();
         
         
         
@@ -155,10 +155,10 @@ public class ServicePropertiesController extends Controller {
             IllegalActionException, LuceneException, SAXException, ParserConfigurationException,
             TransformerException, IOException, AtomParseException
     {
-        LuceneWebService   service = c.service();
+        LuceneWebService   service = c.getService();
         LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.req();
-        LuceneResponse     res     = c.res();
+        LuceneRequest      req     = c.getRequest();
+        LuceneResponse     res     = c.getResponse();
         
         
         
