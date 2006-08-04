@@ -62,7 +62,6 @@ public class OpenSearchController extends Controller {
         // Template
         HttpURI template = new HttpURI( service.getServiceURL( request ) );
         template.addPath( ServletUtils.join( ",", (Object[]) indices ) );
-        /**
         template.setParameter( "searchTerms",     "{searchTerms}" );
         template.setParameter( "count",           "{count?}" );
         template.setParameter( "startIndex",      "{startIndex?}" );
@@ -77,7 +76,6 @@ public class OpenSearchController extends Controller {
         template.setParameter( "filter",          "{lucene:filter?}" );
         template.setParameter( "locale",          "{lucene:locale?}" );
         template.setParameter( "sort",            "{lucene:sort?}" );
-        */
         
         
         // Atom
@@ -85,6 +83,7 @@ public class OpenSearchController extends Controller {
         atomUrl.setType("application/atom+xml");
         atomUrl.setTemplate( template.with( "format", "atom" ).toString() );
         atomUrl.setNamespace( "lucene", "http://www.lucene-ws.net/spec/1.0/" );
+        /**
         atomUrl.addParam( "searchTerms",     "{searchTerms}" );
         atomUrl.addParam( "count",           "{count?}" );
         atomUrl.addParam( "startIndex",      "{startIndex?}" );
@@ -99,6 +98,7 @@ public class OpenSearchController extends Controller {
         atomUrl.addParam( "filter",          "{lucene:filter?}" );
         atomUrl.addParam( "locale",          "{lucene:locale?}" );
         atomUrl.addParam( "sort",            "{lucene:sort?}" );
+        */
         description.addUrl( atomUrl );
         
         
@@ -107,6 +107,7 @@ public class OpenSearchController extends Controller {
         rssUrl.setType("application/rss+xml");
         rssUrl.setTemplate( template.with( "format", "rss" ).toString() );
         rssUrl.setNamespace( "lucene", "http://www.lucene-ws.net/spec/1.0/" );
+        /**
         rssUrl.addParam( "searchTerms",     "{searchTerms}" );
         rssUrl.addParam( "count",           "{count?}" );
         rssUrl.addParam( "startIndex",      "{startIndex?}" );
@@ -121,6 +122,7 @@ public class OpenSearchController extends Controller {
         rssUrl.addParam( "filter",          "{lucene:filter?}" );
         rssUrl.addParam( "locale",          "{lucene:locale?}" );
         rssUrl.addParam( "sort",            "{lucene:sort?}" );
+        */
         description.addUrl( rssUrl );
         
         
