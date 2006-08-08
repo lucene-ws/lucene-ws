@@ -1,5 +1,4 @@
 package net.lucenews.model;
 
-public interface Model
-{
+public interface Model {
 }

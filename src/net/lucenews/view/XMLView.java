@@ -37,7 +37,6 @@ public class XMLView extends View {
     {
         LuceneRequest  req = c.getRequest();
         LuceneResponse res = c.getResponse();
-        Charset outputCharset = req.getOutputCharset();
         
         TransformerFactory factory = TransformerFactory.newInstance();
         Transformer transformer = factory.newTransformer();

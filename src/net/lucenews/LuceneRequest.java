@@ -1,33 +1,22 @@
 package net.lucenews;
 
-import net.lucenews.atom.*;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.*;
 import java.util.*;
+import javax.servlet.http.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import net.lucenews.atom.*;
 import net.lucenews.controller.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
-import java.nio.charset.*;
-import java.io.IOException;
-import java.net.*;
-import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
 import org.apache.log4j.*;
-import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.*;
 import org.apache.lucene.queryParser.*;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.apache.lucene.search.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
 
 
@@ -45,10 +34,9 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
+    private byte[]        content;
     private LuceneContext context;
-    
-    
-    private Document domDocument;
+    private Document      domDocument;
     
     
     
@@ -58,11 +46,10 @@ public class LuceneRequest extends HttpServletRequestWrapper {
         super( request );
     }
     
-    
-    
     public static LuceneRequest newInstance (HttpServletRequest request) {
         return new LuceneRequest( request );
     }
+    
     
     
     
@@ -72,6 +59,33 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     public void setContext (LuceneContext context) {
         this.context = context;
+    }
+    
+    
+    
+    
+    public byte[] getContent () throws IOException {
+        if ( content == null ) {
+            InputStream inputStream = getInputStream();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            
+            int inputByte = inputStream.read();
+            while ( inputByte >= 0 ) {
+                outputStream.write( inputByte );
+                inputByte = inputStream.read();
+            }
+            
+            content = outputStream.toByteArray();
+        }
+        return content;
+    }
+    
+    public void setContent (byte[] content) {
+        this.content = content;
+    }
+    
+    public InputStream getContentInputStream () throws IOException {
+        return new ByteArrayInputStream( getContent() );
     }
     
     
@@ -164,33 +178,33 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     public Integer getMethodType () {
-        String method = getMethod();
+        String method = getMethod().trim().toUpperCase();
         
-        if (method.equals( "DELETE" )) {
+        if ( method.equals("DELETE") ) {
             return DELETE;
         }
         
-        if (method.equals( "GET" )) {
+        if ( method.equals("GET") ) {
             return GET;
         }
         
-        if (method.equals( "HEAD" )) {
+        if ( method.equals("HEAD") ) {
             return HEAD;
         }
         
-        if (method.equals( "OPTIONS" )) {
+        if ( method.equals("OPTIONS") ) {
             return OPTIONS;
         }
         
-        if (method.equals( "POST" )) {
+        if ( method.equals("POST") ) {
             return POST;
         }
         
-        if (method.equals( "PUT" )) {
+        if ( method.equals("PUT") ) {
             return PUT;
         }
         
-        if (method.equals( "TRACE" )) {
+        if ( method.equals("TRACE") ) {
             return TRACE;
         }
         
@@ -512,7 +526,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
         Logger.getLogger(this.getClass()).trace("getDOMDocument()");
         
         if (domDocument == null) {
-            domDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( getInputStream() );
+            domDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( getContentInputStream() );
         }
         return domDocument;
     }
@@ -799,75 +813,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
-    public String getQueryStringExcluding (String... fields) {
-        Logger.getLogger(this.getClass()).trace("getQueryStringExcluding(String...)");
-        
-        StringBuffer buffer = new StringBuffer();
-        
-        Enumeration names = getParameterNames();
-        //buffer.append( getRequestURL() );
-        
-        boolean first = true;
-        while( names.hasMoreElements() ) {
-            String name = (String) names.nextElement();
-            
-            boolean exclude = false;
-            
-            for (int i = 0; i < fields.length; i++) {
-                if (name.equals( fields[ i ] )) {
-                    exclude = true;
-                }
-            }
-            
-            if (exclude) {
-                continue;
-            }
-            
-            String[] values = getParameterValues( name );
-            for (int i = 0; i < values.length; i++) {
-                if (first) {
-                    buffer.append( "?" );
-                    first = false;
-                }
-                else {
-                    buffer.append( "&" );
-                }
-                buffer.append( name + "=" + values[i] );
-            }
-            
-        }
-        
-        //buffer.append( first ? "?" : "&" );
-        
-        return buffer.toString();
-    }
-    
-    
-    public static String getQueryStringWithParameter (String queryString, String name, Object value) {
-        if (value == null) {
-            return queryString;
-        }
-        
-        StringBuffer buffer = new StringBuffer( queryString );
-        
-        if (queryString == null || !queryString.contains( "?" )) {
-            buffer.append( "?" );
-        }
-        else {
-            buffer.append( "&" );
-        }
-        
-        buffer.append( name + "=" + value );
-        
-        return buffer.toString();
-    }
-    
-    public String getQueryStringWithParameter (String name, String value) {
-        Logger.getLogger(this.getClass()).trace("getQueryStringWithParameter(String,String)");
-        
-        return getQueryStringWithParameter( getQueryString(), name, value );
-    }
-    
     
     
     
@@ -987,94 +932,5 @@ public class LuceneRequest extends HttpServletRequestWrapper {
         }
     }
     
-    
-    
-    
-    
-    
-    public String getUrlWith (String name, Object... values) {
-        StringBuffer buffer = getRequestURL();
-        
-        boolean foundName = false;
-        boolean first     = true;
-        
-        Enumeration names = getParameterNames();
-        while (names.hasMoreElements()) {
-            Object element = names.nextElement();
-            if (element instanceof String) {
-                String   _name   = (String) element;
-                Object[] _values = _name.equals(name) ? values : getParameterValues(_name);
-                
-                if (_name.equals(name)) {
-                    foundName = true;
-                }
-                
-                for (int i = 0; i < _values.length; i++) {
-                    if (first) {
-                        buffer.append("?");
-                        buffer.append(_name + "=" + _values[i].toString());
-                        first = false;
-                    }
-                    else {
-                        buffer.append("&");
-                        buffer.append(_name + "=" + _values[i].toString());
-                    }
-                }
-            }
-        }
-        
-        if (!foundName) {
-            for (int i = 0; i < values.length; i++) {
-                if (first) {
-                    buffer.append("?");
-                    buffer.append(name + "=" + values[i].toString());
-                    first = false;
-                }
-                else {
-                    buffer.append("&");
-                    buffer.append(name + "=" + values[i].toString());
-                }
-            }
-        }
-        
-        return buffer.toString();
-    }
-    
-    
-    
-    
-    
-    public String getInputEncoding () {
-        String inputEncoding = getCleanParameter("inputEncoding");
-        if (inputEncoding != null) {
-            return inputEncoding;
-        }
-        else {
-            return "UTF-8";
-        }
-    }
-    
-    public String getOutputEncoding () {
-        String outputEncoding = getCleanParameter("outputEncoding");
-        if (outputEncoding != null) {
-            return outputEncoding;
-        }
-        else {
-            return "UTF-8";
-        }
-    }
-    
-    
-    public Charset getInputCharset ()
-        throws IllegalCharsetNameException, UnsupportedCharsetException
-    {
-        return Charset.forName( getInputEncoding() );
-    }
-    
-    public Charset getOutputCharset ()
-        throws IllegalCharsetNameException, UnsupportedCharsetException
-    {
-        return Charset.forName( getOutputEncoding() );
-    }
     
 }
