@@ -354,6 +354,10 @@ public class LuceneWebService extends HttpServlet {
                 IndexPropertiesController.doGet( c );
                 return;
             }
+            if (req.getDocumentID().equals("tagcloud")) {
+                IndexController.doTagCloud( c );
+                return;
+            }
         }
         
         

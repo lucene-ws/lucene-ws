@@ -330,4 +330,112 @@ public class IndexController extends Controller {
     
     
     
+    public static void doTagCloud (LuceneContext c)
+        throws ParserConfigurationException, TransformerException, IndicesNotFoundException, IOException
+    {
+        Logger.getLogger(IndexController.class).trace("doTagCloud(LuceneContext)");
+        
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
+        LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
+        
+        
+        IndexReader[] readers = new IndexReader[ indices.length ];
+        
+        for (int i = 0; i < indices.length; i++) {
+            readers[ i ] = indices[ i ].getIndexReader();
+        }
+        
+        MultiReader reader = new MultiReader( readers );
+        
+        String[] fields = request.getParameterValues("field");
+        
+        if ( fields == null || fields.length == 0 ) {
+            String field = c.getDefaultField();
+            if ( field != null ) {
+                fields = new String[]{ field };
+            }
+        }
+        
+        // cloud
+        Map<String,Integer> cloud = new LinkedHashMap<String,Integer>();
+        
+        Integer minimum = null;
+        Integer maximum = null;
+        
+        for (int i = 0; i < fields.length; i++) {
+            String field = fields[ i ];
+            
+            TermEnum terms = reader.terms( new Term( field, "" ) );
+            while ( terms.next() && terms.term().field().equals( field ) ) {
+                Term   term = terms.term();
+                String text = term.text();
+                
+                int count = 0;
+                TermPositions positions = reader.termPositions( term );
+                while ( positions.next() ) {
+                    count++;
+                }
+                
+                if ( minimum == null || count < minimum ) {
+                    minimum = count;
+                }
+                
+                if ( maximum == null || count > maximum ) {
+                    maximum = count;
+                }
+                
+                if ( cloud.get( text ) == null ) {
+                    cloud.put( text, count );
+                }
+                else {
+                    cloud.put( text, cloud.get( text ) + count );
+                }
+            }
+        }
+        
+        Document document = XMLController.newDocument();
+        
+        Element htmlElement = document.createElement("html");
+        document.appendChild(htmlElement);
+        
+        Element bodyElement = document.createElement("body");
+        htmlElement.appendChild(bodyElement);
+        
+        Element cloudElement = document.createElement("div");
+        bodyElement.appendChild(cloudElement);
+        
+        int minimum_font_size = 10;
+        int maximum_font_size = 100;
+        
+        Iterator<Map.Entry<String,Integer>> iterator = cloud.entrySet().iterator();
+        while ( iterator.hasNext() ) {
+            Map.Entry<String,Integer> entry = iterator.next();
+            String  text  = entry.getKey();
+            Integer count = entry.getValue();
+            if ( count == null ) {
+                count = 0;
+            }
+            
+            double size = (double)( count - minimum ) / (double)( maximum - minimum );
+            size = minimum_font_size + size * ( maximum_font_size - minimum_font_size );
+            size = (int) size;
+            
+            float percentage = ( (float) count * 100 ) / (float) maximum;
+            Element element = document.createElement("span");
+            element.appendChild( document.createTextNode( text ) );
+            element.setAttribute("style","font-size: "+size+"pt;");
+            
+            cloudElement.appendChild( element );
+        }
+        
+        for (int i = 0; i < indices.length; i++) {
+            indices[ i ].putIndexReader( readers[ i ] );
+        }
+        
+        response.setContentType("text/html; charset=UTF-8");
+        XMLView.process( c, document );
+    }
 }
