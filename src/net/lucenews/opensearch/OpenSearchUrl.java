@@ -41,7 +41,7 @@ public class OpenSearchUrl {
     
     
     /**
-     * template – a value containing the URL that will undergo 
+     * template - a value containing the URL that will undergo 
      * parameter substitution.
      * 
      * Note: New in version 1.1.
@@ -59,7 +59,7 @@ public class OpenSearchUrl {
     
     
     /**
-     * type – the MIME type of the search results.
+     * type - the MIME type of the search results.
      *
      * Note: New in version 1.1.
      * Restrictions: MIME types must conform to the values defined in 
@@ -78,7 +78,7 @@ public class OpenSearchUrl {
     
     
     /**
-     * method – a value indicating the HTTP request method.s
+     * method - a value indicating the HTTP request method.s
      * 
      * Note: New in version 1.1.
      * Restrictions: A case insensitive value of either "get" or "post".
@@ -97,14 +97,14 @@ public class OpenSearchUrl {
     
     
     /**
-     * Param – An empty node that is used to describe HTTP POST 
+     * Param - An empty node that is used to describe HTTP POST 
      * parameters to be passed along with a query of method="post".
      * 
      * Parent: Url
      * Attributes:
-     *     o name – the name of the HTTP POST parameter.
+     *     o name - the name of the HTTP POST parameter.
      *           + Requirements: Must appear one time.
-     *     o value – the value of the HTTP POST parameter. Will 
+     *     o value - the value of the HTTP POST parameter. Will 
      *               undergo parameter substitution before being sent.
      *           + Requirements: Must appear one time.
      * Note: New in version 1.1.

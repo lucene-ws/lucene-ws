@@ -140,7 +140,7 @@ public class OpenSearchDescription {
     
     
     /**
-     * Tags – A space-delimited set of words that are used as keywords 
+     * Tags - A space-delimited set of words that are used as keywords 
      * to identify and categorize this search content.
      *
      * Parent: OpenSearchDescription
@@ -187,9 +187,9 @@ public class OpenSearchDescription {
      *
      * Parent: OpenSearchDescription
      * Attributes:
-     *     o height – height, in pixels, of this image. Optional.
-     *     o width – width, in pixels, of this image. Optional.
-     *     o type – the MIME-type of this image. Optional.
+     *     o height - height, in pixels, of this image. Optional.
+     *     o width - width, in pixels, of this image. Optional.
+     *     o type - the MIME-type of this image. Optional.
      * Note: Valid types correspond to those that can be displayed 
      *       using the HTML <img src=""> element.
      * Note: If more than one image is available, clients will choose 
@@ -290,13 +290,13 @@ public class OpenSearchDescription {
      * Parent: OpenSearchDescription
      * Values: This element must contain one of the following values 
      *         (case insensitive):
-     *     o open – search results can be published or re-published 
+     *     o open - search results can be published or re-published 
      *              without restriction. This is the default.
-     *     o limited – search results can be published on the client 
+     *     o limited - search results can be published on the client 
      *                 site, but not further republished.
-     *     o private – search feed may be queried, but the results may 
+     *     o private - search feed may be queried, but the results may 
      *                 not be displayed at the client site.
-     *     o closed – search feed should not be queried, and will 
+     *     o closed - search feed should not be queried, and will 
      *                disable the column for searches.
      * Note: The SyndicationRight must be either open or limited for 
      *       the content to appear on a public search aggregation site.
