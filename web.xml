@@ -39,7 +39,7 @@
 	  -->
       <init-param>
 		<param-name>properties-file</param-name>
-		<param-value>c:\dev\LuceneWebService\service.properties</param-value>
+		<param-value>/var/local/lucene/service.properties</param-value>
       </init-param>
       <init-param>
           <param-name>debug</param-name>
@@ -47,7 +47,7 @@
       </init-param>
       <init-param>
           <param-name>indexDirectory</param-name>
-          <param-value>c:\indices;c:\dev;c:\Program Files</param-value>
+          <param-value>/var/local/lucene/</param-value>
       </init-param>
       <init-param>
 		<param-name>autoStale</param-name>
@@ -87,7 +87,7 @@
       </init-param>
       <init-param>
 	      <param-name>title</param-name>
-	      <param-value>Adam Paynter's Lucene Web Service</param-value>
+	      <param-value>Brian's Lucene Web Service</param-value>
       </init-param>
     </servlet>
 
