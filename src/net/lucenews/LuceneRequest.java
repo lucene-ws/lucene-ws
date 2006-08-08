@@ -64,6 +64,14 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
+    /**
+     * Retrieves a byte array reflecting the data inputted within the 
+     * body of this request.
+     * 
+     * @return a byte array
+     * @throws IOException
+     */
+    
     public byte[] getContent () throws IOException {
         if ( content == null ) {
             InputStream inputStream = getInputStream();
@@ -80,9 +88,21 @@ public class LuceneRequest extends HttpServletRequestWrapper {
         return content;
     }
     
+    /**
+     * Sets the body content of this request to whatever byte array is 
+     * provided.
+     */
+    
     public void setContent (byte[] content) {
         this.content = content;
     }
+    
+    /**
+     * Retrieves a buffered version of the request's input stream. 
+     * Multiple calls to this method will return identical data.
+     * 
+     * @throws IOException
+     */
     
     public InputStream getContentInputStream () throws IOException {
         return new ByteArrayInputStream( getContent() );
@@ -618,15 +638,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     /**
      * Cleans a string
      */
-    
-    protected String clean (String string) {
-        if (string == null || string.trim().length() == 0) {
-            return null;
-        }
-        return string.trim();
-    }
-    
-    
     
     public String getCleanParameter (String name) {
         return ServletUtils.clean( getParameter( name ) );
