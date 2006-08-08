@@ -25,7 +25,7 @@ public class LuceneUtils {
     public static final String ANALYSIS_NAMESPACE = "org.apache.lucene.analysis";
     public static final String SORT_COMPARATOR_SOURCE_NAMESPACE = "org.apache.lucene.search";
     
-    
+    private static final int SORT_TYPE_DATE = 701;
     
     
     
@@ -296,7 +296,7 @@ public class LuceneUtils {
             fieldType = parseSortType( string );
             fieldTypeSpecified = true;
             
-            if (dataType == LuceneKeys.DATE) {
+            if (dataType == SORT_TYPE_DATE) {
                 return new SortField( fieldName, new DateComparator( reversed ) );
             }
         }
@@ -401,7 +401,7 @@ public class LuceneUtils {
             }
             
             if (substring.equals( "date" )) {
-                return LuceneKeys.DATE;
+                return SORT_TYPE_DATE;
             }
         }
         

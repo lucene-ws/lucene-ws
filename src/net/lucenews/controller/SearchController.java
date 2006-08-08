@@ -51,7 +51,6 @@ public class SearchController extends Controller {
         LuceneIndexManager manager  = service.getIndexManager();
         LuceneRequest      request  = c.getRequest();
         LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
-        Sort               sort     = request.getSort();
         List<String> invalidParameterNames = new LinkedList<String>();
         
         

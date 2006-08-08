@@ -22,12 +22,12 @@ public class AtomView extends View {
     public static void process (LuceneContext c)
         throws ParserConfigurationException, TransformerException, IOException
     {
-        if (c.stash().get("atom_introspection_document") instanceof IntrospectionDocument) {
-            process( c, (IntrospectionDocument) c.stash().get("atom_introspection_document") );
+        if (c.getStash().get("atom_introspection_document") instanceof IntrospectionDocument) {
+            process( c, (IntrospectionDocument) c.getStash().get("atom_introspection_document") );
         }
         
-        if (c.stash().get("atom_feed") instanceof Feed) {
-            process( c, (Feed) c.stash().get("atom_feed") );
+        if (c.getStash().get("atom_feed") instanceof Feed) {
+            process( c, (Feed) c.getStash().get("atom_feed") );
         }
     }
     

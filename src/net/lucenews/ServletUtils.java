@@ -147,7 +147,7 @@ public class ServletUtils {
         if (c.getAnalyzer() == null) {
             Analyzer analyzer = null;
             
-            if (analyzer == null) { analyzer = request.getAnalyzer();  }
+            if (analyzer == null) { analyzer = LuceneUtils.parseAnalyzer( request.getCleanParameter("analyzer") ); }
             if (analyzer == null) { analyzer = new StandardAnalyzer(); }
             
             c.setAnalyzer( analyzer );
@@ -251,7 +251,7 @@ public class ServletUtils {
         
         // locale
         if (c.getLocale() == null) {
-            c.setLocale( request.getLocale() );
+            c.setLocale( ServletUtils.parseLocale( request.getCleanParameter("locale") ) );
         }
         
         

@@ -64,10 +64,6 @@ public class LuceneContext {
         return stash;
     }
     
-    public Map<String,Object> stash () {
-        return getStash();
-    }
-    
     public void setStash (Map<String,Object> stash) {
         this.stash = stash;
     }
@@ -82,15 +78,6 @@ public class LuceneContext {
         this.request = request;
     }
     
-    @Deprecated
-    public LuceneRequest request () {
-        return getRequest();
-    }
-    
-    @Deprecated
-    public LuceneRequest req () {
-        return getRequest();
-    }
     
     
     
@@ -102,22 +89,8 @@ public class LuceneContext {
         this.response = response;
     }
     
-    @Deprecated
-    public LuceneResponse response () {
-        return getResponse();
-    }
-    
-    @Deprecated
-    public LuceneResponse res () {
-        return getResponse();
-    }
     
     
-    
-    @Deprecated
-    public LuceneWebService service () {
-        return getService();
-    }
     
     public LuceneWebService getService () {
         return service;

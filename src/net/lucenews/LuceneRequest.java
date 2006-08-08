@@ -47,43 +47,8 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     private LuceneContext context;
     
-    private boolean  m_analyzerCached;
-    private Analyzer m_analyzer;
     
-    private boolean  m_domDocumentCached;
-    private Document m_domDocument;
-    
-    private boolean  m_defaultFieldCached;
-    private String   m_defaultField;
-    
-    private boolean  m_defaultOperatorCached;
-    private QueryParser.Operator  m_defaultOperator;
-    
-    private boolean  m_entriesPerPageCached;
-    private Integer  m_entriesPerPage;
-    
-    private boolean  m_filterCached;
-    private Filter   m_filter;
-    
-    private boolean  m_limiterCached = false;
-    private Limiter  m_limiter;
-    
-    private boolean  m_localeCached;
-    private Locale   m_locale;
-    
-    private boolean  m_pagerCached;
-    private Pager    m_pager;
-    
-    private boolean  m_pageCached;
-    private Integer  m_page;
-    
-    private boolean  m_queryCached;
-    private Query    m_query;
-    
-    private boolean  m_sortCached;
-    private Sort     m_sort;
-    
-    
+    private Document domDocument;
     
     
     
@@ -290,96 +255,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
-    /**
-     * ========================================
-     *
-     * Limiting and paging
-     *
-     * ========================================
-     */
-    
-    
-    
-    /**
-     * Retrieves the limiter
-     */
-    
-    public Limiter getLimiter () {
-        if (m_limiterCached) {
-            return m_limiter;
-        }
-        
-        m_limiter       = new Pager( getPage(), getEntriesPerPage() );
-        m_limiterCached = true;
-        
-        return m_limiter;
-    }
-    
-    
-    
-    /**
-     * Retrieves the number of entries per page
-     */
-    
-    public Integer getEntriesPerPage () {
-        if (m_entriesPerPageCached) {
-            return m_entriesPerPage;
-        }
-        return getIntegerParameter( LuceneKeys.ENTRIES_PER_PAGE );
-    }
-    
-    
-    
-    /**
-     * Sets the number of entries per page
-     */
-    
-    public void setEntriesPerPage (Integer entriesPerPage) {
-        getPager().setEntriesPerPage( entriesPerPage );
-        m_entriesPerPage       = entriesPerPage;
-        m_entriesPerPageCached = entriesPerPage != null;
-    }
-    
-    
-    
-    /**
-     * Gets the page
-     */
-    
-    public Integer getPage () {
-        if (m_pageCached) {
-            return m_page;
-        }
-        return getIntegerParameter( LuceneKeys.PAGE );
-    }
-    
-    
-    
-    /**
-     * Sets the page
-     */
-    
-    public void setPage (Integer page) {
-        getPager().setCurrentPage( page );
-        m_page       = page;
-        m_pageCached = page != null;
-    }
-    
-    
-    
-    /**
-     * Gets the pager
-     */
-    
-    public Pager getPager () {
-        if (m_pagerCached) {
-            return m_pager;
-        }
-        
-        m_pager = new Pager( getPage(), getEntriesPerPage() );
-        m_pagerCached = true;
-        return m_pager;
-    }
     
     
     
@@ -636,16 +511,10 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     {
         Logger.getLogger(this.getClass()).trace("getDOMDocument()");
         
-        if (m_domDocumentCached) {
-            return m_domDocument;
+        if (domDocument == null) {
+            domDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( getInputStream() );
         }
-        
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        
-        m_domDocument       = builder.parse( getInputStream() );
-        m_domDocumentCached = true;
-        return m_domDocument;
+        return domDocument;
     }
     
     
@@ -745,56 +614,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
-    /**
-     * Gets a cleaned parameter
-     */
-    
-    public String getParameterName (int key) {
-        switch (key) {
-            
-            case LuceneKeys.ANALYZER:
-                return "analyzer";
-                
-            case LuceneKeys.DEFAULT_FIELD:
-                return "default";
-                
-            case LuceneKeys.DEFAULT_OPERATOR:
-                return "operator";
-                
-            case LuceneKeys.ENTRIES_PER_PAGE:
-                return "entriesperpage";
-                
-            case LuceneKeys.FILTER:
-                return "filter";
-                
-            case LuceneKeys.LOCALE:
-                return "locale";
-                
-            case LuceneKeys.PAGE:
-                return "page";
-                
-            case LuceneKeys.SEARCH_STRING:
-                return "query";
-                
-            case LuceneKeys.SORT:
-                return "sort";
-                
-            default:
-                return null;
-                
-        }
-    }
-    
-    
-    
-    /**
-     * Gets a cleaned parameter
-     */
-    
-    public String getCleanParameter (int key) {
-        return ServletUtils.clean( getParameter( key ) );
-    }
-    
     public String getCleanParameter (String name) {
         return ServletUtils.clean( getParameter( name ) );
     }
@@ -815,16 +634,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
         return Integer.valueOf( value );
     }
     
-    public Integer getIntegerParameter (int key) {
-        String value = getCleanParameter( key );
-        
-        if ( value == null ) {
-            return null;
-        }
-        
-        return Integer.valueOf( getParameter( key ) );
-    }
-    
     
     public Boolean getBooleanParameter (String name) {
         String value = getCleanParameter(name);
@@ -837,13 +646,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     }
     
     
-    /**
-     * Gets a parameter
-     */
     
-    public String getParameter (int key) {
-        return getParameter( getParameterName( key ) );
-    }
     
     
     
@@ -859,31 +662,10 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
-    /**
-     * ========================================
-     *
-     * Filter
-     *
-     * ========================================
-     */
     
     
     
-    /**
-     * Gets the filter
-     */
     
-    public Filter getFilter (QueryParser parser) throws ParseException {
-        Logger.getLogger(this.getClass()).trace("getFilter()");
-        
-        if (m_filterCached) {
-            return m_filter;
-        }
-        
-        m_filter = LuceneUtils.parseFilter( getCleanParameter( LuceneKeys.FILTER ), parser );
-        m_filterCached = true;
-        return m_filter;
-    }
     
     
     
@@ -899,45 +681,14 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
-    /**
-     * ========================================
-     *
-     * Default field
-     *
-     * ========================================
-     */
     
     
     
-    /**
-     * Gets the default field
-     */
     
-    public String getDefaultField () {
-        Logger.getLogger(this.getClass()).trace("getDefaultField()");
-        
-        if (m_defaultFieldCached) {
-            return m_defaultField;
-        }
-        
-        m_defaultField = clean( getParameter( LuceneKeys.DEFAULT_FIELD ) );
-        
-        m_defaultFieldCached = true;
-        return m_defaultField;
-    }
     
     
     
-    /**
-     * Sets the default field
-     */
     
-    public void setDefaultField (String defaultField) {
-        Logger.getLogger(this.getClass()).trace("setDefaultField(String)");
-        
-        m_defaultField       = defaultField;
-        m_defaultFieldCached = defaultField != null;
-    }
     
     
     
@@ -953,25 +704,10 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
-    /**
-     * ========================================
-     *
-     * Search string (query)
-     *
-     * ========================================
-     */
     
     
     
-    /**
-     * Gets the search string as specified by the user
-     */
     
-    public String getSearchString () {
-        Logger.getLogger(this.getClass()).trace("getSearchString()");
-        
-        return clean( getParameter( LuceneKeys.SEARCH_STRING ) );
-    }
     
     
     
@@ -987,259 +723,13 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
-    /**
-     * ========================================
-     *
-     * Analyzer
-     *
-     * ========================================
-     */
     
     
     
-    /**
-     * Gets the <tt>Analyzer</tt>
-     */
     
-    public Analyzer getAnalyzer () {
-        Logger.getLogger(this.getClass()).trace("getAnalyzer()");
-        
-        if (m_analyzerCached) {
-            return m_analyzer;
-        }
-        
-        m_analyzer = LuceneUtils.parseAnalyzer( clean( getParameter( LuceneKeys.ANALYZER ) ) );
-        
-        m_analyzerCached = true;
-        return m_analyzer;
-    }
     
     
-    /**
-     * Sets the <tt>Analyzer</tt>
-     */
     
-    public void setAnalyzer (Analyzer analyzer) {
-        Logger.getLogger(this.getClass()).trace("setAnalyzer(Analyzer)");
-        
-        m_analyzer       = analyzer;
-        m_analyzerCached = analyzer != null;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /**
-     * ========================================
-     *
-     * Default operator
-     *
-     * ========================================
-     */
-    
-    
-    
-    /**
-     * Gets the default operator
-     */
-    
-    public QueryParser.Operator getDefaultOperator () {
-        Logger.getLogger(this.getClass()).trace("getDefaultOperator()");
-        
-        if (m_defaultOperatorCached) {
-            return m_defaultOperator;
-        }
-        
-        m_defaultOperator = LuceneUtils.parseOperator( clean( getParameter( LuceneKeys.DEFAULT_OPERATOR ) ) );
-        
-        m_defaultOperatorCached = true;
-        return m_defaultOperator;
-    }
-    
-    
-    
-    /**
-     * Sets the default operator
-     */
-    public void setDefaultOperator (QueryParser.Operator defaultOperator) {
-        Logger.getLogger(this.getClass()).trace("setDefaultOperator(QueryParser.Operator)");
-        
-        m_defaultOperator       = defaultOperator;
-        m_defaultOperatorCached = defaultOperator != null;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /**
-     * ========================================
-     *
-     * Locale
-     *
-     * ========================================
-     */
-    
-    
-    
-    /**
-     * Gets the locale
-     */
-    
-    public Locale getLocale () {
-        Logger.getLogger(this.getClass()).trace("getLocale()");
-        
-        if (m_localeCached) {
-            return m_locale;
-        }
-        
-        m_locale = ServletUtils.parseLocale( clean( getParameter( LuceneKeys.LOCALE ) ) );
-        
-        m_localeCached = true;
-        return m_locale;
-    }
-    
-    
-    
-    /**
-     * Sets the locale
-     */
-    
-    public void setLocale (Locale locale) {
-        Logger.getLogger(this.getClass()).trace("setLocale()");
-        
-        m_locale       = locale;
-        m_localeCached = locale != null;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /**
-     * ========================================
-     *
-     * Query
-     *
-     * ========================================
-     */
-    
-    
-    
-    /**
-     * Gets the query
-     */
-    
-    public Query getQuery () throws InsufficientDataException {
-        Logger.getLogger(this.getClass()).trace("getQuery()");
-        
-        if (m_queryCached) {
-            return m_query;
-        }
-        
-        // Perhaps try to form a query
-        
-        m_queryCached = true;
-        return m_query;
-    }
-    
-    
-    
-    /**
-     * Sets the query
-     */
-    
-    public void setQuery (Query query) {
-        Logger.getLogger(this.getClass()).trace("setQuery(Query)");
-        
-        m_query       = query;
-        m_queryCached = query != null;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /**
-     * ========================================
-     *
-     * Sort
-     *
-     * ========================================
-     */
-    
-    
-    
-    /**
-     * Gets the <tt>Sort</tt>
-     */
-    
-    public Sort getSort () throws InsufficientDataException {
-        Logger.getLogger(this.getClass()).trace("getSort()");
-        
-        if (m_sortCached) {
-            return m_sort;
-        }
-        
-        m_sort = LuceneUtils.parseSort( clean( getParameter( LuceneKeys.SORT ) ) );
-        
-        m_sortCached = true;
-        return m_sort;
-    }
-    
-    
-    
-    /**
-     * Sets the <tt>Sort</tt>
-     */
-    
-    public void setSort (Sort sort) {
-        Logger.getLogger(this.getClass()).trace("setSort(Sort)");
-        
-        m_sort       = sort;
-        m_sortCached = sort != null;
-    }
     
     
     
