@@ -20,21 +20,24 @@ public class LuceneContext {
     private IndexSearcher indexSearcher;
     private MultiSearcher multiSearcher;
     
-    private OpenSearchQuery      openSearchQuery;
-    private OpenSearchResponse   openSearchResponse;
-    private OpenSearch.Format    openSearchFormat;
-    private Analyzer             analyzer;
-    private String               defaultField;
-    private QueryParser.Operator defaultOperator;
-    private Locale               locale;
-    private Filter               filter;
-    private Boolean              expanding;
-    private QueryParser          queryParser;
-    private Boolean              optimizing;
-    private Sort                 sort;
-    private Boolean              spellChecking;
-    private Boolean              suggesting;
-    private String               title;
+    private OpenSearchQuery       openSearchQuery;
+    private OpenSearchResponse    openSearchResponse;
+    private OpenSearch.Format     openSearchFormat;
+    private Analyzer              analyzer;
+    private String                defaultField;
+    private QueryParser.Operator  defaultOperator;
+    private Locale                locale;
+    private Filter                filter;
+    private QueryParser           queryParser;
+    private Boolean               optimizing;
+    private Sort                  sort;
+    private String                title;
+    private Boolean               suggestSimilar;
+    private Boolean               suggestSpelling;
+    private LuceneSpellChecker    spellChecker;
+    private Boolean               suggestSynonyms;
+    private LuceneSynonymExpander synonymExpander;
+    private QueryReconstructor    queryReconstructor;
     
     
     
@@ -200,13 +203,24 @@ public class LuceneContext {
     
     
     
-    public Boolean isExpanding () {
-        return expanding;
+    public Boolean suggestSynonyms () {
+        return suggestSynonyms;
     }
     
-    public void isExpanding (Boolean expanding) {
-        this.expanding = expanding;
+    public Boolean suggestSynonyms (Boolean suggestSynonyms) {
+        this.suggestSynonyms = suggestSynonyms;
+        return suggestSynonyms();
     }
+    
+    
+    public LuceneSynonymExpander getSynonymExpander () {
+        return synonymExpander;
+    }
+    
+    public void setSynonymExpander (LuceneSynonymExpander synonymExpander) {
+        this.synonymExpander = synonymExpander;
+    }
+    
     
     
     
@@ -250,24 +264,43 @@ public class LuceneContext {
     
     
     
-    public Boolean isSpellChecking () {
-        return spellChecking;
+    public Boolean suggestSpelling () {
+        return suggestSpelling;
     }
     
-    public void isSpellChecking (Boolean spellChecking) {
-        this.spellChecking = spellChecking;
+    public Boolean suggestSpelling (Boolean suggestSpelling) {
+        this.suggestSpelling = suggestSpelling;
+        return suggestSpelling();
+    }
+    
+    public LuceneSpellChecker getSpellChecker () {
+        return spellChecker;
+    }
+    
+    public void setSpellChecker (LuceneSpellChecker spellChecker) {
+        this.spellChecker = spellChecker;
     }
     
     
     
-    public Boolean isSuggesting () {
-        return suggesting;
+    public Boolean suggestSimilar () {
+        return suggestSimilar;
     }
     
-    public void isSuggesting (Boolean suggesting) {
-        this.suggesting = suggesting;
+    public Boolean suggestSimilar (Boolean suggestSimilar) {
+        this.suggestSimilar = suggestSimilar;
+        return suggestSimilar();
     }
     
+    
+    
+    public QueryReconstructor getQueryReconstructor () {
+        return queryReconstructor;
+    }
+    
+    public void setQueryReconstructor (QueryReconstructor queryReconstructor) {
+        this.queryReconstructor = queryReconstructor;
+    }
     
     
     

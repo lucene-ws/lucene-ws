@@ -73,9 +73,9 @@ public class SearchController extends Controller {
          */
         
         if (c.getAnalyzer() == null)           { c.setAnalyzer( new StandardAnalyzer() ); }
-        if (c.isExpanding() == null)           { c.isExpanding( false ); }
-        if (c.isSpellChecking() == null)       { c.isSpellChecking( false ); }
-        if (c.isSuggesting() == null)          { c.isSuggesting( false ); }
+        if (c.suggestSimilar() == null)        { c.suggestSimilar( false );  }
+        if (c.suggestSpelling() == null)       { c.suggestSpelling( false ); }
+        if (c.suggestSynonyms() == null)       { c.suggestSynonyms( false ); }
         if (c.getOpenSearchFormat() == null)   { c.setOpenSearchFormat( OpenSearch.ATOM ); }
         if (c.getOpenSearchResponse() == null) { c.setOpenSearchResponse( new OpenSearchResponse() ); }
         OpenSearchResponse response = c.getOpenSearchResponse();
@@ -126,20 +126,7 @@ public class SearchController extends Controller {
          * Perform search
          */
         
-        Hits hits = null;
-        
-        if (c.getFilter() != null && c.getSort() != null) {
-            hits = searcher.search( query, c.getFilter(), c.getSort() );
-        }
-        else if (c.getFilter() != null) {
-            hits = searcher.search( query, c.getFilter() );
-        }
-        else if (c.getSort() != null) {
-            hits = searcher.search( query, c.getSort() );
-        }
-        else {
-            hits = searcher.search( query );
-        }
+        Hits hits = searcher.search( query, c.getFilter(), c.getSort() );
         
         Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
         
@@ -150,56 +137,31 @@ public class SearchController extends Controller {
         
         int maximumCorrectedTotalResults = -1;
         
+        // Suggesting
+        SuggestionController.doSuggest( c, query, response );
+        
+        
+        
+        
+        
+        
+        // Suggest spelling
         /**
-         * ============================================
-         *               EXPANDED QUERY
-         * ============================================
-         */
-        
-        if (c.isExpanding()) {
-            //LuceneQueryExpander expander = new LuceneQueryExpander();
-            //expander.setSearcher( manager.getIndex(service.getProperty("query.expand.index", "wordnet")).getIndexSearcher() );
-            //expander.setAnalyzer( analyzer );
-            //supersetQuery = expander.expand( supersetQuery );
-            
-            OpenSearchQuery superset = new OpenSearchQuery();
-            superset.setRole( "superset" );
-            //superset.setSearchTerms( rewriteExpandedQuery( searchString, supersetQuery ) );
-            //superset.setTotalResults( searcher.search( supersetQuery, c.getFilter() ).length() );
-            /**
-            if (!supersetQuery.equals(query)) {
-                if (superset.getTotalResults() > maximumCorrectedTotalResults) {
-                    maximumCorrectedTotalResults = superset.getTotalResults();
-                }
-                response.addQuery( superset );
-            }
-            */
-        }
-        
-        
-        
-        
-        
-        /**
-         * ============================================
-         *            SPELL CHECKED QUERIES
-         * ============================================
-         */
-        
-        if (c.isSpellChecking()) {
-            LuceneSpellChecker spellChecker = new LuceneSpellChecker( manager.getIndex(service.getProperty("query.spellcheck.index","spelling")).getLuceneDirectory() );
-            spellChecker.setMaximumSuggestions(5);
+        if ( c.suggestSpelling() ) {
+            LuceneSpellChecker spellChecker = c.getSpellChecker();
             List<Query> correctionQueries = spellChecker.suggestSimilar( query );
             
             Iterator<Query> iterator = correctionQueries.iterator();
-            while (iterator.hasNext()) {
+            while ( iterator.hasNext() ) {
                 Query correctionQuery = iterator.next();
+                
+                // OpenSearch Query
                 OpenSearchQuery correction = new OpenSearchQuery();
                 correction.setRole( "correction" );
                 correction.setSearchTerms( correctionQuery.toString() );
                 correction.setTotalResults( searcher.search( correctionQuery, c.getFilter() ).length() );
                 
-                if (correction.getTotalResults() > 0) {
+                if ( correction.getTotalResults() > 0 ) {
                     if (correction.getTotalResults() > maximumCorrectedTotalResults) {
                         maximumCorrectedTotalResults = correction.getTotalResults();
                     }
@@ -207,30 +169,29 @@ public class SearchController extends Controller {
                 }
             }
         }
+        */
         
         
         
         
         
+        // Suggest similar
         /**
-         * ============================================
-         *              SUGGESTED QUERY
-         * ============================================
-         */
-        
-        if (c.isSuggesting()) {
+        if ( c.suggestSimilar() ) {
             List<Query> suggestedQueries = getSuggestedQueries( c, query );
             Iterator<Query> iterator = suggestedQueries.iterator();
             while (iterator.hasNext()) {
                 Query suggestedQuery = iterator.next();
                 
-                if (suggestedQuery.equals(query)) {
+                if ( suggestedQuery.equals(query) ) {
                     continue;
                 }
                 
+                QueryReconstructor reconstructor = new QueryReconstructor();
+                
                 OpenSearchQuery correction = new OpenSearchQuery();
                 correction.setRole( "correction" );
-                correction.setSearchTerms( rewriteQuery( c.getOpenSearchQuery().getSearchTerms(), suggestedQuery ) );
+                correction.setSearchTerms( reconstructor.reconstruct( suggestedQuery, c.getOpenSearchQuery().getSearchTerms() ) );
                 correction.setTotalResults( searcher.search( suggestedQuery, c.getFilter() ).length() );
                 
                 if (correction.getTotalResults() > 0) {
@@ -241,10 +202,10 @@ public class SearchController extends Controller {
                 }
             }
         }
+        */
         
         
-        
-        
+        /**
         Iterator<OpenSearchQuery> queryIterator = response.getQueries().iterator();
         float threshold = 0.5f;
         List<OpenSearchQuery> revoked = new LinkedList<OpenSearchQuery>();
@@ -260,15 +221,19 @@ public class SearchController extends Controller {
             response.removeQuery( r.next() );
         }
         Collections.sort( response.getQueries(), new OpenSearchQueryComparator() );
+        */
         
         
         
         
+        /**
+         * Adjust the totalResults, depending upon whether or not the 
+         * request explicitly specified a desired totalResults values.
+         */
         
         Integer totalResults = c.getOpenSearchQuery().getTotalResults();
-        if (totalResults == null || hits.length() < totalResults) {
-            totalResults = hits.length();
-            c.getOpenSearchQuery().setTotalResults( totalResults );
+        if ( totalResults == null || hits.length() < totalResults ) {
+            c.getOpenSearchQuery().setTotalResults( hits.length() );
         }
         Logger.getLogger(SearchController.class).debug("totalResults: " + c.getOpenSearchQuery().getTotalResults());
         
@@ -301,9 +266,9 @@ public class SearchController extends Controller {
         
         response.setId( request.getLocation() );
         response.setUpdated( Calendar.getInstance() );
-        //response.setTotalResults( limiter.getTotalEntries() );
         
         
+        // link to OpenSearch Description
         OpenSearchLink descriptionLink = new OpenSearchLink();
         descriptionLink.setHref( service.getOpenSearchDescriptionURL( request, request.getIndexNames() ) );
         descriptionLink.setRel("search");
@@ -311,6 +276,7 @@ public class SearchController extends Controller {
         response.setLink( descriptionLink );
         
         
+        // the original OpenSearch Query
         response.addQuery( c.getOpenSearchQuery() );
         
         
@@ -394,18 +360,6 @@ public class SearchController extends Controller {
     }
 
     
-    
-    public static List<Query> getExpandedQueries (LuceneContext c) {
-        return new LinkedList<Query>();
-    }
-    
-    public static List<Query> getSpellCheckedQueries (LuceneContext c) {
-        return new LinkedList<Query>();
-    }
-    
-    public static List<Query> getSuggestedQueries (LuceneContext c) {
-        return new LinkedList<Query>();
-    }
     
     
     
@@ -518,10 +472,6 @@ public class SearchController extends Controller {
     
     
     
-    public static List<Query> getExpandedQueries (LuceneContext c, Query original) throws Exception {
-        List<Query> expanded = new LinkedList<Query>();
-        return expanded;
-    }
     
     
     
@@ -529,7 +479,7 @@ public class SearchController extends Controller {
      * Retrieves a list of queries which reflect the current query as 
      * examined by the spell checking system.
      */
-    
+    /**
     public static List<Query> getSpellCheckedQueries (LuceneContext c, Query original) throws Exception {
         LuceneWebService   service = c.getService();
         LuceneIndexManager manager = service.getIndexManager();
@@ -630,9 +580,9 @@ public class SearchController extends Controller {
         }
         query.setBoost( 1.0f );
     }
+    */
     
-    
-    
+    /**
     public static String rewriteQuery (String original, Query alternate) {
         StringBuffer rewritten = new StringBuffer();
         
@@ -652,10 +602,6 @@ public class SearchController extends Controller {
         return rewritten.toString();
     }
     
-    
-    /**
-     * For boolean queries
-     */
     
     public static String rewriteExpandedQuery (String original, Query alternate) {
         StringBuffer rewritten = new StringBuffer();
@@ -756,8 +702,10 @@ public class SearchController extends Controller {
         }
         return queries;
     }
+    */
 }
 
+/**
 class TokenTermQueryComparator implements Comparator<TokenTermQuery> {
     
     public int compare (TokenTermQuery query1, TokenTermQuery query2) {
@@ -777,7 +725,8 @@ class TokenBooleanQueryComparator implements Comparator<TokenBooleanQuery> {
     }
     
 }
-
+*/
+/**
 class SearchedQuery {
     
     public Query query;
@@ -797,7 +746,8 @@ class SearchedQuery {
     }
     
 }
-
+*/
+/**
 class OpenSearchQueryComparator implements Comparator<OpenSearchQuery> {
     
     public int compare (OpenSearchQuery q1, OpenSearchQuery q2) {
@@ -820,7 +770,8 @@ class OpenSearchQueryComparator implements Comparator<OpenSearchQuery> {
     }
     
 }
-
+*/
+/**
 class SearchedQueryComparator implements Comparator<SearchedQuery> {
     
     public int compare (SearchedQuery q1, SearchedQuery q2) {
@@ -830,3 +781,4 @@ class SearchedQueryComparator implements Comparator<SearchedQuery> {
     }
     
 }
+*/

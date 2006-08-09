@@ -36,7 +36,7 @@ public class ServletUtils {
         
         
         // OpenSearch query
-        if (c.getOpenSearchQuery() == null) {
+        if ( c.getOpenSearchQuery() == null ) {
             OpenSearchQuery query = new OpenSearchQuery();
             
             
@@ -255,12 +255,26 @@ public class ServletUtils {
         }
         
         
-        // is expanding
-        if (c.isExpanding() == null) {
-            Boolean isExpanding = null;
-            if (isExpanding == null) { isExpanding = request.getBooleanParameter("expand");      }
-            if (isExpanding == null) { isExpanding = service.getBooleanProperty("query.expand"); }
-            c.isExpanding( isExpanding );
+        // suggest synonyms
+        if (c.suggestSynonyms() == null) {
+            Boolean suggestSynonyms = null;
+            if (suggestSynonyms == null) { suggestSynonyms = request.getBooleanParameter("synonyms");        }
+            if (suggestSynonyms == null) { suggestSynonyms = service.getBooleanProperty("suggest.synonyms"); }
+            c.suggestSynonyms( suggestSynonyms );
+            
+            // Synonym expander
+            if ( suggestSynonyms != null && suggestSynonyms && c.getSynonymExpander() == null ) {
+                String synonymsIndex = null;
+                
+                if ( synonymsIndex == null ) { synonymsIndex = service.getCleanProperty("suggest.synonyms.index"); }
+                
+                if ( synonymsIndex != null ) {
+                    LuceneSynonymExpander synonymExpander = new LuceneSynonymExpander();
+                    synonymExpander.setAnalyzer( c.getAnalyzer() );
+                    synonymExpander.setSearcher( manager.getIndex( synonymsIndex ).getIndexSearcher() );
+                    c.setSynonymExpander( synonymExpander );
+                }
+            }
         }
         
         
@@ -277,21 +291,34 @@ public class ServletUtils {
         }
         
         
-        // is spell-checking
-        if (c.isSpellChecking() == null) {
-            Boolean isSpellChecking = null;
-            if (isSpellChecking == null) { isSpellChecking = request.getBooleanParameter("spellcheck");      }
-            if (isSpellChecking == null) { isSpellChecking = service.getBooleanProperty("query.spellcheck"); }
-            c.isSpellChecking( isSpellChecking );
+        // suggest spelling
+        if (c.suggestSpelling() == null) {
+            Boolean suggestSpelling = null;
+            if (suggestSpelling == null) { suggestSpelling = request.getBooleanParameter("spelling");        }
+            if (suggestSpelling == null) { suggestSpelling = service.getBooleanProperty("suggest.spelling"); }
+            c.suggestSpelling( suggestSpelling );
+            
+            if ( suggestSpelling != null && suggestSpelling ) {
+                String spellCheckIndex = null;
+                
+                if ( spellCheckIndex == null ) { spellCheckIndex = service.getProperty("suggest.spelling.index"); }
+                if ( spellCheckIndex == null ) { spellCheckIndex = "spelling";                                    }
+                
+                if ( spellCheckIndex != null ) {
+                    LuceneSpellChecker spellChecker = new LuceneSpellChecker( manager.getIndex( spellCheckIndex ).getLuceneDirectory() );
+                    spellChecker.setMaximumSuggestions( 5 );
+                    c.setSpellChecker( spellChecker );
+                }
+            }
         }
         
         
-        // is suggesting
-        if (c.isSuggesting() == null) {
-            Boolean isSuggesting = null;
-            if (isSuggesting == null) { isSuggesting = request.getBooleanParameter("suggest");      }
-            if (isSuggesting == null) { isSuggesting = service.getBooleanProperty("query.suggest"); }
-            c.isSuggesting( isSuggesting );
+        // suggest similar
+        if (c.suggestSimilar() == null) {
+            Boolean suggestSimilar = null;
+            if (suggestSimilar == null) { suggestSimilar = request.getBooleanParameter("similar");        }
+            if (suggestSimilar == null) { suggestSimilar = service.getBooleanProperty("suggest.similar"); }
+            c.suggestSimilar( suggestSimilar );
         }
         
         
@@ -330,6 +357,9 @@ public class ServletUtils {
                 c.setSort( LuceneUtils.parseSort( sortString ) );
             }
         }
+        
+        
+        c.setQueryReconstructor( new QueryReconstructor() );
     }
     
     

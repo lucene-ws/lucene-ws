@@ -29,6 +29,26 @@ public class LuceneUtils {
     
     
     
+    public static Query clone (Query original) {
+        if ( original instanceof BooleanQuery ) {
+            return clone( (BooleanQuery) original );
+        }
+        return (Query) original.clone();
+    }
+    
+    public static BooleanQuery clone (BooleanQuery original) {
+        BooleanQuery booleanQuery = (BooleanQuery) original.clone();
+        
+        BooleanClause[] clauses = booleanQuery.getClauses();
+        for ( int i = 0; i < clauses.length; i++ ) {
+            BooleanClause clause = clauses[ i ];
+            clause.setQuery( clone( clause.getQuery() ) );
+        }
+        return booleanQuery;
+    }
+    
+    
+    
     /**
      * Parses a given string into an analyzer, if at all possible.
      * 

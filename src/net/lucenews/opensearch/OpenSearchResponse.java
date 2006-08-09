@@ -220,6 +220,14 @@ public class OpenSearchResponse {
         queries.add( query );
     }
     
+    public void addQueries (OpenSearchQuery... queries) {
+        this.queries.addAll( Arrays.asList( queries ) );
+    }
+    
+    public void addQueries (List<OpenSearchQuery> queries) {
+        this.queries.addAll( queries );
+    }
+    
     public boolean removeQuery (OpenSearchQuery query) {
         return queries.remove( query );
     }

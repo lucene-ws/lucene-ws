@@ -63,6 +63,9 @@ public class LuceneSpellChecker extends SpellChecker {
     
     
     
+    /**
+     * Suggests similar queries
+     */
     
     public List<Query> suggestSimilar (Query query)
         throws IOException

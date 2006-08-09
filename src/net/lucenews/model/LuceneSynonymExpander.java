@@ -7,7 +7,7 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.wordnet.*;
 
-public class LuceneQueryExpander {
+public class LuceneSynonymExpander {
     
     private float boost;
     private Searcher searcher;
@@ -15,7 +15,7 @@ public class LuceneQueryExpander {
     
     
     
-    public LuceneQueryExpander () {
+    public LuceneSynonymExpander () {
         setBoost( 1.0f );
     }
     

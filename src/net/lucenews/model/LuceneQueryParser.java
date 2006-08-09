@@ -15,6 +15,7 @@ public class LuceneQueryParser extends QueryParser {
     private SpellChecker spellchecker;
     private int maximum_corrections;
     private float boost;
+    private LuceneSynonymExpander synonymExpander;
     
     
     
@@ -59,6 +60,16 @@ public class LuceneQueryParser extends QueryParser {
     
     
     
+    public LuceneSynonymExpander getSynonymExpander () {
+        return synonymExpander;
+    }
+    
+    public void setSynonymExpander (LuceneSynonymExpander synonymExpander) {
+        this.synonymExpander = synonymExpander;
+    }
+    
+    
+    
     public SpellChecker getSpellChecker () {
         return spellchecker;
     }
@@ -86,9 +97,16 @@ public class LuceneQueryParser extends QueryParser {
         }
         
         try {
-            LuceneQueryExpander expander = new LuceneQueryExpander();
-            expander.setSearcher(getSynonymSearcher());
-            expander.setAnalyzer(getAnalyzer());
+            LuceneSynonymExpander expander = getSynonymExpander();
+            
+            // construct a new expander if we have not already done so
+            if ( expander == null ) {
+                expander = new LuceneSynonymExpander();
+                expander.setSearcher( getSynonymSearcher() );
+                expander.setAnalyzer( getAnalyzer() );
+                setSynonymExpander( expander );
+            }
+            
             query = expander.expand(query);
             
             if (query instanceof BooleanQuery) {
@@ -112,7 +130,7 @@ public class LuceneQueryParser extends QueryParser {
     
     
     protected Query getRangeQuery (String field, String part1, String part2, boolean inclusive)
-    throws ParseException
+        throws ParseException
     {
         return new ConstantScoreRangeQuery( field, part1, part2, inclusive, inclusive );
     }
