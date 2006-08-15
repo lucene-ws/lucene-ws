@@ -133,7 +133,7 @@ public class HttpURI {
         
         Logger.getLogger( HttpURI.class ).debug( "SETTING PATH TO " + path );
         
-        if (path != null) {
+        if ( path != null && path.trim().length() > 0 ) {
             Iterator<String> iterator = Arrays.asList( path.split( "/" ) ).iterator();
             
             boolean first = true;
@@ -333,6 +333,10 @@ public class HttpURI {
     
     
     public static String uriFormatted (String string) {
+        if ( string == null ) {
+            return null;
+        }
+        
         byte[] bytes = string.getBytes();
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
