@@ -327,7 +327,7 @@ public class SearchController extends Controller {
                     catch (InsufficientDataException ide) {
                     }
                     
-                    result.setRelevance( score );
+                    result.setScore( score );
                     
                     OpenSearchLink resultLink = new OpenSearchLink();
                     resultLink.setHref( service.getDocumentURL( request, index, document ) );

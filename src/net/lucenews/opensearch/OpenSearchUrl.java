@@ -29,6 +29,8 @@ public class OpenSearchUrl {
     private String template;
     private String type;
     private String method;
+    private Integer indexOffset;
+    private Integer pageOffset;
     private Map<String,String> params;
     private Map<String,String> namespaces;
     
@@ -78,7 +80,45 @@ public class OpenSearchUrl {
     
     
     /**
-     * method - a value indicating the HTTP request method.s
+     * indexOffset - Contains the index number of the first search 
+     *               result.
+     * 
+     * Restrictions: The value must be an integer. 
+     * Default: "1" 
+     * Requirements: This attribute is optional. 
+     */
+    
+    public Integer getIndexOffset () {
+        return indexOffset;
+    }
+    
+    public void setIndexOffset (Integer indexOffset) {
+        this.indexOffset = indexOffset;
+    }
+    
+    
+    
+    /**
+     * pageOffset - Contains the page number of the first set of 
+     *              search results.
+     * 
+     * Restrictions: The value must be an integer. 
+     * Default: "1". 
+     * Requirements: This attribute is optional. 
+     */
+    
+    public Integer getPageOffset () {
+        return pageOffset;
+    }
+    
+    public void setPageOffset (Integer pageOffset) {
+        this.pageOffset = pageOffset;
+    }
+    
+    
+    
+    /**
+     * method - a value indicating the HTTP request method.
      * 
      * Note: New in version 1.1.
      * Restrictions: A case insensitive value of either "get" or "post".
@@ -171,18 +211,28 @@ public class OpenSearchUrl {
         Element element = document.createElement("Url");
         
         // type
-        if (getType() != null) {
-            element.setAttribute("type", getType());
+        if ( getType() != null ) {
+            element.setAttribute( "type", getType() );
         }
         
         // method
-        if (getMethod() != null) {
-            element.setAttribute("method", getMethod());
+        if ( getMethod() != null ) {
+            element.setAttribute( "method", getMethod() );
+        }
+        
+        // indexOffset
+        if ( getIndexOffset() != null ) {
+            element.setAttribute( "indexOffset", getIndexOffset().toString() );
+        }
+        
+        // pageOffset
+        if ( getPageOffset() != null ) {
+            element.setAttribute( "pageOffset", getPageOffset().toString() );
         }
         
         // template
-        if (getTemplate() != null) {
-            element.setAttribute("template", getTemplate());
+        if ( getTemplate() != null ) {
+            element.setAttribute( "template", getTemplate() );
         }
         
         // namespaces

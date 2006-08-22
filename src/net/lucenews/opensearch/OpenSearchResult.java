@@ -9,7 +9,7 @@ public class OpenSearchResult {
     private String   title;
     private String   id;
     private Calendar updated;
-    private Float    relevance;
+    private Float    score;
     private OpenSearchLink link;
     private OpenSearchText content;
     private List<OpenSearchPerson> people;
@@ -53,12 +53,23 @@ public class OpenSearchResult {
     
     
     
-    public Float getRelevance () {
-        return relevance;
+    public Float getScore () {
+        return score;
     }
     
+    public void setScore (Float score) {
+        this.score = score;
+    }
+    
+    
+    @Deprecated
+    public Float getRelevance () {
+        return getScore();
+    }
+    
+    @Deprecated
     public void setRelevance (Float relevance) {
-        this.relevance = relevance;
+        setScore( relevance );
     }
     
     
@@ -126,39 +137,42 @@ public class OpenSearchResult {
             Element element = document.createElement("entry");
             
             // title
-            if (getTitle() != null) {
+            if ( getTitle() != null ) {
                 element.appendChild( asElement( document, "title", getTitle() ) );
             }
             
             // updated
-            if (getUpdated() != null) {
+            if ( getUpdated() != null ) {
                 element.appendChild( asElement( document, "updated", net.lucenews.atom.Entry.asString( getUpdated() ) ) );
             }
             
             // link
-            if (getLink() != null) {
+            if ( getLink() != null ) {
                 element.appendChild( getLink().asElement( document, format, mode, true ) );
             }
             
             // id
-            if (getId() != null) {
+            if ( getId() != null ) {
                 element.appendChild( asElement( document, "id", getId() ) );
             }
             
             // people
             Iterator<OpenSearchPerson> peopleIterator = getPeople().iterator();
-            while (peopleIterator.hasNext()) {
+            while ( peopleIterator.hasNext() ) {
                 OpenSearchPerson person = peopleIterator.next();
                 element.appendChild( person.asElement( document, format, mode ) );
             }
             
-            // relevance
-            if (getRelevance() != null) {
-                element.appendChild( asElementNS( document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance", getRelevance() ) );
+            // score
+            if ( getScore() != null ) {
+                element.appendChild( asElementNS( document, "http://a9.com/-/opensearch/extensions/relevance/1.0/", "relevance:score", getScore() ) );
+                
+                // backwards compatibility
+                element.appendChild( asElementNS( document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance", getScore() ) );
             }
             
             // content
-            if (getContent() != null) {
+            if ( getContent() != null ) {
                 element.appendChild( getContent().asElement( document, format, mode ) );
             }
             
@@ -180,7 +194,10 @@ public class OpenSearchResult {
             
             // relevance
             if (getRelevance() != null) {
-                element.appendChild( asElementNS( document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance", getRelevance() ) );
+                element.appendChild( asElementNS( document, "http://a9.com/-/opensearch/extensions/relevance/1.0/", "relevance:score", getScore() ) );
+                
+                // backwards compatibility
+                element.appendChild( asElementNS( document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance", getScore() ) );
             }
             
             // guid

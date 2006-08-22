@@ -83,6 +83,8 @@ public class OpenSearchController extends Controller {
         atomUrl.setType("application/atom+xml");
         atomUrl.setTemplate( template.with( "format", "atom" ).toString() );
         atomUrl.setNamespace( "lucene", "http://www.lucene-ws.net/spec/1.0/" );
+        atomUrl.setIndexOffset( 1 );
+        atomUrl.setPageOffset( 1 );
         /**
         atomUrl.addParam( "searchTerms",     "{searchTerms}" );
         atomUrl.addParam( "count",           "{count?}" );
@@ -107,6 +109,8 @@ public class OpenSearchController extends Controller {
         rssUrl.setType("application/rss+xml");
         rssUrl.setTemplate( template.with( "format", "rss" ).toString() );
         rssUrl.setNamespace( "lucene", "http://www.lucene-ws.net/spec/1.0/" );
+        rssUrl.setIndexOffset( 1 );
+        rssUrl.setPageOffset( 1 );
         /**
         rssUrl.addParam( "searchTerms",     "{searchTerms}" );
         rssUrl.addParam( "count",           "{count?}" );
