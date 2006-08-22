@@ -124,12 +124,16 @@ public class OpenSearchUrl {
      * Restrictions: A case insensitive value of either "get" or "post".
      * Default: "get"
      * Requirements: May appear one time.
+     * 
+     * @deprecated As of OpenSearch Version 1.1 Draft 3
      */
     
+    @Deprecated
     public String getMethod () {
         return method;
     }
     
+    @Deprecated
     public void setMethod (String method) {
         this.method = method;
     }
