@@ -329,14 +329,14 @@ public class LuceneWebService extends HttpServlet {
             OpenSearchException
     {
         Logger.getLogger( this.getClass() ).trace( "doGet" );
-        LuceneRequest req = c.getRequest();
+        LuceneRequest request = c.getRequest();
         
         
-        Logger.getLogger(this.getClass()).debug("request has " + req.getIndexNames().length + " index names");
+        Logger.getLogger(this.getClass()).debug("request has " + request.getIndexNames().length + " index names");
         
-        if (req.getIndexNames().length == 1) {
+        if ( request.getIndexNames().length == 1 ) {
             Logger.getLogger(this.getClass()).debug("request has 1 index name");
-            if (req.getIndexName().equals( "service.properties" )) {
+            if (request.getIndexName().equals( "service.properties" )) {
                 ServicePropertiesController.doGet( c );
                 return;
             }
@@ -344,29 +344,43 @@ public class LuceneWebService extends HttpServlet {
         
         ServletUtils.prepareContext( c );
         
-        if (req.getDocumentIDs().length == 1) {
-            if (req.getDocumentID().equals( "opensearchdescription.xml" )) {
+        if ( request.getDocumentIDs().length == 1 ) {
+            
+            // OpenSearch Description
+            if ( request.getDocumentID().equals("opensearchdescription.xml") ) {
                 OpenSearchController.doGet( c );
                 return;
             }
             
-            if (req.getDocumentID().equals( "index.properties" )) {
+            // Index properties
+            if ( request.getDocumentID().equals("index.properties") ) {
                 IndexPropertiesController.doGet( c );
                 return;
             }
-            if (req.getDocumentID().equals("tagcloud")) {
+            
+            // Tag cloud
+            if ( request.getDocumentID().equals("tagcloud") ) {
                 IndexController.doTagCloud( c );
                 return;
             }
+            
+            /**
+            // JavaScript suggestions
+            if ( request.getDocumentID().equals("suggest") ) {
+                SearchController.doSuggest( c );
+                return;
+            }
+            */
+            
         }
         
         
         
-        if (req.hasIndexNames()) {
-            if (req.hasDocumentIDs()) {
+        if ( request.hasIndexNames() ) {
+            if ( request.hasDocumentIDs() ) {
                 DocumentController.doGet( c );
             }
-            else if (c.getOpenSearchQuery() != null && c.getOpenSearchQuery().getSearchTerms() != null) {
+            else if ( c.getOpenSearchQuery() != null && c.getOpenSearchQuery().getSearchTerms() != null ) {
                 SearchController.doGet( c );
             }
             else {

@@ -198,7 +198,7 @@ public class HttpURI {
     public void setParameters (String parametersString) {
         Map<String,String[]> parameters = new LinkedHashMap<String,String[]>();
         
-        if (parametersString != null) {
+        if ( parametersString != null && parametersString.trim().length() > 0 ) {
             List<String> entries = Arrays.asList( parametersString.split( "&" ) );
             Iterator<String> iterator = entries.iterator();
             while (iterator.hasNext()) {
@@ -276,6 +276,10 @@ public class HttpURI {
     
     
     
+    
+    /**
+     * Produces a clone of this HTTP URI. 
+     */
     
     public HttpURI clone () {
         Logger.getLogger( HttpURI.class ).debug("STARTING TO CLONE");

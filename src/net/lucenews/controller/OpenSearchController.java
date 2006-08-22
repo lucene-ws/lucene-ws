@@ -131,6 +131,20 @@ public class OpenSearchController extends Controller {
         
         
         
+        /**
+        // JavaScript suggestion (OpenSearch Version 1.1 Draft 3)
+        OpenSearchUrl suggestUrl = new OpenSearchUrl();
+        suggestUrl.setType( "application/x-suggestions+json" );
+        HttpURI suggestTemplate = template.clone();
+        suggestTemplate.setParameters("");
+        suggestTemplate.setParameter("searchTerms", "{searchTerms}");
+        suggestTemplate.addPath("suggest");
+        suggestUrl.setTemplate( suggestTemplate.toString() );
+        description.addUrl( suggestUrl );
+        */
+        
+        
+        
         // Images
         
         boolean addedImage = false;
