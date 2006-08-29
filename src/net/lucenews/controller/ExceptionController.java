@@ -30,7 +30,7 @@ public class ExceptionController extends Controller {
         }
     }
     
-    public static void process (LuceneContext c, Exception e, boolean doStackTrace) {
+    public static void process (LuceneContext c, Exception e, Boolean doStackTrace) {
         LuceneWebService   service = c.getService();
         LuceneIndexManager manager = service.getIndexManager();
         LuceneRequest      req     = c.getRequest();
@@ -66,7 +66,7 @@ public class ExceptionController extends Controller {
             /**
              * Get the stack trace ready, if necessary.
              */
-            if (doStackTrace) {
+            if ( doStackTrace != null && doStackTrace ) {
                 Element div = document.createElement( "div" );
                 div.setAttribute( "xmlns", XMLController.getXHTMLNamespace() );
                 
