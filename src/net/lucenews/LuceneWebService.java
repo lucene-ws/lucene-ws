@@ -735,10 +735,12 @@ public class LuceneWebService extends HttpServlet {
             PropertyConfigurator.configureAndWatch( getProperty("log4j.configuration") );
         }
         
+        /**
         String writeLockTimeout = getProperty("indexwriter.writelocktimeout");
         if ( writeLockTimeout != null ) {
             IndexWriter.setDefaultWriteLockTimeout( Long.valueOf( writeLockTimeout ) );
         }
+        */
     }
     
     
