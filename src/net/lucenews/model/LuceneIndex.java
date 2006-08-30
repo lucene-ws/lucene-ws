@@ -448,6 +448,7 @@ public class LuceneIndex {
         if ( writeLockTimeout != null ) {
             writer.setWriteLockTimeout( Long.valueOf(writeLockTimeout) );
         }
+        writer.setWriteLockTimeout( 10000 );
         return writer;
     }
     
