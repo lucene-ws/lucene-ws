@@ -737,7 +737,7 @@ public class LuceneWebService extends HttpServlet {
         
         String writeLockTimeout = getProperty("indexwriter.writelocktimeout");
         if ( writeLockTimeout != null ) {
-            IndexWriter.WRITE_LOCK_TIMEOUT = Long.valueOf( writeLockTimeout );
+            //IndexWriter.WRITE_LOCK_TIMEOUT = Long.valueOf( writeLockTimeout );
         }
     }
     

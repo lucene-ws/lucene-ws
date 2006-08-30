@@ -444,6 +444,10 @@ public class LuceneIndex {
         if (writer == null) {
             writer = new IndexWriter( getDirectory(), getAnalyzer(), false );
         }
+        String writeLockTimeout = getProperty("indexwriter.writelocktimeout");
+        if ( writeLockTimeout != null ) {
+            writer.setWriteLockTimeout( Long.valueOf(writeLockTimeout) );
+        }
         return writer;
     }
     
