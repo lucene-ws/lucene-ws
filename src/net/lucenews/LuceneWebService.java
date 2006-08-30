@@ -19,6 +19,7 @@ import net.lucenews.view.*;
 
 import org.apache.log4j.*;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.*;
 import org.w3c.dom.*;
 import org.xml.sax.*;
@@ -732,6 +733,11 @@ public class LuceneWebService extends HttpServlet {
         
         if (getProperty("log4j.configuration") != null) {
             PropertyConfigurator.configureAndWatch( getProperty("log4j.configuration") );
+        }
+        
+        String writeLockTimeout = getProperty("indexwriter.writelocktimeout");
+        if ( writeLockTimeout != null ) {
+            IndexWriter.WRITE_LOCK_TIMEOUT = Long.valueOf( writeLockTimeout );
         }
     }
     
