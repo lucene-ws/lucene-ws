@@ -194,9 +194,12 @@ public class ServletUtils {
         if (c.getDefaultFields() == null) {
             String[] defaultFields = null;
             
-            if (defaultFields == null) { defaultFields = request.getCleanParameterValues("defaultField");  }
-            if (defaultFields == null) { defaultFields = request.getCleanParameterValues("default_field"); }
-            if (defaultFields == null) { defaultFields = request.getCleanParameterValues("default");       }
+            if (defaultFields == null) { defaultFields = ServletUtils.split( request.getCleanParameterValues("defaultFields") );  }
+            if (defaultFields == null) { defaultFields = ServletUtils.split( request.getCleanParameterValues("defaultField") );   }
+            if (defaultFields == null) { defaultFields = ServletUtils.split( request.getCleanParameterValues("default_fields") ); }
+            if (defaultFields == null) { defaultFields = ServletUtils.split( request.getCleanParameterValues("default_field") );  }
+            if (defaultFields == null) { defaultFields = ServletUtils.split( request.getCleanParameterValues("defaults") );       }
+            if (defaultFields == null) { defaultFields = ServletUtils.split( request.getCleanParameterValues("default") );        }
             
             // index-specified default field
             for (int i = 0; i < indices.length && defaultFields == null; i++) {
@@ -390,6 +393,32 @@ public class ServletUtils {
         }
         else {
             return tokenList.toArray( new String[]{} );
+        }
+    }
+    
+    public static String[] split (String[] sources) {
+        return split( sources, "," );
+    }
+    
+    public static String[] split (String[] sources, String delimiter) {
+        if ( sources == null || sources.length == 0 ) {
+            return null;
+        }
+        
+        List<String> stringList = new ArrayList<String>();
+        
+        for ( int i = 0; i < sources.length; i++ ) {
+            String[] source = split( sources[ i ], delimiter );
+            if ( source != null ) {
+                stringList.addAll( Arrays.asList( source ) );
+            }
+        }
+        
+        if ( stringList.size() == 0 ) {
+            return null;
+        }
+        else {
+            return stringList.toArray( new String[]{} );
         }
     }
     

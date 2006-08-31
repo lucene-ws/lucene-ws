@@ -124,16 +124,26 @@ public class LuceneQueryParser extends QueryParser {
     
     protected Query getFieldQuery (String field, String queryText) throws ParseException {
         if ( field.equals( getField() ) ) {
-            BooleanQuery booleanQuery = new BooleanQuery();
-            for ( int i = 0; i < getFields().length; i++ ) {
-                String subfield = getField( i );
+            if ( getFields().length == 1 ) {
+                String subfield = getField( 0 );
                 Query query = getFieldQuery( getFieldName( subfield ), queryText );
                 if ( hasFieldBoost( subfield ) ) {
                     query.setBoost( getFieldBoost( subfield ) );
                 }
-                booleanQuery.add( query, getDefaultOccur() );
+                return query;
             }
-            return booleanQuery;
+            else {
+                BooleanQuery booleanQuery = new BooleanQuery();
+                for ( int i = 0; i < getFields().length; i++ ) {
+                    String subfield = getField( i );
+                    Query query = getFieldQuery( getFieldName( subfield ), queryText );
+                    if ( hasFieldBoost( subfield ) ) {
+                        query.setBoost( getFieldBoost( subfield ) );
+                    }
+                    booleanQuery.add( query, getDefaultOccur() );
+                }
+                return booleanQuery;
+            }
         }
         else {
             Query query = super.getFieldQuery( field, queryText );
@@ -179,16 +189,26 @@ public class LuceneQueryParser extends QueryParser {
     
     protected Query getFieldQuery (String field, String queryText, int slop) throws ParseException {
         if ( field.equals( getField() ) ) {
-            BooleanQuery booleanQuery = new BooleanQuery();
-            for ( int i = 0; i < getFields().length; i++ ) {
-                String subfield = getField( i );
+            if ( getFields().length == 1 ) {
+                String subfield = getField( 0 );
                 Query query = getFieldQuery( getFieldName( subfield ), queryText, slop );
                 if ( hasFieldBoost( subfield ) ) {
                     query.setBoost( getFieldBoost( subfield ) );
                 }
-                booleanQuery.add( query, getDefaultOccur() );
+                return query;
             }
-            return booleanQuery;
+            else {
+                BooleanQuery booleanQuery = new BooleanQuery();
+                for ( int i = 0; i < getFields().length; i++ ) {
+                    String subfield = getField( i );
+                    Query query = getFieldQuery( getFieldName( subfield ), queryText, slop );
+                    if ( hasFieldBoost( subfield ) ) {
+                        query.setBoost( getFieldBoost( subfield ) );
+                    }
+                    booleanQuery.add( query, getDefaultOccur() );
+                }
+                return booleanQuery;
+            }
         }
         else {
             return super.getFieldQuery( field, queryText, slop );
@@ -197,16 +217,26 @@ public class LuceneQueryParser extends QueryParser {
     
     protected Query getFuzzyQuery (String field, String termStr, float minSimilarity) throws ParseException {
         if ( field.equals( getField() ) ) {
-            BooleanQuery booleanQuery = new BooleanQuery();
-            for ( int i = 0; i < getFields().length; i++ ) {
-                String subfield = getField( i );
+            if ( getFields().length == 1 ) {
+                String subfield = getField( 0 );
                 Query query = getFuzzyQuery( getFieldName( subfield ), termStr, minSimilarity );
                 if ( hasFieldBoost( subfield ) ) {
                     query.setBoost( getFieldBoost( subfield ) );
                 }
-                booleanQuery.add( query, getDefaultOccur() );
+                return query;
             }
-            return booleanQuery;
+            else {
+                BooleanQuery booleanQuery = new BooleanQuery();
+                for ( int i = 0; i < getFields().length; i++ ) {
+                    String subfield = getField( i );
+                    Query query = getFuzzyQuery( getFieldName( subfield ), termStr, minSimilarity );
+                    if ( hasFieldBoost( subfield ) ) {
+                        query.setBoost( getFieldBoost( subfield ) );
+                    }
+                    booleanQuery.add( query, getDefaultOccur() );
+                }
+                return booleanQuery;
+            }
         }
         else {
             return super.getFuzzyQuery( field, termStr, minSimilarity );
@@ -215,16 +245,26 @@ public class LuceneQueryParser extends QueryParser {
     
     protected Query getPrefixQuery (String field, String termStr) throws ParseException {
         if ( field.equals( getField() ) ) {
-            BooleanQuery booleanQuery = new BooleanQuery();
-            for ( int i = 0; i < getFields().length; i++ ) {
-                String subfield = getField( i );
+            if ( getFields().length == 1 ) {
+                String subfield = getField( 0 );
                 Query query = getPrefixQuery( getFieldName( subfield ), termStr );
                 if ( hasFieldBoost( subfield ) ) {
                     query.setBoost( getFieldBoost( subfield ) );
                 }
-                booleanQuery.add( query, getDefaultOccur() );
+                return query;
             }
-            return booleanQuery;
+            else {
+                BooleanQuery booleanQuery = new BooleanQuery();
+                for ( int i = 0; i < getFields().length; i++ ) {
+                    String subfield = getField( i );
+                    Query query = getPrefixQuery( getFieldName( subfield ), termStr );
+                    if ( hasFieldBoost( subfield ) ) {
+                        query.setBoost( getFieldBoost( subfield ) );
+                    }
+                    booleanQuery.add( query, getDefaultOccur() );
+                }
+                return booleanQuery;
+            }
         }
         else {
             return super.getPrefixQuery( field, termStr );
@@ -233,16 +273,26 @@ public class LuceneQueryParser extends QueryParser {
     
     protected Query getWildcardQuery (String field, String termStr) throws ParseException {
         if ( field.equals( getField() ) ) {
-            BooleanQuery booleanQuery = new BooleanQuery();
-            for ( int i = 0; i < getFields().length; i++ ) {
-                String subfield = getField( i );
+            if ( getFields().length == 1 ) {
+                String subfield = getField( 0 );
                 Query query = getWildcardQuery( getFieldName( subfield ), termStr );
                 if ( hasFieldBoost( subfield ) ) {
                     query.setBoost( getFieldBoost( subfield ) );
                 }
-                booleanQuery.add( query, getDefaultOccur() );
+                return query;
             }
-            return booleanQuery;
+            else {
+                BooleanQuery booleanQuery = new BooleanQuery();
+                for ( int i = 0; i < getFields().length; i++ ) {
+                    String subfield = getField( i );
+                    Query query = getWildcardQuery( getFieldName( subfield ), termStr );
+                    if ( hasFieldBoost( subfield ) ) {
+                        query.setBoost( getFieldBoost( subfield ) );
+                    }
+                    booleanQuery.add( query, getDefaultOccur() );
+                }
+                return booleanQuery;
+            }
         }
         else {
             return super.getWildcardQuery( field, termStr );
@@ -255,16 +305,26 @@ public class LuceneQueryParser extends QueryParser {
         throws ParseException
     {
         if ( fields.equals( getField() ) ) {
-            BooleanQuery booleanQuery = new BooleanQuery();
-            for ( int i = 0; i < getFields().length; i++ ) {
-                String subfield = getField( i );
+            if ( getFields().length == 1 ) {
+                String subfield = getField( 0 );
                 Query query = getRangeQuery( getFieldName( subfield ), part1, part2, inclusive );
                 if ( hasFieldBoost( subfield ) ) {
                     query.setBoost( getFieldBoost( subfield ) );
                 }
-                booleanQuery.add( query, getDefaultOccur() );
+                return query;
             }
-            return booleanQuery;
+            else {
+                BooleanQuery booleanQuery = new BooleanQuery();
+                for ( int i = 0; i < getFields().length; i++ ) {
+                    String subfield = getField( i );
+                    Query query = getRangeQuery( getFieldName( subfield ), part1, part2, inclusive );
+                    if ( hasFieldBoost( subfield ) ) {
+                        query.setBoost( getFieldBoost( subfield ) );
+                    }
+                    booleanQuery.add( query, getDefaultOccur() );
+                }
+                return booleanQuery;
+            }
         }
         else {
             return new ConstantScoreRangeQuery( field, part1, part2, inclusive, inclusive );
