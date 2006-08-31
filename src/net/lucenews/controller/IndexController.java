@@ -350,13 +350,10 @@ public class IndexController extends Controller {
         
         MultiReader reader = new MultiReader( readers );
         
-        String[] fields = request.getParameterValues("field");
+        String[] fields = request.getCleanParameterValues("field");
         
         if ( fields == null || fields.length == 0 ) {
-            String field = c.getDefaultField();
-            if ( field != null ) {
-                fields = new String[]{ field };
-            }
+            fields = c.getDefaultFields();
         }
         
         // cloud

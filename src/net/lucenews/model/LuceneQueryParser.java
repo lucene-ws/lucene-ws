@@ -16,14 +16,21 @@ public class LuceneQueryParser extends QueryParser {
     private int maximum_corrections;
     private float boost;
     private LuceneSynonymExpander synonymExpander;
+    private String[] fields;
+    private BooleanClause.Occur occur;
     
     
     
     
-    public LuceneQueryParser (String f, Analyzer a) {
-        super( f, a );
+    public LuceneQueryParser (String field, Analyzer analyzer) {
+        super( field, analyzer );
         setBoost( 1.0f );
         setMaximumCorrections( 0 );
+    }
+    
+    public LuceneQueryParser (String[] fields, Analyzer analyzer) {
+        this( fields[ 0 ], analyzer );
+        setFields( fields );
     }
     
     public LuceneQueryParser (CharStream stream) {
@@ -32,10 +39,37 @@ public class LuceneQueryParser extends QueryParser {
         setMaximumCorrections( 0 );
     }
     
-    public LuceneQueryParser (QueryParserTokenManager tm) {
-        super( tm );
+    public LuceneQueryParser (QueryParserTokenManager tokenManager) {
+        super( tokenManager );
         setBoost( 1.0f );
         setMaximumCorrections( 0 );
+    }
+    
+    
+    
+    public String[] getFields () {
+        return fields;
+    }
+    
+    public void setFields (String... fields) {
+        this.fields = fields;
+    }
+    
+    public String getField (int index) {
+        String[] fields = getFields();
+        return fields[ index ];
+    }
+    
+    
+    public BooleanClause.Occur getDefaultOccur () {
+        if ( occur == null ) {
+            occur = BooleanClause.Occur.SHOULD;
+        }
+        return occur;
+    }
+    
+    public void setDefaultOccur (BooleanClause.Occur occur) {
+        this.occur = occur;
     }
     
     
@@ -89,42 +123,130 @@ public class LuceneQueryParser extends QueryParser {
     
     
     protected Query getFieldQuery (String field, String queryText) throws ParseException {
-        Query query = super.getFieldQuery( field, queryText );
-        
-        if (query instanceof TermQuery) {
-            TermQuery termQuery = (TermQuery) query;
-            query = new TokenTermQuery( termQuery.getTerm(), getToken(0) );
+        if ( field.equals( getField() ) ) {
+            BooleanQuery booleanQuery = new BooleanQuery();
+            for ( int i = 0; i < getFields().length; i++ ) {
+                String subfield = getField( i );
+                Query query = getFieldQuery( getFieldName( subfield ), queryText );
+                if ( hasFieldBoost( subfield ) ) {
+                    query.setBoost( getFieldBoost( subfield ) );
+                }
+                booleanQuery.add( query, getDefaultOccur() );
+            }
+            return booleanQuery;
         }
-        
-        try {
-            LuceneSynonymExpander expander = getSynonymExpander();
+        else {
+            Query query = super.getFieldQuery( field, queryText );
             
-            // construct a new expander if we have not already done so
-            if ( expander == null ) {
-                expander = new LuceneSynonymExpander();
-                expander.setSearcher( getSynonymSearcher() );
-                expander.setAnalyzer( getAnalyzer() );
-                setSynonymExpander( expander );
+            Logger.getLogger(this.getClass()).debug("Getting FieldQuery for \"" + field + "\", \"" + queryText + "\"");
+            
+            if (query instanceof TermQuery) {
+                TermQuery termQuery = (TermQuery) query;
+                query = new TokenTermQuery( termQuery.getTerm(), getToken(0) );
             }
             
-            query = expander.expand(query);
-            
-            if (query instanceof BooleanQuery) {
-                BooleanQuery booleanQuery = (BooleanQuery) query;
-                BooleanClause[] clauses = booleanQuery.getClauses();
+            try {
+                LuceneSynonymExpander expander = getSynonymExpander();
                 
-                TokenBooleanQuery tokenBoolean = new TokenBooleanQuery( booleanQuery.isCoordDisabled(), getToken( 0 ) );
-                for (int i = 0; i < clauses.length; i++) {
-                    tokenBoolean.add( clauses[ i ] );
+                // construct a new expander if we have not already done so
+                if ( expander == null ) {
+                    expander = new LuceneSynonymExpander();
+                    expander.setSearcher( getSynonymSearcher() );
+                    expander.setAnalyzer( getAnalyzer() );
+                    setSynonymExpander( expander );
                 }
                 
-                query = tokenBoolean;
+                query = expander.expand(query);
+                
+                if (query instanceof BooleanQuery) {
+                    BooleanQuery booleanQuery = (BooleanQuery) query;
+                    BooleanClause[] clauses = booleanQuery.getClauses();
+                    
+                    TokenBooleanQuery tokenBoolean = new TokenBooleanQuery( booleanQuery.isCoordDisabled(), getToken( 0 ) );
+                    for (int i = 0; i < clauses.length; i++) {
+                        tokenBoolean.add( clauses[ i ] );
+                    }
+                    
+                    query = tokenBoolean;
+                }
             }
+            catch (Exception e) {
+            }
+            
+            return query;
         }
-        catch (Exception e) {
+    }
+    
+    protected Query getFieldQuery (String field, String queryText, int slop) throws ParseException {
+        if ( field.equals( getField() ) ) {
+            BooleanQuery booleanQuery = new BooleanQuery();
+            for ( int i = 0; i < getFields().length; i++ ) {
+                String subfield = getField( i );
+                Query query = getFieldQuery( getFieldName( subfield ), queryText, slop );
+                if ( hasFieldBoost( subfield ) ) {
+                    query.setBoost( getFieldBoost( subfield ) );
+                }
+                booleanQuery.add( query, getDefaultOccur() );
+            }
+            return booleanQuery;
         }
-        
-        return query;
+        else {
+            return super.getFieldQuery( field, queryText, slop );
+        }
+    }
+    
+    protected Query getFuzzyQuery (String field, String termStr, float minSimilarity) throws ParseException {
+        if ( field.equals( getField() ) ) {
+            BooleanQuery booleanQuery = new BooleanQuery();
+            for ( int i = 0; i < getFields().length; i++ ) {
+                String subfield = getField( i );
+                Query query = getFuzzyQuery( getFieldName( subfield ), termStr, minSimilarity );
+                if ( hasFieldBoost( subfield ) ) {
+                    query.setBoost( getFieldBoost( subfield ) );
+                }
+                booleanQuery.add( query, getDefaultOccur() );
+            }
+            return booleanQuery;
+        }
+        else {
+            return super.getFuzzyQuery( field, termStr, minSimilarity );
+        }
+    }
+    
+    protected Query getPrefixQuery (String field, String termStr) throws ParseException {
+        if ( field.equals( getField() ) ) {
+            BooleanQuery booleanQuery = new BooleanQuery();
+            for ( int i = 0; i < getFields().length; i++ ) {
+                String subfield = getField( i );
+                Query query = getPrefixQuery( getFieldName( subfield ), termStr );
+                if ( hasFieldBoost( subfield ) ) {
+                    query.setBoost( getFieldBoost( subfield ) );
+                }
+                booleanQuery.add( query, getDefaultOccur() );
+            }
+            return booleanQuery;
+        }
+        else {
+            return super.getPrefixQuery( field, termStr );
+        }
+    }
+    
+    protected Query getWildcardQuery (String field, String termStr) throws ParseException {
+        if ( field.equals( getField() ) ) {
+            BooleanQuery booleanQuery = new BooleanQuery();
+            for ( int i = 0; i < getFields().length; i++ ) {
+                String subfield = getField( i );
+                Query query = getWildcardQuery( getFieldName( subfield ), termStr );
+                if ( hasFieldBoost( subfield ) ) {
+                    query.setBoost( getFieldBoost( subfield ) );
+                }
+                booleanQuery.add( query, getDefaultOccur() );
+            }
+            return booleanQuery;
+        }
+        else {
+            return super.getWildcardQuery( field, termStr );
+        }
     }
     
     
@@ -132,7 +254,58 @@ public class LuceneQueryParser extends QueryParser {
     protected Query getRangeQuery (String field, String part1, String part2, boolean inclusive)
         throws ParseException
     {
-        return new ConstantScoreRangeQuery( field, part1, part2, inclusive, inclusive );
+        if ( fields.equals( getField() ) ) {
+            BooleanQuery booleanQuery = new BooleanQuery();
+            for ( int i = 0; i < getFields().length; i++ ) {
+                String subfield = getField( i );
+                Query query = getRangeQuery( getFieldName( subfield ), part1, part2, inclusive );
+                if ( hasFieldBoost( subfield ) ) {
+                    query.setBoost( getFieldBoost( subfield ) );
+                }
+                booleanQuery.add( query, getDefaultOccur() );
+            }
+            return booleanQuery;
+        }
+        else {
+            return new ConstantScoreRangeQuery( field, part1, part2, inclusive, inclusive );
+        }
+    }
+    
+    
+    
+    protected static String getFieldName (String field) {
+        if ( field == null || field.trim().length() == 0 ) {
+            return null;
+        }
+        
+        if ( field.indexOf("^") >= 0 ) {
+            String[] tokens = field.split("\\^");
+            return tokens[ 0 ];
+        }
+        else {
+            return field;
+        }
+    }
+    
+    protected static boolean hasFieldBoost (String field) {
+        return getFieldBoost( field ) != null;
+    }
+    
+    protected static Float getFieldBoost (String field) {
+        if ( field == null || field.trim().length() == 0 ) {
+            return null;
+        }
+        
+        if ( field.indexOf("^") >= 0 ) {
+            String[] tokens = field.split("\\^");
+            String boost = tokens[ 1 ].trim();
+            Logger.getLogger(LuceneQueryParser.class).debug("TOKEN FOUND!");
+            return Float.valueOf( boost );
+        }
+        else {
+            Logger.getLogger(LuceneQueryParser.class).debug("'"+field+"' contains no caret");
+            return null;
+        }
     }
     
 }

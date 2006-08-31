@@ -643,6 +643,10 @@ public class LuceneRequest extends HttpServletRequestWrapper {
         return ServletUtils.clean( getParameter( name ) );
     }
     
+    public String[] getCleanParameterValues (String name) {
+        return ServletUtils.clean( getParameterValues( name ) );
+    }
+    
     
     
     /**

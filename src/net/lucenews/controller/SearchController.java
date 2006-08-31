@@ -88,12 +88,13 @@ public class SearchController extends Controller {
             c.getOpenSearchQuery().setCount( 10 );
         }
         
-        if (c.getDefaultField() == null) {
-            throw new InsufficientDataException("No default field specified");
+        if (c.getDefaultFields() == null) {
+            throw new InsufficientDataException("No default field(s) specified");
         }
         
         if (c.getQueryParser() == null) {
-            QueryParser queryParser = new LuceneQueryParser( c.getDefaultField(), c.getAnalyzer() );
+            LuceneQueryParser queryParser = new LuceneQueryParser( "dd8fc45d87f91c6f9a9f43a3f355a94a", c.getAnalyzer() );
+            queryParser.setFields( c.getDefaultFields() );
             if (c.getLocale() != null)          { queryParser.setLocale( c.getLocale() ); }
             if (c.getDefaultOperator() != null) { queryParser.setDefaultOperator( c.getDefaultOperator() ); }
             c.setQueryParser( queryParser );

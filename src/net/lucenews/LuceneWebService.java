@@ -1006,8 +1006,8 @@ public class LuceneWebService extends HttpServlet {
      * @throws IOException
      */
     
-    public String getDefaultField () throws IOException {
-        return getProperty( "service.defaultfield" );
+    public String[] getDefaultFields () throws IOException {
+        return ServletUtils.split( getProperty( "service.defaultfield" ) );
     }
     
     

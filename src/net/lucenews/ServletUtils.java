@@ -191,22 +191,22 @@ public class ServletUtils {
         
         
         // default field
-        if (c.getDefaultField() == null) {
-            String defaultField = null;
+        if (c.getDefaultFields() == null) {
+            String[] defaultFields = null;
             
-            if (defaultField == null) { defaultField = request.getCleanParameter("defaultField");  }
-            if (defaultField == null) { defaultField = request.getCleanParameter("default_field"); }
-            if (defaultField == null) { defaultField = request.getCleanParameter("default");       }
+            if (defaultFields == null) { defaultFields = request.getCleanParameterValues("defaultField");  }
+            if (defaultFields == null) { defaultFields = request.getCleanParameterValues("default_field"); }
+            if (defaultFields == null) { defaultFields = request.getCleanParameterValues("default");       }
             
             // index-specified default field
-            for (int i = 0; i < indices.length && defaultField == null; i++) {
-                defaultField = indices[ i ].getDefaultField();
+            for (int i = 0; i < indices.length && defaultFields == null; i++) {
+                defaultFields = indices[ i ].getDefaultFields();
             }
             
             // service-specified default field
-            if (defaultField == null) { defaultField = service.getDefaultField(); }
+            if (defaultFields == null) { defaultFields = service.getDefaultFields(); }
             
-            c.setDefaultField( defaultField );
+            c.setDefaultFields( defaultFields );
         }
         
         
@@ -324,8 +324,10 @@ public class ServletUtils {
         
         // QueryParser
         if (c.getQueryParser() == null) {
-            if (c.getDefaultField() != null && c.getAnalyzer() != null) {
-                QueryParser queryParser = new LuceneQueryParser( c.getDefaultField(), c.getAnalyzer() );
+            if (c.getDefaultFields() != null && c.getAnalyzer() != null) {
+                String fakeDefaultField = "dd8fc45d87f91c6f9a9f43a3f355a94a"; // MD5 hash of "boat"
+                LuceneQueryParser queryParser = new LuceneQueryParser( fakeDefaultField, c.getAnalyzer() );
+                queryParser.setFields( c.getDefaultFields() );
                 c.setQueryParser( queryParser );
             }
         }
@@ -362,6 +364,34 @@ public class ServletUtils {
         c.setQueryReconstructor( new QueryReconstructor() );
     }
     
+    
+    
+    public static String[] split (String source) {
+        return split( source, "," );
+    }
+    
+    public static String[] split (String source, String delimiter) {
+        if ( source == null ) {
+            return null;
+        }
+        
+        List<String> tokenList = new ArrayList<String>();
+        
+        String[] tokens = source.split( delimiter );
+        for ( int i = 0; i < tokens.length; i++ ) {
+            String token = clean( tokens[ i ] );
+            if ( token != null ) {
+                tokenList.add( token );
+            }
+        }
+        
+        if ( tokenList.size() == 0 ) {
+            return null;
+        }
+        else {
+            return tokenList.toArray( new String[]{} );
+        }
+    }
     
     
     
@@ -443,6 +473,28 @@ public class ServletUtils {
             return null;
         }
         return string;
+    }
+    
+    public static String[] clean (String[] strings) {
+        if ( strings == null || strings.length == 0 ) {
+            return null;
+        }
+        
+        List<String> stringList = new ArrayList<String>();
+        
+        for ( int i = 0; i < strings.length; i++ ) {
+            String string = clean( strings[ i ] );
+            if ( string != null ) {
+                stringList.add( string );
+            }
+        }
+        
+        if ( stringList.size() == 0 ) {
+            return null;
+        }
+        else {
+            return stringList.toArray( new String[]{} );
+        }
     }
     
     

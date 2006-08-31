@@ -1411,14 +1411,21 @@ public class LuceneIndex {
     
     
     /**
-     * Retrieves the default field associated with the index.
+     * Retrieves the default fields associated with the index.
      * 
-     * @return The default field associated with the index
+     * @return The default fields associated with the index
      * @throws IOException
      */
     
-    public String getDefaultField () throws IOException {
-        return getProperties().getProperty( "document.defaultfield" );
+    public String[] getDefaultFields () throws IOException {
+        String[] defaultFields = null;
+        
+        if (defaultFields == null) { defaultFields = ServletUtils.split( getProperty("document.fields.<default>") ); }
+        if (defaultFields == null) { defaultFields = ServletUtils.split( getProperty("document.fields.default") );   }
+        if (defaultFields == null) { defaultFields = ServletUtils.split( getProperty("document.defaultfields") );    }
+        if (defaultFields == null) { defaultFields = ServletUtils.split( getProperty("document.defaultfield") );     }
+        
+        return defaultFields;
     }
     
     public QueryParser.Operator getDefaultOperator () throws IOException {

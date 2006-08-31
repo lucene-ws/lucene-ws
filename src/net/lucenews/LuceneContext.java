@@ -25,6 +25,7 @@ public class LuceneContext {
     private OpenSearch.Format     openSearchFormat;
     private Analyzer              analyzer;
     private String                defaultField;
+    private String[]              defaultFields;
     private QueryParser.Operator  defaultOperator;
     private Locale                locale;
     private Filter                filter;
@@ -163,12 +164,24 @@ public class LuceneContext {
     
     
     
+    @Deprecated
     public String getDefaultField () {
         return defaultField;
     }
     
+    @Deprecated
     public void setDefaultField (String defaultField) {
         this.defaultField = defaultField;
+    }
+    
+    
+    
+    public String[] getDefaultFields () {
+        return defaultFields;
+    }
+    
+    public void setDefaultFields (String... defaultFields) {
+        this.defaultFields = defaultFields;
     }
     
     
