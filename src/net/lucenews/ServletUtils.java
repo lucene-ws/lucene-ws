@@ -330,7 +330,9 @@ public class ServletUtils {
             if (c.getDefaultFields() != null && c.getAnalyzer() != null) {
                 String fakeDefaultField = "dd8fc45d87f91c6f9a9f43a3f355a94a"; // MD5 hash of "boat"
                 LuceneQueryParser queryParser = new LuceneQueryParser( fakeDefaultField, c.getAnalyzer() );
+                //LuceneQueryParser queryParser = new LuceneQueryParser( c.getDefaultFields()[ 0 ], c.getAnalyzer() );
                 queryParser.setFields( c.getDefaultFields() );
+                queryParser.setDefaultOperator( c.getDefaultOperator() );
                 c.setQueryParser( queryParser );
             }
         }

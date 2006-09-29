@@ -29,14 +29,15 @@ public class OpenSearchUrl {
     private String template;
     private String type;
     private String method;
+    private String encodingType;
     private Integer indexOffset;
     private Integer pageOffset;
-    private Map<String,String> params;
+    private List<OpenSearchParameter> parameters;
     private Map<String,String> namespaces;
     
     
     public OpenSearchUrl () {
-        params     = new LinkedHashMap<String,String>();
+        parameters = new LinkedList<OpenSearchParameter>();
         namespaces = new LinkedHashMap<String,String>();
     }
     
@@ -124,24 +125,30 @@ public class OpenSearchUrl {
      * Restrictions: A case insensitive value of either "get" or "post".
      * Default: "get"
      * Requirements: May appear one time.
-     * 
-     * @deprecated As of OpenSearch Version 1.1 Draft 3
      */
     
-    @Deprecated
     public String getMethod () {
         return method;
     }
     
-    @Deprecated
     public void setMethod (String method) {
         this.method = method;
     }
     
     
     
+    public String getEncodingType () {
+        return encodingType;
+    }
+    
+    public void setEncodingType (String encodingType) {
+        this.encodingType = encodingType;
+    }
+    
+    
+    
     /**
-     * Param - An empty node that is used to describe HTTP POST 
+     * Parameter - An empty node that is used to describe HTTP POST 
      * parameters to be passed along with a query of method="post".
      * 
      * Parent: Url
@@ -159,16 +166,24 @@ public class OpenSearchUrl {
      * Requirements: May appear zero, one, or more times.
      */
     
-    public void addParam (String name, String value) {
-        params.put( name, value );
+    public void addParameter (String name, String value) {
+        addParameter( new OpenSearchParameter( name, value ) );
     }
     
-    public String removeParam (String name) {
-        return params.remove( name );
+    public void addParameter (OpenSearchParameter parameter) {
+        parameters.add( parameter );
     }
     
-    public Map<String,String> getParams () {
-        return params;
+    public boolean removeParameter (String name) {
+        return removeParameter( new OpenSearchParameter( name, null ) );
+    }
+    
+    public boolean removeParameter (OpenSearchParameter parameter) {
+        return parameters.remove( parameter );
+    }
+    
+    public List<OpenSearchParameter> getParameters () {
+        return parameters;
     }
     
     
@@ -194,13 +209,15 @@ public class OpenSearchUrl {
         String method = element.getAttribute("method");
         url.setMethod( method );
         
-        // Param
-        NodeList params = element.getElementsByTagName("Param");
-        for ( int i = 0; i < params.getLength(); i++ ) {
-            Element param = (Element) params.item( i );
-            String name   = param.getAttribute("name");
-            String value  = param.getAttribute("value");
-            url.addParam( name, value );
+        // enctype
+        String enctype = element.getAttribute("enctype");
+        url.setEncodingType( enctype );
+        
+        // Parameter
+        NodeList parameters = element.getElementsByTagName("Parameter");
+        for ( int i = 0; i < parameters.getLength(); i++ ) {
+            Element parameter = (Element) parameters.item( i );
+            url.addParameter( OpenSearchParameter.asOpenSearchParameter( parameter ) );
         }
         
         return url;
@@ -221,7 +238,12 @@ public class OpenSearchUrl {
         
         // method
         if ( getMethod() != null ) {
-            element.setAttribute( "method", getMethod() );
+            element.setAttributeNS( "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/", "parameters:method", getMethod() );
+        }
+        
+        // enctype
+        if ( getEncodingType() != null ) {
+            element.setAttributeNS( "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/", "parameters:enctype", getEncodingType() );
         }
         
         // indexOffset
@@ -246,34 +268,11 @@ public class OpenSearchUrl {
             element.setAttribute( "xmlns:"+namespace.getKey(), namespace.getValue() );
         }
         
-        Iterator<Map.Entry<String,String>> iterator = params.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String,String> entry = iterator.next();
-            Element param = document.createElement("Param");
-            
-            if (entry.getKey() == null) {
-                if (mode == OpenSearch.STRICT) {
-                    throw new OpenSearchException("Param name cannot be null");
-                }
-                else {
-                    continue;
-                }
-            }
-            param.setAttribute("name", entry.getKey());
-            
-            if (entry.getKey() == null) {
-                if (mode == OpenSearch.STRICT) {
-                    throw new OpenSearchException("Param value cannot be null");
-                }
-                else {
-                    param.setAttribute("value", "");
-                }
-            }
-            else {
-                param.setAttribute("value", entry.getValue());
-            }
-            
-            element.appendChild( param );
+        // Parameter
+        Iterator<OpenSearchParameter> parameters = getParameters().iterator();
+        while ( parameters.hasNext() ) {
+            OpenSearchParameter parameter = parameters.next();
+            element.appendChild( parameter.asElement( document, format, mode ) );
         }
         
         return element;

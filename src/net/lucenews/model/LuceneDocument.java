@@ -18,6 +18,7 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.search.*;
 import java.util.*;
 import org.w3c.dom.*;
 
@@ -27,6 +28,8 @@ public class LuceneDocument {
     private Analyzer    analyzer;
     private Document    document;
     private LuceneIndex index;
+    private Integer     number;
+    private Hits        similarDocumentHits;
     
     
     
@@ -91,6 +94,10 @@ public class LuceneDocument {
         getIndex().updateDocument(this);
     }
     
+    public String getIdentifier () throws InsufficientDataException, IOException {
+        return getIndex().getIdentifier( this );
+    }
+    
     public String getTitle () throws IOException {
         return getIndex().getTitle( this );
     }
@@ -101,6 +108,24 @@ public class LuceneDocument {
     
     public String getAuthor () throws IOException {
         return getIndex().getAuthor( this );
+    }
+    
+    
+    public Integer getNumber () {
+        return number;
+    }
+    
+    public void setNumber (Integer number) {
+        this.number = number;
+    }
+    
+    
+    public Hits getSimilarDocumentHits () {
+        return similarDocumentHits;
+    }
+    
+    public void setSimilarDocumentHits (Hits similarDocumentHits) {
+        this.similarDocumentHits = similarDocumentHits;
     }
     
     

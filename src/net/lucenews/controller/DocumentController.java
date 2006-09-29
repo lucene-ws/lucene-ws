@@ -11,6 +11,9 @@ import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import org.apache.log4j.*;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.*;
+import org.apache.lucene.search.*;
+import org.apache.lucene.search.similar.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -136,15 +139,35 @@ public class DocumentController extends Controller {
                 
                 try {
                     document = index.getDocument( documentID );
+                    
+                    if ( document.getNumber() != null ) {
+                        // Attempt to locate similar documents
+                        IndexReader   reader   = index.getIndexReader();
+                        IndexSearcher searcher = index.getIndexSearcher();
+                        
+                        MoreLikeThis moreLikeThis = new MoreLikeThis( reader );
+                        
+                        document.setSimilarDocumentHits( searcher.search( moreLikeThis.like( document.getNumber() ), c.getFilter(), c.getSort() ) );
+                        
+                        Logger.getLogger(DocumentController.class).debug("Set the similar documents: "+document.getSimilarDocumentHits().length());
+                        
+                        index.putIndexReader( reader );
+                        index.putIndexSearcher( searcher );
+                    }
+                    else {
+                        Logger.getLogger( DocumentController.class ).debug("Document number is null");
+                    }
                 }
-                    catch(DocumentNotFoundException dnfe) {
+                catch (DocumentNotFoundException dnfe) {
+                    Logger.getLogger(DocumentController.class).debug("Failed to set similar documents", dnfe);
                 }
                 
-                if( document != null ) {
-                    if( entries.size() == 0 ) {
+                if ( document != null ) {
+                    if ( entries.size() == 0 ) {
                         String name = index.getAuthor( document );
-                        if( name == null )
+                        if ( name == null ) {
                             name = service.getTitle();
+                        }
                         firstAuthor = new Author( name );
                     }
                     
@@ -153,7 +176,7 @@ public class DocumentController extends Controller {
             }
         }
         
-        if( entries.size() == 1 ) {
+        if ( entries.size() == 1 ) {
             entries.get( 0 ).addAuthor( firstAuthor );
         }
         
@@ -162,11 +185,10 @@ public class DocumentController extends Controller {
         //else
         //	AtomView.process( c, asFeed( c, documents ) );
         
-        
-        if( entries.size() == 0 )
+        if ( entries.size() == 0 ) {
             throw new DocumentsNotFoundException( documentIDs );
-        
-        if( entries.size() == 1 ) {
+        }
+        if ( entries.size() == 1 ) {
             AtomView.process( c, entries.get( 0 ) );
         }
         else {
@@ -319,17 +341,38 @@ public class DocumentController extends Controller {
         entry.setContent( asContent( c, index, document ) );
         
         
-        if( index == null )
+        if ( index == null ) {
             return entry;
+        }
         
         
         // ID and Link may only be added if the document is identified
-        if( index.isDocumentIdentified( document ) ) {
+        if ( index.isDocumentIdentified( document ) ) {
             // ID
             entry.setID( service.getDocumentURL( req, index, document ) );
             
             // Link
             entry.addLink( Link.Alternate( service.getDocumentURL( req, index, document ) ) );
+        }
+        
+        // links to similar documents
+        if ( document.getSimilarDocumentHits() != null ) {
+            Hits hits = document.getSimilarDocumentHits();
+            Logger.getLogger(DocumentController.class).debug("Found " + hits.length() + " similar documents");
+            for ( int i = 0; i < hits.length(); i++ ) {
+                try {
+                    LuceneDocument similarDocument = index.getDocument( hits.id( i ) );
+                    Link relatedLink = Link.Related( service.getDocumentURL( req, index.getName(), similarDocument.getIdentifier() ) );
+                    entry.addLink( relatedLink );
+                    Logger.getLogger(DocumentController.class).debug("Successfully added related link");
+                }
+                catch (DocumentNotFoundException dnfe) {
+                    Logger.getLogger(DocumentController.class).debug("Failed to add related link");
+                }
+            }
+        }
+        else {
+            Logger.getLogger(DocumentController.class).debug("No similar documents!");
         }
         
         // Title
@@ -339,7 +382,7 @@ public class DocumentController extends Controller {
         try {
             entry.setUpdated( index.getUpdated( document ) );
         }
-        catch(InsufficientDataException ide) {
+        catch (InsufficientDataException ide) {
         }
         
         // Author

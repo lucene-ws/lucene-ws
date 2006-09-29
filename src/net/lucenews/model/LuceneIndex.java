@@ -598,18 +598,18 @@ public class LuceneIndex {
         
         LuceneDocument document = null;
         
-        if (getIdentifyingField() == null) {
+        if ( getIdentifyingField() == null ) {
             throw new DocumentNotFoundException( identifier );
         }
         
         Term term = new Term( getIdentifyingField(), identifier );
         
         TermDocs documents = reader.termDocs( term );
-        while (documents.next()) {
-            LuceneDocument _document = asLuceneDocument( reader.document( documents.doc() ) );
+        while ( documents.next() ) {
+            LuceneDocument _document = getDocument( documents.doc(), reader );
             
-            if (isDocumentCorrectlyIdentified( _document, identifier )) {
-                if (document == null) {
+            if ( isDocumentCorrectlyIdentified( _document, identifier ) ) {
+                if ( document == null ) {
                     document = _document;
                 }
                 else {
@@ -618,7 +618,7 @@ public class LuceneIndex {
             }
         }
         
-        if (document == null) {
+        if ( document == null ) {
             throw new DocumentNotFoundException( identifier );
         }
         
@@ -627,6 +627,33 @@ public class LuceneIndex {
         managedDocuments.put( identifier, document );
         
         document.setIndex( this );
+        
+        return document;
+    }
+    
+    public LuceneDocument getDocument (int number)
+        throws DocumentNotFoundException, IOException
+    {
+        LuceneDocument document = null;
+        
+        IndexReader reader = getIndexReader();
+        document = getDocument( number, reader );
+        putIndexReader( reader );
+        
+        return document;
+    }
+    
+    public LuceneDocument getDocument (int number, IndexReader reader)
+        throws DocumentNotFoundException, IOException
+    {
+        if ( reader.isDeleted( number ) ) {
+            throw new DocumentNotFoundException("Document number " + number + " cannot be found");
+        }
+        
+        LuceneDocument document = asLuceneDocument( reader.document( number ) );
+        
+        document.setIndex( this );
+        document.setNumber( number );
         
         return document;
     }

@@ -39,6 +39,10 @@ public class QueryReconstructor {
         else if ( query instanceof TokenBooleanQuery ) {
             reconstruct( (TokenBooleanQuery) query, searchTerms, buffer, indent+"  " );
         }
+        else if ( query instanceof ExpandedTermQuery ) {
+            BooleanQuery booleanQuery = (BooleanQuery) query;
+            reconstruct( booleanQuery.getClauses()[ 0 ].getQuery(), searchTerms, buffer, indent+" " );
+        }
         else if ( query instanceof BooleanQuery ) {
             reconstruct( (BooleanQuery) query, searchTerms, buffer, indent+"  " );
         }

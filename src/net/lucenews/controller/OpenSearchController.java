@@ -86,20 +86,20 @@ public class OpenSearchController extends Controller {
         atomUrl.setIndexOffset( 1 );
         atomUrl.setPageOffset( 1 );
         /**
-        atomUrl.addParam( "searchTerms",     "{searchTerms}" );
-        atomUrl.addParam( "count",           "{count?}" );
-        atomUrl.addParam( "startIndex",      "{startIndex?}" );
-        atomUrl.addParam( "startPage",       "{startPage?}" );
-        atomUrl.addParam( "language",        "{language?}" );
-        atomUrl.addParam( "outputEncoding",  "{outputEncoding?}" );
-        atomUrl.addParam( "inputEncoding",   "{inputEncoding?}" );
-        atomUrl.addParam( "totalResults",    "{totalResults?}" );
-        atomUrl.addParam( "analyzer",        "{lucene:analyzer?}" );
-        atomUrl.addParam( "defaultField",    "{lucene:defaultField?}" );
-        atomUrl.addParam( "defaultOperator", "{lucene:defaultOperator?}" );
-        atomUrl.addParam( "filter",          "{lucene:filter?}" );
-        atomUrl.addParam( "locale",          "{lucene:locale?}" );
-        atomUrl.addParam( "sort",            "{lucene:sort?}" );
+        atomUrl.addParameter( "searchTerms",     "{searchTerms}" );
+        atomUrl.addParameter( "count",           "{count?}" );
+        atomUrl.addParameter( "startIndex",      "{startIndex?}" );
+        atomUrl.addParameter( "startPage",       "{startPage?}" );
+        atomUrl.addParameter( "language",        "{language?}" );
+        atomUrl.addParameter( "outputEncoding",  "{outputEncoding?}" );
+        atomUrl.addParameter( "inputEncoding",   "{inputEncoding?}" );
+        atomUrl.addParameter( "totalResults",    "{totalResults?}" );
+        atomUrl.addParameter( "analyzer",        "{lucene:analyzer?}" );
+        atomUrl.addParameter( "defaultField",    "{lucene:defaultField?}" );
+        atomUrl.addParameter( "defaultOperator", "{lucene:defaultOperator?}" );
+        atomUrl.addParameter( "filter",          "{lucene:filter?}" );
+        atomUrl.addParameter( "locale",          "{lucene:locale?}" );
+        atomUrl.addParameter( "sort",            "{lucene:sort?}" );
         */
         description.addUrl( atomUrl );
         
@@ -112,20 +112,20 @@ public class OpenSearchController extends Controller {
         rssUrl.setIndexOffset( 1 );
         rssUrl.setPageOffset( 1 );
         /**
-        rssUrl.addParam( "searchTerms",     "{searchTerms}" );
-        rssUrl.addParam( "count",           "{count?}" );
-        rssUrl.addParam( "startIndex",      "{startIndex?}" );
-        rssUrl.addParam( "startPage",       "{startPage?}" );
-        rssUrl.addParam( "language",        "{language?}" );
-        rssUrl.addParam( "outputEncoding",  "{outputEncoding?}" );
-        rssUrl.addParam( "inputEncoding",   "{inputEncoding?}" );
-        rssUrl.addParam( "totalResults",    "{totalResults?}" );
-        rssUrl.addParam( "analyzer",        "{lucene:analyzer?}" );
-        rssUrl.addParam( "defaultField",    "{lucene:defaultField?}" );
-        rssUrl.addParam( "defaultOperator", "{lucene:defaultOperator?}" );
-        rssUrl.addParam( "filter",          "{lucene:filter?}" );
-        rssUrl.addParam( "locale",          "{lucene:locale?}" );
-        rssUrl.addParam( "sort",            "{lucene:sort?}" );
+        rssUrl.addParameter( "searchTerms",     "{searchTerms}" );
+        rssUrl.addParameter( "count",           "{count?}" );
+        rssUrl.addParameter( "startIndex",      "{startIndex?}" );
+        rssUrl.addParameter( "startPage",       "{startPage?}" );
+        rssUrl.addParameter( "language",        "{language?}" );
+        rssUrl.addParameter( "outputEncoding",  "{outputEncoding?}" );
+        rssUrl.addParameter( "inputEncoding",   "{inputEncoding?}" );
+        rssUrl.addParameter( "totalResults",    "{totalResults?}" );
+        rssUrl.addParameter( "analyzer",        "{lucene:analyzer?}" );
+        rssUrl.addParameter( "defaultField",    "{lucene:defaultField?}" );
+        rssUrl.addParameter( "defaultOperator", "{lucene:defaultOperator?}" );
+        rssUrl.addParameter( "filter",          "{lucene:filter?}" );
+        rssUrl.addParameter( "locale",          "{lucene:locale?}" );
+        rssUrl.addParameter( "sort",            "{lucene:sort?}" );
         */
         description.addUrl( rssUrl );
         
