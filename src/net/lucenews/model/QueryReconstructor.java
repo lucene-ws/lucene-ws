@@ -31,7 +31,7 @@ public class QueryReconstructor {
     }
     
     protected void reconstruct (Query query, String searchTerms, StringBuffer buffer, String indent) {
-        Logger.getLogger(this.getClass()).debug(indent+"reconstructing Query: " + query + " (cursor:" + cursor + ")");
+        Logger.getLogger(this.getClass()).debug(indent+"reconstructing Query: " + query + " (class: " + query.getClass() + ", cursor:" + cursor + ")");
         
         if ( query instanceof TokenTermQuery ) {
             reconstruct( (TokenTermQuery) query, searchTerms, buffer, indent+"  " );
@@ -41,6 +41,7 @@ public class QueryReconstructor {
         }
         else if ( query instanceof ExpandedTermQuery ) {
             BooleanQuery booleanQuery = (BooleanQuery) query;
+            Logger.getLogger(this.getClass()).debug(indent+"reconstructing ExpandedTermQuery: " + query);
             reconstruct( booleanQuery.getClauses()[ 0 ].getQuery(), searchTerms, buffer, indent+" " );
         }
         else if ( query instanceof BooleanQuery ) {
@@ -53,12 +54,20 @@ public class QueryReconstructor {
             reconstruct( (TokenBooleanQuery) booleanQuery, searchTerms, buffer, indent );
             return;
         }
+        if ( booleanQuery instanceof ExpandedTermQuery ) {
+            reconstruct( (ExpandedTermQuery) booleanQuery, searchTerms, buffer, indent );
+            return;
+        }
         
         Logger.getLogger(this.getClass()).debug(indent+"reconstructing BooleanQuery: " + booleanQuery);
         BooleanClause[] clauses = booleanQuery.getClauses();
         for ( int i = 0; i < clauses.length; i++ ) {
             reconstruct( clauses[ i ].getQuery(), searchTerms, buffer, indent+"  " );
         }
+    }
+    
+    protected void reconstruct (ExpandedTermQuery expandedTermQuery, String searchTerms, StringBuffer buffer, String indent) {
+        Logger.getLogger(this.getClass()).debug(indent+"reconstructing ExpandedTermQuery: " + expandedTermQuery);
     }
     
     protected void reconstruct (TokenTermQuery tokenTermQuery, String searchTerms, StringBuffer buffer, String indent) {

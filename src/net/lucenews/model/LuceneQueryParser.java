@@ -165,7 +165,9 @@ public class LuceneQueryParser extends QueryParser {
     
     protected Query getFieldQuery (String field, String queryText) throws ParseException {
         if ( field.equals( getField() ) ) {
+            Logger.getLogger(this.getClass()).debug("getFieldQuery(\""+field+"\",\""+queryText+"\")");
             if ( getFields().length == 1 ) {
+                Logger.getLogger(this.getClass()).debug("One default field");
                 String subfield = getField( 0 );
                 Query query = getFieldQuery( getFieldName( subfield ), queryText );
                 if ( hasFieldBoost( subfield ) ) {
@@ -174,7 +176,8 @@ public class LuceneQueryParser extends QueryParser {
                 return query;
             }
             else {
-                BooleanQuery booleanQuery = new ExpandedTermQuery();
+                Logger.getLogger(this.getClass()).debug("Multiple default fields");
+                ExpandedTermQuery booleanQuery = new ExpandedTermQuery();
                 for ( int i = 0; i < getFields().length; i++ ) {
                     String subfield = getField( i );
                     Query query = getFieldQuery( getFieldName( subfield ), queryText );
@@ -184,6 +187,7 @@ public class LuceneQueryParser extends QueryParser {
                     //booleanQuery.add( query, getDefaultOccur() );
                     booleanQuery.add( query, BooleanClause.Occur.SHOULD );
                 }
+                Logger.getLogger(this.getClass()).debug("Returning " + booleanQuery.getClass());
                 return booleanQuery;
             }
         }
