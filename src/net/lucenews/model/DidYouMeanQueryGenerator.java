@@ -174,7 +174,13 @@ public class DidYouMeanQueryGenerator
         
         while( indices[ 0 ] <= queries[ 0 ].length ) {
             
-            BooleanQuery returnQuery = new BooleanQuery();
+            BooleanQuery returnQuery = null;
+            if ( bq instanceof ExpandedTermQuery ) {
+                returnQuery = new ExpandedTermQuery();
+            }
+            else {
+                returnQuery = new BooleanQuery();
+            }
             
             boolean addThis = true;
             for( int i = 0; i < indices.length; i++ ) {
