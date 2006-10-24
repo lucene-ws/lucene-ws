@@ -13,7 +13,7 @@ import org.apache.log4j.*;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
-import org.apache.lucene.search.similar.*;
+//import org.apache.lucene.search.similar.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -142,6 +142,7 @@ public class DocumentController extends Controller {
                     
                     if ( document.getNumber() != null ) {
                         // Attempt to locate similar documents
+                        /*
                         IndexReader   reader   = index.getIndexReader();
                         IndexSearcher searcher = index.getIndexSearcher();
                         
@@ -153,6 +154,7 @@ public class DocumentController extends Controller {
                         
                         index.putIndexReader( reader );
                         index.putIndexSearcher( searcher );
+                        */
                     }
                     else {
                         Logger.getLogger( DocumentController.class ).debug("Document number is null");
