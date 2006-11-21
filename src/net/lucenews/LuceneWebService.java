@@ -1,3 +1,9 @@
+/*
+ * The Lucene Web Service
+ * 
+ * @author Adam Paynter
+ */
+
 package net.lucenews;
 
 import java.util.*;
@@ -105,12 +111,19 @@ public class LuceneWebService extends HttpServlet {
         catch(IOException ioe) {
         }
         
-        
-        // Attempt to load an external file, if at all possible
+        // attempt to resolve a file containing the properties
         try {
-            setProperties( new File( getProperty( "properties-file" ) ) );
-        }
-        catch(NullPointerException npe) {
+            String propertiesFile = null;
+            if ( propertiesFile == null ) { propertiesFile = getProperty("properties.file"); }
+            if ( propertiesFile == null ) { propertiesFile = getProperty("properties-file"); }
+            
+            if ( propertiesFile != null ) {
+                try {
+                    setProperties( new File( getProperty( "properties-file" ) ) );
+                }
+                catch(NullPointerException npe) {
+                }
+            }
         }
         catch(IOException ioe) {
         }
@@ -181,6 +194,7 @@ public class LuceneWebService extends HttpServlet {
         
         Logger.getLogger(this.getClass()).info("request:  " + req.getMethod() + " " + req.getLocation() + " " + req.getProtocol());
         
+        /*
         Logger.getLogger(this.getClass()).debug("getContextPath(): " + request.getContextPath());
         Logger.getLogger(this.getClass()).debug("getPathInfo(): " + request.getPathInfo());
         Logger.getLogger(this.getClass()).debug("getPathTranslated(): " + request.getPathTranslated());
@@ -188,11 +202,12 @@ public class LuceneWebService extends HttpServlet {
         Logger.getLogger(this.getClass()).debug("getRequestURI(): " + request.getRequestURI());
         Logger.getLogger(this.getClass()).debug("getRequestURL(): " + request.getRequestURL());
         Logger.getLogger(this.getClass()).debug("getServletPath(): " + request.getServletPath());
+        */
         
         res.setContentType("application/atom+xml; charset=utf-8");
         
         try {
-            switch (req.getMethodType()) {
+            switch ( req.getMethodType() ) {
                 
                 case LuceneRequest.DELETE:
                     doDelete( c );
@@ -227,18 +242,26 @@ public class LuceneWebService extends HttpServlet {
         catch (ServletException se) {
             throw se;
         }
+        
+        // ParseException: 400 Bad Request
         catch (ParseException pe) {
             res.setStatus( res.SC_BAD_REQUEST );
             ExceptionController.process( c, pe );
         }
+        
+        // AtomParseException: 400 Bad Request
         catch (AtomParseException ape) {
             res.setStatus( res.SC_BAD_REQUEST );
             ExceptionController.process( c, ape );
         }
+        
+        // SAXException: 400 Bad Request
         catch (SAXException saxe) {
             res.setStatus( res.SC_BAD_REQUEST );
             ExceptionController.process( c, saxe );
         }
+        
+        // LuceneException: Possibly 500 Internal Server Error
         catch (LuceneException le) {
             if (le.hasStatus()) {
                 res.setStatus( le.getStatus() );
@@ -248,12 +271,14 @@ public class LuceneWebService extends HttpServlet {
             }
             ExceptionController.process( c, le );
         }
+        
+        // Exception: 500 Internal Server Error
         catch (Exception e) {
             res.setStatus( res.SC_INTERNAL_SERVER_ERROR );
             ExceptionController.process( c, e );
         }
         
-        Logger.getLogger(this.getClass()).info("response: " + res.getStatus());
+        Logger.getLogger( this.getClass() ).info("response: " + res.getStatus());
     }	
     
     
@@ -348,7 +373,7 @@ public class LuceneWebService extends HttpServlet {
         if ( request.getDocumentIDs().length == 1 ) {
             
             // OpenSearch Description
-            if ( request.getDocumentID().equals("opensearchdescription.xml") ) {
+            if ( request.getDocumentID().equals("opensearchdescription.xml") || request.getDocumentID().equals("description.xml") ) {
                 OpenSearchController.doGet( c );
                 return;
             }
@@ -621,9 +646,9 @@ public class LuceneWebService extends HttpServlet {
     public void addProperties (Properties properties) throws IOException {
         Enumeration<?> names = properties.propertyNames();
         while (names.hasMoreElements()) {
-            Object _name = names.nextElement();
-            if (_name instanceof String) {
-                String name = (String) _name;
+            Object object = names.nextElement();
+            if ( object instanceof String ) {
+                String name = (String) object;
                 setProperty( name, properties.getProperty( name ) );
             }
         }
@@ -945,7 +970,7 @@ public class LuceneWebService extends HttpServlet {
             url.append( indices[i] );
         }
         
-        url.append( "/opensearchdescription.xml" );
+        url.append( "/description.xml" );
         
         return String.valueOf( url );
     }
@@ -967,8 +992,8 @@ public class LuceneWebService extends HttpServlet {
         LuceneIndex[] indices = getIndexManager().getIndices();
         for ( int i = 0; i < indices.length; i++ ) {
             LuceneIndex index = indices[ i ];
-            if ( updated == null || updated.compareTo( index.getUpdated() ) < 0 ) {
-                updated = index.getUpdated();
+            if ( updated == null || updated.compareTo( index.getLastModified() ) < 0 ) {
+                updated = index.getLastModified();
             }
         }
         
@@ -1007,7 +1032,13 @@ public class LuceneWebService extends HttpServlet {
      */
     
     public String[] getDefaultFields () throws IOException {
-        return ServletUtils.split( getProperty( "service.defaultfield" ) );
+        String defaultFields = null;
+        
+        if ( defaultFields == null ) { defaultFields = getProperty("service.field.<default>"); }
+        if ( defaultFields == null ) { defaultFields = getProperty("service.field.default");   }
+        if ( defaultFields == null ) { defaultFields = getProperty("service.defaultfield");    }
+        
+        return ServletUtils.split( defaultFields );
     }
     
     
@@ -1022,7 +1053,13 @@ public class LuceneWebService extends HttpServlet {
     public QueryParser.Operator getDefaultOperator ()
         throws IOException
     {
-        String defaultOperator = getProperty("service.defaultoperator");
+        String defaultOperator = null;
+        
+        if ( defaultOperator == null ) { defaultOperator = getProperty("service.operator.<default>"); }
+        if ( defaultOperator == null ) { defaultOperator = getProperty("service.operator.default");   }
+        if ( defaultOperator == null ) { defaultOperator = getProperty("service.defaultoperator");    }
+        if ( defaultOperator == null ) { defaultOperator = getProperty("service.operator");           }
+        
         return LuceneUtils.parseOperator( defaultOperator );
     }
     
@@ -1053,9 +1090,11 @@ public class LuceneWebService extends HttpServlet {
     public OpenSearchImage getImage () throws NumberFormatException, IOException {
         OpenSearchImage image = new OpenSearchImage();
         
-        String url = getCleanProperty("service.image");
+        String url = null;
+        if ( url == null ) { url = getCleanProperty("service.image.url"); }
+        if ( url == null ) { url = getCleanProperty("service.image");     }
         
-        if (url == null) {
+        if ( url == null ) {
             image.setUrl("http://www.lucene-ws.net/images/magnifying_glass.png");
             return image;
         }

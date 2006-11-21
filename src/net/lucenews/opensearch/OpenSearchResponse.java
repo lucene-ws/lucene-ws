@@ -296,6 +296,7 @@ public class OpenSearchResponse {
         if (format == OpenSearch.ATOM) {
             Element element = document.createElement("feed");
             element.setAttribute("xmlns:opensearch","http://a9.com/-/spec/opensearch/1.1/");
+            element.setAttribute("xmlns:relevance","http://a9.com/-/opensearch/extensions/relevance/1.0/");
             element.setAttribute("xmlns","http://www.w3.org/2005/Atom");
             
             // title

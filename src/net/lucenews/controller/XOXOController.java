@@ -110,19 +110,19 @@ public class XOXOController {
         
         StringBuffer classBuffer = new StringBuffer();
         
-        if (field.isStored()) {
+        if ( field.isStored() ) {
             classBuffer.append( " stored" );
         }
         
-        if (field.isIndexed()) {
+        if ( field.isIndexed() ) {
             classBuffer.append( " indexed" );
         }
         
-        if (field.isTokenized()) {
+        if ( field.isTokenized() ) {
             classBuffer.append( " tokenized" );
         }
         
-        if (field.isTermVectorStored()) {
+        if ( field.isTermVectorStored() ) {
             classBuffer.append( " termvectorstored" );
         }
         

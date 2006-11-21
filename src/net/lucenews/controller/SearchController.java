@@ -240,7 +240,7 @@ public class SearchController extends Controller {
                     result.setId( service.getDocumentURL( request, index, document ) );
                     
                     try {
-                        result.setUpdated( document.getUpdated() );
+                        result.setUpdated( document.getLastModified() );
                     }
                     catch (InsufficientDataException ide) {
                     }

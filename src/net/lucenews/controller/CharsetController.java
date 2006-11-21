@@ -1,7 +1,7 @@
 /**
-* A class for encoding input streams and writing resulting data
-* to output streams.
-*/
+ * A class for encoding input streams and writing resulting data
+ * to output streams.
+ */
 
 package net.lucenews.controller;
 

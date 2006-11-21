@@ -203,7 +203,7 @@ public class ServletUtils {
             
             // index-specified default field
             for (int i = 0; i < indices.length && defaultFields == null; i++) {
-                defaultFields = indices[ i ].getDefaultFields();
+                defaultFields = indices[ i ].getDefaultFieldNames();
             }
             
             // service-specified default field

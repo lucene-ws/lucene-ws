@@ -56,24 +56,26 @@ public class DocumentController extends Controller {
         boolean deleted = false;
         
         // For each index...
-        for( int i = 0; i < indices.length; i++ ) {
+        for (int i = 0; i < indices.length; i++) {
             LuceneIndex index = indices[ i ];
             
-            if( i > 0 )
-            indexNamesBuffer.append( "," );
+            if (i > 0) {
+                indexNamesBuffer.append( "," );
+            }
             indexNamesBuffer.append( index.getName() );
             
             // For each document...
-            for( int j = 0; j < documentIDs.length; j++ ) {
+            for (int j = 0; j < documentIDs.length; j++) {
                 String documentID = documentIDs[ j ];
                 
                 LuceneDocument document = index.removeDocument( documentID );
                 
                 deleted = true;
                 
-                if( i == 0 ) {
-                    if( j > 0 )
+                if (i == 0) {
+                    if (j > 0) {
                         documentIDsBuffer.append( "," );
+                    }
                     documentIDsBuffer.append( index.getIdentifier( document ) );
                 }
             }
@@ -82,7 +84,7 @@ public class DocumentController extends Controller {
         String indexNamesString  = indexNamesBuffer.toString();
         String documentIDsString = documentIDsBuffer.toString();
         
-        if( deleted ) {
+        if (deleted) {
             if ( c.isOptimizing() == null || c.isOptimizing() ) {
                 IndexController.doOptimize( c );
             }
@@ -114,10 +116,10 @@ public class DocumentController extends Controller {
     {
         Logger.getLogger(DocumentController.class).trace("doGet(LuceneContext)");
         
-        LuceneWebService   service     = c.getService();
-        LuceneIndexManager manager     = service.getIndexManager();
-        LuceneRequest      req         = c.getRequest();
-        LuceneResponse     res         = c.getResponse();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
         
         
@@ -126,13 +128,13 @@ public class DocumentController extends Controller {
         
         List<Entry> entries = new LinkedList<Entry>();
         
-        LuceneIndex[] indices = manager.getIndices( req.getIndexNames() );
-        String[] documentIDs = req.getDocumentIDs();
+        LuceneIndex[] indices = manager.getIndices( request.getIndexNames() );
+        String[] documentIDs = request.getDocumentIDs();
         
         for (int i = 0; i < documentIDs.length; i++) {
             String documentID = documentIDs[ i ];
             
-            for( int j = 0; j < indices.length; j++ ) {
+            for (int j = 0; j < indices.length; j++) {
                 LuceneIndex index = indices[ j ];
                 
                 LuceneDocument document = null;
@@ -198,13 +200,14 @@ public class DocumentController extends Controller {
             
             feed.setTitle( "Documents" );
             feed.setUpdated( Calendar.getInstance() );
-            feed.setID( req.getLocation() );
-            feed.addLink( Link.Self( req.getLocation() ) );
+            feed.setID( request.getLocation() );
+            feed.addLink( Link.Self( request.getLocation() ) );
             feed.addAuthor( new Author( service.getTitle() ) );
             
             Iterator<Entry> iterator = entries.iterator();
-            while( iterator.hasNext() )
-            feed.addEntry( iterator.next() );
+            while ( iterator.hasNext() ) {
+                feed.addEntry( iterator.next() );
+            }
             
             AtomView.process( c, feed );
         }
@@ -235,13 +238,13 @@ public class DocumentController extends Controller {
     {
         Logger.getLogger(DocumentController.class).trace("doPut(LuceneContext)");
         
-        LuceneWebService   service = c.getService();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.getRequest();
-        LuceneResponse     res     = c.getResponse();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
-        LuceneIndex[]    indices   = manager.getIndices( req.getIndexNames() );
-        LuceneDocument[] documents = req.getLuceneDocuments();
+        LuceneIndex[]    indices   = manager.getIndices( request.getIndexNames() );
+        LuceneDocument[] documents = request.getLuceneDocuments();
         
         // Buffers for header location construction
         StringBuffer indexNamesBuffer  = new StringBuffer();
@@ -249,23 +252,25 @@ public class DocumentController extends Controller {
         
         boolean updated = false;
         
-        for( int i = 0; i < indices.length; i++ ) {
+        for (int i = 0; i < indices.length; i++) {
             LuceneIndex index = indices[ i ];
             
-            if( i > 0 )
+            if (i > 0) {
                 indexNamesBuffer.append( "," );
+            }
             indexNamesBuffer.append( index.getName() );
             
-            for( int j = 0; j < documents.length; j++ ) {
+            for (int j = 0; j < documents.length; j++) {
                 LuceneDocument document = documents[ j ];
                 
                 index.updateDocument( document );
                 
                 updated = true;
                 
-                if( i == 0 ) {
-                    if( j > 0 )
+                if (i == 0) {
+                    if (j > 0) {
                         documentIDsBuffer.append( "," );
+                    }
                     documentIDsBuffer.append( index.getIdentifier( document ) );
                 }
             }
@@ -274,7 +279,7 @@ public class DocumentController extends Controller {
         String documentIDs = documentIDsBuffer.toString();
         
         if (updated) {
-            res.addHeader( "Location", service.getDocumentURL( req, indexNames, documentIDs ) );
+            response.addHeader( "Location", service.getDocumentURL( request, indexNames, documentIDs ) );
             
             if ( c.isOptimizing() == null || c.isOptimizing() ) {
                 IndexController.doOptimize( c );
@@ -331,7 +336,7 @@ public class DocumentController extends Controller {
         Logger.getLogger(DocumentController.class).trace("asEntry(LuceneContext,LuceneIndex,LuceneDocument,Float)");
         
         LuceneWebService service = c.getService();
-        LuceneRequest    req     = c.getRequest();
+        LuceneRequest    request = c.getRequest();
         
         
         
@@ -351,30 +356,30 @@ public class DocumentController extends Controller {
         // ID and Link may only be added if the document is identified
         if ( index.isDocumentIdentified( document ) ) {
             // ID
-            entry.setID( service.getDocumentURL( req, index, document ) );
+            entry.setID( service.getDocumentURL( request, index, document ) );
             
             // Link
-            entry.addLink( Link.Alternate( service.getDocumentURL( req, index, document ) ) );
+            entry.addLink( Link.Alternate( service.getDocumentURL( request, index, document ) ) );
         }
         
         // links to similar documents
         if ( document.getSimilarDocumentHits() != null ) {
             Hits hits = document.getSimilarDocumentHits();
-            Logger.getLogger(DocumentController.class).debug("Found " + hits.length() + " similar documents");
-            for ( int i = 0; i < hits.length(); i++ ) {
+            //Logger.getLogger(DocumentController.class).debug("Found " + hits.length() + " similar documents");
+            for (int i = 0; i < hits.length(); i++) {
                 try {
                     LuceneDocument similarDocument = index.getDocument( hits.id( i ) );
-                    Link relatedLink = Link.Related( service.getDocumentURL( req, index.getName(), similarDocument.getIdentifier() ) );
+                    Link relatedLink = Link.Related( service.getDocumentURL( request, index.getName(), similarDocument.getIdentifier() ) );
                     entry.addLink( relatedLink );
-                    Logger.getLogger(DocumentController.class).debug("Successfully added related link");
+                    //Logger.getLogger(DocumentController.class).debug("Successfully added related link");
                 }
                 catch (DocumentNotFoundException dnfe) {
-                    Logger.getLogger(DocumentController.class).debug("Failed to add related link");
+                    //Logger.getLogger(DocumentController.class).debug("Failed to add related link");
                 }
             }
         }
         else {
-            Logger.getLogger(DocumentController.class).debug("No similar documents!");
+            //Logger.getLogger(DocumentController.class).debug("No similar documents!");
         }
         
         // Title
@@ -382,23 +387,23 @@ public class DocumentController extends Controller {
         
         // Updated
         try {
-            entry.setUpdated( index.getUpdated( document ) );
+            entry.setUpdated( index.getLastModified( document ) );
         }
         catch (InsufficientDataException ide) {
         }
         
         // Author
-        if( index.getAuthor( document ) != null ) {
+        if ( index.getAuthor( document ) != null ) {
             entry.addAuthor( new Author( index.getAuthor( document ) ) );
         }
         
         // Score
-        if( score != null ) {
+        if ( score != null ) {
             entry.setPropertyNS( "http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance", String.valueOf( score ) );
         }
         
         // Summary
-        if( index.getSummary( document ) != null ) {
+        if ( index.getSummary( document ) != null ) {
             entry.setSummary( new Text( index.getSummary( document ) ) );
         }
         
@@ -444,17 +449,21 @@ public class DocumentController extends Controller {
         
         StringBuffer _class = new StringBuffer();
         
-        if( field.isStored() )
-        _class.append( " stored" );
+        if ( field.isStored() ) {
+            _class.append( " stored" );
+        }
         
-        if( field.isIndexed() )
-        _class.append( " indexed" );
+        if ( field.isIndexed() ) {
+            _class.append( " indexed" );
+        }
         
-        if( field.isTokenized() )
-        _class.append( " tokenized" );
+        if ( field.isTokenized() ) {
+            _class.append( " tokenized" );
+        }
         
-        if( field.isTermVectorStored() )
-        _class.append( " termvectorstored" );
+        if ( field.isTermVectorStored() ) {
+            _class.append( " termvectorstored" );
+        }
         
         return String.valueOf( _class ).trim();
     }
@@ -590,7 +599,7 @@ public class DocumentController extends Controller {
         Logger.getLogger(DocumentController.class).trace("asLuceneDocuments(LuceneContext,NodeList)");
         
         Node[] nodes = new Node[ nodeList.getLength() ];
-        for( int i = 0; i < nodes.length; i++ ) {
+        for (int i = 0; i < nodes.length; i++) {
             nodes[ i ] = nodeList.item( i );
         }
         return asLuceneDocuments( c, nodes );
@@ -601,7 +610,7 @@ public class DocumentController extends Controller {
         Logger.getLogger(DocumentController.class).trace("Nodes: " + ServletUtils.toString(nodes));
         
         List<LuceneDocument> documents = new LinkedList<LuceneDocument>();
-        for( int i = 0; i < nodes.length; i++ ) {
+        for (int i = 0; i < nodes.length; i++) {
             if (nodes[ i ].getNodeType() == Node.ELEMENT_NODE) {
                 documents.addAll( Arrays.asList( asLuceneDocuments( c, (Element) nodes[ i ] ) ) );
             }

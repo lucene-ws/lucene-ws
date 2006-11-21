@@ -3,9 +3,13 @@ package net.lucenews;
 import java.io.*;
 import java.util.*;
 import javax.servlet.http.*;
-import org.apache.log4j.*;
+//import org.apache.log4j.*;
 
 public class HttpURI {
+    
+    // default port for HTTP communication
+    public static Integer DEFAULT_PORT = 80;
+    
     
     private String       host;
     private Integer      port;
@@ -39,7 +43,7 @@ public class HttpURI {
     }
     
     protected void setUri (String uri) {
-        Logger.getLogger( HttpURI.class ).debug( "STARTED SETTING URI TO " + uri );
+        //Logger.getLogger( HttpURI.class ).debug( "STARTED SETTING URI TO " + uri );
         
         String protocol = "http://";
         
@@ -81,7 +85,7 @@ public class HttpURI {
             }
         }
         
-        Logger.getLogger( HttpURI.class ).debug( "FINISHED SETTING URI TO " + uri + ", PATH = " + getPath() );
+        //Logger.getLogger( HttpURI.class ).debug( "FINISHED SETTING URI TO " + uri + ", PATH = " + getPath() );
     }
     
     
@@ -107,7 +111,7 @@ public class HttpURI {
     
     
     public Integer getDefaultPort () {
-        return 80;
+        return DEFAULT_PORT;
     }
     
     
@@ -131,7 +135,7 @@ public class HttpURI {
     public void setPath (String path) {
         List<String> pathComponents = new LinkedList<String>();
         
-        Logger.getLogger( HttpURI.class ).debug( "SETTING PATH TO " + path );
+        //Logger.getLogger( HttpURI.class ).debug( "SETTING PATH TO " + path );
         
         if ( path != null && path.trim().length() > 0 ) {
             Iterator<String> iterator = Arrays.asList( path.split( "/" ) ).iterator();
@@ -282,13 +286,13 @@ public class HttpURI {
      */
     
     public HttpURI clone () {
-        Logger.getLogger( HttpURI.class ).debug("STARTING TO CLONE");
+        //Logger.getLogger( HttpURI.class ).debug("STARTING TO CLONE");
         HttpURI uri = new HttpURI();
         uri.setHost( getHost() );
         uri.setPort( getPort() );
         uri.setPath( getPath() );
         uri.setParameters( getParameters() );
-        Logger.getLogger( HttpURI.class ).debug("FINISHED TO CLONE");
+        //Logger.getLogger( HttpURI.class ).debug("FINISHED TO CLONE");
         return uri;
     }
     
@@ -335,6 +339,13 @@ public class HttpURI {
     }
     
     
+    /**
+     * Formats a String suitable for use within a URI. Non-ASCII
+     * characters are replaced by their escaped equivalents.
+     * 
+     * @param string the String to be formatted
+     * @return the formatted version of the String
+     */
     
     public static String uriFormatted (String string) {
         if ( string == null ) {
@@ -349,8 +360,13 @@ public class HttpURI {
         return buffer.toString();
     }
     
+    
+    /**
+     * Formats a byte suitable for use within a URI.
+     */
+    
     public static String uriFormatted (byte b) {
-        if ( ( b & 0x80 ) > 0) {
+        if ( ( b & 0x80 ) > 0 ) {
             // Escape it!
             return escape( b );
         }
@@ -361,6 +377,14 @@ public class HttpURI {
         }
     }
     
+    
+    /*
+     * Escapes the given byte. This involves producing its hexadecimal 
+     * representation.
+     * 
+     * @param b the byte to be escaped
+     * @return the String representation of the escaped byte
+     */
     public static String escape (byte b) {
         
         String[] alphabet = {
@@ -381,26 +405,33 @@ public class HttpURI {
         return escaped;
     }
     
+    
+    
+    /*
+     * Converts object into the String representation of a URI.
+     */
     public String toString () {
         StringBuffer buffer = new StringBuffer();
         
+        // protocol
         buffer.append("http://");
         
         // host
         buffer.append( getHost() );
         
         // port
-        if (getPort() != null) {
+        if ( getPort() != null ) {
             buffer.append( ":" + getPort() );
         }
         
         // path
-        if (getPath() != null) {
+        if ( getPath() != null ) {
             buffer.append( getPath() );
         }
         
+        // parameters
         Map<String,String[]> parameters = getParameters();
-        if (parameters != null) {
+        if ( parameters != null ) {
             boolean first = true;
             Iterator<Map.Entry<String,String[]>> entriesIterator = parameters.entrySet().iterator();
             while (entriesIterator.hasNext()) {
@@ -409,7 +440,7 @@ public class HttpURI {
                 String[] values = entry.getValue();
                 
                 for (int i = 0; i < values.length; i++) {
-                    if (first) {
+                    if ( first ) {
                         buffer.append("?");
                         first = false;
                     }

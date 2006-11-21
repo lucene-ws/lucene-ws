@@ -539,7 +539,8 @@ public class LuceneIndex {
      * calling {@link org.apache.lucene.index.IndexReader#termDocs(Term)}
      * on the term [ {@link #getIdentifyingField} ] => [ <code>identifier</code> ].
      *
-     * @param identifier the identifier of the document in question
+     * @param identifier       the identifier of the document in question
+     * @param ignoreDuplicates by setting this to true, multiple document exceptions are suppressed
      * @return           true if the document was found, false otherwise
      * @throws           IOException
      * @throws           MultipleValueException if more than one document exists for the given identifier
@@ -547,7 +548,11 @@ public class LuceneIndex {
      */
     
     public boolean hasDocument (String identifier) throws IOException {
-        Term term = new Term( getIdentifyingField(), identifier );
+        return hasDocument( identifier, false );
+    }
+    
+    public boolean hasDocument (String identifier, boolean ignoreDuplicates) throws IOException {
+        Term term = new Term( getIdentifierFieldName(), identifier );
         
         boolean _hasDocument = false;
         
@@ -557,9 +562,11 @@ public class LuceneIndex {
         while (documents.next()) {
             LuceneDocument _document = asLuceneDocument( reader.document( documents.doc() ) );
             
-            if (isDocumentCorrectlyIdentified( _document, identifier )) {
-                if (_hasDocument) {
-                    throw new MultipleValueException( "Multiple documents exist for identifier '" + identifier + "'" );
+            if ( isDocumentCorrectlyIdentified( _document, identifier ) ) {
+                if ( _hasDocument ) {
+                    if ( !ignoreDuplicates ) {
+                        throw new MultipleValueException( "Multiple documents exist for identifier '" + identifier + "'" );
+                    }
                 }
                 else {
                     _hasDocument = true;
@@ -598,11 +605,11 @@ public class LuceneIndex {
         
         LuceneDocument document = null;
         
-        if ( getIdentifyingField() == null ) {
+        if ( !hasIdentifierFieldName() ) {
             throw new DocumentNotFoundException( identifier );
         }
         
-        Term term = new Term( getIdentifyingField(), identifier );
+        Term term = new Term( getIdentifierFieldName(), identifier );
         
         TermDocs documents = reader.termDocs( term );
         while ( documents.next() ) {
@@ -771,7 +778,7 @@ public class LuceneIndex {
         }
         
         try {
-            setUpdated( document, Calendar.getInstance(), false );
+            setLastModified( document, Calendar.getInstance(), false );
         }
         catch(DocumentNotFoundException dnfe) {
         }
@@ -838,7 +845,7 @@ public class LuceneIndex {
         
         LuceneDocument document = null;
         
-        Term term = new Term( getIdentifyingField(), identifier );
+        Term term = new Term( getIdentifierFieldName(), identifier );
         
         IndexReader reader = getIndexReader();
         
@@ -997,10 +1004,10 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public Field getIdentifyingField (String value)
+    public Field getIdentifierField (String value)
         throws IOException
     {
-        return new Field( getIdentifyingField(), value, Field.Store.YES, Field.Index.UN_TOKENIZED );
+        return new Field( getIdentifierFieldName(), value, Field.Store.YES, Field.Index.UN_TOKENIZED );
     }
     
     
@@ -1012,15 +1019,14 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public String getIdentifyingField ()
+    public String getIdentifierFieldName ()
         throws IOException
     {
-        String name = ServletUtils.clean( getProperty( "document.identifier" ) );
-        
-        if (name == null) {
-            return "id";
-        }
-        
+        String name = null;
+        if ( name == null ) { name = getProperty("document.field.<identifier>"); }
+        if ( name == null ) { name = getProperty("document.field.identifier");   }
+        if ( name == null ) { name = getProperty("document.identifier");         }
+        if ( name == null ) { name = "id";                                       }
         return name;
     }
     
@@ -1032,9 +1038,9 @@ public class LuceneIndex {
      * @return true if the index has an identifying field, false otherwise
      */
     
-    public boolean hasIdentifyingField () {
+    public boolean hasIdentifierFieldName () {
         try {
-            return getIdentifyingField() != null;
+            return getIdentifierFieldName() != null;
         }
         catch(IOException ioe) {
             return false;
@@ -1057,8 +1063,8 @@ public class LuceneIndex {
     public void identifyDocument (LuceneDocument document, String identifier)
         throws IOException
     {
-        document.removeFields( getIdentifyingField() );
-        document.add( getIdentifyingField( identifier ) );
+        document.removeFields( getIdentifierFieldName() );
+        document.add( getIdentifierField( identifier ) );
     }
     
     
@@ -1076,7 +1082,7 @@ public class LuceneIndex {
     public boolean isDocumentIdentified (LuceneDocument document)
         throws IOException
     {
-        String[] values = document.getValues( getIdentifyingField() );
+        String[] values = document.getValues( getIdentifierFieldName() );
         
         if (values == null) {
             return false;
@@ -1176,8 +1182,8 @@ public class LuceneIndex {
     public String getIdentifier (LuceneDocument document)
         throws InsufficientDataException, IOException
     {
-        if (isDocumentIdentified( document )) {
-            return document.get( getIdentifyingField() );
+        if ( isDocumentIdentified( document ) ) {
+            return document.get( getIdentifierFieldName() );
         }
         
         throw new InsufficientDataException( "Document is not identified." );
@@ -1195,10 +1201,10 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public Term getIdentifyingTerm (LuceneDocument document)
+    public Term getIdentifierTerm (LuceneDocument document)
         throws InsufficientDataException, IOException
     {
-        return new Term( getIdentifyingField(), getIdentifier( document ) );
+        return new Term( getIdentifierFieldName(), getIdentifier( document ) );
     }
     
     
@@ -1444,7 +1450,7 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public String[] getDefaultFields () throws IOException {
+    public String[] getDefaultFieldNames () throws IOException {
         String[] defaultFields = null;
         
         if (defaultFields == null) { defaultFields = ServletUtils.split( getProperty("document.fields.<default>") ); }
@@ -1500,7 +1506,33 @@ public class LuceneIndex {
      */
     
     public String getTitle (LuceneDocument document) throws IOException {
-        return ServletUtils.parse( getProperties().getProperty( "document.title", "title" ), asProperties( document ) );
+        // template
+        String template = getTitleTemplate();
+        if ( template != null ) {
+            return ServletUtils.parse( template, asProperties( document ) );
+        }
+        
+        // field
+        String fieldName = getTitleFieldName();
+        if ( fieldName != null ) {
+            return document.get( fieldName );
+        }
+        
+        return null;
+    }
+    
+    public String getTitleFieldName () throws IOException {
+        String fieldName = null;
+        if ( fieldName == null ) { fieldName = getProperty("document.title.field"); }
+        if ( fieldName == null ) { fieldName = getProperty("document.title");       }
+        return fieldName;
+    }
+    
+    public String getTitleTemplate () throws IOException {
+        String template = null;
+        if ( template == null ) { template = getProperty("document.title.template"); }
+        if ( template == null ) { template = getProperty("document.title");          }
+        return template;
     }
     
     
@@ -1696,11 +1728,11 @@ public class LuceneIndex {
      * @return True if such a field exists, false otherwise
      */
     
-    public boolean hasUpdatedField () {
+    public boolean hasLastModifiedFieldName () {
         try {
-            return getUpdatedField() != null;
+            return getLastModifiedFieldName() != null;
         }
-        catch(IOException ioe) {
+        catch (IOException ioe) {
             return false;
         }
     }
@@ -1715,8 +1747,13 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public String getUpdatedField () throws IOException {
-        return getProperties().getProperty( "document.updated", "updated" );
+    public String getLastModifiedFieldName () throws IOException {
+        String fieldName = null;
+        if ( fieldName == null ) { fieldName = getProperty("document.field.<updated>"); }
+        if ( fieldName == null ) { fieldName = getProperty("document.field.updated");   }
+        if ( fieldName == null ) { fieldName = getProperty("document.updated");         }
+        if ( fieldName == null ) { fieldName = getProperty("updated");                  }
+        return fieldName;
     }
     
     
@@ -1730,11 +1767,11 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public boolean hasUpdated (LuceneDocument document) throws IOException {
+    public boolean hasLastModified (LuceneDocument document) throws IOException {
         try {
-            return getUpdated( document ) != null;
+            return getLastModified( document ) != null;
         }
-        catch(InsufficientDataException ide) {
+        catch (InsufficientDataException ide) {
             return false;
         }
     }
@@ -1743,12 +1780,45 @@ public class LuceneIndex {
     
     
     
+    /**
+     * Determines the precision of the time stamps in terms of 
+     * milliseconds.
+     * 
+     * Examples:
+     *   UNIT               |       PRECISION
+     * ==========================================
+     * millisecond (ms)     |             1
+     * second (s)           |          1000
+     * minute               |         60000
+     * 
+     * For example, time stamp which are accurate down to the second 
+     * would have 1.0 (second) precision. Time stamps which are accurate 
+     * to the tenth of a second would have 0.1 precision. Those accurate
+     * to the minute would have 60.0 precision, etc...
+     * 
+     * @return the precision of the time stamps
+     */
+    
+    public Double getTimestampPrecision ()
+        throws IOException
+    {
+        String precision = null;
+        if ( precision == null ) { precision = getProperty("document.field.<updated>.precision"); }
+        if ( precision == null ) { precision = getProperty("document.field.updated.precision");   }
+        if ( precision == null ) { precision = getProperty("document.updated.precision");         }
+        
+        if ( precision == null ) {
+            return null;
+        }
+        
+        return Double.valueOf( precision );
+    }
     
     public long getTimestamp (LuceneDocument document)
         throws InsufficientDataException, IOException
     {
         try {
-            return net.lucenews.NumberTools.stringToLong( document.get( getUpdatedField() ) );
+            return net.lucenews.NumberTools.stringToLong( document.get( getLastModifiedFieldName() ) );
         }
         catch(NumberFormatException nfe) {
             throw new InsufficientDataException("Document '" + document + "' does not provide a valid updated time");
@@ -1769,16 +1839,33 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public Calendar getUpdated (LuceneDocument document)
+    public Calendar getLastModified (LuceneDocument document)
         throws InsufficientDataException, IOException
     {
         Calendar calendar = Calendar.getInstance();
+        
         try {
-            calendar.setTime( new Date( getTimestamp( document ) ) );
+            // determine the time stamp
+            long timestamp = getTimestamp( document );
+            
+            // determine the time stamp's precision
+            Double precision = null;
+            if ( precision == null ) { precision = getTimestampPrecision(); }
+            if ( precision == null ) { precision = 1.0;                     }
+            
+            // determine the time stamp's time zone
+            String timeZone = null;
+            if ( timeZone == null ) { timeZone = getProperty("document.field.updated.timezone.id"); }
+            if ( timeZone == null ) { timeZone = getProperty("document.field.updated.timezone");    }
+            if ( timeZone != null ) {
+                calendar.setTimeZone( TimeZone.getTimeZone( timeZone ) );
+            }
+            
+            calendar.setTime( new Date( Math.round( precision * timestamp ) ) );
         }
-        catch(NullPointerException npe) {
-            if (isDocumentIdentified(document)) {
-                throw new InsufficientDataException("Document '" + getIdentifier(document) + "' does not provide a valid time stamp");
+        catch (NullPointerException npe) {
+            if ( isDocumentIdentified( document ) ) {
+                throw new InsufficientDataException("Document '" + getIdentifier( document ) + "' does not provide a valid time stamp");
             }
             else {
                 throw new InsufficientDataException("Document '" + document + "' does not provide a valid time stamp");
@@ -1800,20 +1887,20 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public Calendar getUpdated (LuceneDocument document, Calendar calendar)
+    public Calendar getLastModified (LuceneDocument document, Calendar calendar)
         throws
             InvalidIdentifierException, DocumentNotFoundException,
             InsufficientDataException, IOException
     {
-        if (!hasUpdated( document )) {
+        if ( !hasLastModified( document ) ) {
             try {
-                setUpdated( document, calendar );
+                setLastModified( document, calendar );
             }
             catch (IllegalActionException iae) {
             }
         }
         
-        return getUpdated( document );
+        return getLastModified( document );
     }
     
     
@@ -1821,20 +1908,20 @@ public class LuceneIndex {
      * Sets the updated field appropriately prior to adding document to index.
      */
     
-    public void setUpdated (LuceneDocument document)
+    public void setLastModified (LuceneDocument document)
         throws
             IllegalActionException, InvalidIdentifierException,
             DocumentNotFoundException, InsufficientDataException, IOException
     {
-        if (!hasUpdatedField()) {
+        if ( !hasLastModifiedFieldName() ) {
             return;
         }
         
-        if (hasUpdated( document )) {
-            setUpdated( document, getTimestamp( document ), false );
+        if ( hasLastModified( document ) ) {
+            setLastModified( document, getTimestamp( document ), false );
         }
         else {
-            setUpdated( document, new Date(), false );
+            setLastModified( document, new Date(), false );
         }
     }
     
@@ -1848,12 +1935,12 @@ public class LuceneIndex {
      * @param calendar the calendar representing the new value of the updated field
      */
     
-    public void setUpdated (LuceneDocument document, Calendar calendar)
+    public void setLastModified (LuceneDocument document, Calendar calendar)
         throws
             IllegalActionException, InvalidIdentifierException,
             DocumentNotFoundException, InsufficientDataException, IOException
     {
-        setUpdated( document, calendar.getTime().getTime() );
+        setLastModified( document, calendar.getTime().getTime() );
     }
     
     
@@ -1867,12 +1954,12 @@ public class LuceneIndex {
      * @param update   whether or not this document should be updated within the index
      */
     
-    public void setUpdated (LuceneDocument document, Calendar calendar, boolean update)
+    public void setLastModified (LuceneDocument document, Calendar calendar, boolean update)
         throws
             IllegalActionException, InvalidIdentifierException,
             DocumentNotFoundException, InsufficientDataException, IOException
     {
-        setUpdated( document, calendar.getTime().getTime(), update );
+        setLastModified( document, calendar.getTime().getTime(), update );
     }
     
     
@@ -1885,12 +1972,12 @@ public class LuceneIndex {
      * @param date     the date representing the new value of the updated field
      */
     
-    public void setUpdated (LuceneDocument document, Date date)
+    public void setLastModified (LuceneDocument document, Date date)
         throws
             IllegalActionException, InvalidIdentifierException,
             DocumentNotFoundException, InsufficientDataException, IOException
     {
-        setUpdated( document, date.getTime() );
+        setLastModified( document, date.getTime() );
     }
     
     
@@ -1904,12 +1991,12 @@ public class LuceneIndex {
      * @param update   whether or not this document should be updated within the index
      */
     
-    public void setUpdated (LuceneDocument document, Date date, boolean update)
+    public void setLastModified (LuceneDocument document, Date date, boolean update)
         throws
             IllegalActionException, InvalidIdentifierException,
             DocumentNotFoundException, InsufficientDataException, IOException
     {
-        setUpdated( document, date.getTime(), update );
+        setLastModified( document, date.getTime(), update );
     }
     
     
@@ -1922,12 +2009,12 @@ public class LuceneIndex {
      * @param timestamp the time stamp representing the new value of the updated field
      */
     
-    public void setUpdated (LuceneDocument document, long timestamp)
+    public void setLastModified (LuceneDocument document, long timestamp)
         throws
             IllegalActionException, InvalidIdentifierException,
             DocumentNotFoundException, InsufficientDataException, IOException
     {
-        setUpdated( document, timestamp, true );
+        setLastModified( document, timestamp, true );
     }
     
     
@@ -1941,13 +2028,13 @@ public class LuceneIndex {
      * @param update    whether or not this document should be updated within the index
      */
     
-    public void setUpdated (LuceneDocument document, long timestamp, boolean update)
+    public void setLastModified (LuceneDocument document, long timestamp, boolean update)
         throws
             IllegalActionException, InvalidIdentifierException,
             DocumentNotFoundException, InsufficientDataException, IOException
     {
-        if (hasUpdatedField()) {
-            String field = getUpdatedField();
+        if ( hasLastModifiedFieldName() ) {
+            String field = getLastModifiedFieldName();
             document.removeFields( field );
             document.add( new Field( field, net.lucenews.NumberTools.longToString( timestamp ), Field.Store.YES, Field.Index.UN_TOKENIZED ) );
             
@@ -1967,7 +2054,7 @@ public class LuceneIndex {
      * @throws IOException
      */
     
-    public Calendar getUpdated () throws IOException {
+    public Calendar getLastModified () throws IOException {
         File[] files = getDirectory().listFiles();
         
         long lastModified = 0;
@@ -1996,8 +2083,17 @@ public class LuceneIndex {
      * more clear. Will consider deprecation.
      * 
      */
-    
+    @Deprecated
     public boolean hasAuthor () {
+        try {
+            return getAuthor() != null;
+        }
+        catch(IOException ioe) {
+            return false;
+        }
+    }
+    
+    public boolean hasAuthorField () {
         try {
             return getAuthor() != null;
         }
@@ -2012,8 +2108,18 @@ public class LuceneIndex {
      * Should really be 'getAuthorField'
      */
     
+    @Deprecated
     public String getAuthor () throws IOException {
         return getProperties().getProperty( "index.author" );
+    }
+    
+    public String getAuthorField () throws IOException {
+        String authorField = null;
+        if ( authorField == null ) { authorField = getProperty("document.author.field"); }
+        if ( authorField == null ) { authorField = getProperty("document.author");       }
+        if ( authorField == null ) { authorField = getProperty("index.author");          }
+        if ( authorField == null ) { authorField = "author";                             }
+        return authorField;
     }
     
     
@@ -2029,12 +2135,22 @@ public class LuceneIndex {
      */
     
     public String getAuthor (LuceneDocument document) throws IOException {
-        return ServletUtils.clean(
-            parse(
-                getProperties().getProperty( "document.author", "[author]" ),
-                document
-            )
-        );
+        String authorTemplate = null;
+        if ( authorTemplate == null ) { authorTemplate = getProperty("document.author.template"); }
+        if ( authorTemplate == null ) { authorTemplate = getProperty("document.author");          }
+        
+        // if we have resolved the author template, parse and return it
+        if ( authorTemplate != null ) {
+            return ServletUtils.clean( parse( authorTemplate, document ) );
+        }
+        
+        // if we have resolved the author field, return it
+        String authorField = getAuthorField();
+        if ( authorField != null ) {
+            return document.get( authorField );
+        }
+        
+        return null;
     }
     
     
@@ -2051,7 +2167,7 @@ public class LuceneIndex {
         Properties properties = new Properties();
         
         Iterator<Field> fields = document.getFields().iterator();
-        while (fields.hasNext()) {
+        while ( fields.hasNext() ) {
             Field field = fields.next();
             properties.setProperty( field.name(), field.stringValue() );
         }
@@ -2107,7 +2223,9 @@ public class LuceneIndex {
     public OpenSearchImage getImage () throws NumberFormatException, IOException {
         OpenSearchImage image = null;
         
-        String url = getProperty("index.image");
+        String url = null;
+        if ( url == null ) { url = getProperty("index.image.url"); }
+        if ( url == null ) { url = getProperty("index.image");     }
         
         if (url == null || url.length() == 0) {
             return image;
