@@ -322,10 +322,10 @@ public class LuceneWebService extends HttpServlet {
             IllegalActionException, DocumentsNotFoundException, IOException, InsufficientDataException
     {
         Logger.getLogger( this.getClass() ).trace( "doDelete" );
-        LuceneRequest req = c.getRequest();
+        LuceneRequest request = c.getRequest();
         
-        if (req.hasIndexNames()) {
-            if (req.hasDocumentIDs()) {
+        if (request.hasIndexNames()) {
+            if (request.hasDocumentIDs()) {
                 DocumentController.doDelete( c );
             }
             else {
@@ -477,23 +477,23 @@ public class LuceneWebService extends HttpServlet {
             IndicesNotFoundException, SAXException, IOException, LuceneException
     {
         Logger.getLogger( this.getClass() ).trace( "doPost" );
-        LuceneRequest req = c.getRequest();
+        LuceneRequest request = c.getRequest();
         
-        if (req.hasIndexName() && !req.hasDocumentIDs()) {
-            if (req.getIndexName().equals( "service.properties" )) {
+        if (request.hasIndexName() && !request.hasDocumentIDs()) {
+            if (request.getIndexName().equals( "service.properties" )) {
                 ServicePropertiesController.doPost( c );
                 return;
             }
         }
         
-        if (req.hasDocumentID()) {
-            if (req.getDocumentID().equals( "index.properties" )) {
+        if (request.hasDocumentID()) {
+            if (request.getDocumentID().equals( "index.properties" )) {
                 IndexPropertiesController.doPost( c );
                 return;
             }
         }
         
-        if (req.hasIndexNames()) {
+        if (request.hasIndexNames()) {
             IndexController.doPost( c );
         }
         else {
@@ -526,27 +526,27 @@ public class LuceneWebService extends HttpServlet {
             IndexNotFoundException, IOException, LuceneException, AtomParseException
     {
         Logger.getLogger( this.getClass() ).trace( "doPut" );
-        LuceneRequest req = c.getRequest();
+        LuceneRequest request = c.getRequest();
         
-        if (req.getDocumentIDs().length == 0) {
-            if (req.getIndexNames().length == 1 && req.getIndexName().equals( "service.properties" )) {
+        if (request.getDocumentIDs().length == 0) {
+            if (request.getIndexNames().length == 1 && request.getIndexName().equals( "service.properties" )) {
                 ServicePropertiesController.doPut( c );
                 return;
             }
-            if (req.getIndexNames().length > 0 && req.getParameter( "optimize" ) != null) {
+            if (request.getIndexNames().length > 0 && request.getParameter( "optimize" ) != null) {
                 IndexController.doOptimize( c );
                 return;
             }
         }
         
-        if (req.getDocumentIDs().length == 1) {
-            if (req.getDocumentID().equals( "index.properties" )) {
+        if (request.getDocumentIDs().length == 1) {
+            if (request.getDocumentID().equals( "index.properties" )) {
                 IndexPropertiesController.doPut( c );
                 return;
             }
         }
         
-        if (req.hasIndexNames() && req.hasDocumentIDs()) {
+        if (request.hasIndexNames() && request.hasDocumentIDs()) {
             DocumentController.doPut( c );
         }
     }
@@ -863,8 +863,13 @@ public class LuceneWebService extends HttpServlet {
      * Service URL
      */
     
+    @Deprecated
     public static String getServiceURL (LuceneRequest request) {
         return request.getServletURL();
+    }
+    
+    public static HttpURI getServiceURI (LuceneRequest request) {
+        return new HttpURI( request.getServletURL() );
     }
     
     
@@ -873,8 +878,13 @@ public class LuceneWebService extends HttpServlet {
      * Service properties URL
      */
     
+    @Deprecated
     public static String getServicePropertiesURL (LuceneRequest request) {
         return getServiceURL( request ) + "service.properties";
+    }
+    
+    public static HttpURI getServicePropertiesURI (LuceneRequest request) {
+        return getServiceURI( request ).withPath( "service.properties" );
     }
     
     
@@ -882,16 +892,27 @@ public class LuceneWebService extends HttpServlet {
     /**
      * Index URL
      */
-    
+     
+    @Deprecated
     public static String getIndexURL (LuceneRequest request, String indexName) {
-        return getServiceURL( request ) + indexName + "/";
+        return getServiceURL( request ) + indexName;
     }
     
+    public static HttpURI getIndexURI (LuceneRequest request, String indexName) {
+        return getServiceURI( request ).withPath( indexName );
+    }
+    
+    @Deprecated
     public static String getIndexURL (LuceneRequest request, LuceneIndex index) {
         return getIndexURL( request, index.getName() );
     }
     
-    public static String getIndicesURL (LuceneRequest request, LuceneIndex[] indices) {
+    public static HttpURI getIndexURI (LuceneRequest request, LuceneIndex index) {
+        return getIndexURI( request, index.getName() );
+    }
+    
+    @Deprecated
+    public static String getIndicesURL (LuceneRequest request, LuceneIndex... indices) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < indices.length; i++) {
             if (i > 0) {
@@ -902,18 +923,50 @@ public class LuceneWebService extends HttpServlet {
         return getIndexURL( request, buffer.toString() );
     }
     
+    public static HttpURI getIndicesURI (LuceneRequest request, String... indices) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < indices.length; i++) {
+            if (i > 0) {
+                buffer.append(",");
+            }
+            buffer.append( indices[ i ] );
+        }
+        return getIndexURI( request, buffer.toString() );
+    }
+    
+    public static HttpURI getIndicesURI (LuceneRequest request, LuceneIndex... indices) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < indices.length; i++) {
+            if (i > 0) {
+                buffer.append(",");
+            }
+            buffer.append( indices[ i ].getName() );
+        }
+        return getIndexURI( request, buffer.toString() );
+    }
+    
     
     
     /**
      * Index properties URL
      */
     
+    @Deprecated
     public static String getIndexPropertiesURL (LuceneRequest request, String indexName) {
-        return getIndexURL( request, indexName ) + "index.properties";
+        return getIndexURL( request, indexName ) + "/index.properties";
     }
     
+    public static HttpURI getIndexPropertiesURI (LuceneRequest request, String indexName) {
+        return getIndexURI( request, indexName ).withPath( "index.properties" );
+    }
+    
+    @Deprecated
     public static String getIndexPropertiesURL (LuceneRequest request, LuceneIndex index) {
         return getIndexPropertiesURL( request, index.getName() );
+    }
+    
+    public static HttpURI getIndexPropertiesURI (LuceneRequest request, LuceneIndex index) {
+        return getIndexPropertiesURI( request, index.getName() );
     }
     
     
@@ -923,22 +976,43 @@ public class LuceneWebService extends HttpServlet {
      */
     
     
+    @Deprecated
     public static String getDocumentURL (LuceneRequest request, String indexName, String documentID)
         throws InsufficientDataException, IOException
     {
-        return getIndexURL( request, indexName ) + documentID + "/";
+        return getIndexURL( request, indexName ) + "/" + documentID;
     }
     
+    public static HttpURI getDocumentURI (LuceneRequest request, String indexName, String documentID)
+        throws InsufficientDataException, IOException
+    {
+        return getIndexURI( request, indexName ).withPath( documentID );
+    }
+    
+    @Deprecated
     public static String getDocumentURL (LuceneRequest request, LuceneDocument document)
         throws InsufficientDataException, IOException
     {
         return getDocumentURL( request, document.getIndex(), document );
     }
     
+    public static HttpURI getDocumentURI (LuceneRequest request, LuceneDocument document)
+        throws InsufficientDataException, IOException
+    {
+        return getDocumentURI( request, document.getIndex(), document );
+    }
+    
+    @Deprecated
     public static String getDocumentURL (LuceneRequest request, LuceneIndex index, LuceneDocument document)
         throws InsufficientDataException, IOException
     {
         return getDocumentURL( request, index.getName(), index.getIdentifier( document ) );
+    }
+    
+    public static HttpURI getDocumentURI (LuceneRequest request, LuceneIndex index, LuceneDocument document)
+        throws InsufficientDataException, IOException
+    {
+        return getDocumentURI( request, index.getName(), index.getIdentifier( document ) );
     }
     
     
@@ -947,10 +1021,16 @@ public class LuceneWebService extends HttpServlet {
      * OpenSearch description URL
      */
     
+    @Deprecated
     public static String getOpenSearchDescriptionURL (LuceneRequest request, String... indices)
     {
         String s = getServiceURL( request );
         return s.substring( 0, s.length() - 1 ) + getOpenSearchDescriptionPathInfo( indices );
+    }
+
+    public static HttpURI getOpenSearchDescriptionURI (LuceneRequest request, String... indices)
+    {
+        return getIndicesURI( request, indices ).withPath( "description.xml" );
     }
     
     

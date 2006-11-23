@@ -138,7 +138,7 @@ public class IndexPropertiesController extends Controller {
         }
         
         if (updated) {
-            response.addHeader( "Location", service.getIndexPropertiesURL( request, indexNamesBuffer.toString() ) );
+            response.addHeader( "Location", service.getIndexPropertiesURI( request, indexNamesBuffer.toString() ).toString() );
         }
         
         XMLController.acknowledge( c );
@@ -202,7 +202,7 @@ public class IndexPropertiesController extends Controller {
         }
         
         if (created) {
-            response.addHeader( "Location", service.getIndexPropertiesURL( request, indexNamesBuffer.toString() ) );
+            response.addHeader( "Location", service.getIndexPropertiesURI( request, indexNamesBuffer.toString() ).toString() );
         }
         
         XMLController.acknowledge( c );
@@ -233,7 +233,7 @@ public class IndexPropertiesController extends Controller {
         Entry entry = new Entry();
         
         entry.setTitle( "Properties of '" + index.getTitle() + "'" );
-        entry.setID( c.getService().getIndexURL( request, index ) + "index.properties" );
+        entry.setID( c.getService().getIndexPropertiesURI( request, index ).toString() );
         entry.setUpdated( new Date( index.getPropertiesFile().lastModified() ) );
         entry.setContent( XOXOController.asContent( c, index.getProperties() ) );
         

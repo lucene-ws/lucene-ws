@@ -42,11 +42,11 @@ public class DocumentController extends Controller {
         
         LuceneWebService   service     = c.getService();
         LuceneIndexManager manager     = service.getIndexManager();
-        LuceneRequest      req         = c.getRequest();
-        LuceneResponse     res         = c.getResponse();
-        String[]           indexNames  = req.getIndexNames();
+        LuceneRequest      request     = c.getRequest();
+        LuceneResponse     response    = c.getResponse();
+        String[]           indexNames  = request.getIndexNames();
         LuceneIndex[]      indices     = manager.getIndices( indexNames );
-        String[]           documentIDs = req.getDocumentIDs();
+        String[]           documentIDs = request.getDocumentIDs();
         
         
         // Buffers for header location construction
@@ -88,7 +88,7 @@ public class DocumentController extends Controller {
             if ( c.isOptimizing() == null || c.isOptimizing() ) {
                 IndexController.doOptimize( c );
             }
-            res.addHeader( "Location", service.getDocumentURL( req, indexNamesString, documentIDsString ) );
+            response.addHeader( "Location", service.getDocumentURI( request, indexNamesString, documentIDsString ).toString() );
         }
         else {
             throw new InsufficientDataException( "No documents to be deleted" );
@@ -279,7 +279,7 @@ public class DocumentController extends Controller {
         String documentIDs = documentIDsBuffer.toString();
         
         if (updated) {
-            response.addHeader( "Location", service.getDocumentURL( request, indexNames, documentIDs ) );
+            response.addHeader( "Location", service.getDocumentURI( request, indexNames, documentIDs ).toString() );
             
             if ( c.isOptimizing() == null || c.isOptimizing() ) {
                 IndexController.doOptimize( c );
@@ -356,10 +356,10 @@ public class DocumentController extends Controller {
         // ID and Link may only be added if the document is identified
         if ( index.isDocumentIdentified( document ) ) {
             // ID
-            entry.setID( service.getDocumentURL( request, index, document ) );
+            entry.setID( service.getDocumentURI( request, index, document ).toString() );
             
             // Link
-            entry.addLink( Link.Alternate( service.getDocumentURL( request, index, document ) ) );
+            entry.addLink( Link.Alternate( service.getDocumentURI( request, index, document ).toString() ) );
         }
         
         // links to similar documents
@@ -369,7 +369,7 @@ public class DocumentController extends Controller {
             for (int i = 0; i < hits.length(); i++) {
                 try {
                     LuceneDocument similarDocument = index.getDocument( hits.id( i ) );
-                    Link relatedLink = Link.Related( service.getDocumentURL( request, index.getName(), similarDocument.getIdentifier() ) );
+                    Link relatedLink = Link.Related( service.getDocumentURI( request, index.getName(), similarDocument.getIdentifier() ).toString() );
                     entry.addLink( relatedLink );
                     //Logger.getLogger(DocumentController.class).debug("Successfully added related link");
                 }
@@ -388,6 +388,8 @@ public class DocumentController extends Controller {
         // Updated
         try {
             entry.setUpdated( index.getLastModified( document ) );
+        }
+        catch (java.text.ParseException pe) {
         }
         catch (InsufficientDataException ide) {
         }

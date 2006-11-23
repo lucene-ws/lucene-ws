@@ -102,7 +102,7 @@ public class LuceneDocument {
         return getIndex().getTitle( this );
     }
     
-    public Calendar getLastModified () throws InsufficientDataException, IOException {
+    public Calendar getLastModified () throws java.text.ParseException, InsufficientDataException, IOException {
         return getIndex().getLastModified( this );
     }
     

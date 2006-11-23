@@ -36,8 +36,8 @@ public class ServicePropertiesController extends Controller {
     {
         LuceneWebService   service      = c.getService();
         LuceneIndexManager manager      = service.getIndexManager();
-        LuceneRequest      req          = c.getRequest();
-        LuceneResponse     res          = c.getResponse();
+        LuceneRequest      request      = c.getRequest();
+        LuceneResponse     response     = c.getResponse();
         Calendar           lastModified = service.getPropertiesLastModified();
         String             httpDate     = ServletUtils.asHTTPDate( lastModified );
         
@@ -45,15 +45,15 @@ public class ServicePropertiesController extends Controller {
         
         
         if (httpDate != null) {
-            res.addHeader( "Etag", httpDate );
-            res.addHeader( "Last-Modified", httpDate );
+            response.addHeader( "Etag", httpDate );
+            response.addHeader( "Last-Modified", httpDate );
         }
         
         
         
         
-        if (!req.shouldHandle( lastModified, httpDate )) {
-            res.setStatus( res.SC_NOT_MODIFIED );
+        if (!request.shouldHandle( lastModified, httpDate )) {
+            response.setStatus( response.SC_NOT_MODIFIED );
             return;
         }
         
@@ -64,7 +64,7 @@ public class ServicePropertiesController extends Controller {
         
         entry.setTitle( service.getTitle() );
         entry.setUpdated( service.getPropertiesLastModified() );
-        entry.setID( service.getServicePropertiesURL( req ) );
+        entry.setID( service.getServicePropertiesURI( request ).toString() );
         entry.setContent( XOXOController.asContent( c, service.getProperties() ) );
         entry.addAuthor( new Author( service.getTitle() ) );
         
@@ -93,10 +93,10 @@ public class ServicePropertiesController extends Controller {
             IllegalActionException, LuceneException, SAXException, ParserConfigurationException,
             TransformerException, IOException, AtomParseException
     {
-        LuceneWebService   service = c.getService();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.getRequest();
-        LuceneResponse     res     = c.getResponse();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
         
         
@@ -112,7 +112,7 @@ public class ServicePropertiesController extends Controller {
             throw new IllegalActionException( "Service properties cannot be updated" );
         }
         
-        Entry[] entries = req.getEntries();
+        Entry[] entries = request.getEntries();
         
         if (entries.length == 0) {
             throw new InsufficientDataException( "No set of properties submitted" );
@@ -128,7 +128,7 @@ public class ServicePropertiesController extends Controller {
         
         service.setProperties( properties );
         
-        res.addHeader( "Location", service.getServicePropertiesURL( req ) );
+        response.addHeader( "Location", service.getServicePropertiesURI( request ).toString() );
         
         XMLController.acknowledge( c );
     }
@@ -155,10 +155,10 @@ public class ServicePropertiesController extends Controller {
             IllegalActionException, LuceneException, SAXException, ParserConfigurationException,
             TransformerException, IOException, AtomParseException
     {
-        LuceneWebService   service = c.getService();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.getRequest();
-        LuceneResponse     res     = c.getResponse();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
         
         
@@ -174,7 +174,7 @@ public class ServicePropertiesController extends Controller {
             throw new IllegalActionException( "Service properties cannot be added to" );
         }
         
-        Entry[] entries = req.getEntries();
+        Entry[] entries = request.getEntries();
         
         if (entries.length == 0) {
             throw new InsufficientDataException( "No set of properties submitted" );
@@ -190,7 +190,7 @@ public class ServicePropertiesController extends Controller {
         
         service.addProperties( properties );
         
-        res.addHeader( "Location", service.getServicePropertiesURL( req ) );
+        response.addHeader( "Location", service.getServicePropertiesURI( request ).toString() );
         
         XMLController.acknowledge( c );
     }

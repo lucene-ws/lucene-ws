@@ -65,6 +65,8 @@ public class LuceneDocumentComparator implements Comparator<LuceneDocument> {
         try {
             updated1 = index1.getLastModified( document1 );
         }
+        catch (java.text.ParseException pe1) {
+        }
         catch (InsufficientDataException ide1) {
         }
         
@@ -74,6 +76,8 @@ public class LuceneDocumentComparator implements Comparator<LuceneDocument> {
         
         try {
             updated2 = index2.getLastModified( document2 );
+        }
+        catch (java.text.ParseException pe2) {
         }
         catch (InsufficientDataException ide2) {
         }

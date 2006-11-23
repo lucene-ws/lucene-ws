@@ -122,7 +122,7 @@ public class ServiceController extends Controller {
         }
         
         if (created) {
-            response.addHeader( "Location", service.getIndexURL( request, indexNamesBuffer.toString() ) );
+            response.addHeader( "Location", service.getIndexURI( request, indexNamesBuffer.toString() ).toString() );
         }
         else {
             throw new InsufficientDataException( "No indices to be added" );
@@ -185,7 +185,7 @@ public class ServiceController extends Controller {
         for (int i = 0; i < indices.length; i++) {
             LuceneIndex index = indices[ i ];
             
-            String href = service.getIndexURL( request, index );
+            String href = service.getIndexURI( request, index ).toString();
             
             String title = index.getTitle();
             if (title == null) {
@@ -224,7 +224,7 @@ public class ServiceController extends Controller {
         
         feed.setTitle( "Lucene Web Service" );
         //feed.setUpdated( service.getLastModified() );
-        feed.setID( service.getServiceURL( request ) );
+        feed.setID( service.getServiceURI( request ).toString() );
         
         //Iterator<LuceneIndex> indices = service.getIndexManager().getIndices().iterator();
         //while( indices.hasNext() )
@@ -241,7 +241,7 @@ public class ServiceController extends Controller {
         }
         
         
-        feed.addLink( Link.Alternate( service.getServiceURL( request ) ) );
+        feed.addLink( Link.Alternate( service.getServiceURI( request ).toString() ) );
         
         return feed;
     }
@@ -265,7 +265,7 @@ public class ServiceController extends Controller {
         
         entry.setTitle( index.getTitle() );
         //entry.setUpdated( index.getLastModified() );
-        entry.setID( service.getIndexURL( request, index ) );
+        entry.setID( service.getIndexURI( request, index ).toString() );
         
         
         String summary = null;
@@ -294,7 +294,7 @@ public class ServiceController extends Controller {
             }
         }
         
-        entry.addLink( Link.Alternate( service.getIndexURL( request, index ) ) );
+        entry.addLink( Link.Alternate( service.getIndexURI( request, index ).toString() ) );
         entry.setSummary( new net.lucenews.atom.Text( summary ) );
         
         return entry;

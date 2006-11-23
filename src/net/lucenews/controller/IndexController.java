@@ -70,7 +70,7 @@ public class IndexController extends Controller {
         
         
         if (deleted) {
-            response.addHeader( "Location", service.getIndexURL( request, indexNamesBuffer.toString() ) );
+            response.addHeader( "Location", service.getIndexURI( request, indexNamesBuffer.toString() ).toString() );
         }
         else {
             throw new InsufficientDataException( "No indices to be deleted" );
@@ -186,7 +186,7 @@ public class IndexController extends Controller {
         }
         
         if (updated) {
-            response.addHeader( "Location", service.getIndexURL( request, indexNamesBuffer.toString() ) );
+            response.addHeader( "Location", service.getIndexURI( request, indexNamesBuffer.toString() ).toString() );
         }
         
         XMLController.acknowledge( c );
@@ -259,8 +259,8 @@ public class IndexController extends Controller {
         String documentIDs = documentIDsBuffer.toString();
         
         if (response.getStatus() == response.SC_CREATED) {
-            response.addHeader( "Location", service.getDocumentURL( request, indexNames, documentIDs ) );
-            response.addHeader( "Content-Location", service.getDocumentURL( request, indexNames, documentIDs ) );
+            response.addHeader( "Location", service.getDocumentURI( request, indexNames, documentIDs ).toString() );
+            response.addHeader( "Content-Location", service.getDocumentURI( request, indexNames, documentIDs ).toString() );
         }
         else {
             throw new InsufficientDataException( "No documents to be added" );
@@ -277,7 +277,7 @@ public class IndexController extends Controller {
             LuceneDocument document = addedDocuments.iterator().next();
             
             Entry entry = DocumentController.asEntry( c, document );
-            entry.addLink( Link.Edit( service.getDocumentURL( request, document ) ) );
+            entry.addLink( Link.Edit( service.getDocumentURI( request, document ).toString() ) );
             AtomView.process( c, entry );
         }
         else {
@@ -287,7 +287,7 @@ public class IndexController extends Controller {
             while (iterator.hasNext()) {
                 LuceneDocument document = iterator.next();
                 Entry entry = DocumentController.asEntry( c, document );
-                entry.addLink( Link.Edit( service.getDocumentURL( request, document ) ) );
+                entry.addLink( Link.Edit( service.getDocumentURI( request, document ).toString() ) );
                 feed.addEntry( entry );
             }
             

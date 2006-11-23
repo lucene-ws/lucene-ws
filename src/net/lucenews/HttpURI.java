@@ -339,6 +339,24 @@ public class HttpURI {
     }
     
     
+    
+    
+    public HttpURI withPath (String path) {
+        HttpURI uri = clone();
+        uri.addPath( path );
+        return uri;
+    }
+    
+    public HttpURI withPaths (String... paths) {
+        HttpURI uri = this;
+        for (String path:paths) {
+            uri = uri.withPath( path );
+        }
+        return uri;
+    }
+    
+    
+    
     /**
      * Formats a String suitable for use within a URI. Non-ASCII
      * characters are replaced by their escaped equivalents.

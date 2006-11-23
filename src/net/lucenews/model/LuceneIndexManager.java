@@ -1,3 +1,7 @@
+/**
+ * A class to manage indices. 
+ */
+
 package net.lucenews.model;
 
 import java.io.*;
@@ -21,6 +25,13 @@ public class LuceneIndexManager implements LuceneIndexListener {
     }
     
     
+    /**
+     * Gets a particular index based on its index name. Will search 
+     * through all paths, attempting to find a directory with that name.
+     * 
+     * @param name the name of the index
+     * @return the LuceneIndex corresponding to the given name
+     */
     
     public LuceneIndex getIndex (String name) throws IndexNotFoundException, IOException {
         if (!directories.containsKey(name)) {

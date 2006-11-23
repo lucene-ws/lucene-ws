@@ -60,7 +60,7 @@ public class OpenSearchController extends Controller {
         
         
         // Template
-        HttpURI template = new HttpURI( service.getServiceURL( request ) );
+        HttpURI template = service.getServiceURI( request );
         template.addPath( ServletUtils.join( ",", (Object[]) indices ) );
         template.setParameter( "searchTerms",     "{searchTerms}" );
         template.setParameter( "count",           "{count?}" );

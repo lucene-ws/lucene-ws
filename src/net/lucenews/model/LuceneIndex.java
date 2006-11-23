@@ -1,6 +1,7 @@
 package net.lucenews.model;
 
 import java.io.*;
+import java.text.*;
 import java.util.*;
 import net.lucenews.*;
 import net.lucenews.model.event.*;
@@ -1749,10 +1750,11 @@ public class LuceneIndex {
     
     public String getLastModifiedFieldName () throws IOException {
         String fieldName = null;
-        if ( fieldName == null ) { fieldName = getProperty("document.field.<updated>"); }
-        if ( fieldName == null ) { fieldName = getProperty("document.field.updated");   }
-        if ( fieldName == null ) { fieldName = getProperty("document.updated");         }
-        if ( fieldName == null ) { fieldName = getProperty("updated");                  }
+        if ( fieldName == null ) { fieldName = getProperty("document.field.<modified>"); }
+        if ( fieldName == null ) { fieldName = getProperty("document.field.<updated>");  }
+        if ( fieldName == null ) { fieldName = getProperty("document.field.updated");    }
+        if ( fieldName == null ) { fieldName = getProperty("document.updated");          }
+        if ( fieldName == null ) { fieldName = getProperty("updated");                   }
         return fieldName;
     }
     
@@ -1774,6 +1776,9 @@ public class LuceneIndex {
         catch (InsufficientDataException ide) {
             return false;
         }
+        catch (java.text.ParseException pe) {
+            return false;
+        }
     }
     
     
@@ -1790,11 +1795,6 @@ public class LuceneIndex {
      * millisecond (ms)     |             1
      * second (s)           |          1000
      * minute               |         60000
-     * 
-     * For example, time stamp which are accurate down to the second 
-     * would have 1.0 (second) precision. Time stamps which are accurate 
-     * to the tenth of a second would have 0.1 precision. Those accurate
-     * to the minute would have 60.0 precision, etc...
      * 
      * @return the precision of the time stamps
      */
@@ -1831,7 +1831,8 @@ public class LuceneIndex {
     
     
     /**
-     * Gets the updated time of a document.
+     * Gets the updated time of a document. This is determined based 
+     * on settings in the index properties.
      * 
      * @param document The document to get the updated time of
      * @return The updated time of the document
@@ -1840,28 +1841,63 @@ public class LuceneIndex {
      */
     
     public Calendar getLastModified (LuceneDocument document)
-        throws InsufficientDataException, IOException
+        throws java.text.ParseException, InsufficientDataException, IOException
     {
         Calendar calendar = Calendar.getInstance();
         
         try {
-            // determine the time stamp
-            long timestamp = getTimestamp( document );
+            String format = getProperty("document.field.<modified>.format").toLowerCase().trim();
+            String value  = document.get( getLastModifiedFieldName() );
             
-            // determine the time stamp's precision
-            Double precision = null;
-            if ( precision == null ) { precision = getTimestampPrecision(); }
-            if ( precision == null ) { precision = 1.0;                     }
-            
-            // determine the time stamp's time zone
-            String timeZone = null;
-            if ( timeZone == null ) { timeZone = getProperty("document.field.updated.timezone.id"); }
-            if ( timeZone == null ) { timeZone = getProperty("document.field.updated.timezone");    }
-            if ( timeZone != null ) {
-                calendar.setTimeZone( TimeZone.getTimeZone( timeZone ) );
+            if ( format != null && value != null ) {
+                
+                if ( format.equals("epoch") ) {
+                    // determine the time stamp
+                    long timestamp = getTimestamp( document );
+                    
+                    // determine the time stamp's precision
+                    Double precision = null;
+                    if ( precision == null ) { precision = getTimestampPrecision(); }
+                    if ( precision == null ) { precision = 1.0;                     }
+                    
+                    // determine the time stamp's time zone
+                    String timeZone = null;
+                    if ( timeZone == null ) { timeZone = getProperty("document.field.<modified>.timezone.id"); }
+                    if ( timeZone == null ) { timeZone = getProperty("document.field.<modified>.timezone");    }
+                    if ( timeZone != null ) {
+                        calendar.setTimeZone( TimeZone.getTimeZone( timeZone ) );
+                    }
+                    
+                    calendar.setTime( new Date( Math.round( precision * timestamp ) ) );
+                }
+                else {
+                    // determine whether or not we are to be lenient
+                    String lenient    = null;
+                    Boolean isLenient = null;
+                    if ( lenient == null ) { lenient = getProperty("document.field.<modified>.lenient"); }
+                    if ( lenient == null ) { lenient = getProperty("document.field.<updated>.lenient");  }
+                    if ( lenient == null ) { lenient = getProperty("document.field.updated.lenient");    }
+                    if ( lenient == null ) { lenient = getProperty("document.updated.lenient");          }
+                    if ( lenient != null ) {
+                        isLenient = ServletUtils.parseBoolean( lenient );
+                    }
+                    
+                    // assume a format suitable for SimpleDateFormat
+                    SimpleDateFormat formatter = new SimpleDateFormat( format );
+                    
+                    // specify whether or not we are to be lenient
+                    if ( isLenient != null ) {
+                        formatter.setLenient( isLenient );
+                    }
+                    
+                    // parse the date
+                    Date date = formatter.parse( value );
+                    
+                    // apply to the calendar
+                    calendar.setTime( date );
+                }
+                
             }
-            
-            calendar.setTime( new Date( Math.round( precision * timestamp ) ) );
         }
         catch (NullPointerException npe) {
             if ( isDocumentIdentified( document ) ) {
@@ -1889,8 +1925,9 @@ public class LuceneIndex {
     
     public Calendar getLastModified (LuceneDocument document, Calendar calendar)
         throws
-            InvalidIdentifierException, DocumentNotFoundException,
-            InsufficientDataException, IOException
+            java.text.ParseException, InvalidIdentifierException, 
+            DocumentNotFoundException, InsufficientDataException, 
+            IOException
     {
         if ( !hasLastModified( document ) ) {
             try {
@@ -2254,6 +2291,9 @@ public class LuceneIndex {
     }
     
     
+    /**
+     * Stringifies to the index name.
+     */
     
     public String toString () {
         return getName();

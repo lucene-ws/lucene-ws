@@ -188,7 +188,7 @@ public class SearchController extends Controller {
         
         // link to OpenSearch Description
         OpenSearchLink descriptionLink = new OpenSearchLink();
-        descriptionLink.setHref( service.getOpenSearchDescriptionURL( request, request.getIndexNames() ) );
+        descriptionLink.setHref( service.getOpenSearchDescriptionURI( request, request.getIndexNames() ).toString() );
         descriptionLink.setRel("search");
         descriptionLink.setType("application/opensearchdescription+xml");
         response.setLink( descriptionLink );
@@ -237,10 +237,12 @@ public class SearchController extends Controller {
                     
                     OpenSearchResult result = new OpenSearchResult();
                     result.setTitle( document.getTitle() );
-                    result.setId( service.getDocumentURL( request, index, document ) );
+                    result.setId( service.getDocumentURI( request, index, document ).toString() );
                     
                     try {
                         result.setUpdated( document.getLastModified() );
+                    }
+                    catch (java.text.ParseException pe) {
                     }
                     catch (InsufficientDataException ide) {
                     }
@@ -248,7 +250,7 @@ public class SearchController extends Controller {
                     result.setScore( score );
                     
                     OpenSearchLink resultLink = new OpenSearchLink();
-                    resultLink.setHref( service.getDocumentURL( request, index, document ) );
+                    resultLink.setHref( service.getDocumentURI( request, index, document ).toString() );
                     result.setLink( resultLink );
                     
                     

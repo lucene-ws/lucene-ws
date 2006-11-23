@@ -35,8 +35,8 @@ public class XMLView extends View {
     public static void process (LuceneContext c, Document document)
         throws ParserConfigurationException, TransformerException, IOException
     {
-        LuceneRequest  req = c.getRequest();
-        LuceneResponse res = c.getResponse();
+        LuceneRequest  request  = c.getRequest();
+        LuceneResponse response = c.getResponse();
         
         TransformerFactory factory = TransformerFactory.newInstance();
         Transformer transformer = factory.newTransformer();
@@ -45,7 +45,7 @@ public class XMLView extends View {
         
         transformer.transform(
             new DOMSource( document ),
-            new StreamResult( res.getWriter() )
+            new StreamResult( response.getWriter() )
         );
     }
     
