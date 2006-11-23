@@ -15,6 +15,7 @@ public class LuceneContext {
     private LuceneRequest      request;
     private LuceneResponse     response;
     private LuceneWebService   service;
+    private Map<Locale,Map<Object,String>> localizations;
     
     private Searcher searcher;
     private IndexSearcher indexSearcher;
@@ -45,6 +46,7 @@ public class LuceneContext {
     public LuceneContext (HttpServletRequest request, HttpServletResponse response) {
         setRequest( LuceneRequest.newInstance( request ) );
         setResponse( LuceneResponse.newInstance( response ) );
+        localizations = new HashMap<Locale,Map<Object,String>>();
     }
     
     
@@ -345,6 +347,82 @@ public class LuceneContext {
     
     public void setOpenSearchFormat (OpenSearch.Format openSearchFormat) {
         this.openSearchFormat = openSearchFormat;
+    }
+    
+    
+    
+    /**
+     * Localize a particular key into a particular language
+     */
+    
+    public Map<Locale,Map<Object,String>> getLocalizations () {
+        return localizations;
+    }
+    
+    public void setLocalizations (Map<Locale,Map<Object,String>> localizations) {
+        this.localizations = localizations;
+    }
+    
+    public Map<Object,String> getLocalizations (String locale) {
+        return getLocalizations( new Locale( locale ) );
+    }
+    
+    public Map<Object,String> getLocalizations (Locale locale) {
+        return getLocalizations().get( locale );
+    }
+    
+    public void setLocalizations (String locale, Map<Object,String> localizations) {
+        setLocalizations( new Locale( locale ), localizations );
+    }
+    
+    public void setLocalizations (Locale locale, Map<Object,String> localizations) {
+        getLocalizations().put( locale, localizations );
+    }
+    
+    public String getLocalization (String locale, Object key) {
+        return getLocalization( new Locale( locale ), key );
+    }
+    
+    public String getLocalization (Locale locale, Object key) {
+        return getLocalizations( locale ).get( key );
+    }
+    
+    public void setLocalization (String locale, Object key, String localization) {
+        setLocalization( new Locale( locale ), key, localization );
+    }
+    
+    public void setLocalization (Locale locale, Object key, String localization) {
+        if ( getLocalizations( locale ) == null ) {
+            setLocalizations( locale, new HashMap<Object,String>() );
+        }
+        Map<Object,String> mapping = getLocalizations( locale );
+        mapping.put( key, localization );
+    }
+    
+    public boolean hasLocalizations (Locale locale) {
+        return getLocalizations( locale ) != null;
+    }
+    
+    public String localize (Object key, String... parameters) {
+        return localize( getLocale() );
+    }
+    
+    public String localize (Locale locale, Object key, String... parameters) {
+        if ( key == null ) {
+            return null;
+        }
+        
+        if ( locale == null || !hasLocalizations( locale ) ) {
+            return key.toString();
+        }
+        
+        String localization = getLocalization( locale, key );
+        
+        if ( localization == null ) {
+            return key.toString();
+        }
+        
+        return localization;
     }
     
 }

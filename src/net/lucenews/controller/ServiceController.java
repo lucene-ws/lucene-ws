@@ -185,7 +185,7 @@ public class ServiceController extends Controller {
         for (int i = 0; i < indices.length; i++) {
             LuceneIndex index = indices[ i ];
             
-            String href = service.getIndexURI( request, index ).toString();
+            String href = service.getIndexURI( request, index ).withPath("").toString();
             
             String title = index.getTitle();
             if (title == null) {

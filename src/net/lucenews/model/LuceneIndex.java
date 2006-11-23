@@ -2011,7 +2011,24 @@ public class LuceneIndex {
             IllegalActionException, InvalidIdentifierException,
             DocumentNotFoundException, InsufficientDataException, IOException
     {
-        setLastModified( document, calendar.getTime().getTime(), update );
+        String format = getProperty("document.field.<modified>.format");
+        
+        if ( format == null ) {
+            setLastModified( document, calendar.getTime().getTime(), update );
+            return;
+        }
+        
+        SimpleDateFormat formatter = new SimpleDateFormat( format );
+        
+        if ( hasLastModifiedFieldName() ) {
+            String field = getLastModifiedFieldName();
+            document.removeFields( field );
+            document.add( new Field( field, formatter.format( calendar.getTime() ), Field.Store.YES, Field.Index.UN_TOKENIZED ) );
+            
+            if (update) {
+                updateDocument( document );
+            }
+        }
     }
     
     
