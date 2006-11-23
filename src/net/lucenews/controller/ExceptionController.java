@@ -31,10 +31,10 @@ public class ExceptionController extends Controller {
     }
     
     public static void process (LuceneContext c, Exception e, Boolean doStackTrace) {
-        LuceneWebService   service = c.getService();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.getRequest();
-        LuceneResponse     res     = c.getResponse();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
         
         Logger.getLogger(ExceptionController.class).error("Catching an exception", e);
@@ -53,7 +53,7 @@ public class ExceptionController extends Controller {
             Entry entry = new Entry();
             entry.setTitle( e.getClass().getSimpleName() );
             entry.setUpdated( Calendar.getInstance() );
-            entry.setID( req.getLocation() );
+            entry.setID( request.getLocation() );
             entry.setSummary( new Text( e.getMessage() ) );
             entry.setContent( Content.text( String.valueOf( e.getMessage() ) ) );
             entry.addAuthor( new Author( service.getTitle() ) );

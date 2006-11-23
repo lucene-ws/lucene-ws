@@ -7,6 +7,7 @@ import net.lucenews.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.opensearch.*;
+import org.apache.log4j.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.document.*;
@@ -1845,9 +1846,23 @@ public class LuceneIndex {
     {
         Calendar calendar = Calendar.getInstance();
         
+        Logger.getLogger( this.getClass() ).debug("getLastModified");
+        
         try {
-            String format = getProperty("document.field.<modified>.format").toLowerCase().trim();
+            String format = getProperty("document.field.<modified>.format");
+            Logger.getLogger( this.getClass() ).debug("format: "+format);
             String value  = document.get( getLastModifiedFieldName() );
+            Logger.getLogger( this.getClass() ).debug("value: "+value);
+            
+            // do some sniffing
+            try {
+                Long.valueOf( value );
+                format = "epoch";
+            }
+            catch (NumberFormatException nfe) {
+            }
+            
+            Logger.getLogger( this.getClass() ).debug("format: "+format);
             
             if ( format != null && value != null ) {
                 

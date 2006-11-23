@@ -64,6 +64,28 @@ public class LuceneContext {
     
     
     
+    /**
+     * Gets a Logger object suitable for whatever class has called this 
+     * accessor.
+     */
+    
+    public Logger getLogger () {
+        Thread thread = Thread.currentThread();
+        StackTraceElement[] elements = thread.getStackTrace();
+        StackTraceElement element = elements[ 3 ];
+        
+        Class loggerClass = this.getClass();
+        try {
+            loggerClass = Class.forName( element.getClassName() );
+        }
+        catch (ClassNotFoundException cnfe) {
+        }
+        
+        return Logger.getLogger( loggerClass );
+    }
+    
+    
+    
     public Map<String,Object> getStash () {
         return stash;
     }

@@ -32,12 +32,11 @@ public class OpenSearchController extends Controller {
             IndicesNotFoundException, ParserConfigurationException, TransformerException,
             IOException, OpenSearchException
     {
-        LuceneWebService   service = c.getService();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.getRequest();
-        LuceneRequest      request = c.getRequest();
-        LuceneResponse     res     = c.getResponse();
-        LuceneIndex[]      indices = manager.getIndices( req.getIndexNames() );
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
+        LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
         
         
         OpenSearchDescription description = new OpenSearchDescription();

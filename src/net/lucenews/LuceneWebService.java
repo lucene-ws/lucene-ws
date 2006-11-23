@@ -192,7 +192,7 @@ public class LuceneWebService extends HttpServlet {
         LuceneContext  c   = new LuceneContext( req, res, this );
         req.setContext( c );
         
-        Logger.getLogger(this.getClass()).info("request:  " + req.getMethod() + " " + req.getLocation() + " " + req.getProtocol());
+        c.getLogger().info("request:  " + req.getMethod() + " " + req.getLocation() + " " + req.getProtocol());
         
         /*
         Logger.getLogger(this.getClass()).debug("getContextPath(): " + request.getContextPath());
@@ -278,7 +278,7 @@ public class LuceneWebService extends HttpServlet {
             ExceptionController.process( c, e );
         }
         
-        Logger.getLogger( this.getClass() ).info("response: " + res.getStatus());
+        c.getLogger().info("response: " + res.getStatus());
     }	
     
     
@@ -321,7 +321,7 @@ public class LuceneWebService extends HttpServlet {
             TransformerException, ParserConfigurationException, IndicesNotFoundException,
             IllegalActionException, DocumentsNotFoundException, IOException, InsufficientDataException
     {
-        Logger.getLogger( this.getClass() ).trace( "doDelete" );
+        c.getLogger().trace( "doDelete" );
         LuceneRequest request = c.getRequest();
         
         if (request.hasIndexNames()) {
@@ -354,14 +354,14 @@ public class LuceneWebService extends HttpServlet {
             TransformerException, IOException, ParseException, LuceneException,
             OpenSearchException
     {
-        Logger.getLogger( this.getClass() ).trace( "doGet" );
+        c.getLogger().trace( "doGet" );
         LuceneRequest request = c.getRequest();
         
         
-        Logger.getLogger(this.getClass()).debug("request has " + request.getIndexNames().length + " index names");
+        c.getLogger().debug("request has " + request.getIndexNames().length + " index names");
         
         if ( request.getIndexNames().length == 1 ) {
-            Logger.getLogger(this.getClass()).debug("request has 1 index name");
+            c.getLogger().debug("request has 1 index name");
             if (request.getIndexName().equals( "service.properties" )) {
                 ServicePropertiesController.doGet( c );
                 return;
@@ -434,7 +434,7 @@ public class LuceneWebService extends HttpServlet {
             TransformerException, IOException, ParseException, LuceneException,
             OpenSearchException
     {
-        Logger.getLogger( this.getClass() ).trace( "doHead" );
+        c.getLogger().trace( "doHead" );
         doGet( c );
     }
     
@@ -449,7 +449,7 @@ public class LuceneWebService extends HttpServlet {
      */
     
     public void doOptions (LuceneContext c) throws ServletException, IOException {
-        Logger.getLogger( this.getClass() ).trace( "doOptions" );
+        c.getLogger().trace( "doOptions" );
         super.doOptions( c.getRequest(), c.getResponse() );
     }
     
@@ -476,7 +476,7 @@ public class LuceneWebService extends HttpServlet {
             IndicesAlreadyExistException, TransformerException, AtomParseException,
             IndicesNotFoundException, SAXException, IOException, LuceneException
     {
-        Logger.getLogger( this.getClass() ).trace( "doPost" );
+        c.getLogger().trace( "doPost" );
         LuceneRequest request = c.getRequest();
         
         if (request.hasIndexName() && !request.hasDocumentIDs()) {
@@ -525,7 +525,7 @@ public class LuceneWebService extends HttpServlet {
             TransformerException, ParserConfigurationException, DocumentNotFoundException,
             IndexNotFoundException, IOException, LuceneException, AtomParseException
     {
-        Logger.getLogger( this.getClass() ).trace( "doPut" );
+        c.getLogger().trace( "doPut" );
         LuceneRequest request = c.getRequest();
         
         if (request.getDocumentIDs().length == 0) {
@@ -562,7 +562,7 @@ public class LuceneWebService extends HttpServlet {
      */
     
     public void doTrace (LuceneContext c) throws ServletException, IOException {
-        Logger.getLogger( this.getClass() ).trace( "doTrace" );
+        c.getLogger().trace( "doTrace" );
         super.doTrace( c.getRequest(), c.getResponse() );
     }
     

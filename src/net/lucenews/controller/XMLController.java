@@ -61,10 +61,10 @@ public class XMLController extends Controller {
             TransformerException, ParserConfigurationException,
             TransformerException, IOException
     {
-        LuceneWebService   service = c.getService();
-        LuceneIndexManager manager = service.getIndexManager();
-        LuceneRequest      req     = c.getRequest();
-        LuceneResponse     res     = c.getResponse();
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
+        LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
         
         
         
@@ -73,7 +73,7 @@ public class XMLController extends Controller {
         
         entry.setTitle( "OK" );
         entry.setUpdated( Calendar.getInstance() );
-        entry.setID( req.getLocation() );
+        entry.setID( request.getLocation() );
         entry.setSummary( new Text( "OK" ) );
         
         AtomView.process( c, entry );

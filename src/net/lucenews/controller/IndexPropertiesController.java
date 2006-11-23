@@ -32,11 +32,11 @@ public class IndexPropertiesController extends Controller {
     public static void doGet (LuceneContext c)
         throws IndicesNotFoundException, ParserConfigurationException, TransformerException, IOException
     {
-        LuceneWebService   service      = c.getService();
-        LuceneIndexManager manager      = service.getIndexManager();
-        LuceneRequest      req          = c.getRequest();
-        LuceneResponse     res          = c.getResponse();
-        LuceneIndex[]      indices      = manager.getIndices( req.getIndexNames() );
+        LuceneWebService   service   = c.getService();
+        LuceneIndexManager manager   = service.getIndexManager();
+        LuceneRequest      request   = c.getRequest();
+        LuceneResponse     response  = c.getResponse();
+        LuceneIndex[]      indices   = manager.getIndices( request.getIndexNames() );
         
         
         
@@ -52,16 +52,16 @@ public class IndexPropertiesController extends Controller {
             
             
             if ( httpDate != null ) {
-                res.addHeader( "Etag", httpDate );
-                res.addHeader( "Last-Modified", httpDate );
+                response.addHeader( "Etag", httpDate );
+                response.addHeader( "Last-Modified", httpDate );
             }
             
             
-            if ( req.shouldHandle( lastModified, httpDate ) ) {
+            if ( request.shouldHandle( lastModified, httpDate ) ) {
                 AtomView.process( c, entry );
             }
             else {
-                res.setStatus( res.SC_NOT_MODIFIED );
+                response.setStatus( response.SC_NOT_MODIFIED );
             }
         }
         else {
@@ -69,9 +69,9 @@ public class IndexPropertiesController extends Controller {
             
             feed.setTitle( "Properties" );
             feed.setUpdated( Calendar.getInstance() );
-            feed.setID( req.getRequestURL().toString() );
+            feed.setID( request.getRequestURL().toString() );
             feed.addAuthor( new Author( service.getTitle() ) );
-            feed.addLink( Link.Self( req.getLocation() ) );
+            feed.addLink( Link.Self( request.getLocation() ) );
             
             for (int i = 0; i < indices.length; i++) {
                 feed.addEntry( asEntry( c, indices[ i ], false ) );
