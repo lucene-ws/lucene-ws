@@ -123,9 +123,11 @@ public class Entry extends Base {
         
         
         // <title>
-        Element title = document.createElement( "title" );
-        title.appendChild( document.createTextNode( String.valueOf( getTitle() ) ) );
-        entry.appendChild( title );
+        if ( getTitle() != null ) {
+            Element title = document.createElement("title");
+            title.appendChild( document.createTextNode( getTitle() ) );
+            entry.appendChild( title );
+        }
         
         
         
@@ -138,9 +140,11 @@ public class Entry extends Base {
         
         
         // <updated>
-        Element updated = document.createElement( "updated" );
-        updated.appendChild( document.createTextNode( String.valueOf( getUpdated() ) ) );
-        entry.appendChild( updated );
+        if ( getUpdated() != null ) {
+            Element updated = document.createElement("updated");
+            updated.appendChild( document.createTextNode( getUpdated() ) );
+            entry.appendChild( updated );
+        }
         
         
         
@@ -153,14 +157,16 @@ public class Entry extends Base {
         
         
         // <id>
-        Element id = document.createElement( "id" );
-        id.appendChild( document.createTextNode( String.valueOf( getID() ) ) );
-        entry.appendChild( id );
+        if ( getID() != null ) {
+            Element id = document.createElement("id");
+            id.appendChild( document.createTextNode( getID() ) );
+            entry.appendChild( id );
+        }
         
         
         
         // <category>
-        if (getCategory() != null) {
+        if ( getCategory() != null ) {
             entry.appendChild( getCategory().asElement( document ) );
         }
         
@@ -174,18 +180,18 @@ public class Entry extends Base {
         
         
         // <summary>
-        if (getSummary() != null) {
+        if ( getSummary() != null ) {
             entry.appendChild( getSummary().asElement( document, "summary" ) );
         }
         
         
         // Additional properties
         Enumeration names = properties.propertyNames();
-        while (names.hasMoreElements()) {
+        while ( names.hasMoreElements() ) {
             String name = (String) names.nextElement();
             
             Element property = null;
-            if (namespaces.containsKey( name )) {
+            if ( namespaces.containsKey( name ) ) {
                 property = document.createElementNS( namespaces.get( name ), name );
             }
             else {
@@ -199,7 +205,7 @@ public class Entry extends Base {
         
         
         // <content>
-        if (getContent() != null) {
+        if ( getContent() != null ) {
             entry.appendChild( getContent().asElement( document ) );
         }
         

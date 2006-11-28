@@ -436,6 +436,22 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     
     
+    public String[] getFacets () {
+        List<String> facets = new ArrayList<String>();
+        
+        String component = getUri().getPathComponent( 3 );
+        if ( component != null ) {
+            String[] parts = component.split(",");
+            for (String part : parts) {
+                facets.add( part );
+            }
+        }
+        
+        return facets.toArray( new String[]{} );
+    }
+    
+    
+    
     
     
     

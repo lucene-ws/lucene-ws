@@ -163,6 +163,10 @@ public class HttpURI {
         return pathComponents;
     }
     
+    public String getPathComponent (int index) {
+        return getPathComponents().get( index );
+    }
+    
     public void setPathComponents (String... pathComponents) {
         this.pathComponents = Arrays.asList( pathComponents );
     }

@@ -352,7 +352,7 @@ public class LuceneWebService extends HttpServlet {
         throws
             ParserConfigurationException, IndicesNotFoundException,
             TransformerException, IOException, ParseException, LuceneException,
-            OpenSearchException
+            OpenSearchException, Exception
     {
         c.getLogger().trace( "doGet" );
         LuceneRequest request = c.getRequest();
@@ -375,6 +375,12 @@ public class LuceneWebService extends HttpServlet {
             // OpenSearch Description
             if ( request.getDocumentID().equals("opensearchdescription.xml") || request.getDocumentID().equals("description.xml") ) {
                 OpenSearchController.doGet( c );
+                return;
+            }
+            
+            // facets
+            if ( request.getDocumentID().equals("facets") ) {
+                FacetController.doGet( c );
                 return;
             }
             
@@ -432,7 +438,7 @@ public class LuceneWebService extends HttpServlet {
         throws
             ParserConfigurationException, IndicesNotFoundException,
             TransformerException, IOException, ParseException, LuceneException,
-            OpenSearchException
+            OpenSearchException, Exception
     {
         c.getLogger().trace( "doHead" );
         doGet( c );
