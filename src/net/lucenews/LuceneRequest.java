@@ -24,16 +24,6 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     
     private HttpURI uri;
     
-    public static final int DELETE  = 1;
-    public static final int GET     = 2;
-    public static final int HEAD    = 3;
-    public static final int OPTIONS = 4;
-    public static final int POST    = 5;
-    public static final int PUT     = 6;
-    public static final int TRACE   = 7;
-    
-    
-    
     private byte[]        content;
     private LuceneContext context;
     private Document      domDocument;
@@ -197,35 +187,13 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      * @return An integer reflecting the method
      */
     
-    public Integer getMethodType () {
-        String method = getMethod().trim().toUpperCase();
+    public HttpMethod getMethodType () {
+        String methodName = getMethod().trim().toUpperCase();
         
-        if ( method.equals("DELETE") ) {
-            return DELETE;
-        }
-        
-        if ( method.equals("GET") ) {
-            return GET;
-        }
-        
-        if ( method.equals("HEAD") ) {
-            return HEAD;
-        }
-        
-        if ( method.equals("OPTIONS") ) {
-            return OPTIONS;
-        }
-        
-        if ( method.equals("POST") ) {
-            return POST;
-        }
-        
-        if ( method.equals("PUT") ) {
-            return PUT;
-        }
-        
-        if ( method.equals("TRACE") ) {
-            return TRACE;
+        for (HttpMethod method : HttpMethod.values()) {
+            if ( method.toString().equals( methodName ) ) {
+                return method;
+            }
         }
         
         return null;

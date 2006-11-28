@@ -209,31 +209,31 @@ public class LuceneWebService extends HttpServlet {
         try {
             switch ( req.getMethodType() ) {
                 
-                case LuceneRequest.DELETE:
+                case DELETE:
                     doDelete( c );
                     break;
                     
-                case LuceneRequest.GET:
+                case GET:
                     doGet( c );
                     break;
                     
-                case LuceneRequest.HEAD:
+                case HEAD:
                     doHead( c );
                     break;
                     
-                case LuceneRequest.OPTIONS:
+                case OPTIONS:
                     doOptions( c );
                     break;
                     
-                case LuceneRequest.POST:
+                case POST:
                     doPost( c );
                     break;
                     
-                case LuceneRequest.PUT:
+                case PUT:
                     doPut( c );
                     break;
                     
-                case LuceneRequest.TRACE:
+                case TRACE:
                     doTrace( c );
                     break;
                     
