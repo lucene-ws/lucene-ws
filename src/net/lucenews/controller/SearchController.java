@@ -238,6 +238,7 @@ public class SearchController extends Controller {
                     OpenSearchResult result = new OpenSearchResult();
                     result.setTitle( document.getTitle() );
                     result.setId( service.getDocumentURI( request, index, document ).toString() );
+                    //result.setRights( document.getRights() );
                     
                     try {
                         result.setUpdated( document.getLastModified() );

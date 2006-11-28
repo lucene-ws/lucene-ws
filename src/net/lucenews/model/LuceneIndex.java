@@ -2147,6 +2147,16 @@ public class LuceneIndex {
     
     
     
+    public OpenSearchText getRights (LuceneDocument document) throws IOException {
+        String field = null;
+        if ( field == null ) { field = getProperty("document.field.<rights>.field"); }
+        if ( field == null ) { field = getProperty("document.field.<rights>");       }
+        if ( field == null ) { field = "rights";                                     }
+        return new OpenSearchText( document.get( field ) );
+    }
+    
+    
+    
     /**
      * Should really be 'hasAuthorField' to make its meaning
      * more clear. Will consider deprecation.

@@ -13,6 +13,7 @@ public class OpenSearchResult {
     private OpenSearchLink link;
     private OpenSearchText content;
     private List<OpenSearchPerson> people;
+    private OpenSearchText rights;
     
     
     public OpenSearchResult () {
@@ -123,6 +124,16 @@ public class OpenSearchResult {
     
     
     
+    public OpenSearchText getRights () {
+        return rights;
+    }
+    
+    public void setRights (OpenSearchText rights) {
+        this.rights = rights;
+    }
+    
+    
+    
     public Element asElement (Document document, OpenSearch.Format format) throws OpenSearchException {
         return asElement( document, format, OpenSearch.STRICT );
     }
@@ -169,6 +180,11 @@ public class OpenSearchResult {
                 
                 // backwards compatibility
                 element.appendChild( asElementNS( document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance", getScore() ) );
+            }
+            
+            // rights
+            if ( getRights() != null ) {
+                element.appendChild( getRights().asElement( document, format, mode ) );
             }
             
             // content

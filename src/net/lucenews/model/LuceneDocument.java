@@ -13,6 +13,7 @@ import java.io.*;
 import net.lucenews.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
+import net.lucenews.opensearch.*;
 
 import org.apache.lucene.index.*;
 import org.apache.lucene.analysis.Analyzer;
@@ -108,6 +109,10 @@ public class LuceneDocument {
     
     public String getAuthor () throws IOException {
         return getIndex().getAuthor( this );
+    }
+    
+    public OpenSearchText getRights () throws IOException {
+        return getIndex().getRights( this );
     }
     
     
