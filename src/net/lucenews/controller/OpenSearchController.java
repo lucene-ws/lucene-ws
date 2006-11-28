@@ -147,15 +147,14 @@ public class OpenSearchController extends Controller {
         // Images
         
         boolean addedImage = false;
-        for (int i = 0; i < indices.length; i++) {
-            LuceneIndex index = indices[ i ];
+        for (LuceneIndex index : indices ) {
             OpenSearchImage indexImage = null;
             
             try {
                 indexImage = index.getImage();
             }
             catch (NumberFormatException nfe) {
-                Logger.getLogger(OpenSearchController.class).debug( nfe );
+                c.getLogger().debug( nfe );
             }
             
             if (indexImage != null) {

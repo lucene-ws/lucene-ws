@@ -182,9 +182,8 @@ public class ServiceController extends Controller {
         Collections.sort( indicesList, new IndexComparator() );
         LuceneIndex[] indices = indicesList.toArray( new LuceneIndex[]{} );
         
-        for (int i = 0; i < indices.length; i++) {
-            LuceneIndex index = indices[ i ];
-            
+        for (LuceneIndex index : indices) {
+            // TODO: remove the adding of the empty path to make this work with Perl client!
             String href = service.getIndexURI( request, index ).withPath("").toString();
             
             String title = index.getTitle();
@@ -236,8 +235,8 @@ public class ServiceController extends Controller {
         
         LuceneIndex[] indices = list.toArray( new LuceneIndex[]{} );
         
-        for (int i = 0; i < indices.length; i++) {
-            feed.addEntry( asEntry( c, service, request, indices[ i ] ) );
+        for (LuceneIndex index : indices) {
+            feed.addEntry( asEntry( c, service, request, index ) );
         }
         
         

@@ -72,10 +72,10 @@ public class ExceptionController extends Controller {
                 
                 Element ol = document.createElement( "ol" );
                 
-                StackTraceElement[] stack = e.getStackTrace();
-                for (int i = 0; i < stack.length; i++) {
+                StackTraceElement[] stackTraceElements = e.getStackTrace();
+                for (StackTraceElement stackTraceElement : stackTraceElements) {
                     Element li = document.createElement( "li" );
-                    li.appendChild( document.createTextNode( stack[ i ].toString() ) );
+                    li.appendChild( document.createTextNode( stackTraceElement.toString() ) );
                     ol.appendChild( li );
                 }
                 
