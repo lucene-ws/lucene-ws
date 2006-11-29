@@ -25,7 +25,7 @@
     <target name="compile" depends="prepare">
         <javac srcdir="src" destdir="build" debug="on" optimize="off" deprecation="on">
             <classpath>
-                <path refid="lib.class.path"/>
+                <path refid="lib.class.path" />
             </classpath>
         </javac>
     </target>
@@ -34,7 +34,7 @@
         <mkdir dir="dist/javadoc" />
         <javadoc sourcepath="src" destdir="dist/javadoc" packagenames="*">
             <classpath>
-        		<pathelement path="${lib.class.path}" />
+                <path refid="lib.class.path" />
             </classpath>
         </javadoc>
     </target>

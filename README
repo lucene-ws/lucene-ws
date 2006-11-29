@@ -1,5 +1,5 @@
-Lucene Web Service INSTALL
-==========================
+Lucene Web Service
+------------------
 
 To install this Lucene Web Service you will need:
 
@@ -80,3 +80,8 @@ Installation:
 
 That should be it -- now read the docs to find out how to use the lucene web service to index
 and search your documents.
+
+AUTHORS
+
+Adam Paynter <adam.paynter@unb.ca>
+Brian Cassidy <brian.cassidy@nald.ca>
