@@ -40,7 +40,12 @@
     </target>
 
     <target name="package" depends="compile">
-        <mkdir dir="dist" />        <war destfile="dist/${project.name}-${project.version}.war" webxml="conf/web.xml">
+        <mkdir dir="dist" />
+        <war destfile="dist/${project.name}-${project.version}.war" webxml="conf/web.xml">
+            <classes dir="build" />
+            <lib dir="lib">
+                <exclude name="servlet-api-2.5-6.0.2.jar" />
+            </lib>
         </war>
     </target>
 

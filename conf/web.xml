@@ -61,7 +61,7 @@
       </init-param>
       <init-param>
 	      <param-name>title</param-name>
-	      <param-value>Brian's Lucene Web Service</param-value>
+	      <param-value>Lucene Web Service</param-value>
       </init-param>
     </servlet>
 
