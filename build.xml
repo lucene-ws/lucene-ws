@@ -8,11 +8,11 @@
 <!-- ==================== File and Directory Names ======================== -->
 
   <!-- EDIT THE LINE BELOW TO POINT TO YOUR TOMCAT INSTALL -->
-  <property name="catalina.home" value="/var/opt/tomcat/"/>
+  <property name="catalina.home" value="/usr/share/tomcat5.5/"/>
 
-  <property name="app.name"      value="lucene"/>
+  <property name="app.name"      value="lucene-ws"/>
   <property name="app.path"      value="/${app.name}"/>
-  <property name="app.version"   value="0.1.0"/>
+  <property name="app.version"   value="1.0"/>
   <property name="build.home"    value="${basedir}/build"/>
   <property name="dist.home"     value="${basedir}/dist"/>
   <property name="docs.home"     value="${basedir}/docs"/>
@@ -40,7 +40,7 @@
   <path id="compile.classpath">
 
     <!-- EDIT THIS TO POINT TO YOUR INSTALL OF LUCENE! -->
-    <pathelement location="/var/opt/tomcat/common/lib/lucene-core-2.0.0.jar"/>
+    <pathelement location="${cataline.home}/common/lib/lucene-core-2.0.0.jar"/>
 
     <pathelement location="${catalina.home}/common/classes"/>
     <fileset dir="${catalina.home}/common/endorsed">
