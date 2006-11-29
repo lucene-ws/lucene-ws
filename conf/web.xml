@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <web-app>
 
+    <display-name>The Lucene Web Service</display-name>
+
     <servlet>
         <servlet-name>LuceneWebService</servlet-name>
         <servlet-class>net.lucenews.LuceneWebService</servlet-class>
