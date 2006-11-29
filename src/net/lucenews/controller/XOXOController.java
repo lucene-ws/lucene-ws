@@ -380,7 +380,7 @@ public class XOXOController {
      * Produces a new Field object given the standard field constructor
      * parameters. If the requested field is not stored, not indexed and
      * not tokenized (a dud, so to speak), a field as constructed by 
-     * {@link org.apache.lucene.document.Field#Text} will be returned.
+     * {@link org.apache.lucene.document.Field} will be returned.
      * 
      * @param name
      * @param value

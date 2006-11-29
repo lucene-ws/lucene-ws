@@ -19,18 +19,18 @@ public class CharsetController extends Controller {
      * Encodes the input stream using the encoder provided by the Charset represented
      * by <code>charsetName</code> and writes the resulting data to the output stream.
      * 
-     * @param charset the charset providing the desired CharsetEncoder
-     * @param in      the input stream
-     * @param out     the output stream
-     * @throws        IllegalCharsetNameException
-     * @throws        UnsupportedCharsetException
-     * @throws        UnsupportedOperationException
-     * @throws        IOException if an exception occurred while reading from and/or writing to the streams
-     * @throws        IllegalStateException
-     * @throws        MalformedInputException
-     * @throws        UnmappableCharacterException
-     * @throws        CodingErrorAction.REPORT
-     * @throws        CharacterCodingException
+     * @param charsetName the charset providing the desired CharsetEncoder
+     * @param in          the input stream
+     * @param out         the output stream
+     * @throws            IllegalCharsetNameException
+     * @throws            UnsupportedCharsetException
+     * @throws            UnsupportedOperationException
+     * @throws            IOException if an exception occurred while reading from and/or writing to the streams
+     * @throws            IllegalStateException
+     * @throws            MalformedInputException
+     * @throws            UnmappableCharacterException
+     * @throws            CodingErrorAction.REPORT
+     * @throws            CharacterCodingException
      */
     
     public static void encode (String charsetName, InputStream in, OutputStream out)

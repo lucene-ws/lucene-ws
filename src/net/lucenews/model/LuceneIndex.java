@@ -539,19 +539,33 @@ public class LuceneIndex {
      * to the given identifier. This is accomplished by enumerating through
      * the {@link org.apache.lucene.index.TermDocs} object returned by 
      * calling {@link org.apache.lucene.index.IndexReader#termDocs(Term)}
-     * on the term [ {@link #getIdentifyingField} ] => [ <code>identifier</code> ].
+     * on the term [ {@link #getIdentifierFieldName} ] => [ <code>identifier</code> ].
+     *
+     * @param identifier       the identifier of the document in question
+     * @return           true if the document was found, false otherwise
+     * @throws           IOException
+     * @throws           MultipleValueException if more than one document exists for the given identifier
+     * @see              #getIdentifierFieldName
+     */
+    
+    public boolean hasDocument (String identifier) throws IOException {
+        return hasDocument( identifier, false );
+    }
+
+    /**
+     * Determines whether the index possesses a document corresponding
+     * to the given identifier. This is accomplished by enumerating through
+     * the {@link org.apache.lucene.index.TermDocs} object returned by 
+     * calling {@link org.apache.lucene.index.IndexReader#termDocs(Term)}
+     * on the term [ {@link #getIdentifierFieldName} ] => [ <code>identifier</code> ].
      *
      * @param identifier       the identifier of the document in question
      * @param ignoreDuplicates by setting this to true, multiple document exceptions are suppressed
      * @return           true if the document was found, false otherwise
      * @throws           IOException
      * @throws           MultipleValueException if more than one document exists for the given identifier
-     * @see              #getIdentifyingField
+     * @see              #getIdentifierFieldName
      */
-    
-    public boolean hasDocument (String identifier) throws IOException {
-        return hasDocument( identifier, false );
-    }
     
     public boolean hasDocument (String identifier, boolean ignoreDuplicates) throws IOException {
         Term term = new Term( getIdentifierFieldName(), identifier );
@@ -585,7 +599,7 @@ public class LuceneIndex {
     
     /**
      * Gets the document corresponding to the given identifier.
-     * That is, a document containing the [ {@link #getIdentifyingField()} ]
+     * That is, a document containing the [ {@link #getIdentifierFieldName()} ]
      * => [ <code>identifier</code> ] term. If more than one such
      * document is found, a {@link net.lucenews.model.exception.MultipleValueException}
      * is thrown. Document's index is set to this index prior to
@@ -673,7 +687,7 @@ public class LuceneIndex {
     /**
      * Gets documents corresponding to the given identifiers.
      * Iterates through the array, calling {@link #getDocument(String)}
-     * on each. Throws a {@link net.luenews.model.exception.DocumentsNotFound}
+     * on each. Throws a {@link net.lucenews.model.exception.DocumentsNotFoundException}
      * exception if any of the documents could not be found.
      * 
      * @param identifiers the identifiers of desired documents

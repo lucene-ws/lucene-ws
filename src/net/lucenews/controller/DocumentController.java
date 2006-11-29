@@ -315,7 +315,6 @@ public class DocumentController extends Controller {
     * Returns an Atom Entry reflecting the standard format chosen for documents.
     * 
     * @param c The context
-    * @param index The index
     * @param document The document
     * @param score The score of the document (if it was a hit)
     * @return An Atom Entry
@@ -329,6 +328,18 @@ public class DocumentController extends Controller {
         c.getLogger().trace("asEntry(LuceneContext,LuceneDocument,Float)");
         return asEntry( c, document.getIndex(), document, score );
     }
+
+    /**
+    * Returns an Atom Entry reflecting the standard format chosen for documents.
+    * 
+    * @param c The context
+    * @param index The index
+    * @param document The document
+    * @param score The score of the document (if it was a hit)
+    * @return An Atom Entry
+    * @throws ParserConfigurationException
+    * @throws IOException
+    */
     
     public static Entry asEntry (LuceneContext c, LuceneIndex index, LuceneDocument document, Float score)
         throws InsufficientDataException, ParserConfigurationException, IOException
