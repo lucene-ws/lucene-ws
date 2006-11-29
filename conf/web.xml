@@ -2,67 +2,67 @@
 <web-app>
 
     <servlet>
-      <servlet-name>LuceneWebService</servlet-name>
-      <servlet-class>net.lucenews.LuceneWebService</servlet-class>
+        <servlet-name>LuceneWebService</servlet-name>
+        <servlet-class>net.lucenews.LuceneWebService</servlet-class>
 
-      <!-- ADJUST THESE SETTINGS BELOW AS NECESSARY -->
-      <!--
-		In the presence of 'properties-file' it detected, web service will attempt to
-		repopulate parameters with those found within the file pointed to by the 'properties-file'
-		name/value pair value.
-	  -->
-      <init-param>
-		<param-name>properties-file</param-name>
-		<param-value>/var/local/lucene/service.properties</param-value>
-      </init-param>
-      <init-param>
-          <param-name>debug</param-name>
-          <param-value>0</param-value>
-      </init-param>
-      <init-param>
-          <param-name>indexDirectory</param-name>
-          <param-value>/var/local/lucene/</param-value>
-      </init-param>
-      <init-param>
-		<param-name>autoStale</param-name>
-		<param-value>false</param-value>
-      </init-param>
-      <init-param>
-		<param-name>stalePeriod</param-name>
-		<param-value>5</param-value>
-      </init-param>
-      <init-param>
-		<param-name>defaultOperator</param-name>
-		<param-value>AND</param-value>
-      </init-param>
-      <init-param>
-		<param-name>defaultField</param-name>
-		<param-value>all</param-value>
-      </init-param>
-      <init-param>
-		<param-name>entriesPerPage</param-name>
-		<param-value>10</param-value>
-      </init-param>
-      <init-param>
-          <param-name>minSearchers</param-name>
-          <param-value>3</param-value>
-      </init-param>
-      <init-param>
-          <param-name>maxSearchers</param-name>
-          <param-value>10</param-value>
-      </init-param>
-      <init-param>
-          <param-name>searcherTimeout</param-name>
-          <param-value>10</param-value>
-      </init-param>
-      <init-param>
-          <param-name>writerTimeout</param-name>
-          <param-value>30</param-value>
-      </init-param>
-      <init-param>
-	      <param-name>title</param-name>
-	      <param-value>Lucene Web Service</param-value>
-      </init-param>
+        <!-- ADJUST THESE SETTINGS BELOW AS NECESSARY -->
+        <!--
+            In the presence of 'properties-file' it detected, web service will attempt
+            to repopulate parameters with those found within the file pointed to by
+            the 'properties-file' name/value pair value.
+        -->
+        <init-param>
+            <param-name>properties-file</param-name>
+            <param-value>/var/local/lucene/service.properties</param-value>
+        </init-param>
+        <init-param>
+            <param-name>debug</param-name>
+            <param-value>0</param-value>
+        </init-param>
+        <init-param>
+            <param-name>indexDirectory</param-name>
+            <param-value>/var/local/lucene/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>autoStale</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+            <param-name>stalePeriod</param-name>
+            <param-value>5</param-value>
+        </init-param>
+        <init-param>
+            <param-name>defaultOperator</param-name>
+            <param-value>AND</param-value>
+        </init-param>
+        <init-param>
+            <param-name>defaultField</param-name>
+            <param-value>all</param-value>
+        </init-param>
+        <init-param>
+            <param-name>entriesPerPage</param-name>
+            <param-value>10</param-value>
+        </init-param>
+        <init-param>
+             <param-name>minSearchers</param-name>
+            <param-value>3</param-value>
+        </init-param>
+        <init-param>
+            <param-name>maxSearchers</param-name>
+            <param-value>10</param-value>
+        </init-param>
+        <init-param>
+            <param-name>searcherTimeout</param-name>
+            <param-value>10</param-value>
+        </init-param>
+        <init-param>
+            <param-name>writerTimeout</param-name>
+            <param-value>30</param-value>
+        </init-param>
+        <init-param>
+            <param-name>title</param-name>
+            <param-value>Lucene Web Service</param-value>
+        </init-param>
     </servlet>
 
     <servlet-mapping>
