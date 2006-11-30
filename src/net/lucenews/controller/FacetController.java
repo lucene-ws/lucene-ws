@@ -8,6 +8,7 @@ import net.lucenews.model.exception.*;
 import net.lucenews.view.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
+import org.apache.lucene.misc.ChainedFilter;
 import org.apache.lucene.search.*;
 import org.w3c.dom.*;
 
@@ -44,10 +45,15 @@ public class FacetController extends Controller {
         }
         
         // build the filter
-        Filter filter = new CachingWrapperFilter( new QueryFilter( query ) );
-        if ( c.getFilter() != null ) {
-            filter = new CachingWrapperFilter( c.getFilter() );
+        Filter[] filters = null;
+        if ( c.getFilter() == null ) {
+            filters = new Filter[]{ new QueryFilter( query ) };
         }
+        else {
+            filters = new Filter[]{ new QueryFilter( query ), c.getFilter() };
+        }
+        Filter filter = new ChainedFilter( filters, ChainedFilter.AND );
+        
         BitSet bits = filter.bits( reader );
         
         // build an entry for each facet
