@@ -8,7 +8,7 @@
     <taskdef name="reload"   classname="org.apache.catalina.ant.ReloadTask" />
     <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" />
 
-    <target name="install" depends="package" if="tomcat">
+    <target name="install" depends="package">
         <deploy url="${tomcat.manager.url}"
             username="${tomcat.manager.username}"
             password="${tomcat.manager.password}"
@@ -16,13 +16,12 @@
             localWar="${basedir}/dist/${project.name}-${project.version}.war"/>
     </target>
     
-    <target name="remove" if="tomcat">
+    <target name="remove">
         <undeploy url="${tomcat.manager.url}"
             username="${tomcat.manager.username}"
             password="${tomcat.manager.password}"
             path="${tomcat.manager.context}"/>
     </target>
     
-    <target name="reinstall" depends="remove,install" if="tomcat">
-    </target>
+    <target name="reinstall" depends="remove,install" />
 </project>

@@ -4,7 +4,7 @@
     <property name="project.name"    value="lucene-ws" />
     <property name="project.version" value="1.0" />
 
-    <import file="conf/tomcat.xml" />
+    <import file="conf/${deploy}.xml" optional="true" />
 
     <path id="lib.class.path">
         <fileset dir="lib">
