@@ -20,6 +20,7 @@ import org.apache.log4j.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.queryParser.*;
+import org.apache.lucene.search.*;
 import org.w3c.dom.*;
 
 public class ServletUtils {
@@ -346,10 +347,22 @@ public class ServletUtils {
             if (filterString == null) { filterString = request.getCleanParameter("search_filter"); };
             if (filterString == null) { filterString = request.getCleanParameter("filter");        };
             
-            Logger.getLogger(ServletUtils.class).debug("filter string: " + filterString);
-            
             if (filterString != null) {
+                c.getLogger().debug("Generic filter string: " + filterString);
                 c.setFilter( LuceneUtils.parseFilter( filterString, c.getQueryParser() ) );
+            }
+            else {
+                
+                String queryFilterString = null;
+                if ( queryFilterString == null ) { queryFilterString = request.getCleanParameter("searchTermsFilter"); }
+                if ( queryFilterString == null ) { queryFilterString = request.getCleanParameter("QueryFilter");       }
+                if ( queryFilterString == null ) { queryFilterString = request.getCleanParameter("queryFilter");       }
+                
+                if ( queryFilterString != null ) {
+                    c.getLogger().debug("Query filter string: " + queryFilterString);
+                    c.setFilter( new QueryFilter( c.getQueryParser().parse( queryFilterString ) ) );
+                }
+                
             }
         }
         
