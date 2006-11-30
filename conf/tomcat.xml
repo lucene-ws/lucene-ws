@@ -9,18 +9,18 @@
     <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" />
 
     <target name="install" depends="package">
-        <deploy url="${tomcat.manager.url}"
+        <deploy  url="${tomcat.manager.url}"
             username="${tomcat.manager.username}"
             password="${tomcat.manager.password}"
-            path="${tomcat.manager.context}"
-            localWar="${package.war}"/>
+                path="${tomcat.manager.context}"
+            localWar="${package.war}" />
     </target>
     
     <target name="remove">
         <undeploy url="${tomcat.manager.url}"
-            username="${tomcat.manager.username}"
-            password="${tomcat.manager.password}"
-            path="${tomcat.manager.context}"/>
+             username="${tomcat.manager.username}"
+             password="${tomcat.manager.password}"
+                 path="${tomcat.manager.context}" />
     </target>
     
     <target name="reinstall" depends="remove,install" />

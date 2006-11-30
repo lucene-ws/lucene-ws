@@ -7,14 +7,14 @@
     <import file="conf/${deploy}.xml" optional="true" />
 
     <property name="package.filename" value="${basedir}/dist/${project.name}-${project.version}" />
-    <property name="package.war" value="${package.filename}.war" />
-    <property name="package.source" value="${package.filename}-src.tar.gz" />
+    <property name="package.war"      value="${package.filename}.war" />
+    <property name="package.source"   value="${package.filename}-src.tar.gz" />
 
     <path id="lib.class.path">
         <fileset dir="lib">
-            <include name="**/*.jar"/>
+            <include name="**/*.jar" />
         </fileset>
-        <pathelement location="build"/>
+        <pathelement location="build" />
     </path>
 
     <target name="all" depends="clean,prepare,compile,javadoc,package" />
