@@ -1,6 +1,5 @@
 package net.lucenews.controller;
 
-//import com.ibm.icu.text.*;
 import java.util.*;
 import net.lucenews.*;
 import net.lucenews.atom.*;
@@ -44,6 +43,7 @@ public class FacetController extends Controller {
             query = new MatchAllDocsQuery();
         }
         
+        // build the filter
         Filter filter = new CachingWrapperFilter( new QueryFilter( query ) );
         if ( c.getFilter() != null ) {
             filter = new CachingWrapperFilter( c.getFilter() );
@@ -64,8 +64,6 @@ public class FacetController extends Controller {
             TermEnum termEnumeration = reader.terms( new Term( facet, "" ) );
             while ( termEnumeration.next() && termEnumeration.term().field().equals( facet ) ) {
                 TermDocs termDocuments = reader.termDocs( termEnumeration.term() );
-                
-                //String normalizedName = Normalizer.normalize( termEnumeration.term().text(), Normalizer.NFKD );
                 String name = termEnumeration.term().text();
                 
                 int count = 0;
@@ -75,6 +73,7 @@ public class FacetController extends Controller {
                     }
                 }
                 
+                // only mention facets with more than one hit
                 if ( count > 0 ) {
                     Element dt = document.createElement("dt");
                     dt.appendChild( document.createTextNode( name ) );
