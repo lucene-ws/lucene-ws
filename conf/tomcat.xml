@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<project name="lucene-ws-tomcat">
+
+    <property file="${basedir}/conf/tomcat.properties" />
+
+    <taskdef name="deploy"   classname="org.apache.catalina.ant.DeployTask" />
+    <taskdef name="list"     classname="org.apache.catalina.ant.ListTask" />
+    <taskdef name="reload"   classname="org.apache.catalina.ant.ReloadTask" />
+    <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" />
+
+    <target name="install" depends="package" if="tomcat">
+        <deploy url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="${tomcat.manager.context}"
+            localWar="${basedir}/dist/${project.name}-${project.version}.war"/>
+    </target>
+    
+    <target name="remove" if="tomcat">
+        <undeploy url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="${tomcat.manager.context}"/>
+    </target>
+    
+    <target name="reinstall" depends="remove,install" if="tomcat">
+    </target>
+</project>

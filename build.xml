@@ -4,6 +4,8 @@
     <property name="project.name"    value="lucene-ws" />
     <property name="project.version" value="1.0" />
 
+    <import file="conf/tomcat.xml" />
+
     <path id="lib.class.path">
         <fileset dir="lib">
             <include name="**/*.jar"/>
