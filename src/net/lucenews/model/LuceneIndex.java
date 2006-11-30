@@ -157,19 +157,19 @@ public class LuceneIndex {
     public static LuceneIndex create (File directory, Analyzer analyzer)
         throws IndexAlreadyExistsException, IOException
     {
-        if (IndexReader.indexExists( directory )) {
+        if ( IndexReader.indexExists( directory ) ) {
             throw new IndexAlreadyExistsException(String.valueOf( directory ));
         }
         
-        if (!managedIndices.containsKey(directory)) {
+        if ( !managedIndices.containsKey(directory) ) {
             LuceneIndex index = new LuceneIndex( directory );
             
-            // Actually write the initial index
+            // actually write the initial index
             IndexWriter writer = new IndexWriter( directory, analyzer, true );
             writer.close();
             
             if (analyzer != null) {
-                index.getProperties().getProperty( "index.analyzer", analyzer.getClass().getCanonicalName() );
+                index.getProperties().setProperty( "analyzer", analyzer.getClass().getCanonicalName() );
                 index.storeProperties();
             }
             
@@ -346,7 +346,11 @@ public class LuceneIndex {
      */
     
     public String getTitle () throws IOException {
-        return getProperties().getProperty( "index.title", getName() );
+        String title = null;
+        if ( title == null ) title = getProperty("title");
+        if ( title == null ) title = getProperty("index.title"); // backwards-compatability
+        if ( title == null ) title = getName();
+        return title;
     }
     
     
@@ -1002,13 +1006,15 @@ public class LuceneIndex {
     public boolean isReadOnly ()
         throws IOException
     {
-        String _readOnly = ServletUtils.clean( getProperty( "index.readonly" ) );
+        String readOnly = null;
+        if ( readOnly == null ) readOnly = getProperty("readonly");
+        if ( readOnly == null ) readOnly = getProperty("index.readonly"); // backward compatability
         
-        if (_readOnly == null) {
+        if ( readOnly == null ) {
             return false;
         }
         
-        return ServletUtils.parseBoolean( _readOnly );
+        return ServletUtils.parseBoolean( readOnly );
     }
     
     
@@ -1039,10 +1045,11 @@ public class LuceneIndex {
         throws IOException
     {
         String name = null;
-        if ( name == null ) { name = getProperty("document.field.<identifier>"); }
-        if ( name == null ) { name = getProperty("document.field.identifier");   }
-        if ( name == null ) { name = getProperty("document.identifier");         }
-        if ( name == null ) { name = "id";                                       }
+        if ( name == null ) name = getProperty("field.<identifier>.name");
+        if ( name == null ) name = getProperty("field.<identifier>");
+        if ( name == null ) name = getProperty("field.identifier");
+        if ( name == null ) name = getProperty("identifier");
+        if ( name == null ) name = "id";
         return name;
     }
     
@@ -1138,16 +1145,17 @@ public class LuceneIndex {
         try {
             String identifier = getIdentifier( document );
             
-            String regex = getProperties().getProperty( "document.identifier.validator" );
+            String pattern = null;
+            if ( pattern == null ) pattern = getProperty("field.<identifier>.pattern");
             
-            if (regex == null) {
+            if ( pattern == null ) {
                 return true;
             }
             else {
-                return identifier.matches( regex );
+                return identifier.matches( pattern );
             }
         }
-        catch(InsufficientDataException ide) {
+        catch (InsufficientDataException insufficientData) {
             return false;
         }
     }
@@ -1172,11 +1180,11 @@ public class LuceneIndex {
         throws IOException
     {
         try {
-            if (isDocumentIdentified( document )) {
+            if ( isDocumentIdentified( document ) ) {
                 return getIdentifier( document ).equals( identifier );
             }
         }
-        catch(InsufficientDataException ide) {
+        catch (InsufficientDataException insufficientData) {
             return false;
         }
         
@@ -1271,10 +1279,17 @@ public class LuceneIndex {
     public Analyzer getAnalyzer ()
         throws IOException
     {
-        Analyzer analyzer = LuceneUtils.parseAnalyzer( getProperty( "index.analyzer" ) );
-        if( analyzer == null ) {
-            return new StandardAnalyzer();
+        String analyzerName = null;
+        if ( analyzerName == null ) analyzerName = getProperty("analyzer.class.name");
+        if ( analyzerName == null ) analyzerName = getProperty("analyzer.name");
+        if ( analyzerName == null ) analyzerName = getProperty("analyzer");
+        if ( analyzerName == null ) analyzerName = getProperty("index.analyzer"); // backward compatability
+        
+        Analyzer analyzer = LuceneUtils.parseAnalyzer( analyzerName );
+        if ( analyzer == null ) {
+            analyzer = new StandardAnalyzer();
         }
+        
         return analyzer;
     }
     
@@ -1469,16 +1484,29 @@ public class LuceneIndex {
     public String[] getDefaultFieldNames () throws IOException {
         String[] defaultFields = null;
         
-        if (defaultFields == null) { defaultFields = ServletUtils.split( getProperty("document.fields.<default>") ); }
-        if (defaultFields == null) { defaultFields = ServletUtils.split( getProperty("document.fields.default") );   }
-        if (defaultFields == null) { defaultFields = ServletUtils.split( getProperty("document.defaultfields") );    }
-        if (defaultFields == null) { defaultFields = ServletUtils.split( getProperty("document.defaultfield") );     }
+        if ( defaultFields == null ) defaultFields = ServletUtils.split( getProperty("field.<default>.names") );
+        if ( defaultFields == null ) defaultFields = ServletUtils.split( getProperty("field.<default>.name") );
+        if ( defaultFields == null ) defaultFields = ServletUtils.split( getProperty("field.<default>") );
+        if ( defaultFields == null ) defaultFields = ServletUtils.split( getProperty("field.default") );
+        if ( defaultFields == null ) defaultFields = ServletUtils.split( getProperty("defaultfields") ); // backwards compatibility
+        if ( defaultFields == null ) defaultFields = ServletUtils.split( getProperty("defaultfield") ); // backwards compatibility
         
         return defaultFields;
     }
     
+    
+    
+    /**
+     * Gets this index's default operator.
+     */
+    
     public QueryParser.Operator getDefaultOperator () throws IOException {
-        return LuceneUtils.parseOperator( getProperty( "index.defaultoperator" ) );
+        String defaultOperator = null;
+        if ( defaultOperator == null ) defaultOperator = getProperty("operator.default");
+        if ( defaultOperator == null ) defaultOperator = getProperty("defaultoperator");
+        if ( defaultOperator == null ) defaultOperator = getProperty("operator");
+        if ( defaultOperator == null ) defaultOperator = getProperty("index.defaultoperator"); // backwards compatability
+        return LuceneUtils.parseOperator( defaultOperator );
     }
     
     
@@ -1491,7 +1519,18 @@ public class LuceneIndex {
      */
     
     public String getSummary () throws IOException {
-        return getProperties().getProperty( "document.summary", "summary" );
+        String summary = null;
+        if ( summary == null ) summary = getProperty("summary");
+        return summary;
+    }
+    
+    
+    public String getSummaryFieldName () throws IOException {
+        String fieldName = null;
+        if ( fieldName == null ) fieldName = getProperty("field.<summary>.name");
+        if ( fieldName == null ) fieldName = getProperty("field.<summary>");
+        if ( fieldName == null ) fieldName = getProperty("document.summary"); // backwards compatability
+        return fieldName;
     }
     
     
@@ -1539,15 +1578,16 @@ public class LuceneIndex {
     
     public String getTitleFieldName () throws IOException {
         String fieldName = null;
-        if ( fieldName == null ) { fieldName = getProperty("document.title.field"); }
-        if ( fieldName == null ) { fieldName = getProperty("document.title");       }
+        if ( fieldName == null ) fieldName = getProperty("field.<title>.name");
+        if ( fieldName == null ) fieldName = getProperty("field.<title>");
+        if ( fieldName == null ) fieldName = getProperty("document.title");
         return fieldName;
     }
     
     public String getTitleTemplate () throws IOException {
         String template = null;
-        if ( template == null ) { template = getProperty("document.title.template"); }
-        if ( template == null ) { template = getProperty("document.title");          }
+        if ( template == null ) template = getProperty("field.<title>.template");
+        if ( template == null ) template = getProperty("field.<title>");
         return template;
     }
     
@@ -1765,11 +1805,10 @@ public class LuceneIndex {
     
     public String getLastModifiedFieldName () throws IOException {
         String fieldName = null;
-        if ( fieldName == null ) { fieldName = getProperty("document.field.<modified>"); }
-        if ( fieldName == null ) { fieldName = getProperty("document.field.<updated>");  }
-        if ( fieldName == null ) { fieldName = getProperty("document.field.updated");    }
-        if ( fieldName == null ) { fieldName = getProperty("document.updated");          }
-        if ( fieldName == null ) { fieldName = getProperty("updated");                   }
+        if ( fieldName == null ) fieldName = getProperty("field.<modified>.name");
+        if ( fieldName == null ) fieldName = getProperty("field.<modified>");
+        if ( fieldName == null ) fieldName = getProperty("field.modified");
+        if ( fieldName == null ) fieldName = getProperty("document.updated"); // backwards compatability
         return fieldName;
     }
     
@@ -1818,9 +1857,8 @@ public class LuceneIndex {
         throws IOException
     {
         String precision = null;
-        if ( precision == null ) { precision = getProperty("document.field.<updated>.precision"); }
-        if ( precision == null ) { precision = getProperty("document.field.updated.precision");   }
-        if ( precision == null ) { precision = getProperty("document.updated.precision");         }
+        if ( precision == null ) precision = getProperty("field.<modified>.precision");
+        if ( precision == null ) precision = getProperty("field.modified.precision");
         
         if ( precision == null ) {
             return null;
@@ -1863,7 +1901,7 @@ public class LuceneIndex {
         Logger.getLogger( this.getClass() ).debug("getLastModified");
         
         try {
-            String format = getProperty("document.field.<modified>.format");
+            String format = getProperty("field.<modified>.format");
             Logger.getLogger( this.getClass() ).debug("format: "+format);
             String value  = document.get( getLastModifiedFieldName() );
             Logger.getLogger( this.getClass() ).debug("value: "+value);
@@ -1886,13 +1924,13 @@ public class LuceneIndex {
                     
                     // determine the time stamp's precision
                     Double precision = null;
-                    if ( precision == null ) { precision = getTimestampPrecision(); }
-                    if ( precision == null ) { precision = 1.0;                     }
+                    if ( precision == null ) precision = getTimestampPrecision();
+                    if ( precision == null ) precision = 1.0;
                     
                     // determine the time stamp's time zone
                     String timeZone = null;
-                    if ( timeZone == null ) { timeZone = getProperty("document.field.<modified>.timezone.id"); }
-                    if ( timeZone == null ) { timeZone = getProperty("document.field.<modified>.timezone");    }
+                    if ( timeZone == null ) timeZone = getProperty("field.<modified>.timezone.id");
+                    if ( timeZone == null ) timeZone = getProperty("field.<modified>.timezone");
                     if ( timeZone != null ) {
                         calendar.setTimeZone( TimeZone.getTimeZone( timeZone ) );
                     }
@@ -1903,10 +1941,7 @@ public class LuceneIndex {
                     // determine whether or not we are to be lenient
                     String lenient    = null;
                     Boolean isLenient = null;
-                    if ( lenient == null ) { lenient = getProperty("document.field.<modified>.lenient"); }
-                    if ( lenient == null ) { lenient = getProperty("document.field.<updated>.lenient");  }
-                    if ( lenient == null ) { lenient = getProperty("document.field.updated.lenient");    }
-                    if ( lenient == null ) { lenient = getProperty("document.updated.lenient");          }
+                    if ( lenient == null ) lenient = getProperty("field.<modified>.lenient");
                     if ( lenient != null ) {
                         isLenient = ServletUtils.parseBoolean( lenient );
                     }
@@ -2025,7 +2060,7 @@ public class LuceneIndex {
             IllegalActionException, InvalidIdentifierException,
             DocumentNotFoundException, InsufficientDataException, IOException
     {
-        String format = getProperty("document.field.<modified>.format");
+        String format = getProperty("field.<modified>.format");
         
         if ( format == null ) {
             setLastModified( document, calendar.getTime().getTime(), update );
@@ -2163,9 +2198,9 @@ public class LuceneIndex {
     
     public OpenSearchText getRights (LuceneDocument document) throws IOException {
         String field = null;
-        if ( field == null ) { field = getProperty("document.field.<rights>.field"); }
-        if ( field == null ) { field = getProperty("document.field.<rights>");       }
-        if ( field == null ) { field = "rights";                                     }
+        if ( field == null ) field = getProperty("field.<rights>.name");
+        if ( field == null ) field = getProperty("field.<rights>");
+        if ( field == null ) field = "rights";
         return new OpenSearchText( document.get( field ) );
     }
     
@@ -2208,10 +2243,10 @@ public class LuceneIndex {
     
     public String getAuthorField () throws IOException {
         String authorField = null;
-        if ( authorField == null ) { authorField = getProperty("document.author.field"); }
-        if ( authorField == null ) { authorField = getProperty("document.author");       }
-        if ( authorField == null ) { authorField = getProperty("index.author");          }
-        if ( authorField == null ) { authorField = "author";                             }
+        if ( authorField == null ) authorField = getProperty("field.<author>.name");
+        if ( authorField == null ) authorField = getProperty("field.<author>");
+        if ( authorField == null ) authorField = getProperty("index.author");
+        if ( authorField == null ) authorField = "author";
         return authorField;
     }
     
@@ -2229,8 +2264,8 @@ public class LuceneIndex {
     
     public String getAuthor (LuceneDocument document) throws IOException {
         String authorTemplate = null;
-        if ( authorTemplate == null ) { authorTemplate = getProperty("document.author.template"); }
-        if ( authorTemplate == null ) { authorTemplate = getProperty("document.author");          }
+        if ( authorTemplate == null ) { authorTemplate = getProperty("field.<author>.template"); }
+        if ( authorTemplate == null ) { authorTemplate = getProperty("field.<author>");          }
         
         // if we have resolved the author template, parse and return it
         if ( authorTemplate != null ) {
@@ -2317,8 +2352,8 @@ public class LuceneIndex {
         OpenSearchImage image = null;
         
         String url = null;
-        if ( url == null ) { url = getProperty("index.image.url"); }
-        if ( url == null ) { url = getProperty("index.image");     }
+        if ( url == null ) url = getProperty("image.url");
+        if ( url == null ) url = getProperty("image");
         
         if (url == null || url.length() == 0) {
             return image;
@@ -2328,17 +2363,17 @@ public class LuceneIndex {
         
         image.setUrl( url );
         
-        String height = getProperty("index.image.height");
+        String height = getProperty("image.height");
         if ( height != null && height.trim().length() > 0 ) {
             image.setHeight( Integer.valueOf( height ) );
         }
         
-        String width = getProperty("index.image.width");
+        String width = getProperty("image.width");
         if ( width != null && width.trim().length() > 0 ) {
             image.setWidth( Integer.valueOf( width ) );
         }
         
-        String type = getProperty("index.image.type");
+        String type = getProperty("image.type");
         if ( type != null && type.trim().length() > 0 ) {
             image.setType( type );
         }

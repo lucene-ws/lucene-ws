@@ -9,6 +9,7 @@ import java.util.*;
 import net.lucenews.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
+import org.apache.log4j.*;
 import org.apache.lucene.index.*;
 
 
@@ -95,8 +96,26 @@ public class LuceneIndexManager implements LuceneIndexListener {
     public File[] getIndicesDirectories ()
         throws IOException
     {
-        String pathsString = service.getProperty( "indices.directories", service.getProperty( "indexDirectory", "c:/indices" ) );
-        String[] paths = pathsString.split( ";" );
+        String directoryNames = null;
+        
+        if ( directoryNames == null ) directoryNames = service.getProperty("index.directories");
+        if ( directoryNames == null ) directoryNames = service.getProperty("index.directory");
+        if ( directoryNames == null ) directoryNames = service.getProperty("directories");
+        if ( directoryNames == null ) directoryNames = service.getProperty("directory");
+        if ( directoryNames == null ) directoryNames = service.getProperty("indices.directories");
+        if ( directoryNames == null ) directoryNames = service.getProperty("index.directories");
+        if ( directoryNames == null ) directoryNames = service.getProperty("indexDirectory");
+        if ( directoryNames == null ) directoryNames = service.getProperty("indexDirectories");
+        
+        // If none of these work, we will attempt to come up with a 
+        // logical default based on what operating system this is using.
+        String os = System.getProperty("os.name");
+        Logger.getLogger( this.getClass() ).info("Operating system: " + os);
+        
+        if ( directoryNames == null ) directoryNames = service.getProperty("C:\\indices");
+        
+        // split the directory names
+        String[] paths = directoryNames.split(";");
         
         List<File> directories = new LinkedList<File>();
         for ( int i = 0; i < paths.length; i++ ) {
