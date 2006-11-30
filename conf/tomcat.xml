@@ -13,7 +13,7 @@
             username="${tomcat.manager.username}"
             password="${tomcat.manager.password}"
             path="${tomcat.manager.context}"
-            localWar="${basedir}/dist/${project.name}-${project.version}.war"/>
+            localWar="${package.war}"/>
     </target>
     
     <target name="remove">

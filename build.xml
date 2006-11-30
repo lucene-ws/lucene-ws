@@ -6,6 +6,10 @@
 
     <import file="conf/${deploy}.xml" optional="true" />
 
+    <property name="package.filename" value="${basedir}/dist/${project.name}-${project.version}" />
+    <property name="package.war" value="${package.filename}.war" />
+    <property name="package.source" value="${package.filename}-src.tar.gz" />
+
     <path id="lib.class.path">
         <fileset dir="lib">
             <include name="**/*.jar"/>
@@ -43,12 +47,17 @@
 
     <target name="package" depends="compile">
         <mkdir dir="dist" />
-        <war destfile="dist/${project.name}-${project.version}.war" webxml="conf/web.xml">
+        <war destfile="${package.war}" webxml="conf/web.xml">
             <classes dir="build" />
             <lib dir="lib">
                 <exclude name="servlet-api-2.5-6.0.2.jar" />
             </lib>
         </war>
+    </target>
+
+    <target name="package-source" depends="clean">
+        <mkdir dir="dist" />
+        <tar destfile="${package.source}" basedir="." excludes="dist/**" compression="gzip" />
     </target>
 
 </project>
