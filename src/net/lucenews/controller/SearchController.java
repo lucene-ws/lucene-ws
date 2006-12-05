@@ -305,7 +305,7 @@ public class SearchController extends Controller {
         
         if ( response.getRelatedLink("first") == null && openSearchQuery.getFirstPage() != null ) {
             OpenSearchLink link = new OpenSearchLink();
-            link.setHref( uri.with( "page", openSearchQuery.getFirstPage() ).toString() );
+            link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getFirstPage() ).toString() );
             link.setRel( "first" );
             link.setType( OpenSearch.getContentType( format ) );
             response.addLink( link );
@@ -318,7 +318,7 @@ public class SearchController extends Controller {
         
         if ( response.getRelatedLink("previous") == null && openSearchQuery.getPreviousPage() != null ) {
             OpenSearchLink link = new OpenSearchLink();
-            link.setHref( uri.with( "page", openSearchQuery.getPreviousPage() ).toString() );
+            link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getPreviousPage() ).toString() );
             link.setRel( "previous" );
             link.setType( OpenSearch.getContentType( format ) );
             response.addLink( link );
@@ -331,7 +331,7 @@ public class SearchController extends Controller {
         
         if ( response.getRelatedLink("self") == null && openSearchQuery.getStartPage() != null ) {
             OpenSearchLink link = new OpenSearchLink();
-            link.setHref( uri.with( "page", openSearchQuery.getStartPage() ).toString() );
+            link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getStartPage() ).toString() );
             link.setRel( "self" );
             link.setType( OpenSearch.getContentType( format ) );
             response.addLink( link );
@@ -344,7 +344,7 @@ public class SearchController extends Controller {
         
         if ( response.getRelatedLink("next") == null && openSearchQuery.getNextPage() != null ) {
             OpenSearchLink link = new OpenSearchLink();
-            link.setHref( uri.with( "page", openSearchQuery.getNextPage() ).toString() );
+            link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getNextPage() ).toString() );
             link.setRel( "next" );
             link.setType( OpenSearch.getContentType( format ) );
             response.addLink( link );
@@ -357,7 +357,7 @@ public class SearchController extends Controller {
         
         if ( response.getRelatedLink("last") == null && openSearchQuery.getLastPage() != null ) {
             OpenSearchLink link = new OpenSearchLink();
-            link.setHref( uri.with( "page", openSearchQuery.getLastPage() ).toString() );
+            link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getLastPage() ).toString() );
             link.setRel( "last" );
             link.setType( OpenSearch.getContentType( format ) );
             response.addLink( link );

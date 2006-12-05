@@ -69,9 +69,21 @@ public class ServletUtils {
              */
             
             Integer startPage = null;
-            if (startPage == null) { startPage = request.getIntegerParameter("startPage");  }
-            if (startPage == null) { startPage = request.getIntegerParameter("start_page"); }
-            if (startPage == null) { startPage = request.getIntegerParameter("page");       }
+            if (startPage == null) {
+                startPage = request.getIntegerParameter("startPage");
+                c.setStartPageParameter("startPage");
+            }
+            if (startPage == null) {
+                startPage = request.getIntegerParameter("start_page");
+                c.setStartPageParameter("start_page");
+            }
+            if (startPage == null) {
+                startPage = request.getIntegerParameter("page");
+                c.setStartPageParameter("page");
+            }
+            
+            if (startPage == null) c.setStartPageParameter( null );
+            
             query.setStartPage( startPage );
             
             

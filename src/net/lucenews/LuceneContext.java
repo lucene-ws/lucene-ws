@@ -40,6 +40,7 @@ public class LuceneContext {
     private Boolean               suggestSynonyms;
     private LuceneSynonymExpander synonymExpander;
     private QueryReconstructor    queryReconstructor;
+    private String startPageParameter;
     
     
     
@@ -423,6 +424,21 @@ public class LuceneContext {
         }
         
         return localization;
+    }
+    
+    
+    
+    public String getStartPageParameter () {
+        if ( startPageParameter == null ) {
+            return "startPage";
+        }
+        else {
+            return startPageParameter;
+        }
+    }
+    
+    public void setStartPageParameter (String startPageParameter) {
+        this.startPageParameter = startPageParameter;
     }
     
 }
