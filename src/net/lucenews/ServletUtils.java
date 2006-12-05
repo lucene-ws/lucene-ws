@@ -167,6 +167,16 @@ public class ServletUtils {
         }
         
         
+        // filter analyzer
+        if (c.getFilterAnalyzer() == null) {
+            Analyzer analyzer = null;
+            
+            if (analyzer == null) { analyzer = LuceneUtils.parseAnalyzer( request.getCleanParameter("filterAnalyzer") ); }
+            
+            c.setFilterAnalyzer( analyzer );
+        }
+        
+        
         // default operator
         if (c.getDefaultOperator() == null) {
             QueryParser.Operator defaultOperator = null;
@@ -359,9 +369,19 @@ public class ServletUtils {
             if (filterString == null) { filterString = request.getCleanParameter("search_filter"); };
             if (filterString == null) { filterString = request.getCleanParameter("filter");        };
             
+            QueryParser filterParser = null;
+            if ( c.getFilterAnalyzer() == null ) {
+                filterParser = c.getQueryParser();
+            }
+            else {
+                filterParser = new QueryParser( c.getQueryParser().getField(), c.getFilterAnalyzer() );
+            }
+            
+            c.getLogger().debug("Filter query parser: " + filterParser);
+            
             if (filterString != null) {
                 c.getLogger().debug("Generic filter string: " + filterString);
-                c.setFilter( LuceneUtils.parseFilter( filterString, c.getQueryParser() ) );
+                c.setFilter( LuceneUtils.parseFilter( filterString, filterParser ) );
             }
             else {
                 
@@ -372,7 +392,7 @@ public class ServletUtils {
                 
                 if ( queryFilterString != null ) {
                     c.getLogger().debug("Query filter string: " + queryFilterString);
-                    c.setFilter( new QueryFilter( c.getQueryParser().parse( queryFilterString ) ) );
+                    c.setFilter( new QueryFilter( filterParser.parse( queryFilterString ) ) );
                 }
                 
             }

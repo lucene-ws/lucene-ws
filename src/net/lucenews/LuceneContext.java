@@ -25,6 +25,7 @@ public class LuceneContext {
     private OpenSearchResponse    openSearchResponse;
     private OpenSearch.Format     openSearchFormat;
     private Analyzer              analyzer;
+    private Analyzer              filterAnalyzer;
     private String                defaultField;
     private String[]              defaultFields;
     private QueryParser.Operator  defaultOperator;
@@ -185,6 +186,16 @@ public class LuceneContext {
     
     public void setAnalyzer (Analyzer analyzer) {
         this.analyzer = analyzer;
+    }
+    
+    
+    
+    public Analyzer getFilterAnalyzer () {
+        return filterAnalyzer;
+    }
+    
+    public void setFilterAnalyzer (Analyzer filterAnalyzer) {
+        this.filterAnalyzer = filterAnalyzer;
     }
     
     

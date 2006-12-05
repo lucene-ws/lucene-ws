@@ -75,6 +75,7 @@ public class OpenSearchController extends Controller {
         template.setParameter( "filter",          "{lucene:filter?}" );
         template.setParameter( "locale",          "{lucene:locale?}" );
         template.setParameter( "sort",            "{lucene:sort?}" );
+        template.setParameter( "filterAnalyzer",  "{lucene:filterAnalyzer?}" );
         
         
         // Atom
