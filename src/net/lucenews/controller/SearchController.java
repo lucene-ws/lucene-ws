@@ -72,33 +72,18 @@ public class SearchController extends Controller {
          * Apply defaults
          */
         
-        if (c.getAnalyzer() == null)           { c.setAnalyzer( new StandardAnalyzer() ); }
-        if (c.suggestSimilar() == null)        { c.suggestSimilar( false );  }
-        if (c.suggestSpelling() == null)       { c.suggestSpelling( false ); }
-        if (c.suggestSynonyms() == null)       { c.suggestSynonyms( false ); }
-        if (c.getOpenSearchFormat() == null)   { c.setOpenSearchFormat( OpenSearch.ATOM ); }
-        if (c.getOpenSearchResponse() == null) { c.setOpenSearchResponse( new OpenSearchResponse() ); }
+        if ( c.getAnalyzer() == null )           c.setAnalyzer( new StandardAnalyzer() );
+        if ( c.suggestSimilar() == null )        c.suggestSimilar( false );
+        if ( c.suggestSpelling() == null )       c.suggestSpelling( false );
+        if ( c.suggestSynonyms() == null )       c.suggestSynonyms( false );
+        if ( c.getOpenSearchFormat() == null )   c.setOpenSearchFormat( OpenSearch.ATOM );
+        if ( c.getOpenSearchResponse() == null ) c.setOpenSearchResponse( new OpenSearchResponse() );
         OpenSearchResponse response = c.getOpenSearchResponse();
         
-        if (c.getOpenSearchQuery() == null) {
-            throw new InsufficientDataException("No OpenSearch Query provided");
-        }
-        
-        if (c.getOpenSearchQuery().getCount() == null) {
+        if ( c.getOpenSearchQuery().getCount() == null ) {
             c.getOpenSearchQuery().setCount( 10 );
         }
         
-        if (c.getDefaultFields() == null) {
-            throw new InsufficientDataException("No default field(s) specified");
-        }
-        
-        if (c.getQueryParser() == null) {
-            LuceneQueryParser queryParser = new LuceneQueryParser( "dd8fc45d87f91c6f9a9f43a3f355a94a", c.getAnalyzer() );
-            queryParser.setFields( c.getDefaultFields() );
-            if (c.getLocale() != null)          { queryParser.setLocale( c.getLocale() ); }
-            if (c.getDefaultOperator() != null) { queryParser.setDefaultOperator( c.getDefaultOperator() ); }
-            c.setQueryParser( queryParser );
-        }
         
         
         /**
@@ -108,11 +93,28 @@ public class SearchController extends Controller {
         Query  query       = null;
         String searchTerms = c.getOpenSearchQuery().getSearchTerms();
         
-        if (query == null) {
-            if (searchTerms == null) {
+        if ( query == null ) {
+            if ( searchTerms == null ) {
                 query = new MatchAllDocsQuery();
             }
             else {
+                
+                if ( c.getOpenSearchQuery() == null ) {
+                    throw new InsufficientDataException("No OpenSearch Query provided");
+                }
+                
+                if ( c.getDefaultFields() == null ) {
+                    throw new InsufficientDataException("No default field(s) specified");
+                }
+                
+                if ( c.getQueryParser() == null ) {
+                    LuceneQueryParser queryParser = new LuceneQueryParser( "dd8fc45d87f91c6f9a9f43a3f355a94a", c.getAnalyzer() );
+                    queryParser.setFields( c.getDefaultFields() );
+                    if (c.getLocale() != null)          { queryParser.setLocale( c.getLocale() ); }
+                    if (c.getDefaultOperator() != null) { queryParser.setDefaultOperator( c.getDefaultOperator() ); }
+                    c.setQueryParser( queryParser );
+                }
+                
                 query = c.getQueryParser().parse( searchTerms );
             }
         }

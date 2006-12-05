@@ -120,8 +120,8 @@ public class IndexController extends Controller {
             LuceneIndex index = indices[ i ];
             
             String title = null;
-            if ( title == null ) { title = index.getTitle(); }
-            if ( title == null ) { title = index.getName();  }
+            if ( title == null ) title = index.getTitle();
+            if ( title == null ) title = index.getName();
             titles[ i ] = title;
         }
         c.setTitle( ServletUtils.joined( titles ) );

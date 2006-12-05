@@ -119,7 +119,7 @@ public class LuceneWebService extends HttpServlet {
             
             if ( propertiesFile != null ) {
                 try {
-                    setProperties( new File( getProperty( "properties-file" ) ) );
+                    setProperties( new File( propertiesFile ) );
                 }
                 catch(NullPointerException npe) {
                 }
@@ -1158,8 +1158,11 @@ public class LuceneWebService extends HttpServlet {
      */
     
     public boolean isDebugging () throws IOException {
-        String debugging = getProperty("service.debugging");
-        return ServletUtils.parseBoolean( debugging );
+        String debug = null;
+        if ( debug == null ) debug = getProperty("debug");
+        if ( debug == null ) debug = getProperty("debugging");
+        if ( debug == null ) debug = getProperty("service.debugging");
+        return ServletUtils.parseBoolean( debug );
     }
     
     

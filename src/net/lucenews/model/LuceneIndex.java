@@ -1561,18 +1561,10 @@ public class LuceneIndex {
      */
     
     public String getTitle (LuceneDocument document) throws IOException {
-        // template
-        String template = getTitleTemplate();
-        if ( template != null ) {
-            return ServletUtils.parse( template, asProperties( document ) );
-        }
-        
-        // field
         String fieldName = getTitleFieldName();
         if ( fieldName != null ) {
             return document.get( fieldName );
         }
-        
         return null;
     }
     
@@ -1862,6 +1854,13 @@ public class LuceneIndex {
         
         if ( precision == null ) {
             return null;
+        }
+        
+        if ( precision.equals("millisecond") ) {
+            return 1.0;
+        }
+        if ( precision.equals("second") ) {
+            return 1000.0;
         }
         
         return Double.valueOf( precision );

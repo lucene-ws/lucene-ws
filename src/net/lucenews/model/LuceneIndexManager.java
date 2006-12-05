@@ -112,7 +112,17 @@ public class LuceneIndexManager implements LuceneIndexListener {
         String os = System.getProperty("os.name");
         Logger.getLogger( this.getClass() ).info("Operating system: " + os);
         
-        if ( directoryNames == null ) directoryNames = service.getProperty("C:\\indices");
+        // attempt to determine a directory based on operating system
+        if ( directoryNames == null && os != null ) {
+            if ( os.startsWith("Windows") ) {
+                directoryNames = "C:\\indices";
+            }
+            else if ( os.startsWith("Linux") ) {
+                directoryNames = "/var/lucene";
+            }
+        }
+        
+        if ( directoryNames == null ) directoryNames = "C:\\indices";
         
         // split the directory names
         String[] paths = directoryNames.split(";");
