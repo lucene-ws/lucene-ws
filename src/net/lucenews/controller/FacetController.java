@@ -68,7 +68,11 @@ public class FacetController extends Controller {
             Element dl = document.createElement("dl");
             
             TermEnum termEnumeration = reader.terms( new Term( facet, "" ) );
-            while ( termEnumeration.next() && termEnumeration.term().field().equals( facet ) ) {
+            while ( termEnumeration.term() != null ) {
+                if ( !termEnumeration.term().field().equals( facet ) ) {
+                    break;
+                }
+                
                 TermDocs termDocuments = reader.termDocs( termEnumeration.term() );
                 String name = termEnumeration.term().text();
                 
@@ -89,6 +93,8 @@ public class FacetController extends Controller {
                     dd.appendChild( document.createTextNode( String.valueOf( count ) ) );
                     dl.appendChild( dd );
                 }
+                
+                termEnumeration.next();
             }
             
             div.appendChild( dl );
