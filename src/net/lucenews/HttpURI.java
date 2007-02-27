@@ -1,6 +1,7 @@
 package net.lucenews;
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import javax.servlet.http.*;
 //import org.apache.log4j.*;
@@ -45,46 +46,17 @@ public class HttpURI {
     protected void setUri (String uri) {
         //Logger.getLogger( HttpURI.class ).debug( "STARTED SETTING URI TO " + uri );
         
-        String protocol = "http://";
-        
-        if (uri.startsWith(protocol)) {
-            uri = uri.substring(protocol.length());
+        try {
+           URI netUri = new URI(uri);
+           setHost(netUri.getHost());
+           setPort(netUri.getPort() < 0 ? null : netUri.getPort());
+           setPath(netUri.getPath().substring(0, netUri.getPath().length() - 2));
+           setParameters(netUri.getQuery());
         }
-        
-        int indexOfSlash = uri.indexOf("/");
-        int indexOfColon = uri.indexOf(":");
-        
-        if (indexOfSlash < 0) {
-            if (indexOfColon < 0) {
-                setHost( uri );
-            }
-            else {
-                setHost( uri.substring( 0, indexOfColon ) );
-                setPort( Integer.valueOf( uri.substring( indexOfColon + 1 ) ) );
-            }
+        catch (Exception e) {
+           e.printStackTrace();
         }
-        else {
-            if (indexOfColon < 0) { // port not specified
-                setHost( uri.substring( 0, indexOfSlash ) );
-                setPort( null );
-            }
-            else { // port specified
-                setHost( uri.substring( 0, indexOfColon ) );
-                setPort( Integer.valueOf( uri.substring( indexOfColon + 1, indexOfSlash ) ) );
-            }
-            
-            int indexOfQuestion = uri.indexOf("?");
-            if (indexOfQuestion < 0) { // parameters not specified
-                setPath( uri.substring( indexOfSlash ) );
-            }
-            else { // parameters specified
-                setPath( uri.substring( indexOfSlash, indexOfQuestion ) );
-                
-                String parameters = uri.substring( indexOfQuestion + 1 );
-                setParameters( parameters );
-            }
-        }
-        
+ 	        
         //Logger.getLogger( HttpURI.class ).debug( "FINISHED SETTING URI TO " + uri + ", PATH = " + getPath() );
     }
     
