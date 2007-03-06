@@ -50,7 +50,7 @@ public class HttpURI {
            URI netUri = new URI(uri);
            setHost(netUri.getHost());
            setPort(netUri.getPort() < 0 ? null : netUri.getPort());
-           setPath(netUri.getPath().substring(0, netUri.getPath().length() - 2));
+           setPath(netUri.getPath());
            setParameters(netUri.getQuery());
         }
         catch (Exception e) {
