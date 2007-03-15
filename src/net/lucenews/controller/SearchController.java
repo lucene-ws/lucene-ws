@@ -242,6 +242,8 @@ public class SearchController extends Controller {
                     result.setId( service.getDocumentURI( request, index, document ).toString() );
                     //result.setRights( document.getRights() );
                     
+                    result.setSummary(index.getSummary(document));
+                    
                     try {
                         result.setUpdated( document.getLastModified() );
                     }
