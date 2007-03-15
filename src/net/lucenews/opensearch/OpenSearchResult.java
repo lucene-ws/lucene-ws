@@ -14,6 +14,7 @@ public class OpenSearchResult {
     private OpenSearchText content;
     private List<OpenSearchPerson> people;
     private OpenSearchText rights;
+    private String summary;
     
     
     public OpenSearchResult () {
@@ -43,6 +44,14 @@ public class OpenSearchResult {
     }
     
     
+    public String getSummary () {
+        return summary;
+    }
+    
+    public void setSummary (String summary) {
+        this.summary = summary;
+    }
+
     
     public Calendar getUpdated () {
         return updated;
@@ -190,6 +199,11 @@ public class OpenSearchResult {
             // content
             if ( getContent() != null ) {
                 element.appendChild( getContent().asElement( document, format, mode ) );
+            }
+            
+            // summary
+            if ( getSummary() != null ) {
+                element.appendChild( asElement( document, "summary", getSummary() ) );
             }
             
             return element;
