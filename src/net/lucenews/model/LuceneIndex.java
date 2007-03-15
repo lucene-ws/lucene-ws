@@ -1546,7 +1546,11 @@ public class LuceneIndex {
      */
     
     public String getSummary (LuceneDocument document) throws IOException {
-        return document.get( getSummary() );
+        String fieldName = getSummaryFieldName();
+        if ( fieldName != null ) {
+            return document.get( fieldName );
+        }
+        return null;
     }
     
     
@@ -1897,13 +1901,9 @@ public class LuceneIndex {
     {
         Calendar calendar = Calendar.getInstance();
         
-        Logger.getLogger( this.getClass() ).debug("getLastModified");
-        
         try {
             String format = getProperty("field.<modified>.format");
-            Logger.getLogger( this.getClass() ).debug("format: "+format);
             String value  = document.get( getLastModifiedFieldName() );
-            Logger.getLogger( this.getClass() ).debug("value: "+value);
             
             // do some sniffing
             try {
@@ -1912,8 +1912,6 @@ public class LuceneIndex {
             }
             catch (NumberFormatException nfe) {
             }
-            
-            Logger.getLogger( this.getClass() ).debug("format: "+format);
             
             if ( format != null && value != null ) {
                 
