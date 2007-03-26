@@ -15,19 +15,9 @@ public class LuceneSpellChecker extends SpellChecker {
     private boolean more_popular;
     
     
-    public LuceneSpellChecker (Directory gramIndex) {
+    public LuceneSpellChecker (Directory gramIndex) throws IOException {
         super( gramIndex );
         setMaximumSuggestions( 0 );
-    }
-    
-    
-    
-    /**
-     * Typo in SpellChecker class (how ironic)
-     */
-    
-    public void setAccuracy (float min) {
-        setAccuraty( min );
     }
     
     
