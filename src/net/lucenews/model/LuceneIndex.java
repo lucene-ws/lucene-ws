@@ -1471,8 +1471,7 @@ public class LuceneIndex {
             refresh();
         }
     }
-    
-    
+        
     
     /**
      * Retrieves the default fields associated with the index.
@@ -1554,6 +1553,38 @@ public class LuceneIndex {
     }
     
     
+   
+    /**
+     * Retrieves the URI fieldname of a given document
+     * @return
+     * @throws IOException
+     */
+    public String getURIFieldName () throws IOException {
+        String fieldName = null;
+        if ( fieldName == null ) fieldName = getProperty("field.<uri>.name");
+        if ( fieldName == null ) fieldName = getProperty("field.<uri>");
+        if ( fieldName == null ) fieldName = getProperty("document.uri"); // backwards compatability
+        return fieldName;
+    }
+    
+    
+
+    
+    /**
+     * Retrieves a URI of the given document.
+     * 
+     * @param document The document to get the URI of
+     * @return The URI of the given document
+     * @throws IOException
+     */
+    
+    public String getURI (LuceneDocument document) throws IOException {
+        String fieldName = getURIFieldName();
+        if ( fieldName != null ) {
+            return document.get( fieldName );
+        }
+        return null;
+    }
     
     
     /**

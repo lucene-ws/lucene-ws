@@ -10,7 +10,7 @@ public class OpenSearchResult {
     private String   id;
     private Calendar updated;
     private Float    score;
-    private OpenSearchLink link;
+    private List<OpenSearchLink> links;
     private OpenSearchText content;
     private List<OpenSearchPerson> people;
     private OpenSearchText rights;
@@ -100,12 +100,15 @@ public class OpenSearchResult {
     
     
     
-    public OpenSearchLink getLink () {
-        return link;
+    public List<OpenSearchLink> getLinks () {
+        return links;
     }
     
-    public void setLink (OpenSearchLink link) {
-        this.link = link;
+    public void addLink (OpenSearchLink link) {
+        if(links == null) {
+        	links = new ArrayList<OpenSearchLink>();
+        }
+        links.add(link);
     }
     
     
@@ -167,8 +170,11 @@ public class OpenSearchResult {
             }
             
             // link
-            if ( getLink() != null ) {
-                element.appendChild( getLink().asElement( document, format, mode, true ) );
+            if ( getLinks() != null ) {
+            	for (OpenSearchLink link : links) {
+            		element.appendChild( link.asElement( document, format, mode, true ) );
+            	}
+                
             }
             
             // id

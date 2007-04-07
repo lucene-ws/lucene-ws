@@ -254,9 +254,21 @@ public class SearchController extends Controller {
                     
                     result.setScore( score );
                     
-                    OpenSearchLink resultLink = new OpenSearchLink();
-                    resultLink.setHref( service.getDocumentURI( request, index, document ).toString() );
-                    result.setLink( resultLink );
+                    
+                    OpenSearchLink serviceLink = new OpenSearchLink();
+                    serviceLink.setHref(service.getDocumentURI( request, index, document ).toString() );
+                    serviceLink.setRel("self");
+                    result.addLink( serviceLink );
+                    
+                    
+                    String documentURI = index.getURI(document);
+                    if (documentURI != null) { 
+                    	OpenSearchLink alternateLink = new OpenSearchLink();
+                    	alternateLink.setHref(documentURI);
+                    	alternateLink.setRel("alternate");
+                        result.addLink( alternateLink );
+                    }
+                    
                     
                     
                     if (document.getAuthor() != null) {
@@ -265,7 +277,7 @@ public class SearchController extends Controller {
                         author.setName( document.getAuthor() );
                         result.addPerson( author );
                     }
-                    
+                                       
                     
                     // content
                     Element div = domDocument.createElement("div");
