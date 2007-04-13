@@ -79,6 +79,7 @@
 	 	 <junit>
 	    	<classpath>
 	   			<path refid="lib.class.path" />
+	    		<pathelement location="${build.test}" />
 	    	</classpath>
 	      <formatter type="brief" usefile="false" />
 	      <batchtest>
