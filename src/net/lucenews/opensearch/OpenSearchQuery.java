@@ -212,7 +212,7 @@ public class OpenSearchQuery {
         }
         
         Integer startPage = getStartPage();
-        if (startPage == null) {
+        if (getStartIndex() != null || startPage == null) {
             startPage = 1; // default
         }
         
