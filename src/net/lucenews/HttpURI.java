@@ -1,10 +1,14 @@
 package net.lucenews;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import javax.servlet.http.*;
-//import org.apache.log4j.*;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class HttpURI {
     
@@ -16,6 +20,9 @@ public class HttpURI {
     private Integer      port;
     private List<String> pathComponents;
     private Map<String,String[]> parameters;
+
+
+	private String scheme;
     
     
     
@@ -48,6 +55,7 @@ public class HttpURI {
         
         try {
            URI netUri = new URI(uri);
+           setScheme(netUri.getScheme());
            setHost(netUri.getHost());
            setPort(netUri.getPort() < 0 ? null : netUri.getPort());
            setPath(netUri.getPath());
@@ -58,6 +66,14 @@ public class HttpURI {
         }
  	        
         //Logger.getLogger( HttpURI.class ).debug( "FINISHED SETTING URI TO " + uri + ", PATH = " + getPath() );
+    }
+    
+    public void setScheme(String scheme) {
+    	this.scheme = scheme;
+    }
+    
+    public String getScheme() {
+    	return scheme;
     }
     
     
@@ -407,8 +423,12 @@ public class HttpURI {
     public String toString () {
         StringBuffer buffer = new StringBuffer();
         
-        // protocol
-        buffer.append("http://");
+        String scheme = getScheme();
+        if (scheme == null) {
+        	scheme = "http";
+        }
+		// protocol
+        buffer.append( scheme + "://" );
         
         // host
         buffer.append( getHost() );
