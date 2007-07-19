@@ -30,7 +30,7 @@ public class IntrospectionDocument {
         Document document = builder.newDocument();
         
         Element service = document.createElement( "service" );
-        service.setAttribute( "xmlns", "http://www.w3.org/atom/app" );
+        service.setAttribute( "xmlns", "http://www.w3.org/2007/app" );
         
         Iterator<Workspace> workspaces = getWorkspaces().iterator();
         while (workspaces.hasNext()) {
