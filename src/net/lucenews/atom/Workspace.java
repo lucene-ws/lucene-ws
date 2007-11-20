@@ -47,9 +47,9 @@ public class Workspace
 	
 	public Element asElement (Document document)
 	{
-// This was updated to create a title element for a workspace
+		
 		Element workspace = document.createElement( "workspace" );
-		//Added atom:title for the workspace
+		
 		Element title = document.createElement("atom:title");
 		title.appendChild(document.createTextNode(String.valueOf(getTitle()))); 
 		workspace.appendChild(title);

@@ -68,8 +68,8 @@ public class AtomCollection {
     
     
     
- // This was updated to add the 'accept' elements and change to 'atom:title' tags.
-   
+ 
+ 	  
     public Element asElement (Document document) {
         Element collection = document.createElement("collection");
         //collection.setAttribute("title", String.valueOf(getTitle()));
