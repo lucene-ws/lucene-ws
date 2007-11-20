@@ -192,7 +192,8 @@ public class SearchController extends Controller {
         OpenSearchLink descriptionLink = new OpenSearchLink();
         descriptionLink.setHref( service.getOpenSearchDescriptionURI( request, request.getIndexNames() ).toString() );
         descriptionLink.setRel("search");
-        descriptionLink.setType("application/opensearchdescription+xml");
+//descriptionLink.setType("application/opensearchdescription+xml");
+	descriptionLink.setType("application/atom+xml");
         response.setLink( descriptionLink );
         
         
