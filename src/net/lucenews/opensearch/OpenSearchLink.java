@@ -79,7 +79,7 @@ public class OpenSearchLink {
         }
         else {
             if (getRel().equals("search") || format == OpenSearch.RSS) {
-//element = document.createElementNS("http://a9.com/-/spec/opensearch/1.1/","opensearch:link");
+
 		element = document.createElementNS("http://www.w3.org/2005/Atom","link");
             }
             else {
