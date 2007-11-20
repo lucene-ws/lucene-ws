@@ -203,8 +203,8 @@ public class LuceneWebService extends HttpServlet {
         Logger.getLogger(this.getClass()).debug("getRequestURL(): " + request.getRequestURL());
         Logger.getLogger(this.getClass()).debug("getServletPath(): " + request.getServletPath());
         */
-        
-        res.setContentType("application/atom+xml; charset=utf-8");
+// Made a change to content-type of the service document to "application/atomsvc+xml"
+        res.setContentType("application/atomsvc+xml; charset=utf-8");
         
         try {
             switch ( req.getMethodType() ) {
