@@ -33,17 +33,18 @@ public class LuceneIndexManager implements LuceneIndexListener {
      * @param name the name of the index
      * @return the LuceneIndex corresponding to the given name
      */
-    
+
     public LuceneIndex getIndex (String name) throws IndexNotFoundException, IOException {
-        if (!directories.containsKey(name)) {
+	
+	if (!directories.containsKey(name)) {
+	
             // Perhaps we're a little old...
             refresh();
         }
         
         File directory = directories.get( name );
-        
         if (directory == null) {
-            throw new IndexNotFoundException( name );
+	       throw new IndexNotFoundException( name );
         }
         
         try {
@@ -84,7 +85,9 @@ public class LuceneIndexManager implements LuceneIndexListener {
         LuceneIndex[] indices = new LuceneIndex[ names.length ];
         
         for (int i = 0; i < names.length; i++) {
+		
             indices[ i ] = getIndex( names[ i ] );
+		
         }
         
         return indices;
@@ -112,7 +115,7 @@ public class LuceneIndexManager implements LuceneIndexListener {
                 directoryNames = "C:\\indices";
             }
             else if ( os.startsWith("Linux") ) {
-                directoryNames = "/var/lucene";
+                directoryNames = "/var/local/lucene/";
             }
         }
         

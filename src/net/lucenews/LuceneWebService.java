@@ -95,8 +95,7 @@ public class LuceneWebService extends HttpServlet {
     
     public void init () {
         manager = new LuceneIndexManager( this );
-        
-        
+	
         OpenSearch.setDefaultFormat( OpenSearch.ATOM );
         OpenSearch.setDefaultMode( OpenSearch.PASSIVE );
         
@@ -115,6 +114,7 @@ public class LuceneWebService extends HttpServlet {
         try {
             String propertiesFile = null;
             if ( propertiesFile == null ) { propertiesFile = getProperty("properties.file"); }
+		
             if ( propertiesFile == null ) { propertiesFile = getProperty("properties-file"); }
             
             if ( propertiesFile != null ) {
@@ -192,10 +192,6 @@ public class LuceneWebService extends HttpServlet {
         LuceneContext  c   = new LuceneContext( req, res, this );
         req.setContext( c );
         
-        c.getLogger().info("request:  " + req.getMethod() + " " + req.getLocation() + " " + req.getProtocol());
-        
-        
-
         res.setContentType("application/atomsvc+xml; charset=utf-8");
         
         try {
@@ -206,7 +202,7 @@ public class LuceneWebService extends HttpServlet {
                     break;
                     
                 case GET:
-                    doGet( c );
+		    doGet( c );
                     break;
                     
                 case HEAD:
@@ -317,6 +313,7 @@ public class LuceneWebService extends HttpServlet {
         LuceneRequest request = c.getRequest();
         
         if (request.hasIndexNames()) {
+		
             if (request.hasDocumentIDs()) {
                 DocumentController.doDelete( c );
             }
@@ -353,37 +350,43 @@ public class LuceneWebService extends HttpServlet {
         c.getLogger().debug("request has " + request.getIndexNames().length + " index names");
         
         if ( request.getIndexNames().length == 1 ) {
-            c.getLogger().debug("request has 1 index name");
+            System.out.println("LuceneWebService line 2 has 1 index name");
+		System.out.println("The name of the index is "+request.getIndexName());
             if (request.getIndexName().equals( "service.properties" )) {
+		System.out.println("LuceneWebService line 3 index name is service.properties");
                 ServicePropertiesController.doGet( c );
                 return;
             }
         }
-        
+        System.out.println("Does this get hit line a");
         ServletUtils.prepareContext( c );
-        
+        System.out.println("Does this get hit line b");
         if ( request.getDocumentIDs().length == 1 ) {
-            
+            System.out.println("LuceneWebService line 4 Doc IDs = 1");
             // OpenSearch Description
             if ( request.getDocumentID().equals("opensearchdescription.xml") || request.getDocumentID().equals("description.xml") ) {
+		System.out.println("LuceneWebService line 5 OpenSearchController");
                 OpenSearchController.doGet( c );
                 return;
             }
             
             // facets
             if ( request.getDocumentID().equals("facets") ) {
+	System.out.println("LuceneWebService line 5 FacetController");
                 FacetController.doGet( c );
                 return;
             }
             
             // Index properties
             if ( request.getDocumentID().equals("index.properties") ) {
+		System.out.println("LuceneWebService line 6 IndexPropertiesController");
                 IndexPropertiesController.doGet( c );
                 return;
             }
             
             // Tag cloud
             if ( request.getDocumentID().equals("tagcloud") ) {
+		System.out.println("LuceneWebService line 7 IndexController");
                 IndexController.doTagCloud( c );
                 return;
             }
@@ -402,16 +405,19 @@ public class LuceneWebService extends HttpServlet {
         
         if ( request.hasIndexNames() ) {
             if ( request.hasDocumentIDs() ) {
+		System.out.println("LuceneWebService line 8 DocumentController");
                 DocumentController.doGet( c );
             }
             else if ( c.getOpenSearchQuery() != null && c.getOpenSearchQuery().getSearchTerms() != null ) {
+		System.out.println("LuceneWebService line 9 SearchController");
                 SearchController.doGet( c );
             }
             else {
+		System.out.println("LuceneWebService line 10 INdexController");
                 IndexController.doGet( c );
             }
         }
-        else {
+        else {System.out.println("LuceneWebService line 11 ServiceController");
             ServiceController.doGet( c );
         }
     }
