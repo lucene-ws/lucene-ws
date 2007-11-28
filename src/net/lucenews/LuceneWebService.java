@@ -350,44 +350,37 @@ public class LuceneWebService extends HttpServlet {
         c.getLogger().debug("request has " + request.getIndexNames().length + " index names");
         
         if ( request.getIndexNames().length == 1 ) {
-            System.out.println("LuceneWebService line 2 has 1 index name");
-		System.out.println("The name of the index is "+request.getIndexName());
-            if (request.getIndexName().equals( "service.properties" )) {
-		System.out.println("LuceneWebService line 3 index name is service.properties");
-                ServicePropertiesController.doGet( c );
+	     if (request.getIndexName().equals( "service.properties" )) {
+		     ServicePropertiesController.doGet( c );
                 return;
             }
         }
-        System.out.println("Does this get hit line a");
+        
         ServletUtils.prepareContext( c );
-        System.out.println("Does this get hit line b");
+        
         if ( request.getDocumentIDs().length == 1 ) {
-            System.out.println("LuceneWebService line 4 Doc IDs = 1");
+            
             // OpenSearch Description
             if ( request.getDocumentID().equals("opensearchdescription.xml") || request.getDocumentID().equals("description.xml") ) {
-		System.out.println("LuceneWebService line 5 OpenSearchController");
-                OpenSearchController.doGet( c );
+		    OpenSearchController.doGet( c );
                 return;
             }
             
             // facets
             if ( request.getDocumentID().equals("facets") ) {
-	System.out.println("LuceneWebService line 5 FacetController");
-                FacetController.doGet( c );
+	         FacetController.doGet( c );
                 return;
             }
             
             // Index properties
             if ( request.getDocumentID().equals("index.properties") ) {
-		System.out.println("LuceneWebService line 6 IndexPropertiesController");
-                IndexPropertiesController.doGet( c );
+		    IndexPropertiesController.doGet( c );
                 return;
             }
             
             // Tag cloud
             if ( request.getDocumentID().equals("tagcloud") ) {
-		System.out.println("LuceneWebService line 7 IndexController");
-                IndexController.doTagCloud( c );
+		    IndexController.doTagCloud( c );
                 return;
             }
             
@@ -405,19 +398,16 @@ public class LuceneWebService extends HttpServlet {
         
         if ( request.hasIndexNames() ) {
             if ( request.hasDocumentIDs() ) {
-		System.out.println("LuceneWebService line 8 DocumentController");
-                DocumentController.doGet( c );
+		   DocumentController.doGet( c );
             }
             else if ( c.getOpenSearchQuery() != null && c.getOpenSearchQuery().getSearchTerms() != null ) {
-		System.out.println("LuceneWebService line 9 SearchController");
-                SearchController.doGet( c );
+		SearchController.doGet( c );
             }
             else {
-		System.out.println("LuceneWebService line 10 INdexController");
-                IndexController.doGet( c );
+		IndexController.doGet( c );
             }
         }
-        else {System.out.println("LuceneWebService line 11 ServiceController");
+        else {
             ServiceController.doGet( c );
         }
     }
