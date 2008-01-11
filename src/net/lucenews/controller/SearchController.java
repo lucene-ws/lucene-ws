@@ -129,7 +129,14 @@ public class SearchController extends Controller {
          * Perform search
          */
         
-        Hits hits = searcher.search( query, c.getFilter(), c.getSort() );
+        Hits hits= null;	
+	 for (int i = 0; i < indices.length; i++) {
+	    if(indices[i].getDocuments().length < 1){
+		hits = searcher.search(query); 
+	    }else{
+		 hits = searcher.search( query, c.getFilter(), c.getSort() );	
+	      }	
+            }
         
         Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
         
