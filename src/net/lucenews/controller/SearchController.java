@@ -62,12 +62,12 @@ public class SearchController extends Controller {
         	boolean sort = false;
         	IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
 		LuceneDocument[] docs;
-        	for:outer(int i =0; i < indices.length; i++) {
+        	for(int i =0; i < indices.length; i++) {
 			docs = indices[i].getDocuments();
 	    		searchers[ i ] = indices[ i ].getIndexSearcher();
 			if(docs.length > 0){
 				sort=true;
-				break outer;
+				break;
 			}
 			
 		}
