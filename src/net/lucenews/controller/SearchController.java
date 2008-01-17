@@ -59,10 +59,17 @@ public class SearchController extends Controller {
          * Prepare searcher
          */
         
-        IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
-        for (int i = 0; i < indices.length; i++) {
-            searchers[ i ] = indices[ i ].getIndexSearcher();
-        }
+        boolean sort = true;
+        	IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
+		LuceneDocument[] docs;
+        	for(int i =0; i < indices.length; i++) {
+			docs = indices[i].getDocuments();
+	    		searchers[ i ] = indices[ i ].getIndexSearcher();
+			if(docs.length<1){
+				sort=false;
+				
+			}
+		}
         LuceneMultiSearcher searcher = new LuceneMultiSearcher( searchers, getSearcherIndexField() );
         c.setMultiSearcher( searcher );
         
@@ -129,14 +136,14 @@ public class SearchController extends Controller {
          * Perform search
          */
         
-        Hits hits= null;	
-	 for (int i = 0; i < indices.length; i++) {
-	    if(indices[i].getDocuments().length < 1){
-		hits = searcher.search(query); 
-	    }else{
-		 hits = searcher.search( query, c.getFilter(), c.getSort() );	
-	      }	
-            }
+        Hits hits= null;
+	if(sort){System.out.println("The sort is true and filtered search is done");
+        	hits = searcher.search( query, c.getFilter(), c.getSort() );	
+	   	}
+	if(!sort){
+		System.out.println("The sort is false and the query search is done");
+		hits = searcher.search(query);	
+	}
         
         Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
         
