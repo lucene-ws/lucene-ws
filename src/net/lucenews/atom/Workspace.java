@@ -47,14 +47,19 @@ public class Workspace
 	
 	public Element asElement (Document document)
 	{
+		
 		Element workspace = document.createElement( "workspace" );
 		
-		workspace.setAttribute( "title", String.valueOf( getTitle() ) );
+		Element title = document.createElement("atom:title");
+		title.appendChild(document.createTextNode(String.valueOf(getTitle()))); 
+		workspace.appendChild(title);
 		
 		Iterator<AtomCollection> collections = getCollections().iterator();
-		while( collections.hasNext() )
+		while( collections.hasNext() ){
+			System.out.println("COllection has next?"+collections.hasNext());			 
 			workspace.appendChild( collections.next().asElement( document ) );
-		
+				
+			}
 		return workspace;
 	}
 	

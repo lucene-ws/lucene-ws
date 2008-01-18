@@ -29,14 +29,15 @@ public class ServletUtils {
         throws
             IndicesNotFoundException,
             org.apache.lucene.queryParser.ParseException, IOException
-    {
+    {	
         LuceneWebService   service  = c.getService();
-        LuceneIndexManager manager  = service.getIndexManager();
-        LuceneRequest      request  = c.getRequest();
-        LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
+	LuceneIndexManager manager  = service.getIndexManager();
+	LuceneRequest      request  = c.getRequest();
+	LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
         
         
         // OpenSearch query
+	
         if ( c.getOpenSearchQuery() == null ) {
             OpenSearchQuery query = new OpenSearchQuery();
             
@@ -49,7 +50,8 @@ public class ServletUtils {
             if (searchTerms == null) { searchTerms = request.getCleanParameter("searchTerms"); }
             if (searchTerms == null) { searchTerms = request.getCleanParameter("query");       }
             if (searchTerms == null) { searchTerms = request.getCleanParameter("q");           }
-            query.setSearchTerms( searchTerms );
+	    
+		query.setSearchTerms( searchTerms );
             
             
             /**

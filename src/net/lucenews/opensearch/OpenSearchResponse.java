@@ -27,6 +27,7 @@ public class OpenSearchResponse {
     private String   id;
     private Calendar updated;
     private String   description;
+    private String   topUrl;
     private Integer  totalResults;
     private Integer  startIndex;
     private Integer  itemsPerPage;
@@ -43,7 +44,13 @@ public class OpenSearchResponse {
     }
     
     
-    
+    public String getTopUrl(){
+	return topUrl;
+    }
+
+    public void setTopUrl(String url){
+      	this.topUrl = url;
+    }
     
     public String getTitle () {
         return title;
@@ -292,14 +299,22 @@ public class OpenSearchResponse {
         /**
          * Atom
          */
-        
         if (format == OpenSearch.ATOM) {
+	    	
             Element element = document.createElement("feed");
             element.setAttribute("xmlns:opensearch","http://a9.com/-/spec/opensearch/1.1/");
             element.setAttribute("xmlns:relevance","http://a9.com/-/opensearch/extensions/relevance/1.0/");
             element.setAttribute("xmlns","http://www.w3.org/2005/Atom");
+	    
             
-            // title
+
+	    // Top Link
+		
+	    if (getTopUrl() != null){
+		element.appendChild(asElement(document, getTopUrl()));
+	    } 		            
+
+	    // title
             if (getTitle() != null) {
                 element.appendChild( asElement( document, "title", getTitle() ) );
             }
@@ -467,5 +482,13 @@ public class OpenSearchResponse {
         element.appendChild( document.createTextNode(value) );
         return element;
     }
+    
+    protected Element asElement(Document document, String value) throws OpenSearchException{
+	Element element = document.createElement("link");
+	element.setAttribute("href",value);
+	element.setAttribute("rel","self");
+	element.appendChild( document.createTextNode(value) );
+	return element;
+    }	
     
 }
