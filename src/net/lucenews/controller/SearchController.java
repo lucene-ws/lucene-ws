@@ -59,18 +59,10 @@ public class SearchController extends Controller {
          * Prepare searcher
          */
         
-        	boolean sort = false;
-        	IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
-		LuceneDocument[] docs;
-        	for(int i =0; i < indices.length; i++) {
-			docs = indices[i].getDocuments();
-	    		searchers[ i ] = indices[ i ].getIndexSearcher();
-			if(docs.length > 0){
-				sort=true;
-				break;
-			}
-			
-		}
+        IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
+        for (int i = 0; i < indices.length; i++) {
+            searchers[ i ] = indices[ i ].getIndexSearcher();
+        }
         LuceneMultiSearcher searcher = new LuceneMultiSearcher( searchers, getSearcherIndexField() );
         c.setMultiSearcher( searcher );
         
@@ -137,14 +129,7 @@ public class SearchController extends Controller {
          * Perform search
          */
         
-        Hits hits= null;
-	if(sort){
-        	hits = searcher.search( query, c.getFilter(), c.getSort() );	
-	   	}
-	else{
-		
-		hits = searcher.search(query);	
-	}
+        Hits hits = searcher.search( query, c.getFilter(), c.getSort() );
         
         Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
         
@@ -207,7 +192,7 @@ public class SearchController extends Controller {
         OpenSearchLink descriptionLink = new OpenSearchLink();
         descriptionLink.setHref( service.getOpenSearchDescriptionURI( request, request.getIndexNames() ).toString() );
         descriptionLink.setRel("search");
-	descriptionLink.setType("application/atom+xml");
+        descriptionLink.setType("application/opensearchdescription+xml");
         response.setLink( descriptionLink );
         
         

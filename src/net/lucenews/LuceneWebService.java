@@ -95,7 +95,8 @@ public class LuceneWebService extends HttpServlet {
     
     public void init () {
         manager = new LuceneIndexManager( this );
-	
+        
+        
         OpenSearch.setDefaultFormat( OpenSearch.ATOM );
         OpenSearch.setDefaultMode( OpenSearch.PASSIVE );
         
@@ -114,7 +115,6 @@ public class LuceneWebService extends HttpServlet {
         try {
             String propertiesFile = null;
             if ( propertiesFile == null ) { propertiesFile = getProperty("properties.file"); }
-		
             if ( propertiesFile == null ) { propertiesFile = getProperty("properties-file"); }
             
             if ( propertiesFile != null ) {
@@ -192,7 +192,19 @@ public class LuceneWebService extends HttpServlet {
         LuceneContext  c   = new LuceneContext( req, res, this );
         req.setContext( c );
         
-        res.setContentType("application/atomsvc+xml; charset=utf-8");
+        c.getLogger().info("request:  " + req.getMethod() + " " + req.getLocation() + " " + req.getProtocol());
+        
+        /*
+        Logger.getLogger(this.getClass()).debug("getContextPath(): " + request.getContextPath());
+        Logger.getLogger(this.getClass()).debug("getPathInfo(): " + request.getPathInfo());
+        Logger.getLogger(this.getClass()).debug("getPathTranslated(): " + request.getPathTranslated());
+        Logger.getLogger(this.getClass()).debug("getQueryString(): " + request.getQueryString());
+        Logger.getLogger(this.getClass()).debug("getRequestURI(): " + request.getRequestURI());
+        Logger.getLogger(this.getClass()).debug("getRequestURL(): " + request.getRequestURL());
+        Logger.getLogger(this.getClass()).debug("getServletPath(): " + request.getServletPath());
+        */
+        
+        res.setContentType("application/atom+xml; charset=utf-8");
         
         try {
             switch ( req.getMethodType() ) {
@@ -202,7 +214,7 @@ public class LuceneWebService extends HttpServlet {
                     break;
                     
                 case GET:
-		    doGet( c );
+                    doGet( c );
                     break;
                     
                 case HEAD:
@@ -313,7 +325,6 @@ public class LuceneWebService extends HttpServlet {
         LuceneRequest request = c.getRequest();
         
         if (request.hasIndexNames()) {
-		
             if (request.hasDocumentIDs()) {
                 DocumentController.doDelete( c );
             }
@@ -350,8 +361,9 @@ public class LuceneWebService extends HttpServlet {
         c.getLogger().debug("request has " + request.getIndexNames().length + " index names");
         
         if ( request.getIndexNames().length == 1 ) {
-	     if (request.getIndexName().equals( "service.properties" )) {
-		     ServicePropertiesController.doGet( c );
+            c.getLogger().debug("request has 1 index name");
+            if (request.getIndexName().equals( "service.properties" )) {
+                ServicePropertiesController.doGet( c );
                 return;
             }
         }
@@ -362,25 +374,25 @@ public class LuceneWebService extends HttpServlet {
             
             // OpenSearch Description
             if ( request.getDocumentID().equals("opensearchdescription.xml") || request.getDocumentID().equals("description.xml") ) {
-		    OpenSearchController.doGet( c );
+                OpenSearchController.doGet( c );
                 return;
             }
             
             // facets
             if ( request.getDocumentID().equals("facets") ) {
-	         FacetController.doGet( c );
+                FacetController.doGet( c );
                 return;
             }
             
             // Index properties
             if ( request.getDocumentID().equals("index.properties") ) {
-		    IndexPropertiesController.doGet( c );
+                IndexPropertiesController.doGet( c );
                 return;
             }
             
             // Tag cloud
             if ( request.getDocumentID().equals("tagcloud") ) {
-		    IndexController.doTagCloud( c );
+                IndexController.doTagCloud( c );
                 return;
             }
             
@@ -398,13 +410,13 @@ public class LuceneWebService extends HttpServlet {
         
         if ( request.hasIndexNames() ) {
             if ( request.hasDocumentIDs() ) {
-		   DocumentController.doGet( c );
+                DocumentController.doGet( c );
             }
             else if ( c.getOpenSearchQuery() != null && c.getOpenSearchQuery().getSearchTerms() != null ) {
-		SearchController.doGet( c );
+                SearchController.doGet( c );
             }
             else {
-		IndexController.doGet( c );
+                IndexController.doGet( c );
             }
         }
         else {

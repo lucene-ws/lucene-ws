@@ -192,7 +192,10 @@ public class OpenSearchResult {
             // score
             if ( getScore() != null ) {
                 element.appendChild( asElementNS( document, "http://a9.com/-/opensearch/extensions/relevance/1.0/", "relevance:score", getScore() ) );
-             }
+                
+                // backwards compatibility
+                element.appendChild( asElementNS( document, "http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance", getScore() ) );
+            }
             
             // rights
             if ( getRights() != null ) {
