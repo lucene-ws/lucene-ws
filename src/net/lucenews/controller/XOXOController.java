@@ -148,7 +148,6 @@ public class XOXOController {
         Logger.getLogger(XOXOController.class).trace("asElement(LuceneContext,Entry)");
         
         Content content = entry.getContent();
-        System.out.println("Entry id : "+entry.getID());
         if (content == null) {
             throw new LuceneException( "Entry contains no content", LuceneResponse.SC_BAD_REQUEST );
         }
