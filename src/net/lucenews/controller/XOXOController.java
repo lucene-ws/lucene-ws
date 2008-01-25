@@ -144,11 +144,11 @@ public class XOXOController {
         throws
             ParserConfigurationException, TransformerConfigurationException,
             TransformerException, LuceneException
-    {
+    { if(entry.getID()!=null){
         Logger.getLogger(XOXOController.class).trace("asElement(LuceneContext,Entry)");
         
         Content content = entry.getContent();
-        
+        System.out.println("Entry id : "+entry.getID());
         if (content == null) {
             throw new LuceneException( "Entry contains no content", LuceneResponse.SC_BAD_REQUEST );
         }
@@ -172,8 +172,9 @@ public class XOXOController {
                 return (Element) textContent.asDocument().getElementsByTagName( "dl" ).item( 0 );
             }
         }
-        
+        }//close the if
         return null;
+	
     }
     
     

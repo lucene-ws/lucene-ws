@@ -82,21 +82,14 @@ public class ServiceController extends Controller {
         
         
         Entry[] entries = getEntries( c, request );
-        
         for (int i = 0; i < entries.length; i++) {
             Entry entry = entries[ i ];
-            
             // Index name
             String name = entry.getTitle();
-            
-            //Properties properties = ServletUtils.getProperties( entry.getContent() );
             Properties properties = XOXOController.asProperties( c, entry );
-            
-            File parentDirectory = manager.getCreatedIndicesDirectory();
-            File directory = new File( parentDirectory, name );
-            
-            LuceneIndex index = null;
-            
+	    File parentDirectory = manager.getCreatedIndicesDirectory();
+	    File directory = new File( parentDirectory, name );
+	    LuceneIndex index = null;
             // We don't want any exceptions thrown to give away
             // where in the file system the index was being
             // placed at.
@@ -117,12 +110,11 @@ public class ServiceController extends Controller {
                 indexNamesBuffer.append( "," );
             }
             indexNamesBuffer.append( index.getName() );
-            
             response.setStatus( response.SC_CREATED );
-        }
+	    }
         
         if (created) {
-            response.addHeader( "Location", service.getIndexURI( request, indexNamesBuffer.toString() ).toString() );
+		response.addHeader( "Location", service.getIndexURI( request, indexNamesBuffer.toString() ).toString() );
         }
         else {
             throw new InsufficientDataException( "No indices to be added" );
@@ -263,7 +255,6 @@ public class ServiceController extends Controller {
         Entry entry = new Entry();
         
         entry.setTitle( index.getTitle() );
-        //entry.setUpdated( index.getLastModified() );
         entry.setID( service.getIndexURI( request, index ).toString() );
         
         

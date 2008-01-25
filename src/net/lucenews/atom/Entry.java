@@ -59,8 +59,7 @@ public class Entry extends Base {
         Document document = XMLController.newDocument();
         
         document.appendChild( asElement( document ) );
-        
-        return document;
+	return document;
     }
     
     
@@ -76,41 +75,47 @@ public class Entry extends Base {
         throws
             TransformerConfigurationException, TransformerException,
             ParserConfigurationException, AtomParseException
-    {
-        if (!e.getTagName().equals( "entry" )) {
-            throw new AtomParseException("Invalid tag name for Atom entry: " + e.getTagName());
-        }
-        
-        Entry entry = new Entry();
-        
+    {	Entry entry = new Entry();
+	if (e.getTagName().equals( "entry" )) {	
+               
         NodeList nodes = e.getChildNodes();
         
-        for( int i = 0; i < nodes.getLength(); i++ ) {
-            if (nodes.item( i ).getNodeType() != Node.ELEMENT_NODE) {
-                continue;
-            }
+           for( int i = 0; i < nodes.getLength(); i++ ) {
+		if (nodes.item( i ).getNodeType() != Node.ELEMENT_NODE && !e.getTagName().equals("feed")) {
+                	continue;
+            	}
             
-            Element element = (Element) nodes.item( i );
+            	Element element = (Element) nodes.item( i );
             
-            if (element.getTagName().equals( "id" )) {
-                entry.setID( element.getFirstChild().getNodeValue() );
-            }
+            	if (element.getTagName().equals( "id" )) {
+                	entry.setID( element.getFirstChild().getNodeValue() );
+			
+		
+            	}
             
-            if (element.getTagName().equals( "title" )) {
-                entry.setTitle( element.getFirstChild().getNodeValue() );
-            }
+            	if (element.getTagName().equals( "title" )) {
+			
+               	  		entry.setTitle( element.getFirstChild().getNodeValue() );
+				
+			
+            	}
             
-            if (element.getTagName().equals( "updated" )) {
-                entry.setUpdated( element.getFirstChild().getNodeValue() );
-            }
+            	if (element.getTagName().equals( "updated" )) {
+                	entry.setUpdated( element.getFirstChild().getNodeValue() );
+			
+            	}
             
-            if (element.getTagName().equals( "content" )) {
-                entry.setContent( Content.parse( element ) );
-            }
-        }
-        
-        return entry;
-    }
+            	if (element.getTagName().equals( "content" )) {
+                	entry.setContent( Content.parse( element ) );
+			
+	    	}
+         
+       
+        	
+	   }//close for		
+	}// if 'entry'
+	return entry;
+     }//close method
     
     
     public Element asElement (Document document) throws TransformerException {
@@ -126,7 +131,7 @@ public class Entry extends Base {
         if ( getTitle() != null ) {
             Element title = document.createElement("title");
             title.appendChild( document.createTextNode( getTitle() ) );
-            entry.appendChild( title );
+	    entry.appendChild( title );
         }
         
         
@@ -143,7 +148,7 @@ public class Entry extends Base {
         if ( getUpdated() != null ) {
             Element updated = document.createElement("updated");
             updated.appendChild( document.createTextNode( getUpdated() ) );
-            entry.appendChild( updated );
+	    entry.appendChild( updated );
         }
         
         
@@ -152,7 +157,7 @@ public class Entry extends Base {
         Iterator<Author> authors = getAuthors().iterator();
         while (authors.hasNext()) {
             entry.appendChild( authors.next().asElement( document ) );
-        }
+	}
         
         
         
@@ -160,7 +165,7 @@ public class Entry extends Base {
         if ( getID() != null ) {
             Element id = document.createElement("id");
             id.appendChild( document.createTextNode( getID() ) );
-            entry.appendChild( id );
+	    entry.appendChild( id );
         }
         
         

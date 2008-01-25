@@ -94,7 +94,7 @@ public class LuceneWebService extends HttpServlet {
      */
     
     public void init () {
-        manager = new LuceneIndexManager( this );
+	manager = new LuceneIndexManager( this );
 	
         OpenSearch.setDefaultFormat( OpenSearch.ATOM );
         OpenSearch.setDefaultMode( OpenSearch.PASSIVE );
@@ -214,11 +214,11 @@ public class LuceneWebService extends HttpServlet {
                     break;
                     
                 case POST:
-                    doPost( c );
+		    doPost( c );
                     break;
                     
                 case PUT:
-                    doPut( c );
+		    doPut( c );
                     break;
                     
                 case TRACE:
@@ -384,14 +384,7 @@ public class LuceneWebService extends HttpServlet {
                 return;
             }
             
-            /**
-            // JavaScript suggestions
-            if ( request.getDocumentID().equals("suggest") ) {
-                SearchController.doSuggest( c );
-                return;
-            }
-            */
-            
+                        
         }
         
         
@@ -472,26 +465,25 @@ public class LuceneWebService extends HttpServlet {
     {
         c.getLogger().trace( "doPost" );
         LuceneRequest request = c.getRequest();
-        
         if (request.hasIndexName() && !request.hasDocumentIDs()) {
-            if (request.getIndexName().equals( "service.properties" )) {
-                ServicePropertiesController.doPost( c );
+	    if (request.getIndexName().equals( "service.properties" )) {
+		ServicePropertiesController.doPost( c );
                 return;
             }
         }
         
         if (request.hasDocumentID()) {
             if (request.getDocumentID().equals( "index.properties" )) {
-                IndexPropertiesController.doPost( c );
+		IndexPropertiesController.doPost( c );
                 return;
             }
         }
         
         if (request.hasIndexNames()) {
-            IndexController.doPost( c );
+	      IndexController.doPost( c );
         }
         else {
-            ServiceController.doPost( c );
+	      ServiceController.doPost( c );
         }
     }
     
@@ -893,6 +885,7 @@ public class LuceneWebService extends HttpServlet {
     }
     
     public static HttpURI getIndexURI (LuceneRequest request, String indexName) {
+	
         return getServiceURI( request ).withPath( indexName );
     }
     
@@ -1090,7 +1083,6 @@ public class LuceneWebService extends HttpServlet {
         
         String title = null;
         if ( title == null ) { title = getProperty("service.title"); }
-        if ( title == null ) { title = getProperty("title");         }
         if ( title == null ) { title = defaultTitle;                 }
         
         return title;
@@ -1108,8 +1100,6 @@ public class LuceneWebService extends HttpServlet {
     public String[] getDefaultFields () throws IOException {
         String defaultFields = null;
         
-        if ( defaultFields == null ) { defaultFields = getProperty("service.field.<default>"); }
-        if ( defaultFields == null ) { defaultFields = getProperty("service.field.default");   }
         if ( defaultFields == null ) { defaultFields = getProperty("service.defaultfield");    }
         
         return ServletUtils.split( defaultFields );
@@ -1129,9 +1119,6 @@ public class LuceneWebService extends HttpServlet {
     {
         String defaultOperator = null;
         
-        if ( defaultOperator == null ) { defaultOperator = getProperty("service.operator.<default>"); }
-        if ( defaultOperator == null ) { defaultOperator = getProperty("service.operator.default");   }
-        if ( defaultOperator == null ) { defaultOperator = getProperty("service.defaultoperator");    }
         if ( defaultOperator == null ) { defaultOperator = getProperty("service.operator");           }
         
         return LuceneUtils.parseOperator( defaultOperator );
@@ -1147,8 +1134,6 @@ public class LuceneWebService extends HttpServlet {
     
     public boolean isDebugging () throws IOException {
         String debug = null;
-        if ( debug == null ) debug = getProperty("debug");
-        if ( debug == null ) debug = getProperty("debugging");
         if ( debug == null ) debug = getProperty("service.debugging");
         return ServletUtils.parseBoolean( debug );
     }
@@ -1169,15 +1154,11 @@ public class LuceneWebService extends HttpServlet {
         
         String url = null;
         if ( url == null ) { url = getCleanProperty("service.image.url"); }
-        if ( url == null ) { url = getCleanProperty("service.image");     }
-        
         if ( url == null ) {
             image.setUrl("http://www.lucene-ws.net/images/magnifying_glass.png");
             return image;
         }
-        
         image = new OpenSearchImage();
-        
         image.setUrl( url );
         
         String height = getCleanProperty("service.image.height");

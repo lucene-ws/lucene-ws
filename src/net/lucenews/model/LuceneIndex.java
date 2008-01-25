@@ -169,7 +169,7 @@ public class LuceneIndex {
             writer.close();
             
             if (analyzer != null) {
-                index.getProperties().setProperty( "analyzer", analyzer.getClass().getCanonicalName() );
+                index.getProperties().setProperty( "index.analyzer", analyzer.getClass().getCanonicalName() );
                 index.storeProperties();
             }
             
@@ -1046,7 +1046,7 @@ public class LuceneIndex {
     {
         String name = null;
         
-        if ( name == null ) name = getProperty("field.identifier");
+        if ( name == null ) name = getProperty("document.identifier");
 
         if ( name == null ) name = "id";
         return name;
@@ -1128,7 +1128,7 @@ public class LuceneIndex {
     /**
      * Determines whether or not a document possesses a valid
      * identifier. The identifier is checked against the regular
-     * expression contained within the "document.identifier.validator"
+     * expression contained within the "document.identifier.pattern"
      * property. If such a regular expression does not exist,
      * method will return true.
      * 
@@ -1145,7 +1145,7 @@ public class LuceneIndex {
             String identifier = getIdentifier( document );
             
             String pattern = null;
-            if ( pattern == null ) pattern = getProperty("field.identifier.pattern");
+            if ( pattern == null ) pattern = getProperty("document.identifier.pattern");
             
             if ( pattern == null ) {
                 return true;
@@ -1481,7 +1481,7 @@ public class LuceneIndex {
     public String[] getDefaultFieldNames () throws IOException {
         String[] defaultFields = null;
         
-        if ( defaultFields == null ) defaultFields = ServletUtils.split( getProperty("field.default.names") );
+        if ( defaultFields == null ) defaultFields = ServletUtils.split( getProperty("index.default.names") );
         return defaultFields;
     }
     
@@ -1509,7 +1509,7 @@ public class LuceneIndex {
     
     public String getSummary () throws IOException {
         String summary = null;
-        if ( summary == null ) summary = getProperty("summary");
+        if ( summary == null ) summary = getProperty("index.summary");
         return summary;
     }
     
@@ -2364,7 +2364,7 @@ public class LuceneIndex {
         OpenSearchImage image = null;
         
         String url = null;
-        if ( url == null ) url = getProperty("image.url");
+        if ( url == null ) url = getProperty("index.image.url");
         
         
         if (url == null || url.length() == 0) {
@@ -2375,17 +2375,17 @@ public class LuceneIndex {
         
         image.setUrl( url );
         
-        String height = getProperty("image.height");
+        String height = getProperty("index.image.height");
         if ( height != null && height.trim().length() > 0 ) {
             image.setHeight( Integer.valueOf( height ) );
         }
         
-        String width = getProperty("image.width");
+        String width = getProperty("index.image.width");
         if ( width != null && width.trim().length() > 0 ) {
             image.setWidth( Integer.valueOf( width ) );
         }
         
-        String type = getProperty("image.type");
+        String type = getProperty("index.image.type");
         if ( type != null && type.trim().length() > 0 ) {
             image.setType( type );
         }

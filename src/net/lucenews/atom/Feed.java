@@ -76,22 +76,27 @@ public class Feed extends Base {
             
             if ( _element.getTagName().equals( "id" ) ) {
                 feed.setID( _element.getFirstChild().getNodeValue() );
+		
             }
             
             if ( _element.getTagName().equals( "title" ) ) {
                 feed.setTitle( _element.getFirstChild().getNodeValue() );
+		
             }
             
             if ( _element.getTagName().equals( "updated" ) ) {
                 feed.setUpdated( _element.getFirstChild().getNodeValue() );
+		
             }
             
             if ( _element.getTagName().equals( "author" ) ) {
                 feed.addAuthor( Author.parse( _element ) );
+		
             }
             
             if ( _element.getTagName().equals( "entry" ) ) {
                 feed.addEntry( Entry.parse( _element ) );
+		
             }
         }
         
