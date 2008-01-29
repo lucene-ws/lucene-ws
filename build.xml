@@ -2,7 +2,7 @@
 <project name="lucene-ws" default="all" basedir=".">
 
     <property name="project.name"    value="lucene-ws" />
-    <property name="project.version" value="1.0" />
+    <property name="project.version" value="1.0_03" />
 
     <import file="conf/${deploy}.xml" optional="true" />
 

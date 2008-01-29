@@ -37,7 +37,7 @@ public class LuceneWebService extends HttpServlet {
     
     
     
-    public static final String VERSION = "1.0_02";
+    public static final String VERSION = "1.0_03";
     
     
     
