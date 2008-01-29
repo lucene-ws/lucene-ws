@@ -106,7 +106,7 @@ public class OpenSearchResult {
     
     public void addLink (OpenSearchLink link) {
         if(links == null) {
-        	links = new ArrayList<OpenSearchLink>();
+            links = new ArrayList<OpenSearchLink>();
         }
         links.add(link);
     }
@@ -171,9 +171,9 @@ public class OpenSearchResult {
             
             // link
             if ( getLinks() != null ) {
-            	for (OpenSearchLink link : links) {
-            		element.appendChild( link.asElement( document, format, mode, true ) );
-            	}
+                for (OpenSearchLink link : links) {
+                    element.appendChild( link.asElement( document, format, mode, true ) );
+                }
                 
             }
             

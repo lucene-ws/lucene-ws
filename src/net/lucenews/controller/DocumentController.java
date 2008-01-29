@@ -185,9 +185,9 @@ public class DocumentController extends Controller {
         }
         
         //if( documents.length == 1 )
-        //	AtomView.process( c, asEntry( c, documents[ 0 ] ) );
+        //  AtomView.process( c, asEntry( c, documents[ 0 ] ) );
         //else
-        //	AtomView.process( c, asFeed( c, documents ) );
+        //  AtomView.process( c, asFeed( c, documents ) );
         
         if ( entries.size() == 0 ) {
             throw new DocumentsNotFoundException( documentIDs );

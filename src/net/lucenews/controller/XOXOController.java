@@ -217,7 +217,7 @@ public class XOXOController {
     {
         Logger.getLogger(XOXOController.class).trace("asProperties(LuceneContext,Entry)");
         
-        return asProperties( c, asElement( c, entry ) );	
+        return asProperties( c, asElement( c, entry ) );    
     }
     
     

@@ -263,9 +263,9 @@ public class SearchController extends Controller {
                     
                     String documentURI = index.getURI(document);
                     if (documentURI != null) { 
-                    	OpenSearchLink alternateLink = new OpenSearchLink();
-                    	alternateLink.setHref(documentURI);
-                    	alternateLink.setRel("alternate");
+                        OpenSearchLink alternateLink = new OpenSearchLink();
+                        alternateLink.setHref(documentURI);
+                        alternateLink.setRel("alternate");
                         result.addLink( alternateLink );
                     }
                     

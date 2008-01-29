@@ -5,57 +5,57 @@ import org.w3c.dom.*;
 
 public class Workspace
 {
-	
-	private List<AtomCollection> m_collections;
-	
-	
-	private String m_title;
-	
-	
-	public Workspace (String title)
-	{
-		m_collections = new LinkedList<AtomCollection>();
-		setTitle( title );
-	}
-	
-	
-	public String getTitle ()
-	{
-		return m_title;
-	}
-	
-	public void setTitle (String title)
-	{
-		m_title = title;
-	}
-	
-	
-	
-	
-	public List<AtomCollection> getCollections ()
-	{
-		return m_collections;
-	}
-	
-	public void addCollection (AtomCollection collection)
-	{
-		m_collections.add( collection );
-	}
-	
-	
-	
-	
-	public Element asElement (Document document)
-	{
-		Element workspace = document.createElement( "workspace" );
-		
-		workspace.setAttribute( "title", String.valueOf( getTitle() ) );
-		
-		Iterator<AtomCollection> collections = getCollections().iterator();
-		while( collections.hasNext() )
-			workspace.appendChild( collections.next().asElement( document ) );
-		
-		return workspace;
-	}
-	
+    
+    private List<AtomCollection> m_collections;
+    
+    
+    private String m_title;
+    
+    
+    public Workspace (String title)
+    {
+        m_collections = new LinkedList<AtomCollection>();
+        setTitle( title );
+    }
+    
+    
+    public String getTitle ()
+    {
+        return m_title;
+    }
+    
+    public void setTitle (String title)
+    {
+        m_title = title;
+    }
+    
+    
+    
+    
+    public List<AtomCollection> getCollections ()
+    {
+        return m_collections;
+    }
+    
+    public void addCollection (AtomCollection collection)
+    {
+        m_collections.add( collection );
+    }
+    
+    
+    
+    
+    public Element asElement (Document document)
+    {
+        Element workspace = document.createElement( "workspace" );
+        
+        workspace.setAttribute( "title", String.valueOf( getTitle() ) );
+        
+        Iterator<AtomCollection> collections = getCollections().iterator();
+        while( collections.hasNext() )
+            workspace.appendChild( collections.next().asElement( document ) );
+        
+        return workspace;
+    }
+    
 }

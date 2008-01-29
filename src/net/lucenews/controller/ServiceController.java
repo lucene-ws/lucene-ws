@@ -227,7 +227,7 @@ public class ServiceController extends Controller {
         
         //Iterator<LuceneIndex> indices = service.getIndexManager().getIndices().iterator();
         //while( indices.hasNext() )
-        //	feed.addEntry( asEntry( service, indices.next() ) );
+        //  feed.addEntry( asEntry( service, indices.next() ) );
         
         List<LuceneIndex> list = Arrays.asList( service.getIndexManager().getIndices() );
         
