@@ -22,7 +22,7 @@ public class HttpURI {
     private Map<String,String[]> parameters;
 
 
-	private String scheme;
+    private String scheme;
     
     
     
@@ -64,16 +64,16 @@ public class HttpURI {
         catch (Exception e) {
            e.printStackTrace();
         }
- 	        
+            
         //Logger.getLogger( HttpURI.class ).debug( "FINISHED SETTING URI TO " + uri + ", PATH = " + getPath() );
     }
     
     public void setScheme(String scheme) {
-    	this.scheme = scheme;
+        this.scheme = scheme;
     }
     
     public String getScheme() {
-    	return scheme;
+        return scheme;
     }
     
     
@@ -425,9 +425,9 @@ public class HttpURI {
         
         String scheme = getScheme();
         if (scheme == null) {
-        	scheme = "http";
+            scheme = "http";
         }
-		// protocol
+        // protocol
         buffer.append( scheme + "://" );
         
         // host

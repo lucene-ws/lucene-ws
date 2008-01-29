@@ -69,18 +69,18 @@ public class AtomCollection {
     
     
  
- 	  
+      
     public Element asElement (Document document) {
         Element collection = document.createElement("collection");
         //collection.setAttribute("title", String.valueOf(getTitle()));
-	Element title = document.createElement("atom:title");
-	title.appendChild(document.createTextNode(String.valueOf(getTitle())));
-	collection.setAttribute("href", String.valueOf(getHref()));
+    Element title = document.createElement("atom:title");
+    title.appendChild(document.createTextNode(String.valueOf(getTitle())));
+    collection.setAttribute("href", String.valueOf(getHref()));
         //Changed to the Element type below from the 'member-type'below that
         Element accept = document.createElement("accept");
-	accept.appendChild( document.createTextNode( "application/atom+xml;type=entry" ));
-	collection.appendChild(accept);
-	collection.appendChild(title);
+    accept.appendChild( document.createTextNode( "application/atom+xml;type=entry" ));
+    collection.appendChild(accept);
+    collection.appendChild(title);
         if (getListTemplate() != null) {
             Element list_template = document.createElement("list-template");
             list_template.appendChild( document.createTextNode( String.valueOf( getListTemplate() ) ) );

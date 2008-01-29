@@ -45,11 +45,11 @@ public class OpenSearchResponse {
     
     
     public String getTopUrl(){
-	return topUrl;
+    return topUrl;
     }
 
     public void setTopUrl(String url){
-      	this.topUrl = url;
+        this.topUrl = url;
     }
     
     public String getTitle () {
@@ -300,21 +300,21 @@ public class OpenSearchResponse {
          * Atom
          */
         if (format == OpenSearch.ATOM) {
-	    	
+            
             Element element = document.createElement("feed");
             element.setAttribute("xmlns:opensearch","http://a9.com/-/spec/opensearch/1.1/");
             element.setAttribute("xmlns:relevance","http://a9.com/-/opensearch/extensions/relevance/1.0/");
             element.setAttribute("xmlns","http://www.w3.org/2005/Atom");
-	    
+        
             
 
-	    // Top Link
-		
-	    if (getTopUrl() != null){
-		element.appendChild(asElement(document, getTopUrl()));
-	    } 		            
+        // Top Link
+        
+        if (getTopUrl() != null){
+        element.appendChild(asElement(document, getTopUrl()));
+        }                   
 
-	    // title
+        // title
             if (getTitle() != null) {
                 element.appendChild( asElement( document, "title", getTitle() ) );
             }
@@ -484,11 +484,11 @@ public class OpenSearchResponse {
     }
     
     protected Element asElement(Document document, String value) throws OpenSearchException{
-	Element element = document.createElement("link");
-	element.setAttribute("href",value);
-	element.setAttribute("rel","self");
-	element.appendChild( document.createTextNode(value) );
-	return element;
-    }	
+    Element element = document.createElement("link");
+    element.setAttribute("href",value);
+    element.setAttribute("rel","self");
+    element.appendChild( document.createTextNode(value) );
+    return element;
+    }   
     
 }

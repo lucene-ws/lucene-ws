@@ -35,16 +35,16 @@ public class LuceneIndexManager implements LuceneIndexListener {
      */
 
     public LuceneIndex getIndex (String name) throws IndexNotFoundException, IOException {
-	
-	if (!directories.containsKey(name)) {
-	
+    
+    if (!directories.containsKey(name)) {
+    
             // Perhaps we're a little old...
             refresh();
         }
         
         File directory = directories.get( name );
         if (directory == null) {
-	       throw new IndexNotFoundException( name );
+           throw new IndexNotFoundException( name );
         }
         
         try {
@@ -85,9 +85,9 @@ public class LuceneIndexManager implements LuceneIndexListener {
         LuceneIndex[] indices = new LuceneIndex[ names.length ];
         
         for (int i = 0; i < names.length; i++) {
-		
+        
             indices[ i ] = getIndex( names[ i ] );
-		
+        
         }
         
         return indices;

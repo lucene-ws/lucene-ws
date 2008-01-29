@@ -9,9 +9,9 @@
     <property name="package.filename" value="${basedir}/dist/${project.name}-${project.version}" />
     <property name="package.war"      value="${package.filename}.war" />
     <property name="package.source"   value="${package.filename}-src.tar.gz" />
-	
-	<property name="build.test"   value="testBuild" />
-	
+    
+    <property name="build.test"   value="testBuild" />
+    
 
     <path id="lib.class.path">
         <fileset dir="lib">
@@ -19,7 +19,7 @@
         </fileset>
         <pathelement location="build" />
     </path>
-	
+    
     <target name="all" depends="clean,prepare,compile,javadoc,package" />
 
     <target name="clean">
@@ -54,7 +54,7 @@
             <classes dir="build" />
             <lib dir="lib">
                 <exclude name="servlet-api-2.5-6.0.2.jar" />
-            	<exclude name="*junit*.jar" />
+                <exclude name="*junit*.jar" />
             </lib>
         </war>
     </target>
@@ -63,29 +63,29 @@
         <mkdir dir="dist" />
         <tar destfile="${package.source}" basedir="." excludes="dist/**" compression="gzip" />
     </target>
-    	
-   	
-	<target name="test-compile" depends="compile">
-		<delete dir="${build.test}" />
-		<mkdir dir="${build.test}" />
-		<javac srcdir="test" destdir="${build.test}" debug="on" optimize="off" deprecation="on">
-		     <classpath>
-		          <path refid="lib.class.path" />
-		     </classpath>
-		 </javac>
-	</target>
-	
-	 <target name="test" depends="test-compile">
-	 	 <junit>
-	    	<classpath>
-	   			<path refid="lib.class.path" />
-	    		<pathelement location="${build.test}" />
-	    	</classpath>
-	      <formatter type="brief" usefile="false" />
-	      <batchtest>
-	        <fileset dir="${build.test}" includes="**/*Test*.class" />
-	      </batchtest>
-	    </junit>
-	  </target>
+        
+    
+    <target name="test-compile" depends="compile">
+        <delete dir="${build.test}" />
+        <mkdir dir="${build.test}" />
+        <javac srcdir="test" destdir="${build.test}" debug="on" optimize="off" deprecation="on">
+             <classpath>
+                  <path refid="lib.class.path" />
+             </classpath>
+         </javac>
+    </target>
+    
+     <target name="test" depends="test-compile">
+         <junit>
+            <classpath>
+                <path refid="lib.class.path" />
+                <pathelement location="${build.test}" />
+            </classpath>
+          <formatter type="brief" usefile="false" />
+          <batchtest>
+            <fileset dir="${build.test}" includes="**/*Test*.class" />
+          </batchtest>
+        </junit>
+      </target>
 
 </project>

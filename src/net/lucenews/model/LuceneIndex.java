@@ -211,7 +211,7 @@ public class LuceneIndex {
     
     public static LuceneIndex retrieve (File directory)
         throws IndexNotFoundException, IOException
-    {	
+    {   
         if (!IndexReader.indexExists( directory )) {
             throw new IndexNotFoundException(String.valueOf( directory ));
         }

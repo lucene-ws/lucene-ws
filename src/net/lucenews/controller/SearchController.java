@@ -59,18 +59,18 @@ public class SearchController extends Controller {
          * Prepare searcher
          */
         
-        	boolean sort = false;
-        	IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
-		LuceneDocument[] docs;
-        	for(int i =0; i < indices.length; i++) {
-			docs = indices[i].getDocuments();
-	    		searchers[ i ] = indices[ i ].getIndexSearcher();
-			if(docs.length > 0){
-				sort=true;
-				break;
-			}
-			
-		}
+            boolean sort = false;
+            IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
+        LuceneDocument[] docs;
+            for(int i =0; i < indices.length; i++) {
+            docs = indices[i].getDocuments();
+                searchers[ i ] = indices[ i ].getIndexSearcher();
+            if(docs.length > 0){
+                sort=true;
+                break;
+            }
+            
+        }
         LuceneMultiSearcher searcher = new LuceneMultiSearcher( searchers, getSearcherIndexField() );
         c.setMultiSearcher( searcher );
         
@@ -138,13 +138,13 @@ public class SearchController extends Controller {
          */
         
         Hits hits= null;
-	if(sort){
-        	hits = searcher.search( query, c.getFilter(), c.getSort() );	
-	   	}
-	else{
-		
-		hits = searcher.search(query);	
-	}
+    if(sort){
+            hits = searcher.search( query, c.getFilter(), c.getSort() );    
+        }
+    else{
+        
+        hits = searcher.search(query);  
+    }
         
         Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
         
@@ -207,7 +207,7 @@ public class SearchController extends Controller {
         OpenSearchLink descriptionLink = new OpenSearchLink();
         descriptionLink.setHref( service.getOpenSearchDescriptionURI( request, request.getIndexNames() ).toString() );
         descriptionLink.setRel("search");
-	descriptionLink.setType("application/atom+xml");
+    descriptionLink.setType("application/atom+xml");
         response.setLink( descriptionLink );
         
         
@@ -278,9 +278,9 @@ public class SearchController extends Controller {
                     
                     String documentURI = index.getURI(document);
                     if (documentURI != null) { 
-                    	OpenSearchLink alternateLink = new OpenSearchLink();
-                    	alternateLink.setHref(documentURI);
-                    	alternateLink.setRel("alternate");
+                        OpenSearchLink alternateLink = new OpenSearchLink();
+                        alternateLink.setHref(documentURI);
+                        alternateLink.setRel("alternate");
                         result.addLink( alternateLink );
                     }
                     
