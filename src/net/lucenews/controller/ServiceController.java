@@ -42,7 +42,6 @@ public class ServiceController extends Controller {
         LuceneRequest      request  = c.getRequest();
         LuceneResponse     response = c.getResponse();
         
-        response.setContentType( "application/atomsvc+xml; charset=utf-8" );
         AtomView.process( c, asIntrospectionDocument( c, service, request ) );
     }
     
