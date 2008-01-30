@@ -2,6 +2,7 @@ package net.lucenews.opensearch;
 
 import java.util.*;
 import org.w3c.dom.*;
+import net.lucenews.atom.Link;
 
 public class OpenSearchResult {
     
@@ -10,7 +11,7 @@ public class OpenSearchResult {
     private String   id;
     private Calendar updated;
     private Float    score;
-    private List<OpenSearchLink> links;
+    private List<Link> links;
     private OpenSearchText content;
     private List<OpenSearchPerson> people;
     private OpenSearchText rights;
@@ -100,13 +101,13 @@ public class OpenSearchResult {
     
     
     
-    public List<OpenSearchLink> getLinks () {
+    public List<Link> getLinks () {
         return links;
     }
     
-    public void addLink (OpenSearchLink link) {
+    public void addLink (Link link) {
         if(links == null) {
-            links = new ArrayList<OpenSearchLink>();
+            links = new ArrayList<Link>();
         }
         links.add(link);
     }
@@ -171,8 +172,8 @@ public class OpenSearchResult {
             
             // link
             if ( getLinks() != null ) {
-                for (OpenSearchLink link : links) {
-                    element.appendChild( link.asElement( document, format, mode, true ) );
+                for (Link link : links) {
+                    element.appendChild( link.asElement( document ) );
                 }
                 
             }

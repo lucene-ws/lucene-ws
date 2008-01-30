@@ -189,7 +189,7 @@ public class SearchController extends Controller {
         
         
         // link to OpenSearch Description
-        OpenSearchLink descriptionLink = new OpenSearchLink();
+        Link descriptionLink = new Link();
         descriptionLink.setHref( service.getOpenSearchDescriptionURI( request, request.getIndexNames() ).toString() );
         descriptionLink.setRel("search");
         descriptionLink.setType("application/opensearchdescription+xml");
@@ -255,7 +255,7 @@ public class SearchController extends Controller {
                     result.setScore( score );
                     
                     
-                    OpenSearchLink serviceLink = new OpenSearchLink();
+                    Link serviceLink = new Link();
                     serviceLink.setHref(service.getDocumentURI( request, index, document ).toString() );
                     serviceLink.setRel("self");
                     result.addLink( serviceLink );
@@ -263,7 +263,7 @@ public class SearchController extends Controller {
                     
                     String documentURI = index.getURI(document);
                     if (documentURI != null) { 
-                        OpenSearchLink alternateLink = new OpenSearchLink();
+                        Link alternateLink = new Link();
                         alternateLink.setHref(documentURI);
                         alternateLink.setRel("alternate");
                         result.addLink( alternateLink );
@@ -318,7 +318,7 @@ public class SearchController extends Controller {
          */
         
         if ( response.getRelatedLink("first") == null && openSearchQuery.getFirstPage() != null ) {
-            OpenSearchLink link = new OpenSearchLink();
+            Link link = new Link();
             link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getFirstPage() ).toString() );
             link.setRel( "first" );
             link.setType( OpenSearch.getContentType( format ) );
@@ -331,7 +331,7 @@ public class SearchController extends Controller {
          */
         
         if ( response.getRelatedLink("previous") == null && openSearchQuery.getPreviousPage() != null ) {
-            OpenSearchLink link = new OpenSearchLink();
+            Link link = new Link();
             link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getPreviousPage() ).toString() );
             link.setRel( "previous" );
             link.setType( OpenSearch.getContentType( format ) );
@@ -344,7 +344,7 @@ public class SearchController extends Controller {
          */
         
         if ( response.getRelatedLink("self") == null && openSearchQuery.getStartPage() != null ) {
-            OpenSearchLink link = new OpenSearchLink();
+            Link link = new Link();
             link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getStartPage() ).toString() );
             link.setRel( "self" );
             link.setType( OpenSearch.getContentType( format ) );
@@ -357,7 +357,7 @@ public class SearchController extends Controller {
          */
         
         if ( response.getRelatedLink("next") == null && openSearchQuery.getNextPage() != null ) {
-            OpenSearchLink link = new OpenSearchLink();
+            Link link = new Link();
             link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getNextPage() ).toString() );
             link.setRel( "next" );
             link.setType( OpenSearch.getContentType( format ) );
@@ -370,7 +370,7 @@ public class SearchController extends Controller {
          */
         
         if ( response.getRelatedLink("last") == null && openSearchQuery.getLastPage() != null ) {
-            OpenSearchLink link = new OpenSearchLink();
+            Link link = new Link();
             link.setHref( uri.with( c.getStartPageParameter(), openSearchQuery.getLastPage() ).toString() );
             link.setRel( "last" );
             link.setType( OpenSearch.getContentType( format ) );

@@ -124,8 +124,17 @@ public class Link {
         this.length = length;
     }
     
-    
-    
+    public Link clone () {
+        Link link = new Link();
+        link.setHref( getHref() );
+        link.setHrefLang( getHrefLang() );
+        link.setRel( getRel() );
+        link.setType( getType() );
+        link.setTitle( getTitle() );
+        link.setLength( getLength() );
+        return link;
+    }    
+
     public Element asElement (Document document) {
         Element link = document.createElement( "link" );
         
