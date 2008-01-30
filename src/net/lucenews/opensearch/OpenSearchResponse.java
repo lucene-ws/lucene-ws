@@ -3,6 +3,7 @@ package net.lucenews.opensearch;
 import java.util.*;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
+import net.lucenews.atom.Link;
 
 /**
  * OpenSearch Response elements are used to add search data to 
@@ -31,14 +32,14 @@ public class OpenSearchResponse {
     private Integer  totalResults;
     private Integer  startIndex;
     private Integer  itemsPerPage;
-    private OpenSearchLink link;
-    private List<OpenSearchLink>   links;
+    private Link link;
+    private List<Link>   links;
     private List<OpenSearchQuery>  queries;
     private List<OpenSearchResult> results;
     
     
     public OpenSearchResponse () {
-        links   = new LinkedList<OpenSearchLink>();
+        links   = new LinkedList<Link>();
         queries = new LinkedList<OpenSearchQuery>();
         results = new LinkedList<OpenSearchResult>();
     }
@@ -161,30 +162,30 @@ public class OpenSearchResponse {
      * Requirements: May appear zero or one time.
      */
     
-    public OpenSearchLink getLink () {
+    public Link getLink () {
         return link;
     }
     
-    public void setLink (OpenSearchLink link) {
+    public void setLink (Link link) {
         this.link = link;
     }
     
-    public List<OpenSearchLink> getLinks () {
+    public List<Link> getLinks () {
         return links;
     }
     
-    public void addLink (OpenSearchLink link) {
+    public void addLink (Link link) {
         links.add( link );
     }
     
-    public boolean removeLink (OpenSearchLink link) {
+    public boolean removeLink (Link link) {
         return links.remove( link );
     }
     
-    public OpenSearchLink getRelatedLink (String rel) {
-        Iterator<OpenSearchLink> iterator = getLinks().iterator();
+    public Link getRelatedLink (String rel) {
+        Iterator<Link> iterator = getLinks().iterator();
         while ( iterator.hasNext() ) {
-            OpenSearchLink link = iterator.next();
+            Link link = iterator.next();
             if (link.getRel() != null && link.getRel().toLowerCase().trim().equals(rel.toLowerCase().trim())) {
                 return link;
             }
@@ -340,23 +341,23 @@ public class OpenSearchResponse {
                             throw new OpenSearchException("Link relation must be 'search'");
                         }
                         else if (mode == OpenSearch.ADAPTIVE) {
-                            OpenSearchLink link = getLink().clone();
+                            Link link = getLink().clone();
                             link.setRel("search");
-                            element.appendChild( link.asElement( document, format, mode ) );
+                            element.appendChild( link.asElement( document ) );
                         }
                         else {
-                            element.appendChild( getLink().asElement( document, format, mode ) );
+                            element.appendChild( getLink().asElement( document ) );
                         }
                     }
                     else {
-                        element.appendChild( getLink().asElement( document, format, mode ) );
+                        element.appendChild( getLink().asElement( document ) );
                     }
                 }
                 else {
                     if (mode == OpenSearch.STRICT) {
                         throw new OpenSearchException("Link relation must be 'search'");
                     }
-                    element.appendChild( getLink().asElement( document, format, mode ) );
+                    element.appendChild( getLink().asElement( document ) );
                 }
             }
             
@@ -389,10 +390,10 @@ public class OpenSearchResponse {
             }
             
             // Links
-            Iterator<OpenSearchLink> linksIterator = getLinks().iterator();
+            Iterator<Link> linksIterator = getLinks().iterator();
             while (linksIterator.hasNext()) {
-                OpenSearchLink link = linksIterator.next();
-                element.appendChild( link.asElement( document, format, mode ) );
+                Link link = linksIterator.next();
+                element.appendChild( link.asElement( document ) );
             }
             
             Iterator<OpenSearchResult> resultsIterator = getResults().iterator();
@@ -447,10 +448,10 @@ public class OpenSearchResponse {
             }
             
             // Links
-            Iterator<OpenSearchLink> linksIterator = getLinks().iterator();
+            Iterator<Link> linksIterator = getLinks().iterator();
             while (linksIterator.hasNext()) {
-                OpenSearchLink link = linksIterator.next();
-                channel.appendChild( link.asElement( document, format, mode ) );
+                Link link = linksIterator.next();
+                channel.appendChild( link.asElement( document ) );
             }
             
             // items
