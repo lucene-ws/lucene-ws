@@ -52,11 +52,11 @@ public class Workspace
         Element title = document.createElement("atom:title"); 
         title.appendChild(document.createTextNode(String.valueOf(getTitle())));  
         workspace.appendChild(title);         
-        
+
         Iterator<AtomCollection> collections = getCollections().iterator();
         while( collections.hasNext() )
             workspace.appendChild( collections.next().asElement( document ) );
-
+        
         return workspace;
     }
     

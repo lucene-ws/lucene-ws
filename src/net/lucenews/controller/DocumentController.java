@@ -409,7 +409,6 @@ public class DocumentController extends Controller {
             entry.addAuthor( new Author( index.getAuthor( document ) ) );
         }
         
-          
         // Summary
         if ( index.getSummary( document ) != null ) {
             entry.setSummary( new Text( index.getSummary( document ) ) );

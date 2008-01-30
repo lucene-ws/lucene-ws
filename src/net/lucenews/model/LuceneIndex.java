@@ -211,7 +211,7 @@ public class LuceneIndex {
     
     public static LuceneIndex retrieve (File directory)
         throws IndexNotFoundException, IOException
-    {   
+    {
         if (!IndexReader.indexExists( directory )) {
             throw new IndexNotFoundException(String.valueOf( directory ));
         }
@@ -347,7 +347,6 @@ public class LuceneIndex {
     
     public String getTitle () throws IOException {
         String title = null;
-        
         if ( title == null ) title = getProperty("index.title"); // backwards-compatability
         if ( title == null ) title = getName();
         return title;
@@ -1007,7 +1006,6 @@ public class LuceneIndex {
         throws IOException
     {
         String readOnly = null;
-        
         if ( readOnly == null ) readOnly = getProperty("index.readonly"); // backward compatability
         
         if ( readOnly == null ) {
@@ -1279,8 +1277,6 @@ public class LuceneIndex {
         throws IOException
     {
         String analyzerName = null;
-        
-        
         if ( analyzerName == null ) analyzerName = getProperty("index.analyzer"); // backward compatability
         
         Analyzer analyzer = LuceneUtils.parseAnalyzer( analyzerName );
@@ -1493,7 +1489,6 @@ public class LuceneIndex {
     
     public QueryParser.Operator getDefaultOperator () throws IOException {
         String defaultOperator = null;
-        
         if ( defaultOperator == null ) defaultOperator = getProperty("index.defaultoperator"); // backwards compatability
         return LuceneUtils.parseOperator( defaultOperator );
     }
@@ -1516,7 +1511,6 @@ public class LuceneIndex {
     
     public String getSummaryFieldName () throws IOException {
         String fieldName = null;
-        
         if ( fieldName == null ) fieldName = getProperty("document.summary"); // backwards compatability
         return fieldName;
     }
@@ -1550,7 +1544,6 @@ public class LuceneIndex {
      */
     public String getURIFieldName () throws IOException {
         String fieldName = null;
-        
         if ( fieldName == null ) fieldName = getProperty("document.uri"); // backwards compatability
         return fieldName;
     }
@@ -1593,14 +1586,12 @@ public class LuceneIndex {
     
     public String getTitleFieldName () throws IOException {
         String fieldName = null;
-        
         if ( fieldName == null ) fieldName = getProperty("document.title");
         return fieldName;
     }
     
     public String getTitleTemplate () throws IOException {
         String template = null;
-        
         if ( template == null ) template = getProperty("field.title");
         return template;
     }
