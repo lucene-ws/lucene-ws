@@ -56,7 +56,7 @@ public class Workspace
         
         Iterator<AtomCollection> collections = getCollections().iterator();
         while( collections.hasNext() ){
-            System.out.println("COllection has next?"+collections.hasNext());            
+                      
             workspace.appendChild( collections.next().asElement( document ) );
                 
             }

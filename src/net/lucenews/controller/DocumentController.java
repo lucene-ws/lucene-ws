@@ -409,11 +409,7 @@ public class DocumentController extends Controller {
             entry.addAuthor( new Author( index.getAuthor( document ) ) );
         }
         
-    //Score
-        if ( score != null ) {
-            entry.setPropertyNS( "http://a9.com/-/spec/opensearch/1.1/", "opensearch:score", String.valueOf( score ) );
-        }
-        
+          
         // Summary
         if ( index.getSummary( document ) != null ) {
             entry.setSummary( new Text( index.getSummary( document ) ) );

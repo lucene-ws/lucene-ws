@@ -36,7 +36,7 @@ public class AtomView extends View {
     public static void process (LuceneContext c, IntrospectionDocument introspectionDocument)
         throws ParserConfigurationException, TransformerException, IOException
     {
-        c.getResponse().setContentType("application/atom+xml;charset=utf-8");
+        c.getResponse().setContentType("application/atomsvc+xml;charset=utf-8");
         XMLView.process( c, introspectionDocument.asDocument() );
     }
     
