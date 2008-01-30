@@ -181,11 +181,9 @@ public class ServiceController extends Controller {
                 title = index.getName();
             }
             
-            String member_type = "entry";
+            String accept = "application/atom+xml;type=entry";
             
-            String list_template = null;
-            
-            AtomCollection coll = new AtomCollection( title, href, member_type, list_template );
+            AtomCollection coll = new AtomCollection( title, href, accept );
             
             w.addCollection( coll );
         }

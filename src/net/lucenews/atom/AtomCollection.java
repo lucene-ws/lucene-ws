@@ -5,18 +5,13 @@ import java.util.*;
 
 public class AtomCollection {
     
-    private String title, href, member_type, list_template;
+    private String title, href, accept;
     
     
-    public AtomCollection (String title, String href, String member_type) {
-        this( title, href, member_type, null );
-    }
-    
-    public AtomCollection (String title, String href, String member_type, String list_template) {
+    public AtomCollection (String title, String href, String accept) {
         setTitle( title );
         setHref( href );
-        setMemberType( member_type );
-        setListTemplate( list_template );
+        setAccept( accept );
     }
     
     
@@ -48,44 +43,25 @@ public class AtomCollection {
     
     
     
-    public String getMemberType () {
-        return member_type;
+    public String getAccept () {
+        return accept;
     }
     
-    public void setMemberType (String member_type) {
-        this.member_type = member_type;
+    public void setAccept (String accept) {
+        this.accept = accept;
     }
-    
-    
-    
-    public String getListTemplate () {
-        return list_template;
-    }
-    
-    public void setListTemplate (String list_template) {
-        this.list_template = list_template;
-    }
-    
-    
-    
- 
-      
+  
     public Element asElement (Document document) {
         Element collection = document.createElement("collection");
-        //collection.setAttribute("title", String.valueOf(getTitle()));
-    Element title = document.createElement("atom:title");
-    title.appendChild(document.createTextNode(String.valueOf(getTitle())));
-    collection.setAttribute("href", String.valueOf(getHref()));
-        //Changed to the Element type below from the 'member-type'below that
-        Element accept = document.createElement("accept");
-    accept.appendChild( document.createTextNode( "application/atom+xml;type=entry" ));
-    collection.appendChild(accept);
-    collection.appendChild(title);
-        if (getListTemplate() != null) {
-            Element list_template = document.createElement("list-template");
-            list_template.appendChild( document.createTextNode( String.valueOf( getListTemplate() ) ) );
-            collection.appendChild(list_template);
-        }
+        collection.setAttribute("href", String.valueOf(getHref())); 
+
+        Element title = document.createElement("atom:title"); 
+        title.appendChild(document.createTextNode(String.valueOf(getTitle()))); 
+        collection.appendChild(title); 
+
+        Element accept = document.createElement("accept"); 
+        accept.appendChild( document.createTextNode( String.valueOf( getAccept() ) )); 
+        collection.appendChild(accept); 
         
         return collection;
     }
