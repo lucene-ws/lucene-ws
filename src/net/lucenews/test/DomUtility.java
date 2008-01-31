@@ -64,4 +64,19 @@ public class DomUtility {
 		return toList(nodesByPath(item, xpath), Element.class);
 	}
 	
+	public String innerText(Node node) {
+		final StringBuffer buffer = new StringBuffer();
+		final NodeList childNodes = node.getChildNodes();
+		final int length = childNodes.getLength();
+		for (int i = 0; i < length; i++) {
+			final Node childNode = childNodes.item(i);
+			buffer.append(toString(childNode));
+		}
+		return buffer.toString();
+	}
+	
+	public String toString(Node node) {
+		return node.getNodeValue();
+	}
+	
 }

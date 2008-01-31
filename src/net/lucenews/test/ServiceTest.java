@@ -41,7 +41,7 @@ public class ServiceTest extends ClientTest {
 	public void testXml() throws MalformedURLException, IOException,
 			SAXException, XPathExpressionException {
 		GetMethodWebRequest request = getServiceRequest();
-		WebResponse response = servletClient.getResponse(request);
+		WebResponse response = client.getResponse(request);
 		Document document = toDocument(response);
 		introspectionDocumentAsserter.assertIntrospectionDocument(document);
 	}
@@ -59,7 +59,7 @@ public class ServiceTest extends ClientTest {
 	public void testWorkspaceCount() throws HttpException, IOException,
 			SAXException, XPathExpressionException {
 		GetMethodWebRequest request = getServiceRequest();
-		WebResponse response = servletClient.getResponse(request);
+		WebResponse response = client.getResponse(request);
 		Document document = toDocument(response);
 		Assert.assertEquals("# of workspaces", 1, dom.elementsByPath(document,
 				"/service/workspace").size());
@@ -77,7 +77,7 @@ public class ServiceTest extends ClientTest {
 	public void testCollectionCount() throws HttpException, IOException,
 			SAXException, XPathExpressionException {
 		GetMethodWebRequest request = getServiceRequest();
-		WebResponse response = servletClient.getResponse(request);
+		WebResponse response = client.getResponse(request);
 		Document document = toDocument(response);
 		Assert.assertEquals("# of collections", 0, dom.elementsByPath(document,
 				"/service/workspace/collection").size());
