@@ -1,40 +1,70 @@
 package net.lucenews.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
+import net.lucenews.LuceneWebService;
+
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class ClientTest {
+import com.meterware.httpunit.WebResponse;
+import com.meterware.servletunit.ServletRunner;
+import com.meterware.servletunit.ServletUnitClient;
 
-	protected URL serviceUrl;
+public class ClientTest {
 	
-	protected HttpClient client;
-	
+	protected File servletDirectory;
+	protected DomUtility dom;
 	protected DocumentBuilder documentBuilder;
+	protected ServletRunner servletRunner;
+	protected ServletUnitClient servletClient;
+	
+	public ClientTest() {
+		dom = new DomUtility();
+		try {
+			documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			servletRunner = new ServletRunner(new File("conf/web.xml"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	@Before
-	public void setup() throws MalformedURLException, ParserConfigurationException {
-		serviceUrl = new URL("http://localhost:8080/lucene/");
-		client = new HttpClient();
-		documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+	public void setup() throws Exception {
+		servletRunner.registerServlet("lucene", LuceneWebService.class.getName());
+		servletClient = servletRunner.newClient();
 	}
 	
-	protected String toUrl(String relativePath) {
-		return serviceUrl.toString() + relativePath;
-	}
-	
-	protected Document toDocument(HttpMethod method) throws SAXException, IOException {
-		return documentBuilder.parse(method.getResponseBodyAsStream());
+	public Document toDocument(WebResponse response) throws SAXException, IOException {
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		InputStream stream = response.getInputStream();
+		while (true) {
+			int b = stream.read();
+			if (b < 0) {
+				break;
+			}
+			buffer.write(b);
+			System.out.write(b);
+		}
+		return documentBuilder.parse(new ByteArrayInputStream(buffer.toByteArray()));
 	}
 	
 }
