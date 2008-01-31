@@ -20,7 +20,7 @@ specify the directories where you want Lucene indexes to reside.
 Setting:               Description:
 ===============================================================================================
    
-properties-file        When present in initial parameters, service will replace all initial
+properties.file        When present in initial parameters, service will replace all initial
                        parameters with those contained within the file pointed to by the value.
                           
 service.title          The title of service. Defaults to "Lucene Web Service vX.X.X"
@@ -37,10 +37,11 @@ service.debugging      If true, a stack trace is appended to all exceptions thro
 
 AUTHORS
 
-Adam Paynter <adam.paynter@unb.ca>
-Brian Cassidy <brian.cassidy@nald.ca>
+Adam Paynter <adam.paynter@gmail.com>
+Brian Cassidy <brian.cassidy@gmail.com>
 
 CONTRIBUTORS
 
 Darren Osten
 Kris Resellmo
+Kirk Beers
