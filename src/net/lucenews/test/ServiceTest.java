@@ -18,57 +18,73 @@ import com.meterware.httpunit.WebResponse;
 public class ServiceTest extends ClientTest {
 
 	private IntrospectionDocumentAsserter introspectionDocumentAsserter;
-	
+
 	public ServiceTest() {
 		introspectionDocumentAsserter = new IntrospectionDocumentAsserter();
 	}
-	
+
 	@Before
 	public void setup() throws Exception {
 		super.setup();
 	}
-	
+
+	/**
+	 * Test that the XML produced by the web service is a valid Atom Publishing
+	 * Protocol introspection document.
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws XPathExpressionException
+	 */
 	@Test
-	public void testXml() throws MalformedURLException, IOException, SAXException, XPathExpressionException {
+	public void testXml() throws MalformedURLException, IOException,
+			SAXException, XPathExpressionException {
 		GetMethodWebRequest request = getServiceRequest();
 		WebResponse response = servletClient.getResponse(request);
 		Document document = toDocument(response);
 		introspectionDocumentAsserter.assertIntrospectionDocument(document);
 	}
-	
+
 	/**
 	 * The initial state of the web service should be empty.
-	 * @throws IOException 
-	 * @throws HttpException 
-	 * @throws SAXException 
-	 * @throws XPathExpressionException 
-	 *
+	 * 
+	 * @throws IOException
+	 * @throws HttpException
+	 * @throws SAXException
+	 * @throws XPathExpressionException
+	 * 
 	 */
 	@Test
-	public void testWorkspaceCount() throws HttpException, IOException, SAXException, XPathExpressionException {
+	public void testWorkspaceCount() throws HttpException, IOException,
+			SAXException, XPathExpressionException {
 		GetMethodWebRequest request = getServiceRequest();
 		WebResponse response = servletClient.getResponse(request);
 		Document document = toDocument(response);
-		Assert.assertEquals("# of workspaces", 1, dom.elementsByPath(document, "/service/workspace").size());
+		Assert.assertEquals("# of workspaces", 1, dom.elementsByPath(document,
+				"/service/workspace").size());
 	}
 
 	/**
 	 * The initial web service should have no collections as of yet.
+	 * 
 	 * @throws HttpException
 	 * @throws IOException
 	 * @throws SAXException
 	 * @throws XPathExpressionException
 	 */
 	@Test
-	public void testCollectionCount() throws HttpException, IOException, SAXException, XPathExpressionException {
+	public void testCollectionCount() throws HttpException, IOException,
+			SAXException, XPathExpressionException {
 		GetMethodWebRequest request = getServiceRequest();
 		WebResponse response = servletClient.getResponse(request);
 		Document document = toDocument(response);
-		Assert.assertEquals("# of collections", 0, dom.elementsByPath(document, "/service/workspace/collection").size());
+		Assert.assertEquals("# of collections", 0, dom.elementsByPath(document,
+				"/service/workspace/collection").size());
 	}
-	
+
 	public GetMethodWebRequest getServiceRequest() {
 		return new GetMethodWebRequest("http://localhost/lucene");
 	}
-	
+
 }

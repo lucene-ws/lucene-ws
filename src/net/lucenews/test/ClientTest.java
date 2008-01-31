@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -65,6 +66,11 @@ public class ClientTest {
 			System.out.write(b);
 		}
 		return documentBuilder.parse(new ByteArrayInputStream(buffer.toByteArray()));
+	}
+	
+	public byte[] buildWebXml(Map<?, ?> initialParameters) {
+		// TODO
+		return null;
 	}
 	
 }
