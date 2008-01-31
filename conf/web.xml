@@ -9,9 +9,9 @@
 
         <!-- ADJUST THESE SETTINGS BELOW AS NECESSARY -->
         <!--
-            In the presence of 'properties.file' it detected, web service will attempt
-            to repopulate parameters with those found within the file pointed to by
-            the 'properties-file' name/value pair value.
+            If the presence of a 'properties.file' parameter is detected, the web
+            service will attempt to repopulate the parameters with those found
+            within the file specified as the value.
         -->
         <init-param>
             <param-name>properties.file</param-name>
