@@ -184,7 +184,7 @@ public class LuceneDocument {
     
     
     
-    public List<Field> getFields() {
+    public List<Field> getFields () {
         List<Field> fields  = new ArrayList<Field>();
         List<?> objects = document.getFields();
         Iterator<?> iterator = objects.iterator();        
@@ -194,9 +194,10 @@ public class LuceneDocument {
                 fields.add( (Field) object );
             }
         }
-            return fields;
-    }
         
+        return fields;
+    }
+    
     
     
     public Field[] getFields (String name) {
