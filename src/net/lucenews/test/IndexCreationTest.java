@@ -69,9 +69,6 @@ public class IndexCreationTest extends ClientTest {
 	public void testAutomaticCreation() throws Exception {
 		File temp = fileSystem.getTemporaryDirectory();
 		
-		//runner = new ServletRunner();
-		//runner.registerServlet("lucene", LuceneWebService.class.getName(), toMap("directory", temp.getCanonicalPath()));
-		//client = runner.newClient();
 		container.getInitialParameters().put("directory", temp.getCanonicalPath());
 		
 		StringBuffer buffer = new StringBuffer();
@@ -88,7 +85,6 @@ public class IndexCreationTest extends ClientTest {
 		buffer.append("</content>");
 		buffer.append("</entry>");
 		
-		//HttpRequest request = new PostMethodWebRequest("http://localhost/lucene", new ByteArrayInputStream(buffer.toString().getBytes()), "text/xml");
 		HttpRequest request = postRequest("http://localhost/lucene");
 		request.getBody().put(buffer.toString().getBytes());
 		HttpResponse response = getResponse(request);
@@ -99,7 +95,40 @@ public class IndexCreationTest extends ClientTest {
 			entryAsserter.assertEntry(document.getDocumentElement());
 		}
 		
-		Assert.assertEquals("response status", response.getStatus(), HttpStatus.SC_CREATED);
+		Assert.assertEquals("response status", HttpStatus.SC_CREATED, response.getStatus());
+	}
+	
+	@Test
+	public void testAutomaticConflictingCreation() throws Exception {
+		File temp = fileSystem.getTemporaryDirectory();
+		
+		String indexName = "testindex";
+		
+		File indexDir = new File(temp, indexName);
+		IndexWriter writer = lucene.getTemporaryIndexWriter(indexDir);
+		writer.addDocument(lucene.buildDocument(toMap("id", 5)));
+		writer.close();
+		
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		buffer.append("<entry xmlns=\"http://www.w3.org/2005/Atom\">");
+		buffer.append("<title>" + indexName + "</title>");
+		buffer.append("<content type=\"xhtml\">");
+		buffer.append("<div xmlns=\"http://www.w3.org/1999/xhtml\">");
+		buffer.append("<dl class=\"xoxo\">");
+		buffer.append("<dt>index.title</dt>");
+		buffer.append("<dd>Yippee!</dd>");
+		buffer.append("</dl>");
+		buffer.append("</div>");
+		buffer.append("</content>");
+		buffer.append("</entry>");
+
+		HttpRequest request = postRequest("http://localhost/lucene");
+		request.getBody().put(buffer.toString().getBytes());
+		HttpResponse response = getResponse(request);
+		
+		Assert.assertEquals("response status", HttpStatus.SC_CONFLICT, response.getStatus());
+		
 	}
 	
 	public GetMethodWebRequest getIndexRequest(String indexName) {
