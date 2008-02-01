@@ -83,7 +83,7 @@ public class DefaultHttpServletContainer implements HttpServletContainer {
 			if (servlet == null && servletClassName != null) {
 				servlet = (HttpServlet) Class.forName(servletClassName).newInstance();
 			}
-			servletConfig = new DefaultServletConfig(servletName);
+			servletConfig = new DefaultServletConfig(servletName, initialParameters);
 			servlet.init(servletConfig);
 		}
 	}
