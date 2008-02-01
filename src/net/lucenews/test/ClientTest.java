@@ -1,10 +1,10 @@
 package net.lucenews.test;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
@@ -14,14 +14,16 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.lucenews.LuceneWebService;
+import net.lucenews.http.ByteBufferInputStream;
 import net.lucenews.http.DefaultHttpRequest;
+import net.lucenews.http.DefaultHttpResponse;
+import net.lucenews.http.HttpCommunication;
 import net.lucenews.http.HttpRequest;
 import net.lucenews.http.HttpResponse;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
@@ -40,6 +42,7 @@ public class ClientTest {
 	protected ServletRunner runner;
 	protected ServletUnitClient client;
 	protected Random random;
+	protected DefaultHttpServletContainer servletContainer;
 	
 	public ClientTest() {
 		this.introspectionDocumentAsserter = new IntrospectionDocumentAsserter();
@@ -55,6 +58,8 @@ public class ClientTest {
 		this.fileSystem = new FileSystemUtility();
 		this.lucene = new LuceneUtility();
 		this.entryAsserter = new EntryAsserter();
+		this.servletContainer = new DefaultHttpServletContainer();
+		this.servletContainer.setServletClass(LuceneWebService.class);
 	}
 	
 	public void setup() throws Exception {
@@ -62,18 +67,21 @@ public class ClientTest {
 		client = runner.newClient();
 	}
 	
-	public Document toDocument(WebResponse response) throws SAXException, IOException {
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		InputStream stream = response.getInputStream();
+	public Document toDocument(HttpCommunication communication) throws SAXException, IOException {
+		final ByteBuffer body = communication.getBody();
+		final InputStream inputStream = new ByteBufferInputStream(body);
+		
+		body.rewind();
 		while (true) {
-			int b = stream.read();
+			int b = inputStream.read();
 			if (b < 0) {
 				break;
 			}
-			buffer.write(b);
 			System.out.write(b);
 		}
-		return documentBuilder.parse(new ByteArrayInputStream(buffer.toByteArray()));
+		
+		body.rewind();
+		return documentBuilder.parse(inputStream);
 	}
 	
 	public InputStream toWebConfigStream(Map<?, ?> initialParameters) {
@@ -168,15 +176,50 @@ public class ClientTest {
 	 * Constructs a new HTTP request.
 	 * @return
 	 */
-	public HttpRequest getRequest() {
+	public HttpRequest newRequest() {
 		return new DefaultHttpRequest();
 	}
 	
-	public HttpResponse getResponse(HttpRequest request) {
-		HttpResponse result;
-		// TODO
-		result = null;
-		return result;
+	public HttpRequest newRequest(String method) {
+		HttpRequest request = newRequest();
+		request.setMethod(method);
+		return request;
+	}
+	
+	public HttpRequest newRequest(String method, String resource) {
+		HttpRequest request = newRequest(method);
+		// TODO: request.setResource(resource);
+		return request;
+	}
+	
+	public HttpRequest getRequest(String resource) {
+		return newRequest("GET", resource);
+	}
+	
+	public HttpRequest postRequest(String resource) {
+		return newRequest("POST", resource);
+	}
+	
+	public HttpRequest putRequest(String resource) {
+		return newRequest("PUT", resource);
+	}
+	
+	public HttpRequest deleteRequest(String resource) {
+		return newRequest("DELETE", resource);
+	}
+	
+	public HttpResponse getResponse() {
+		return new DefaultHttpResponse();
+	}
+	
+	public HttpResponse getResponse(HttpRequest request) throws Exception {
+		return getResponse(servletContainer, request);
+	}
+	
+	public HttpResponse getResponse(HttpServletContainer servletContainer, HttpRequest request) throws Exception {
+		HttpResponse response = getResponse();
+		servletContainer.service(request, response);
+		return response;
 	}
 	
 }

@@ -1,13 +1,15 @@
 package net.lucenews.test;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.xml.xpath.XPathExpressionException;
 
 import net.lucenews.LuceneWebService;
+import net.lucenews.http.HttpRequest;
+import net.lucenews.http.HttpResponse;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
@@ -18,9 +20,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.PostMethodWebRequest;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 
 public class IndexCreationTest extends ClientTest {
@@ -32,9 +31,10 @@ public class IndexCreationTest extends ClientTest {
 	 * @throws CorruptIndexException 
 	 * @throws SAXException 
 	 * @throws XPathExpressionException 
+	 * @throws ServletException 
 	 */
 	@Test
-	public void testStartupManualCreation() throws CorruptIndexException, LockObtainFailedException, IOException, SAXException, XPathExpressionException {
+	public void testStartupManualCreation() throws Exception {
 		File temp = fileSystem.getTemporaryDirectory();
 		
 		String indexName = "testindex";
@@ -48,8 +48,8 @@ public class IndexCreationTest extends ClientTest {
 		runner.registerServlet("lucene", LuceneWebService.class.getName(), toMap("directory", temp.getCanonicalPath()));
 		client = runner.newClient();
 		
-		WebRequest request = new GetMethodWebRequest("http://localhost/lucene/testindex/opensearchdescription.xml");
-		WebResponse response = client.getResponse(request);
+		HttpRequest request = getRequest("http://localhost/lucene/testindex/opensearchdescription.xml");
+		HttpResponse response = getResponse(request);
 		
 		org.w3c.dom.Document document = toDocument(response);
 		//introspectionDocumentAsserter.assertIntrospectionDocument(document);
@@ -66,7 +66,7 @@ public class IndexCreationTest extends ClientTest {
 	}
 	
 	@Test
-	public void testAutomaticCreation() throws IOException, SAXException, XPathExpressionException {
+	public void testAutomaticCreation() throws Exception {
 		File temp = fileSystem.getTemporaryDirectory();
 		
 		runner = new ServletRunner();
@@ -87,8 +87,9 @@ public class IndexCreationTest extends ClientTest {
 		buffer.append("</content>");
 		buffer.append("</entry>");
 		
-		PostMethodWebRequest request = new PostMethodWebRequest("http://localhost/lucene", new ByteArrayInputStream(buffer.toString().getBytes()), "text/xml");
-		WebResponse response = client.getResponse(request);
+		//HttpRequest request = new PostMethodWebRequest("http://localhost/lucene", new ByteArrayInputStream(buffer.toString().getBytes()), "text/xml");
+		HttpRequest request = postRequest("http://localhost/lucene");
+		HttpResponse response = getResponse(request);
 		
 		org.w3c.dom.Document document = toDocument(response);
 		entryAsserter.assertEntry(document.getDocumentElement());

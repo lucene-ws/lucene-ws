@@ -3,7 +3,11 @@ package net.lucenews.test;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import javax.servlet.ServletException;
 import javax.xml.xpath.XPathExpressionException;
+
+import net.lucenews.http.HttpRequest;
+import net.lucenews.http.HttpResponse;
 
 import org.apache.commons.httpclient.HttpException;
 import org.junit.Assert;
@@ -11,9 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.WebResponse;
 
 public class ServiceTest extends ClientTest {
 
@@ -36,12 +37,12 @@ public class ServiceTest extends ClientTest {
 	 * @throws IOException
 	 * @throws SAXException
 	 * @throws XPathExpressionException
+	 * @throws ServletException 
 	 */
 	@Test
-	public void testXml() throws MalformedURLException, IOException,
-			SAXException, XPathExpressionException {
-		GetMethodWebRequest request = getServiceRequest();
-		WebResponse response = client.getResponse(request);
+	public void testXml() throws Exception {
+		HttpRequest request = getServiceRequest();
+		HttpResponse response = getResponse(request);
 		Document document = toDocument(response);
 		introspectionDocumentAsserter.assertIntrospectionDocument(document);
 	}
@@ -53,13 +54,13 @@ public class ServiceTest extends ClientTest {
 	 * @throws HttpException
 	 * @throws SAXException
 	 * @throws XPathExpressionException
+	 * @throws ServletException 
 	 * 
 	 */
 	@Test
-	public void testWorkspaceCount() throws HttpException, IOException,
-			SAXException, XPathExpressionException {
-		GetMethodWebRequest request = getServiceRequest();
-		WebResponse response = client.getResponse(request);
+	public void testWorkspaceCount() throws Exception {
+		HttpRequest request = getServiceRequest();
+		HttpResponse response = getResponse(request);
 		Document document = toDocument(response);
 		Assert.assertEquals("# of workspaces", 1, dom.elementsByPath(document,
 				"/service/workspace").size());
@@ -72,19 +73,19 @@ public class ServiceTest extends ClientTest {
 	 * @throws IOException
 	 * @throws SAXException
 	 * @throws XPathExpressionException
+	 * @throws ServletException 
 	 */
 	@Test
-	public void testCollectionCount() throws HttpException, IOException,
-			SAXException, XPathExpressionException {
-		GetMethodWebRequest request = getServiceRequest();
-		WebResponse response = client.getResponse(request);
+	public void testCollectionCount() throws Exception {
+		HttpRequest request = getServiceRequest();
+		HttpResponse response = getResponse(request);
 		Document document = toDocument(response);
 		Assert.assertEquals("# of collections", 0, dom.elementsByPath(document,
 				"/service/workspace/collection").size());
 	}
 
-	public GetMethodWebRequest getServiceRequest() {
-		return new GetMethodWebRequest("http://localhost/lucene");
+	public HttpRequest getServiceRequest() {
+		return getRequest("http://localhost/lucene");
 	}
 
 }
