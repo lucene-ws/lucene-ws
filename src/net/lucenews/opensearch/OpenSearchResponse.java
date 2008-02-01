@@ -28,6 +28,7 @@ public class OpenSearchResponse {
     private String   id;
     private Calendar updated;
     private String   description;
+    private String   selfUrl;
     private Integer  totalResults;
     private Integer  startIndex;
     private Integer  itemsPerPage;
@@ -44,6 +45,13 @@ public class OpenSearchResponse {
     }
     
     
+    public String getSelfUrl(){
+        return selfUrl;
+    }
+
+    public void setSelfUrl(String url){
+        this.selfUrl = url;
+    }
     
     
     public String getTitle () {
@@ -299,6 +307,16 @@ public class OpenSearchResponse {
             element.setAttribute("xmlns:opensearch","http://a9.com/-/spec/opensearch/1.1/");
             element.setAttribute("xmlns:relevance","http://a9.com/-/opensearch/extensions/relevance/1.0/");
             element.setAttribute("xmlns","http://www.w3.org/2005/Atom");
+            
+            
+            // Self Link
+            if (getSelfUrl() != null){
+                Element link = document.createElement("link");
+                link.setAttribute("href",getSelfUrl());
+                link.setAttribute("rel","self");
+                link.setAttribute("type","application/atom+xml");
+                element.appendChild(link);
+            }                   
             
             // title
             if (getTitle() != null) {
