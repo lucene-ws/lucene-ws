@@ -184,37 +184,19 @@ public class LuceneDocument {
     
     
     
-    public List<Field> getFields () {
+    public List<Field> getFields() {
         List<Field> fields  = new ArrayList<Field>();
-        
-        /**
-        
-            NOTE: The following lines will only work
-            when compiling against Lucene-Core 2.0.1.
-            Until that is officially launched, we must
-            deal with 2.0.0 API.
-        
-        List<?>     objects = document.getFields();
-        Iterator<?> iterator = objects.iterator();
+        List<?> objects = document.getFields();
+        Iterator<?> iterator = objects.iterator();        
         while (iterator.hasNext()) {
             Object object = iterator.next();
             if (object instanceof Field) {
                 fields.add( (Field) object );
             }
         }
-        */
-        
-        Enumeration<?> enumeration = document.fields();
-        while (enumeration.hasMoreElements()) {
-            Object object = enumeration.nextElement();
-            if (object instanceof Field) {
-                fields.add( (Field) object );
-            }
-        }
-        
-        return fields;
+            return fields;
     }
-    
+        
     
     
     public Field[] getFields (String name) {

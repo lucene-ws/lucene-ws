@@ -87,6 +87,7 @@ public class SearchController extends Controller {
         if ( c.getOpenSearchFormat() == null )   c.setOpenSearchFormat( OpenSearch.ATOM );
         if ( c.getOpenSearchResponse() == null ) c.setOpenSearchResponse( new OpenSearchResponse() );
         OpenSearchResponse response = c.getOpenSearchResponse();
+        response.setSelfUrl(request.getLocation());
         
         if ( c.getOpenSearchQuery().getCount() == null ) {
             c.getOpenSearchQuery().setCount( 10 );
