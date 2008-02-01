@@ -14,7 +14,10 @@ public class ByteBufferOutputStream extends OutputStream {
 	
 	@Override
 	public void write(int value) throws IOException {
+		System.err.write(value);
+		System.err.flush();
 		buffer.put((byte) value);
+		//System.err.println("Wrote " + value + " (" + ((char) value) + ")");
 	}
 
 }

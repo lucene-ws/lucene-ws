@@ -9,7 +9,7 @@ public class DefaultHttpCommunication implements HttpCommunication {
 	
 	public DefaultHttpCommunication() {
 		this.headers = new DefaultHeaderCollection();
-		this.body = ByteBuffer.allocate(10000);
+		this.body = ByteBuffer.allocate(20000);
 	}
 	
 	@Override

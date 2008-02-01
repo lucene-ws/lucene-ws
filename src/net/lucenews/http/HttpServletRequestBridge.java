@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -42,6 +43,10 @@ public class HttpServletRequestBridge implements HttpServletRequest {
 	@Override
 	public String getContextPath() {
 		return contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
 	}
 
 	@Override
@@ -132,14 +137,23 @@ public class HttpServletRequestBridge implements HttpServletRequest {
 
 	@Override
 	public String getRequestURI() {
-		// TODO Auto-generated method stub
-		return null;
+		return request.getResource();
 	}
 
 	@Override
 	public StringBuffer getRequestURL() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("http://");
+		buffer.append(request.getHost());
+		Integer port = request.getPort();
+		if (port != null) {
+			buffer.append(":" + port);
+		}
+		String resource = request.getResource();
+		if (resource != null) {
+			buffer.append(resource);
+		}
+		return buffer;
 	}
 
 	@Override
@@ -222,8 +236,7 @@ public class HttpServletRequestBridge implements HttpServletRequest {
 
 	@Override
 	public int getContentLength() {
-		// TODO Auto-generated method stub
-		return 0;
+		return request.getBody().limit();
 	}
 
 	@Override
@@ -234,8 +247,8 @@ public class HttpServletRequestBridge implements HttpServletRequest {
 
 	@Override
 	public ServletInputStream getInputStream() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		ByteBuffer body = request.getBody();
+		return new DefaultServletInputStream(new ByteBufferInputStream(body));
 	}
 
 	@Override

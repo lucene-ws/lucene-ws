@@ -3,6 +3,9 @@ package net.lucenews.http;
 public class DefaultHttpRequest extends DefaultHttpCommunication implements HttpRequest {
 
 	private String method;
+	private String host;
+	private Integer port;
+	private String resource;
 	private ParameterCollection parameters;
 	private String protocol;
 
@@ -19,6 +22,30 @@ public class DefaultHttpRequest extends DefaultHttpCommunication implements Http
 
 	public void setMethod(String method) {
 		this.method = method;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public Integer getPort() {
+		return port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public String getResource() {
+		return resource;
+	}
+
+	public void setResource(String resource) {
+		this.resource = resource;
 	}
 
 	@Override

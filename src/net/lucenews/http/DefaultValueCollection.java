@@ -1,17 +1,25 @@
 package net.lucenews.http;
 
-import java.util.ArrayList;
+import java.util.AbstractCollection;
+import java.util.Iterator;
 
-public class DefaultValueCollection<V> extends ArrayList<V> implements ValueCollection<V> {
+public class DefaultValueCollection<K, V> extends AbstractCollection<V> implements ValueCollection<V> {
 
 	private static final long serialVersionUID = -7351471183123387133L;
+	private KeyValueCollection<K, V> collection;
+	private Object key;
 
+	public DefaultValueCollection(KeyValueCollection<K, V> collection, Object key) {
+		this.collection = collection;
+		this.key = key;
+	}
+	
 	@Override
 	public V first() {
 		if (isEmpty()) {
 			throw new RuntimeException("Cannot obtain the first value in an empty collection");
 		} else {
-			return get(0);
+			return iterator().next();
 		}
 	}
 
@@ -22,10 +30,26 @@ public class DefaultValueCollection<V> extends ArrayList<V> implements ValueColl
 		case 0:
 			throw new RuntimeException("Cannot obtain the only value in an empty collection");
 		case 1:
-			return get(0);
+			return iterator().next();
 		default:
 			throw new RuntimeException("Cannot obtain the only value in an collection containing " + size + " values");
 		}
+	}
+
+	@Override
+	public int size() {
+		int result = 0;
+		Iterator<V> iterator = iterator();
+		while (iterator.hasNext()) {
+			iterator.next();
+			result++;
+		}
+		return result;
+	}
+
+	@Override
+	public Iterator<V> iterator() {
+		return new DefaultValueIterator<K, V>(collection, key);
 	}
 
 }
