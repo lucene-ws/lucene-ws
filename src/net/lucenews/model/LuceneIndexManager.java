@@ -118,7 +118,7 @@ public class LuceneIndexManager implements LuceneIndexListener {
                 directoryNames = "C:\\indices";
             }
             else if ( os.startsWith("Linux") ) {
-                directoryNames = "/var/lucene";
+                directoryNames = "/var/local/lucene";
             }
         }
         
