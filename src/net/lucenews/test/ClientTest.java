@@ -14,6 +14,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.lucenews.LuceneWebService;
+import net.lucenews.http.DefaultHttpRequest;
+import net.lucenews.http.HttpRequest;
+import net.lucenews.http.HttpResponse;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -158,6 +161,21 @@ public class ClientTest {
 			}
 			result.put(key, value);
 		}
+		return result;
+	}
+	
+	/**
+	 * Constructs a new HTTP request.
+	 * @return
+	 */
+	public HttpRequest getRequest() {
+		return new DefaultHttpRequest();
+	}
+	
+	public HttpResponse getResponse(HttpRequest request) {
+		HttpResponse result;
+		// TODO
+		result = null;
 		return result;
 	}
 	

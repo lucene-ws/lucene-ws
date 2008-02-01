@@ -48,7 +48,7 @@ public class IndexCreationTest extends ClientTest {
 		runner.registerServlet("lucene", LuceneWebService.class.getName(), toMap("directory", temp.getCanonicalPath()));
 		client = runner.newClient();
 		
-		WebRequest request = new GetMethodWebRequest("http://localhost/lucene");
+		WebRequest request = new GetMethodWebRequest("http://localhost/lucene/testindex/opensearchdescription.xml");
 		WebResponse response = client.getResponse(request);
 		
 		org.w3c.dom.Document document = toDocument(response);

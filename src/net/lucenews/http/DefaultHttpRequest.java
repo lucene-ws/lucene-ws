@@ -1,15 +1,17 @@
 package net.lucenews.http;
 
-import java.nio.ByteBuffer;
-
-public class DefaultHttpRequest implements HttpRequest {
+public class DefaultHttpRequest extends DefaultHttpCommunication implements HttpRequest {
 
 	private String method;
 	private ParameterCollection parameters;
 	private String protocol;
-	private HeaderCollection headers;
-	private ByteBuffer body;
 
+	public DefaultHttpRequest() {
+		this.method = "GET";
+		this.parameters = new DefaultParameterCollection();
+		this.protocol = "HTTP/1.0";
+	}
+	
 	@Override
 	public String getMethod() {
 		return method;
@@ -35,24 +37,6 @@ public class DefaultHttpRequest implements HttpRequest {
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
-	}
-
-	@Override
-	public HeaderCollection getHeaders() {
-		return headers;
-	}
-
-	public void setHeaders(HeaderCollection headers) {
-		this.headers = headers;
-	}
-
-	@Override
-	public ByteBuffer getBody() {
-		return body;
-	}
-
-	public void setBody(ByteBuffer body) {
-		this.body = body;
 	}
 
 }
