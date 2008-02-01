@@ -45,9 +45,8 @@ public class OpenSearchResponse {
     }
     
     
-
     public String getSelfUrl(){
-    return selfUrl;
+        return selfUrl;
     }
 
     public void setSelfUrl(String url){
@@ -310,19 +309,16 @@ public class OpenSearchResponse {
             element.setAttribute("xmlns","http://www.w3.org/2005/Atom");
             
             
-
-        // Self Link
-        if (getSelfUrl() != null){
-            Element link = document.createElement("link");
-            link.setAttribute("href",getSelfUrl());
-            link.setAttribute("rel","self");
-            link.setAttribute("type","application/atom+xml");
-            element.appendChild(link);
-        }                   
-
-        // title
-
+            // Self Link
+            if (getSelfUrl() != null){
+                Element link = document.createElement("link");
+                link.setAttribute("href",getSelfUrl());
+                link.setAttribute("rel","self");
+                link.setAttribute("type","application/atom+xml");
+                element.appendChild(link);
+            }                   
             
+            // title
             if (getTitle() != null) {
                 element.appendChild( asElement( document, "title", getTitle() ) );
             }
@@ -490,4 +486,5 @@ public class OpenSearchResponse {
         element.appendChild( document.createTextNode(value) );
         return element;
     }
+    
 }
