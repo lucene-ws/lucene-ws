@@ -66,6 +66,10 @@ public class DefaultHttpServletContainer implements HttpServletContainer {
 	public void setInitialParameters(Map<String, String> initialParameters) {
 		this.initialParameters = initialParameters;
 	}
+	
+	public void setInitialParameter(String name, String value) {
+		this.initialParameters.put(name, value);
+	}
 
 	public boolean isInitialized() {
 		return initialized;
@@ -91,7 +95,10 @@ public class DefaultHttpServletContainer implements HttpServletContainer {
 	@Override
 	public void service(HttpRequest request, HttpResponse response)
 			throws Exception {
-		service(new HttpServletRequestBridge(request), new HttpServletResponseBridge(response));
+		HttpServletRequestBridge bridgedRequest = new HttpServletRequestBridge(request);
+		HttpServletResponseBridge bridgedResponse = new HttpServletResponseBridge(response);
+		bridgedRequest.setContextPath("/lucene");
+		service(bridgedRequest, bridgedResponse);
 	}
 
 	@Override

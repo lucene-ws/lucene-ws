@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
 import java.util.Map;
@@ -24,11 +26,9 @@ import net.lucenews.http.HttpResponse;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.meterware.servletunit.ServletRunner;
-import com.meterware.servletunit.ServletUnitClient;
-
 public class ClientTest {
 	
+	protected boolean strict;
 	protected FileSystemUtility fileSystem;
 	protected LuceneUtility lucene;
 	protected DomUtility dom;
@@ -39,10 +39,8 @@ public class ClientTest {
 	
 	protected File servletDirectory;
 	protected DocumentBuilder documentBuilder;
-	protected ServletRunner runner;
-	protected ServletUnitClient client;
 	protected Random random;
-	protected DefaultHttpServletContainer servletContainer;
+	protected DefaultHttpServletContainer container;
 	
 	public ClientTest() {
 		this.introspectionDocumentAsserter = new IntrospectionDocumentAsserter();
@@ -54,33 +52,20 @@ public class ClientTest {
 			e.printStackTrace();
 		}
 		this.random = new Random();
-		runner = new ServletRunner();
 		this.fileSystem = new FileSystemUtility();
 		this.lucene = new LuceneUtility();
 		this.entryAsserter = new EntryAsserter();
-		this.servletContainer = new DefaultHttpServletContainer();
-		this.servletContainer.setServletClass(LuceneWebService.class);
-	}
-	
-	public void setup() throws Exception {
-		runner.registerServlet("lucene", LuceneWebService.class.getName());
-		client = runner.newClient();
+		this.container = new DefaultHttpServletContainer();
+		this.container.setServletClass(LuceneWebService.class);
 	}
 	
 	public Document toDocument(HttpCommunication communication) throws SAXException, IOException {
 		final ByteBuffer body = communication.getBody();
+		//int position = body.position();
+		//body.limit(position);
+		//body.position(0);
+		//System.out.println("POSITION: " + body.position() + ", LIMIT: " + body.limit());
 		final InputStream inputStream = new ByteBufferInputStream(body);
-		
-		body.rewind();
-		while (true) {
-			int b = inputStream.read();
-			if (b < 0) {
-				break;
-			}
-			System.out.write(b);
-		}
-		
-		body.rewind();
 		return documentBuilder.parse(inputStream);
 	}
 	
@@ -187,7 +172,19 @@ public class ClientTest {
 	}
 	
 	public HttpRequest newRequest(String method, String resource) {
+		URL url;
+		try {
+			url = new URL(resource);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 		HttpRequest request = newRequest(method);
+		request.setHost(url.getHost());
+		Integer port = url.getPort();
+		if (port != null && port >= 0) {
+			request.setPort(port);
+		}
+		request.setResource(url.getPath());
 		// TODO: request.setResource(resource);
 		return request;
 	}
@@ -213,7 +210,7 @@ public class ClientTest {
 	}
 	
 	public HttpResponse getResponse(HttpRequest request) throws Exception {
-		return getResponse(servletContainer, request);
+		return getResponse(container, request);
 	}
 	
 	public HttpResponse getResponse(HttpServletContainer servletContainer, HttpRequest request) throws Exception {

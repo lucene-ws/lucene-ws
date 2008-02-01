@@ -11,7 +11,6 @@ import net.lucenews.http.HttpResponse;
 
 import org.apache.commons.httpclient.HttpException;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -22,11 +21,6 @@ public class ServiceTest extends ClientTest {
 
 	public ServiceTest() {
 		introspectionDocumentAsserter = new IntrospectionDocumentAsserter();
-	}
-
-	@Before
-	public void setup() throws Exception {
-		super.setup();
 	}
 
 	/**
@@ -44,7 +38,9 @@ public class ServiceTest extends ClientTest {
 		HttpRequest request = getServiceRequest();
 		HttpResponse response = getResponse(request);
 		Document document = toDocument(response);
-		introspectionDocumentAsserter.assertIntrospectionDocument(document);
+		if (strict) {
+			introspectionDocumentAsserter.assertIntrospectionDocument(document);
+		}
 	}
 
 	/**

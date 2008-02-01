@@ -7,10 +7,10 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.xml.xpath.XPathExpressionException;
 
-import net.lucenews.LuceneWebService;
 import net.lucenews.http.HttpRequest;
 import net.lucenews.http.HttpResponse;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.LockObtainFailedException;
@@ -20,7 +20,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.servletunit.ServletRunner;
 
 public class IndexCreationTest extends ClientTest {
 
@@ -44,15 +43,16 @@ public class IndexCreationTest extends ClientTest {
 		writer.addDocument(lucene.buildDocument(toMap("id", 5)));
 		writer.close();
 		
-		runner = new ServletRunner();
-		runner.registerServlet("lucene", LuceneWebService.class.getName(), toMap("directory", temp.getCanonicalPath()));
-		client = runner.newClient();
+		container.setInitialParameter("directory", temp.getCanonicalPath());
 		
-		HttpRequest request = getRequest("http://localhost/lucene/testindex/opensearchdescription.xml");
+		HttpRequest request = getRequest("http://localhost/lucene");
 		HttpResponse response = getResponse(request);
 		
 		org.w3c.dom.Document document = toDocument(response);
-		//introspectionDocumentAsserter.assertIntrospectionDocument(document);
+		
+		if (strict) {
+			introspectionDocumentAsserter.assertIntrospectionDocument(document);
+		}
 		
 		List<Element> collections = dom.elementsByPath(document, "/service/workspace/collection");
 		Assert.assertEquals("# of collections", 1, collections.size());
@@ -69,9 +69,10 @@ public class IndexCreationTest extends ClientTest {
 	public void testAutomaticCreation() throws Exception {
 		File temp = fileSystem.getTemporaryDirectory();
 		
-		runner = new ServletRunner();
-		runner.registerServlet("lucene", LuceneWebService.class.getName(), toMap("directory", temp.getCanonicalPath()));
-		client = runner.newClient();
+		//runner = new ServletRunner();
+		//runner.registerServlet("lucene", LuceneWebService.class.getName(), toMap("directory", temp.getCanonicalPath()));
+		//client = runner.newClient();
+		container.getInitialParameters().put("directory", temp.getCanonicalPath());
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -89,10 +90,16 @@ public class IndexCreationTest extends ClientTest {
 		
 		//HttpRequest request = new PostMethodWebRequest("http://localhost/lucene", new ByteArrayInputStream(buffer.toString().getBytes()), "text/xml");
 		HttpRequest request = postRequest("http://localhost/lucene");
+		request.getBody().put(buffer.toString().getBytes());
 		HttpResponse response = getResponse(request);
 		
 		org.w3c.dom.Document document = toDocument(response);
-		entryAsserter.assertEntry(document.getDocumentElement());
+		
+		if (strict) {
+			entryAsserter.assertEntry(document.getDocumentElement());
+		}
+		
+		Assert.assertEquals("response status", response.getStatus(), HttpStatus.SC_CREATED);
 	}
 	
 	public GetMethodWebRequest getIndexRequest(String indexName) {
