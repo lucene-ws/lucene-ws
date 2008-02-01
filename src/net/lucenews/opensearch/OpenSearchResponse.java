@@ -490,13 +490,4 @@ public class OpenSearchResponse {
         element.appendChild( document.createTextNode(value) );
         return element;
     }
-    
-
-    protected Element asElement(Document document, String value) throws OpenSearchException{
-    Element element = document.createElement("link");
-    element.setAttribute("href",value);
-    element.setAttribute("rel","self");
-    element.setAttribute("type","application/atom+xml");
-    return element;
-    }   
 }
