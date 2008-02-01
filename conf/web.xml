@@ -22,7 +22,7 @@
             <param-value>0</param-value>
         </init-param>
         <init-param>
-            <param-name>directory</param-name>
+            <param-name>index.directories</param-name>
             <param-value>/var/local/lucene/</param-value>
         </init-param>
         <init-param>

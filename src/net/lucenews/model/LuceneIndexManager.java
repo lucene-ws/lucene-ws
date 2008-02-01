@@ -99,13 +99,6 @@ public class LuceneIndexManager implements LuceneIndexListener {
         String directoryNames = null;
         
         if ( directoryNames == null ) directoryNames = service.getProperty("index.directories");
-        if ( directoryNames == null ) directoryNames = service.getProperty("index.directory");
-        if ( directoryNames == null ) directoryNames = service.getProperty("directories");
-        if ( directoryNames == null ) directoryNames = service.getProperty("directory");
-        if ( directoryNames == null ) directoryNames = service.getProperty("indices.directories");
-        if ( directoryNames == null ) directoryNames = service.getProperty("index.directories");
-        if ( directoryNames == null ) directoryNames = service.getProperty("indexDirectory");
-        if ( directoryNames == null ) directoryNames = service.getProperty("indexDirectories");
         
         // If none of these work, we will attempt to come up with a 
         // logical default based on what operating system this is using.
