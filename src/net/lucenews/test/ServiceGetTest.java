@@ -173,8 +173,8 @@ public class ServiceGetTest extends ClientTest {
 		
 		final String directoryParameterValue = string.join(";", directories);
 		
-		if (logger.isLoggable(Level.INFO)) {
-			logger.info("directory parameter: " + directoryParameterValue);
+		if (logger.isLoggable(Level.FINER)) {
+			logger.finer("directory parameter: " + directoryParameterValue);
 		}
 		
 		// Register index's parent as the service's directory

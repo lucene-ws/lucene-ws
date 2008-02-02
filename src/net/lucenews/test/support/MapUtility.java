@@ -6,9 +6,11 @@ import java.util.Map;
 
 public class MapUtility {
 	
+	@SuppressWarnings("unchecked")
 	public <K, V> Map<K, V> toTypedMap(Class<K> keyType, Class<V> valueType, Object... objects) {
-		
-		return null;
+		Map<K, V> result = new LinkedHashMap<K, V>();
+		populate((Map<Object, Object>) result, objects);
+		return result;
 	}
 	
 	/**

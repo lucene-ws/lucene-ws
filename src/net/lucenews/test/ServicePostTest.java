@@ -18,6 +18,12 @@ import org.w3c.dom.Element;
 
 public class ServicePostTest extends ClientTest {
 
+	private final Object NAME_KEY;
+	
+	public ServicePostTest() {
+		this.NAME_KEY = client.INDEX_NAME_KEY;
+	}
+	
 	/**
 	 * Creates an index with no index properties.
 	 * @throws Exception
@@ -97,8 +103,6 @@ public class ServicePostTest extends ClientTest {
 				+ indexName);
 		return request;
 	}
-
-	public final Object NAME_KEY = new Object();
 
 	public HttpRequest buildIndexCreationRequest(Map<?, ?>... indexes) {
 		final int count = indexes.length;

@@ -25,6 +25,9 @@ public class FileSystemUtility {
 		this.random = new Random();
 		this.defaultAutoCreate = true;
 		this.defaultAutoDelete = true;
+		if (!temporaryRoot.exists()) {
+			queueForDeletion(temporaryRoot);
+		}
 		registerShutdownHook();
 	}
 	
@@ -41,8 +44,12 @@ public class FileSystemUtility {
 	}
 	
 	public File getTemporaryDirectory(final boolean autoCreate, final boolean autoDelete) {
-		String directoryName = getTemporaryDirectoryName();
-		File directory = new File(temporaryRoot, directoryName);
+		final String directoryName = getTemporaryDirectoryName();
+		return getTemporaryDirectory(directoryName, autoCreate, autoDelete);
+	}
+	
+	public File getTemporaryDirectory(final String directoryName, final boolean autoCreate, final boolean autoDelete) {
+		final File directory = new File(temporaryRoot, directoryName);
 		if (autoCreate && !directory.exists()) {
 			directory.mkdirs();
 		}

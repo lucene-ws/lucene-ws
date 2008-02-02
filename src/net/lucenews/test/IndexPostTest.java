@@ -1,6 +1,8 @@
 package net.lucenews.test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import net.lucenews.http.HttpRequest;
@@ -20,7 +22,163 @@ public class IndexPostTest extends ClientTest {
 	
 	@Test
 	public void test() throws Exception {
-		doTestDocumentCreation(toMap(NAME, "foo", CLASS, "indexed", VALUE, "bar"));
+		//doTestDocumentCreation(toMap("foo", "bar"));
+	}
+	
+	public List<String> getCustomDocumentIdenfierPropertyKeys() {
+		return Arrays.asList(new String[]{"field.<identifier>.name", "field.<identifier>", "field.identifier", "identifier"});
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation1() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 1));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation2() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 2));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation3() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 3));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation4() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 4));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation5() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 5));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation6() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 6));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation7() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 7));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation8() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 8));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation9() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 9));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation10() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 10));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation11() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 11));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation12() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 12));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation13() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 13));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation14() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 14));
+	}
+	
+	@Test
+	public void testCustomIdentifiedDocumentCreation15() throws Exception {
+		doTestCustomIdentifiedDocumentCreation(lists.filter(getCustomDocumentIdenfierPropertyKeys(), 15));
+	}
+	
+	/**
+	 * 
+	 * @param propertyNames
+	 * @throws Exception
+	 */
+	public void doTestCustomIdentifiedDocumentCreation(List<String> identityFieldNamePropertyKeys) throws Exception {
+		String primaryFieldName = null;
+		
+		final int size = identityFieldNamePropertyKeys.size();
+		for (int i = 0; i < size; i++) {
+			String fieldName = "field" + string.padLeft(i + 1, '0', 2);
+			if (i == 0) {
+				primaryFieldName = fieldName;
+			}
+		}
+		
+		Map<?, ?> indexProperties = toMap(identityFieldNamePropertyKeys.get(0), primaryFieldName);
+		String indexName = client.getRandomIndexName();
+		client.createIndex(indexName, indexProperties);
+		
+		Map<?, ?> document = toMap(primaryFieldName, "123");
+		HttpResponse response = client.createDocument(indexName, document).getResponse();
+		
+		http.assertCreated(response);
+	}
+	
+	@Test
+	public void testUnidentifiedDocumentCreation() throws Exception {
+		String indexName = "testindex01";
+		client.createIndex(indexName);
+		Map<?, ?> document = toMap("sound", "meow");
+		HttpResponse response = client.createDocument(indexName, document).getResponse();
+		
+		http.assertStatus(response, HttpStatus.SC_BAD_REQUEST);
+	}
+	
+	@Test
+	public void testAmbiguouslyIdentifiedDocumentCreation() throws Exception {
+		String indexName = "testindex01";
+		client.createIndex(indexName);
+		Map<?, ?> document = toMap("id", new int[]{ 5, 6 }, "sound", "meow");
+		HttpResponse response = client.createDocument(indexName, document).getResponse();
+		
+		http.assertBadRequest(response);
+	}
+	
+	@Test
+	public void testRedundantlyIdentifiedDocumentCreation() throws Exception {
+		String indexName = "testindex01";
+		client.createIndex(indexName);
+		Map<?, ?> document = toMap("id", new int[]{5, 5, 5, 5}, "sound", "woof");
+		HttpResponse response = client.createDocument(indexName, document).getResponse();
+		
+		http.assertBadRequest(response);
+	}
+	
+	@Test
+	public void testUnknownIndexDocumentCreation() throws Exception {
+		String indexName = "testindex01";
+		Map<?, ?> document = toMap("id", 5);
+		HttpResponse response = client.createDocument(indexName, document).getResponse();
+		
+		http.assertNotFound(response);
+	}
+	
+	@Test
+	public void testDocumentCreationConflict() throws Exception {
+		String indexName = "testindex01";
+		client.createIndex(indexName);
+		Map<?, ?> document = toMap("id", 5);
+		client.createDocument(indexName, document);
+		
+		HttpResponse response = client.createDocument(indexName, document).getResponse();
+		
+		Assert.assertEquals("response status", HttpStatus.SC_CONFLICT, response.getStatus());
 	}
 	
 	protected void doTestDocumentCreation(Map<?, ?> fields) throws Exception {

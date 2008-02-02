@@ -4,6 +4,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 
+import org.apache.commons.httpclient.HttpStatus;
+import org.junit.Assert;
+
 import net.lucenews.http.DefaultHttpConversation;
 import net.lucenews.http.DefaultHttpRequest;
 import net.lucenews.http.DefaultHttpResponse;
@@ -20,6 +23,30 @@ public class HttpUtility {
 	public HttpUtility(final HttpServletContainer container) {
 		this.container = container;
 		this.defaultMethod = "GET";
+	}
+	
+	public void assertOk(HttpResponse response) {
+		assertStatus(response, HttpStatus.SC_OK);
+	}
+	
+	public void assertBadRequest(HttpResponse response) {
+		assertStatus(response, HttpStatus.SC_BAD_REQUEST);
+	}
+	
+	public void assertCreated(HttpResponse response) {
+		assertStatus(response, HttpStatus.SC_CREATED);
+	}
+	
+	public void assertNotFound(HttpResponse response) {
+		assertStatus(response, HttpStatus.SC_NOT_FOUND);
+	}
+	
+	public void assertStatus(HttpResponse response) {
+		assertStatus(response, HttpStatus.SC_OK);
+	}
+	
+	public void assertStatus(HttpResponse response, int expectedStatus) {
+		Assert.assertEquals("response status", expectedStatus, response.getStatus());
 	}
 	
 	public URL toUrl(final String url) {
@@ -112,6 +139,10 @@ public class HttpUtility {
 	
 	public void populateBuffer(final ByteBuffer buffer, final StringBuffer string) {
 		buffer.put(string.toString().getBytes());
+	}
+	
+	public String escape(Object object) {
+		return object.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}
 	
 }

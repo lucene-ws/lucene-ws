@@ -25,6 +25,7 @@ import net.lucenews.test.support.FeedAsserter;
 import net.lucenews.test.support.FileSystemUtility;
 import net.lucenews.test.support.HttpUtility;
 import net.lucenews.test.support.IntrospectionDocumentAsserter;
+import net.lucenews.test.support.ListUtility;
 import net.lucenews.test.support.LuceneUtility;
 import net.lucenews.test.support.MapUtility;
 import net.lucenews.test.support.StringUtility;
@@ -41,6 +42,7 @@ public class ClientTest {
 	protected DomUtility dom;
 	protected FileSystemUtility fileSystem;
 	protected HttpUtility http;
+	protected ListUtility lists;
 	protected LuceneUtility lucene;
 	protected MapUtility map;
 	protected StringUtility string;
@@ -68,6 +70,7 @@ public class ClientTest {
 		}
 		this.random = new Random();
 		this.fileSystem = new FileSystemUtility();
+		this.lists = new ListUtility();
 		this.lucene = new LuceneUtility();
 		this.xoxo = new XoxoUtility();
 		this.string = new StringUtility();
