@@ -179,4 +179,12 @@ public class ClientUtility {
 		return http.sendRequest("DELETE", "http://localhost/lucene/" + indexName + "/" + documentId);
 	}
 	
+	public HttpRequest buildIndexDeletionRequest(final String indexName) {
+		return http.buildRequest("DELETE", "http://localhost/lucene/" + indexName);
+	}
+	
+	public HttpConversation deleteIndex(final String indexName) {
+		return http.send(buildIndexDeletionRequest(indexName));
+	}
+	
 }
