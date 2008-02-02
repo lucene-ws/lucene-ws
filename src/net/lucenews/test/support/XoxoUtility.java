@@ -10,6 +10,10 @@ public class XoxoUtility {
 
 	private DomUtility dom;
 	
+	public XoxoUtility() {
+		dom = new DomUtility();
+	}
+	
 	public Map<String, String> toMap(Element dl) {
 		Map<String, String> result = new HashMap<String, String>();
 		

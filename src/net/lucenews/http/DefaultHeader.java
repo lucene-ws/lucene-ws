@@ -26,5 +26,10 @@ public class DefaultHeader implements Header {
 		this.value = value;
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+		return "header(" + key + ": " + value + ")";
+	}
 
 }

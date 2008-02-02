@@ -45,16 +45,16 @@ public class LuceneUtility {
 		return writer;
 	}
 	
-	public IndexWriter buildIndex(File directory, Map<?, ?>... documents) throws CorruptIndexException, LockObtainFailedException, IOException {
-		return buildIndex(directory, defaultAnalyzer, documents);
+	public void buildIndex(File directory, Map<?, ?>... documents) throws CorruptIndexException, LockObtainFailedException, IOException {
+		buildIndex(directory, defaultAnalyzer, documents);
 	}
 	
-	public IndexWriter buildIndex(File directory, Analyzer analyzer, Map<?, ?>... documents) throws CorruptIndexException, LockObtainFailedException, IOException {
+	public void buildIndex(File directory, Analyzer analyzer, Map<?, ?>... documents) throws CorruptIndexException, LockObtainFailedException, IOException {
 		IndexWriter writer = getIndexWriter(directory, analyzer);
 		for (Map<?, ?> document : documents) {
 			writer.addDocument(buildDocument(document));
 		}
-		return writer;
+		writer.close();
 	}
 	
 	public Document buildDocument(Map<?, ?> fields) {
