@@ -1,4 +1,4 @@
-package net.lucenews.test;
+package net.lucenews.test.support;
 
 import java.io.BufferedReader;
 import java.io.IOException;

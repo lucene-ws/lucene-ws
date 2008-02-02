@@ -8,6 +8,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import net.lucenews.http.HttpRequest;
 import net.lucenews.http.HttpResponse;
+import net.lucenews.test.support.IntrospectionDocumentAsserter;
 
 import org.apache.commons.httpclient.HttpException;
 import org.junit.Assert;

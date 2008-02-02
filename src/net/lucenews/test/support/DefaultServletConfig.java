@@ -1,4 +1,4 @@
-package net.lucenews.test;
+package net.lucenews.test.support;
 
 import java.util.Enumeration;
 import java.util.HashMap;

@@ -24,6 +24,17 @@ import net.lucenews.http.DefaultHttpResponse;
 import net.lucenews.http.HttpCommunication;
 import net.lucenews.http.HttpRequest;
 import net.lucenews.http.HttpResponse;
+import net.lucenews.test.support.CollectionAsserter;
+import net.lucenews.test.support.DefaultHttpServletContainer;
+import net.lucenews.test.support.DomUtility;
+import net.lucenews.test.support.EntryAsserter;
+import net.lucenews.test.support.FeedAsserter;
+import net.lucenews.test.support.FileSystemUtility;
+import net.lucenews.test.support.HttpServletContainer;
+import net.lucenews.test.support.IntrospectionDocumentAsserter;
+import net.lucenews.test.support.LuceneUtility;
+import net.lucenews.test.support.StringUtility;
+import net.lucenews.test.support.XoxoUtility;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;

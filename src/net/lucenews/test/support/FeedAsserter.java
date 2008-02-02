@@ -1,4 +1,4 @@
-package net.lucenews.test;
+package net.lucenews.test.support;
 
 import org.junit.Assert;
 import org.w3c.dom.Element;
