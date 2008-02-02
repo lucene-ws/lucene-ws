@@ -1,14 +1,10 @@
 package net.lucenews.test;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,20 +15,18 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import net.lucenews.LuceneWebService;
 import net.lucenews.http.ByteBufferInputStream;
-import net.lucenews.http.DefaultHttpRequest;
-import net.lucenews.http.DefaultHttpResponse;
 import net.lucenews.http.HttpCommunication;
-import net.lucenews.http.HttpRequest;
-import net.lucenews.http.HttpResponse;
+import net.lucenews.test.support.ClientUtility;
 import net.lucenews.test.support.CollectionAsserter;
 import net.lucenews.test.support.DefaultHttpServletContainer;
 import net.lucenews.test.support.DomUtility;
 import net.lucenews.test.support.EntryAsserter;
 import net.lucenews.test.support.FeedAsserter;
 import net.lucenews.test.support.FileSystemUtility;
-import net.lucenews.test.support.HttpServletContainer;
+import net.lucenews.test.support.HttpUtility;
 import net.lucenews.test.support.IntrospectionDocumentAsserter;
 import net.lucenews.test.support.LuceneUtility;
+import net.lucenews.test.support.MapUtility;
 import net.lucenews.test.support.StringUtility;
 import net.lucenews.test.support.XoxoUtility;
 
@@ -42,11 +36,15 @@ import org.xml.sax.SAXException;
 public class ClientTest {
 	
 	protected boolean strict;
-	protected FileSystemUtility fileSystem;
-	protected LuceneUtility lucene;
+	
+	protected ClientUtility client;
 	protected DomUtility dom;
-	protected XoxoUtility xoxo;
+	protected FileSystemUtility fileSystem;
+	protected HttpUtility http;
+	protected LuceneUtility lucene;
+	protected MapUtility map;
 	protected StringUtility string;
+	protected XoxoUtility xoxo;
 	
 	protected IntrospectionDocumentAsserter introspectionDocumentAsserter;
 	protected CollectionAsserter collectionAsserter;
@@ -75,8 +73,11 @@ public class ClientTest {
 		this.string = new StringUtility();
 		this.entryAsserter = new EntryAsserter();
 		this.feedAsserter = new FeedAsserter();
+		this.map = new MapUtility();
 		this.container = new DefaultHttpServletContainer();
 		this.container.setServletClass(LuceneWebService.class);
+		this.http = new HttpUtility(this.container);
+		this.client = new ClientUtility(this.container, this.http);
 		this.logger = Logger.getLogger(this.getClass().getName());
 		this.logger.setLevel(Level.INFO);
 	}
@@ -87,184 +88,8 @@ public class ClientTest {
 		return documentBuilder.parse(inputStream);
 	}
 	
-	public InputStream toWebConfigStream(Map<?, ?> initialParameters) {
-		return new ByteArrayInputStream(toWebConfig(initialParameters).getBytes());
-	}
-	
-	public String toWebConfig(Map<?, ?> initialParameters) {
-		return toWebConfig("The Lucene Web Service", "LuceneWebService", LuceneWebService.class, initialParameters);
-	}
-	
-	public String toWebConfig(String displayName, String servletName, Class<?> servletClass, Map<?, ?> initialParameters) {
-		StringBuffer buffer = new StringBuffer();
-		try {
-			appendWebConfig(buffer, displayName, servletName, servletClass, initialParameters);
-		} catch (IOException e) {
-			// Shouldn't be thrown from a StringBuffer object, but hey...
-			e.printStackTrace();
-		}
-		return buffer.toString();
-	}
-	
-	/**
-	 * Builds a web.xml file, appending the content to the given appendable object.
-	 * @param appendable
-	 * @param displayName
-	 * @param servletName
-	 * @param servletClass
-	 * @param initialParameters
-	 * @throws IOException
-	 */
-	public void appendWebConfig(Appendable appendable, String displayName, String servletName, Class<?> servletClass, Map<?, ?> initialParameters) throws IOException {
-		appendable.append("<?xml version=\"1.0\"?>");
-		appendLine(appendable);
-		
-		appendable.append("<web-app>");
-		appendLine(appendable);
-		
-		appendable.append("\t<display-name>" + displayName + "</display-name>");
-		appendLine(appendable);
-		
-		appendable.append("\t<servlet>");
-		appendLine(appendable);
-		
-		appendable.append("\t\t<servlet-name>" + servletName + "</servlet-name>");
-		appendLine(appendable);
-		
-		appendable.append("\t\t<servlet-class>" + servletClass.getCanonicalName() + "</servlet-class>");
-		appendLine(appendable);
-		
-		for (Object initParamKey : initialParameters.keySet()) {
-			appendable.append("\t\t<init-param>");
-			appendLine(appendable);
-			appendable.append("\t\t\t<param-name>" + initParamKey + "</param-name>");
-			appendLine(appendable);
-			appendable.append("\t\t\t<param-value>" + initialParameters.get(initParamKey) + "</param-value>");
-			appendLine(appendable);
-			appendable.append("\t\t</init-param>");
-			appendLine(appendable);
-		}
-		
-		appendable.append("\t</servlet>");
-		appendLine(appendable);
-		
-		appendable.append("</web-app>");
-		appendLine(appendable);
-	}
-	
-	public void appendLine(Appendable appendable) throws IOException {
-		appendable.append("\n");
-	}
-	
-	public <K, V> Map<K, V> toTypedMap(Class<K> keyType, Class<V> valueType, Object... objects) {
-		return null;
-	}
-	
-	public Hashtable<?, ?> toMap(Object... objects) {
-		Hashtable<Object, Object> result = new Hashtable<Object, Object>();
-		for (int i = 0; i < objects.length; i += 2) {
-			Object key = objects[i];
-			Object value;
-			try {
-				value = objects[i + 1];
-			} catch (ArrayIndexOutOfBoundsException badIndex) {
-				value = null;
-			}
-			result.put(key, value);
-		}
-		return result;
-	}
-	
-	/**
-	 * Constructs a new HTTP request.
-	 * @return
-	 */
-	public HttpRequest newRequest() {
-		return new DefaultHttpRequest();
-	}
-	
-	public HttpRequest newRequest(String method) {
-		HttpRequest request = newRequest();
-		request.setMethod(method);
-		return request;
-	}
-	
-	public HttpRequest newRequest(String method, String resource) {
-		URL url;
-		try {
-			url = new URL(resource);
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-		HttpRequest request = newRequest(method);
-		request.setHost(url.getHost());
-		Integer port = url.getPort();
-		if (port != null && port >= 0) {
-			request.setPort(port);
-		}
-		request.setResource(url.getPath());
-		// TODO: request.setResource(resource);
-		return request;
-	}
-	
-	public HttpResponse get(String resource) throws Exception {
-		return getResponse(getRequest(resource));
-	}
-	
-	public HttpRequest getRequest(String resource) {
-		return newRequest("GET", resource);
-	}
-	
-	public HttpRequest postRequest(String resource) {
-		return newRequest("POST", resource);
-	}
-	
-	public HttpRequest putRequest(String resource) {
-		return newRequest("PUT", resource);
-	}
-	
-	public HttpRequest deleteRequest(String resource) {
-		return newRequest("DELETE", resource);
-	}
-	
-	public HttpResponse getResponse() {
-		return new DefaultHttpResponse();
-	}
-	
-	public HttpResponse getResponse(HttpRequest request) throws Exception {
-		return getResponse(container, request);
-	}
-	
-	public HttpResponse getResponse(HttpServletContainer servletContainer, HttpRequest request) throws Exception {
-		HttpResponse response = getResponse();
-		servletContainer.service(request, response);
-		return response;
-	}
-	
-	/**
-	 * Attempts to populate the body of the given communication using the
-	 * given object.
-	 * @param communication
-	 * @param content
-	 */
-	public void populateBody(HttpCommunication communication, Object content) {
-		try {
-			this.getClass().getMethod("populateBuffer", ByteBuffer.class, content.getClass()).invoke(this, communication.getBody(), content);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	public void populateBuffer(ByteBuffer buffer, byte[] bytes) {
-		buffer.put(bytes);
-	}
-	
-	public void populateBuffer(ByteBuffer buffer, String string) {
-		buffer.put(string.getBytes());
-	}
-	
-	public void populateBuffer(ByteBuffer buffer, StringBuffer string) {
-		buffer.put(string.toString().getBytes());
+	public Hashtable<?, ?> toMap(final Object... objects) {
+		return map.toHashtable(objects);
 	}
 	
 }

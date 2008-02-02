@@ -34,9 +34,9 @@ public class IndexPostTest extends ClientTest {
 		
 		StringBuffer body = new StringBuffer();
 		appendDocument(body, fields);
-		HttpRequest request = postRequest("http://localhost/lucene/" + indexName);
-		populateBody(request, body);
-		HttpResponse response = getResponse(request);
+		HttpRequest request = http.buildRequest("POST", "http://localhost/lucene/" + indexName);
+		http.populateBody(request, body);
+		HttpResponse response = http.send(request).getResponse();
 		
 		Assert.assertEquals("response status", HttpStatus.SC_CREATED, response.getStatus());
 		

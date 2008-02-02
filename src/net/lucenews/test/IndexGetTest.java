@@ -32,7 +32,7 @@ public class IndexGetTest extends ClientTest {
 		
 		container.setInitialParameter("directory", root.getCanonicalPath());
 		
-		final HttpResponse response = get("http://localhost/lucene/" + indexName);
+		final HttpResponse response = http.sendRequest("http://localhost/lucene/" + indexName).getResponse();
 		final Document document = toDocument(response);
 		final Element feed = dom.elementByPath(document, "/feed");
 		
@@ -45,7 +45,7 @@ public class IndexGetTest extends ClientTest {
 		Assert.assertEquals("# of entries", documents.length, entries.size());
 		
 		for (int i = documents.length - 1; i >= 0; i--) {
-			final Map<?, ?> doc = documents[i];
+			// TODO: final Map<?, ?> doc = documents[i];
 		}
 	}
 	

@@ -36,11 +36,11 @@ public class FileSystemUtility {
 		return getTemporaryDirectory(defaultAutoCreate, defaultAutoDelete);
 	}
 	
-	public File getTemporaryDirectory(boolean autoCreate) {
+	public File getTemporaryDirectory(final boolean autoCreate) {
 		return getTemporaryDirectory(autoCreate, defaultAutoDelete);
 	}
 	
-	public File getTemporaryDirectory(boolean autoCreate, boolean autoDelete) {
+	public File getTemporaryDirectory(final boolean autoCreate, final boolean autoDelete) {
 		String directoryName = getTemporaryDirectoryName();
 		File directory = new File(temporaryRoot, directoryName);
 		if (autoCreate && !directory.exists()) {
@@ -53,10 +53,14 @@ public class FileSystemUtility {
 	}
 	
 	public void registerShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(new Thread(deleter));
+		registerShutdownHook(Runtime.getRuntime());
 	}
 	
-	public void queueForDeletion(File file) {
+	public void registerShutdownHook(final Runtime runtime) {
+		runtime.addShutdownHook(new Thread(deleter));
+	}
+	
+	public void queueForDeletion(final File file) {
 		deletionQueue.add(file);
 	}
 	

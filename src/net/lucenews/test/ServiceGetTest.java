@@ -181,7 +181,7 @@ public class ServiceGetTest extends ClientTest {
 		container.setInitialParameter(directoryParameterName, directoryParameterValue);
 		
 		// Request a list of indexes
-		final HttpResponse response = get("http://localhost/lucene");
+		final HttpResponse response = http.sendRequest("http://localhost/lucene").getResponse();
 		Document document = toDocument(response);
 		
 		// 200 OK

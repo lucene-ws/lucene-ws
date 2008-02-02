@@ -37,7 +37,7 @@ public class ServiceTest extends ClientTest {
 	@Test
 	public void testXml() throws Exception {
 		HttpRequest request = getServiceRequest();
-		HttpResponse response = getResponse(request);
+		HttpResponse response = http.send(request).getResponse();
 		Document document = toDocument(response);
 		if (strict) {
 			introspectionDocumentAsserter.assertIntrospectionDocument(document);
@@ -57,7 +57,7 @@ public class ServiceTest extends ClientTest {
 	@Test
 	public void testWorkspaceCount() throws Exception {
 		HttpRequest request = getServiceRequest();
-		HttpResponse response = getResponse(request);
+		HttpResponse response = http.send(request).getResponse();
 		Document document = toDocument(response);
 		Assert.assertEquals("# of workspaces", 1, dom.elementsByPath(document,
 				"/service/workspace").size());
@@ -75,14 +75,14 @@ public class ServiceTest extends ClientTest {
 	@Test
 	public void testCollectionCount() throws Exception {
 		HttpRequest request = getServiceRequest();
-		HttpResponse response = getResponse(request);
+		HttpResponse response = http.send(request).getResponse();
 		Document document = toDocument(response);
 		Assert.assertEquals("# of collections", 0, dom.elementsByPath(document,
 				"/service/workspace/collection").size());
 	}
 
 	public HttpRequest getServiceRequest() {
-		return getRequest("http://localhost/lucene");
+		return http.buildRequest("http://localhost/lucene");
 	}
 
 }

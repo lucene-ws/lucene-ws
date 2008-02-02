@@ -45,8 +45,7 @@ public class IndexCreationTest extends ClientTest {
 		
 		container.setInitialParameter("directory", temp.getCanonicalPath());
 		
-		HttpRequest request = getRequest("http://localhost/lucene");
-		HttpResponse response = getResponse(request);
+		HttpResponse response = http.sendRequest("http://localhost/lucene").getResponse();
 		
 		org.w3c.dom.Document document = toDocument(response);
 		
@@ -85,9 +84,9 @@ public class IndexCreationTest extends ClientTest {
 		body.append("</content>");
 		body.append("</entry>");
 		
-		HttpRequest request = postRequest("http://localhost/lucene");
-		populateBody(request, body);
-		HttpResponse response = getResponse(request);
+		HttpRequest request = http.buildRequest("POST", "http://localhost/lucene");
+		http.populateBody(request, body);
+		HttpResponse response = http.send(request).getResponse();
 		
 		org.w3c.dom.Document document = toDocument(response);
 		
@@ -101,8 +100,7 @@ public class IndexCreationTest extends ClientTest {
 		
 		Assert.assertEquals("index location", "http://localhost/lucene/testindex04", location);
 		
-		HttpRequest getReq = getRequest("http://localhost/lucene/testindex04");
-		HttpResponse getRes = getResponse(getReq);
+		HttpResponse getRes = http.sendRequest("http://localhost/lucene/testindex04").getResponse();
 		
 		Assert.assertEquals("found index page", HttpStatus.SC_OK, getRes.getStatus());
 		
@@ -145,9 +143,9 @@ public class IndexCreationTest extends ClientTest {
 		body.append("</content>");
 		body.append("</entry>");
 
-		HttpRequest request = postRequest("http://localhost/lucene");
-		populateBody(request, body);
-		HttpResponse response = getResponse(request);
+		HttpRequest request = http.buildRequest("POST", "http://localhost/lucene");
+		http.populateBody(request, body);
+		HttpResponse response = http.send(request).getResponse();
 		
 		Assert.assertEquals("response status", HttpStatus.SC_CONFLICT, response.getStatus());
 		

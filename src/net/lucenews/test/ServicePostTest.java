@@ -57,7 +57,7 @@ public class ServicePostTest extends ClientTest {
 		container.setInitialParameter("directory", root.getCanonicalPath());
 
 		HttpRequest request = buildIndexCreationRequest(toMap(NAME_KEY, indexName));
-		HttpResponse response = getResponse(request);
+		HttpResponse response = http.send(request).getResponse();
 
 		Assert.assertEquals("response status", HttpStatus.SC_CONFLICT, response
 				.getStatus());
@@ -80,7 +80,7 @@ public class ServicePostTest extends ClientTest {
 		container.setInitialParameter("directory", root.getCanonicalPath());
 
 		HttpRequest deleteRequest = buildIndexDeletionRequest(indexName);
-		HttpResponse deleteResponse = getResponse(deleteRequest);
+		HttpResponse deleteResponse = http.send(deleteRequest).getResponse();
 
 		Assert.assertEquals("delete response status", HttpStatus.SC_OK,
 				deleteResponse.getStatus());
@@ -93,7 +93,7 @@ public class ServicePostTest extends ClientTest {
 	}
 
 	public HttpRequest buildIndexDeletionRequest(String indexName) {
-		HttpRequest request = deleteRequest("http://localhost/lucene/"
+		HttpRequest request = http.buildRequest("DELETE", "http://localhost/lucene/"
 				+ indexName);
 		return request;
 	}
@@ -138,8 +138,8 @@ public class ServicePostTest extends ClientTest {
 			body.append("</feed>");
 		}
 
-		HttpRequest postRequest = postRequest("http://localhost/lucene");
-		populateBody(postRequest, body);
+		HttpRequest postRequest = http.buildRequest("POST", "http://localhost/lucene");
+		http.populateBody(postRequest, body);
 		return postRequest;
 	}
 	
@@ -160,7 +160,7 @@ public class ServicePostTest extends ClientTest {
 				.getCanonicalPath());
 
 		HttpRequest postRequest = buildIndexCreationRequest(indexes);
-		HttpResponse postResponse = getResponse(postRequest);
+		HttpResponse postResponse = http.send(postRequest).getResponse();
 		List<String> locations = new ArrayList<String>(postResponse.getHeaders().byKey().get("Location"));
 
 		// TODO: Does this make sense?
@@ -205,8 +205,8 @@ public class ServicePostTest extends ClientTest {
 	 */
 	public void assertIndexProperties(String indexName,
 			Map<?, ?> expectedProperties) throws Exception {
-		HttpResponse response = get("http://localhost/lucene/" + indexName
-				+ "/index.properties");
+		HttpResponse response = http.sendRequest("http://localhost/lucene/" + indexName
+				+ "/index.properties").getResponse();
 
 		Document document = toDocument(response);
 		Element entry = dom.elementByPath(document, "/entry");
