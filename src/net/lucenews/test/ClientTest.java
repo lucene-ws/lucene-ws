@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,15 +34,19 @@ public class ClientTest {
 	protected FileSystemUtility fileSystem;
 	protected LuceneUtility lucene;
 	protected DomUtility dom;
+	protected XoxoUtility xoxo;
+	protected StringUtility string;
 	
 	protected IntrospectionDocumentAsserter introspectionDocumentAsserter;
 	protected CollectionAsserter collectionAsserter;
 	protected EntryAsserter entryAsserter;
+	protected FeedAsserter feedAsserter;
 	
 	protected File servletDirectory;
 	protected DocumentBuilder documentBuilder;
 	protected Random random;
 	protected DefaultHttpServletContainer container;
+	protected Logger logger;
 	
 	public ClientTest() {
 		this.introspectionDocumentAsserter = new IntrospectionDocumentAsserter();
@@ -54,17 +60,18 @@ public class ClientTest {
 		this.random = new Random();
 		this.fileSystem = new FileSystemUtility();
 		this.lucene = new LuceneUtility();
+		this.xoxo = new XoxoUtility();
+		this.string = new StringUtility();
 		this.entryAsserter = new EntryAsserter();
+		this.feedAsserter = new FeedAsserter();
 		this.container = new DefaultHttpServletContainer();
 		this.container.setServletClass(LuceneWebService.class);
+		this.logger = Logger.getLogger(this.getClass().getName());
+		this.logger.setLevel(Level.INFO);
 	}
 	
 	public Document toDocument(HttpCommunication communication) throws SAXException, IOException {
 		final ByteBuffer body = communication.getBody();
-		//int position = body.position();
-		//body.limit(position);
-		//body.position(0);
-		//System.out.println("POSITION: " + body.position() + ", LIMIT: " + body.limit());
 		final InputStream inputStream = new ByteBufferInputStream(body);
 		return documentBuilder.parse(inputStream);
 	}
@@ -189,6 +196,10 @@ public class ClientTest {
 		return request;
 	}
 	
+	public HttpResponse get(String resource) throws Exception {
+		return getResponse(getRequest(resource));
+	}
+	
 	public HttpRequest getRequest(String resource) {
 		return newRequest("GET", resource);
 	}
@@ -217,6 +228,32 @@ public class ClientTest {
 		HttpResponse response = getResponse();
 		servletContainer.service(request, response);
 		return response;
+	}
+	
+	/**
+	 * Attempts to populate the body of the given communication using the
+	 * given object.
+	 * @param communication
+	 * @param content
+	 */
+	public void populateBody(HttpCommunication communication, Object content) {
+		try {
+			this.getClass().getMethod("populateBuffer", ByteBuffer.class, content.getClass()).invoke(this, communication.getBody(), content);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public void populateBuffer(ByteBuffer buffer, byte[] bytes) {
+		buffer.put(bytes);
+	}
+	
+	public void populateBuffer(ByteBuffer buffer, String string) {
+		buffer.put(string.getBytes());
+	}
+	
+	public void populateBuffer(ByteBuffer buffer, StringBuffer string) {
+		buffer.put(string.toString().getBytes());
 	}
 	
 }

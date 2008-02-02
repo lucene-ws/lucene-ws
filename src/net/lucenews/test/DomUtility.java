@@ -55,13 +55,28 @@ public class DomUtility {
 		return Arrays.asList(nodes);
 	}
 	
-	public List<Node> nodesByPath(final Object item, final String xpath) throws XPathExpressionException {
-		XPathExpression expression = this.xpath.compile(xpath);
-		return toList((NodeList) expression.evaluate(item, XPathConstants.NODESET));
+	public List<Node> nodesByPath(final Object item, final String xpath) {
+		try {
+			XPathExpression expression = this.xpath.compile(xpath);
+			return toList((NodeList) expression.evaluate(item, XPathConstants.NODESET));
+		} catch (XPathExpressionException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
-	public List<Element> elementsByPath(final Object item, final String xpath) throws XPathExpressionException {
+	public List<Element> elementsByPath(final Object item, final String xpath) {
 		return toList(nodesByPath(item, xpath), Element.class);
+	}
+	
+	public Element elementByPath(final Object item, final String xpath) {
+		List<Element> elements = elementsByPath(item, xpath);
+		if (elements.isEmpty()) {
+			return null;
+		} else if (elements.size() == 1) {
+			return elements.get(0);
+		} else {
+			throw new RuntimeException("Multiple elements at \"" + xpath + "\"");
+		}
 	}
 	
 	public String innerText(Node node) {

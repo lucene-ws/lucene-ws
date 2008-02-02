@@ -24,7 +24,7 @@ import com.meterware.httpunit.GetMethodWebRequest;
 public class IndexCreationTest extends ClientTest {
 
 	/**
-	 * Creates an index manually, then starts up the service.
+	 * Creates an index locally, then starts up the service.
 	 * @throws IOException 
 	 * @throws LockObtainFailedException 
 	 * @throws CorruptIndexException 
@@ -33,7 +33,7 @@ public class IndexCreationTest extends ClientTest {
 	 * @throws ServletException 
 	 */
 	@Test
-	public void testStartupManualCreation() throws Exception {
+	public void testLocalPreInitCreation() throws Exception {
 		File temp = fileSystem.getTemporaryDirectory();
 		
 		String indexName = "testindex";
@@ -66,27 +66,27 @@ public class IndexCreationTest extends ClientTest {
 	}
 	
 	@Test
-	public void testAutomaticCreation() throws Exception {
+	public void testRemoteCreation() throws Exception {
 		File temp = fileSystem.getTemporaryDirectory();
 		
-		container.getInitialParameters().put("directory", temp.getCanonicalPath());
+		container.setInitialParameter("directory", temp.getCanonicalPath());
 		
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		buffer.append("<entry xmlns=\"http://www.w3.org/2005/Atom\">");
-		buffer.append("<title>testindex04</title>");
-		buffer.append("<content type=\"xhtml\">");
-		buffer.append("<div xmlns=\"http://www.w3.org/1999/xhtml\">");
-		buffer.append("<dl class=\"xoxo\">");
-		buffer.append("<dt>index.title</dt>");
-		buffer.append("<dd>Yippee!</dd>");
-		buffer.append("</dl>");
-		buffer.append("</div>");
-		buffer.append("</content>");
-		buffer.append("</entry>");
+		StringBuffer body = new StringBuffer();
+		body.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		body.append("<entry xmlns=\"http://www.w3.org/2005/Atom\">");
+		body.append("<title>testindex04</title>");
+		body.append("<content type=\"xhtml\">");
+		body.append("<div xmlns=\"http://www.w3.org/1999/xhtml\">");
+		body.append("<dl class=\"xoxo\">");
+		body.append("<dt>index.title</dt>");
+		body.append("<dd>Yippee!</dd>");
+		body.append("</dl>");
+		body.append("</div>");
+		body.append("</content>");
+		body.append("</entry>");
 		
 		HttpRequest request = postRequest("http://localhost/lucene");
-		request.getBody().put(buffer.toString().getBytes());
+		populateBody(request, body);
 		HttpResponse response = getResponse(request);
 		
 		org.w3c.dom.Document document = toDocument(response);
@@ -96,10 +96,32 @@ public class IndexCreationTest extends ClientTest {
 		}
 		
 		Assert.assertEquals("response status", HttpStatus.SC_CREATED, response.getStatus());
+		
+		String location = response.getHeaders().byKey().get("Location").only();
+		
+		Assert.assertEquals("index location", "http://localhost/lucene/testindex04", location);
+		
+		HttpRequest getReq = getRequest("http://localhost/lucene/testindex04");
+		HttpResponse getRes = getResponse(getReq);
+		
+		Assert.assertEquals("found index page", HttpStatus.SC_OK, getRes.getStatus());
+		
+		org.w3c.dom.Document getDoc = toDocument(getRes);
+		Element feed = getDoc.getDocumentElement();
+		
+		feedAsserter.assertFeed(feed);
+		
+		String title = dom.innerText(dom.elementByPath(feed, "./title"));
+		
+		Assert.assertEquals("index title", "Yippee!", title);
+		
+		String id = dom.innerText(dom.elementByPath(feed, "./id"));
+		
+		Assert.assertEquals("index id", "http://localhost/lucene/testindex04", id);
 	}
 	
 	@Test
-	public void testAutomaticConflictingCreation() throws Exception {
+	public void testRemoteConflictingCreation() throws Exception {
 		File temp = fileSystem.getTemporaryDirectory();
 		
 		String indexName = "testindex";
@@ -109,22 +131,22 @@ public class IndexCreationTest extends ClientTest {
 		writer.addDocument(lucene.buildDocument(toMap("id", 5)));
 		writer.close();
 		
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		buffer.append("<entry xmlns=\"http://www.w3.org/2005/Atom\">");
-		buffer.append("<title>" + indexName + "</title>");
-		buffer.append("<content type=\"xhtml\">");
-		buffer.append("<div xmlns=\"http://www.w3.org/1999/xhtml\">");
-		buffer.append("<dl class=\"xoxo\">");
-		buffer.append("<dt>index.title</dt>");
-		buffer.append("<dd>Yippee!</dd>");
-		buffer.append("</dl>");
-		buffer.append("</div>");
-		buffer.append("</content>");
-		buffer.append("</entry>");
+		StringBuffer body = new StringBuffer();
+		body.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		body.append("<entry xmlns=\"http://www.w3.org/2005/Atom\">");
+		body.append("<title>" + indexName + "</title>");
+		body.append("<content type=\"xhtml\">");
+		body.append("<div xmlns=\"http://www.w3.org/1999/xhtml\">");
+		body.append("<dl class=\"xoxo\">");
+		body.append("<dt>index.title</dt>");
+		body.append("<dd>Yippee!</dd>");
+		body.append("</dl>");
+		body.append("</div>");
+		body.append("</content>");
+		body.append("</entry>");
 
 		HttpRequest request = postRequest("http://localhost/lucene");
-		request.getBody().put(buffer.toString().getBytes());
+		populateBody(request, body);
 		HttpResponse response = getResponse(request);
 		
 		Assert.assertEquals("response status", HttpStatus.SC_CONFLICT, response.getStatus());

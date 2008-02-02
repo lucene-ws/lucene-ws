@@ -32,16 +32,28 @@ public class LuceneUtility {
 	}
 	
 	public IndexWriter getTemporaryIndexWriter(File directory) throws CorruptIndexException, LockObtainFailedException, IOException {
-		return getTemporaryIndexWriter(directory, defaultAnalyzer);
+		return getIndexWriter(directory, defaultAnalyzer);
 	}
 	
-	public IndexWriter getTemporaryIndexWriter(File directory, Analyzer analyzer) throws CorruptIndexException, LockObtainFailedException, IOException {
+	public IndexWriter getIndexWriter(File directory, Analyzer analyzer) throws CorruptIndexException, LockObtainFailedException, IOException {
 		return new IndexWriter(directory, analyzer, true);
 	}
 	
 	public IndexWriter getTemporaryIndexWriter(Analyzer analyzer, boolean autoCreate) throws CorruptIndexException, LockObtainFailedException, IOException {
 		File directory = fileSystem.getTemporaryDirectory(true);
 		IndexWriter writer = new IndexWriter(directory, analyzer, autoCreate);
+		return writer;
+	}
+	
+	public IndexWriter buildIndex(File directory, Map<?, ?>... documents) throws CorruptIndexException, LockObtainFailedException, IOException {
+		return buildIndex(directory, defaultAnalyzer, documents);
+	}
+	
+	public IndexWriter buildIndex(File directory, Analyzer analyzer, Map<?, ?>... documents) throws CorruptIndexException, LockObtainFailedException, IOException {
+		IndexWriter writer = getIndexWriter(directory, analyzer);
+		for (Map<?, ?> document : documents) {
+			writer.addDocument(buildDocument(document));
+		}
 		return writer;
 	}
 	
