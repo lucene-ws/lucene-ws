@@ -18,6 +18,14 @@ public class FeedImpl extends CommonImpl implements Feed {
 	private Calendar updated;
 	private EntryList entries;
 
+	public FeedImpl() {
+		this.authors = new AuthorListImpl();
+		this.categories = new CategoryListImpl();
+		this.contributors = new ContributorListImpl();
+		this.links = new LinkListImpl();
+		this.entries = new EntryListImpl();
+	}
+	
 	public AuthorList getAuthors() {
 		return authors;
 	}

@@ -1,5 +1,7 @@
 package net.lucenews3.atom;
 
-public interface ContributorList extends PersonList {
+import java.util.List;
+
+public interface ContributorList extends List<Contributor> {
 
 }

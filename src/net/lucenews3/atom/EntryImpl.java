@@ -18,6 +18,13 @@ public class EntryImpl extends CommonImpl implements Entry {
 	private Calendar updated;
 	private Object extensions;
 
+	public EntryImpl() {
+		this.authors = new AuthorListImpl();
+		this.categories = new CategoryListImpl();
+		this.contributors = new ContributorListImpl();
+		this.links = new LinkListImpl();
+	}
+	
 	public AuthorList getAuthors() {
 		return authors;
 	}
