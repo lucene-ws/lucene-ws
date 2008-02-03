@@ -24,7 +24,7 @@ public class FileSystemUtility {
 		this.deleter = new FileDeleter(deletionQueue);
 		this.random = new Random();
 		this.defaultAutoCreate = true;
-		this.defaultAutoDelete = true;
+		this.defaultAutoDelete = !true;
 		if (!temporaryRoot.exists()) {
 			queueForDeletion(temporaryRoot);
 		}
@@ -32,7 +32,7 @@ public class FileSystemUtility {
 	}
 	
 	public String getTemporaryDirectoryName() {
-		return "tempdir-" + random.nextInt();
+		return "temp-dir-" + random.nextInt();
 	}
 	
 	public File getTemporaryDirectory() {

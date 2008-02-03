@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,6 +31,7 @@ import net.lucenews.test.support.LuceneUtility;
 import net.lucenews.test.support.MapUtility;
 import net.lucenews.test.support.StringUtility;
 import net.lucenews.test.support.XoxoUtility;
+import net.lucenews3.WebService;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -60,6 +62,11 @@ public class ClientTest {
 	protected Logger logger;
 	
 	public ClientTest() {
+		//this(LuceneWebService.class);
+		this(WebService.class);
+	}
+	
+	public ClientTest(Class<? extends HttpServlet> servletClass) {
 		this.introspectionDocumentAsserter = new IntrospectionDocumentAsserter();
 		dom = new DomUtility();
 		try {
@@ -78,7 +85,7 @@ public class ClientTest {
 		this.feedAsserter = new FeedAsserter();
 		this.map = new MapUtility();
 		this.container = new DefaultHttpServletContainer();
-		this.container.setServletClass(LuceneWebService.class);
+		this.container.setServletClass(servletClass);
 		this.http = new HttpUtility(this.container);
 		this.client = new ClientUtility(this.container, this.http);
 		this.logger = Logger.getLogger(this.getClass().getName());
