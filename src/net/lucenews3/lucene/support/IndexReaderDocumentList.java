@@ -14,7 +14,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 
-public class DefaultDocumentList extends AbstractList<Document> implements DocumentList {
+public class IndexReaderDocumentList extends AbstractList<Document> implements DocumentList {
 
 	private IndexReader reader;
 	private IndexWriter writer;
@@ -22,7 +22,7 @@ public class DefaultDocumentList extends AbstractList<Document> implements Docum
 	private Query criteria;
 	private ExceptionWrapper exceptionWrapper;
 	
-	public DefaultDocumentList(DefaultDocumentList prototype) {
+	public IndexReaderDocumentList(IndexReaderDocumentList prototype) {
 		this.reader = prototype.reader;
 		this.writer = prototype.writer;
 		this.searcher = prototype.searcher;
@@ -30,7 +30,7 @@ public class DefaultDocumentList extends AbstractList<Document> implements Docum
 		this.exceptionWrapper = prototype.exceptionWrapper;
 	}
 	
-	public DefaultDocumentList(IndexReader reader, IndexWriter writer, IndexSearcher searcher) {
+	public IndexReaderDocumentList(IndexReader reader, IndexWriter writer, IndexSearcher searcher) {
 		this.reader = reader;
 		this.writer = writer;
 		this.searcher = searcher;
@@ -107,7 +107,7 @@ public class DefaultDocumentList extends AbstractList<Document> implements Docum
 	 * @return a <code>DocumentList</code> which has been filtered by the given criteria
 	 */
 	public DocumentList where(Query criteria) {
-		DefaultDocumentList result = new DefaultDocumentList(this);
+		IndexReaderDocumentList result = new IndexReaderDocumentList(this);
 		if (result.criteria == null) {
 			result.criteria = criteria;
 		} else {
