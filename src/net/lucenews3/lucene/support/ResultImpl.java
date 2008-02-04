@@ -15,8 +15,13 @@ public class ResultImpl implements Result {
 	private int number;
 	
 	public ResultImpl(Hits hits, int number) {
+		this(hits, number, new DefaultExceptionWrapper());
+	}
+	
+	public ResultImpl(Hits hits, int number, ExceptionWrapper exceptionWrapper) {
 		this.hits = hits;
 		this.number = number;
+		this.exceptionWrapper = exceptionWrapper;
 	}
 	
 	public Document getDocument() {

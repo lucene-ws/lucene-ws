@@ -166,7 +166,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	@Override
 	public Result get(int index) {
 		initialize();
-		return new ResultImpl(hits, index);
+		return new ResultImpl(hits, index, exceptionWrapper);
 	}
 
 	@Override
