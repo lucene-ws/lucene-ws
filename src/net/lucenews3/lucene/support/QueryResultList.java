@@ -5,9 +5,8 @@ import java.util.AbstractList;
 
 import net.lucenews.http.ExceptionWrapper;
 
-import org.apache.lucene.misc.ChainedFilter;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.MatchAllDocsQuery;
@@ -19,20 +18,36 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 
 	private ExceptionWrapper exceptionWrapper;
 	private Searcher searcher;
+	private QueryParser queryParser;
 	private Query query;
+	private QueryMerger queryMerger;
 	private Filter filter;
+	private FilterMerger filterMerger;
 	private Sort sort;
+	private SortMerger sortMerger;
 	private Hits hits;
 	private boolean initialized;
 	
 	public QueryResultList(QueryResultList prototype) {
 		this.exceptionWrapper = prototype.exceptionWrapper;
 		this.searcher = prototype.searcher;
+		this.queryParser = prototype.queryParser;
 		this.query = prototype.query;
+		this.queryMerger = prototype.queryMerger;
 		this.filter = prototype.filter;
+		this.filterMerger = prototype.filterMerger;
 		this.sort = prototype.sort;
+		this.sortMerger = prototype.sortMerger;
 		this.hits = prototype.hits;
 		this.initialized = prototype.initialized;
+	}
+	
+	public QueryResultList() {
+		this.exceptionWrapper = new DefaultExceptionWrapper();
+		this.filterMerger = new FilterMergerImpl();
+		this.queryMerger = new QueryMergerImpl();
+		this.sortMerger = new SortMergerImpl();
+		this.initialized = false;
 	}
 	
 	public QueryResultList(Searcher searcher) {
@@ -44,6 +59,99 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		this.query = query;
 	}
 	
+	public QueryResultList(Searcher searcher, QueryParser queryParser) {
+		this.searcher = searcher;
+		this.queryParser = queryParser;
+	}
+	
+	public ExceptionWrapper getExceptionWrapper() {
+		return exceptionWrapper;
+	}
+
+	public void setExceptionWrapper(ExceptionWrapper exceptionWrapper) {
+		this.exceptionWrapper = exceptionWrapper;
+	}
+
+	public Filter getFilter() {
+		return filter;
+	}
+
+	public void setFilter(Filter filter) {
+		this.filter = filter;
+	}
+
+	public FilterMerger getFilterMerger() {
+		return filterMerger;
+	}
+
+	public void setFilterMerger(FilterMerger filterMerger) {
+		this.filterMerger = filterMerger;
+	}
+
+	public Hits getHits() {
+		return hits;
+	}
+
+	public void setHits(Hits hits) {
+		this.hits = hits;
+	}
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
+
+	public Query getQuery() {
+		return query;
+	}
+
+	public void setQuery(Query query) {
+		this.query = query;
+	}
+
+	public QueryMerger getQueryMerger() {
+		return queryMerger;
+	}
+
+	public void setQueryMerger(QueryMerger queryMerger) {
+		this.queryMerger = queryMerger;
+	}
+
+	public QueryParser getQueryParser() {
+		return queryParser;
+	}
+
+	public void setQueryParser(QueryParser queryParser) {
+		this.queryParser = queryParser;
+	}
+
+	public Searcher getSearcher() {
+		return searcher;
+	}
+
+	public void setSearcher(Searcher searcher) {
+		this.searcher = searcher;
+	}
+
+	public Sort getSort() {
+		return sort;
+	}
+
+	public void setSort(Sort sort) {
+		this.sort = sort;
+	}
+
+	public SortMerger getSortMerger() {
+		return sortMerger;
+	}
+
+	public void setSortMerger(SortMerger sortMerger) {
+		this.sortMerger = sortMerger;
+	}
+
 	public void initialize() {
 		if (!initialized) {
 			try {
@@ -57,73 +165,47 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	
 	@Override
 	public Result get(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		initialize();
+		return new ResultImpl(hits, index);
 	}
 
 	@Override
 	public int size() {
+		initialize();
 		return hits.length();
 	}
 
 	@Override
 	public QueryResultList filteredBy(Filter filter) {
 		final QueryResultList result = new QueryResultList(this);
-		if (filter == null) {
-			result.filter = null;
-		} else if (result.filter == null) {
-			result.filter = filter;
-		} else {
-			result.filter = new ChainedFilter(new Filter[]{ result.filter, filter }, ChainedFilter.AND);
-		}
+		result.filter = filterMerger.mergeFilters(result.filter, filter);
 		result.initialized = false;
 		return result;
-	}
-	
-	public Filter merge(Filter base, Filter delta) {
-		return null;
 	}
 
 	@Override
 	public QueryResultList sortedBy(Sort sort) {
 		final QueryResultList result = new QueryResultList(this);
-		if (sort == null) {
-			result.sort = null;
-		} else if (result.sort == null) {
-			result.sort = sort;
-		} else {
-			// TODO: Build the next sort
-			result.sort = sort;
-		}
+		result.sort = sortMerger.mergeSorts(result.sort, sort);
 		result.initialized = false;
 		return result;
-	}
-	
-	public Sort merge(Sort base, Sort delta) {
-		return null;
 	}
 
 	@Override
 	public QueryResultList where(Query criteria) {
 		final QueryResultList result = new QueryResultList(this);
-		result.query = merge(result.query, criteria);
+		result.query = queryMerger.mergeQueries(result.query, criteria);
 		result.initialized = false;
 		return result;
 	}
 	
-	public Query merge(Query base, Query delta) {
-		Query result;
-		if (delta == null) {
-			result = null;
-		} else if (base == null) {
-			result = delta;
-		} else {
-			final BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(base, BooleanClause.Occur.MUST);
-			booleanQuery.add(delta, BooleanClause.Occur.MUST);
-			result = booleanQuery;
+	@Override
+	public QueryResultList where(String criteria) {
+		try {
+			return where(queryParser.parse(criteria));
+		} catch (ParseException e) {
+			throw exceptionWrapper.wrap(e);
 		}
-		return result;
 	}
 
 }

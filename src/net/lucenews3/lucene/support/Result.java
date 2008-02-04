@@ -1,7 +1,15 @@
 package net.lucenews3.lucene.support;
 
-import java.util.List;
+import org.apache.lucene.document.Document;
 
-public interface Result extends List<Result> {
+public interface Result {
 
+	public int getNumber();
+	
+	public int getDocumentId();
+	
+	public Document getDocument();
+	
+	public float getScore();
+	
 }

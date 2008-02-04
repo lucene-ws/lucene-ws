@@ -10,6 +10,8 @@ public interface ResultList extends List<Result> {
 
 	public ResultList where(Query criteria);
 	
+	public ResultList where(String criteria);
+	
 	public ResultList filteredBy(Filter filter);
 	
 	public ResultList sortedBy(Sort sort);
