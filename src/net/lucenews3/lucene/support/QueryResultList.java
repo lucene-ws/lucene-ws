@@ -154,8 +154,11 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 
 	public void initialize() {
 		if (!initialized) {
+			if (query == null) {
+				query = new MatchAllDocsQuery();
+			}
 			try {
-				hits = searcher.search(query);
+				hits = searcher.search(query, filter, sort);
 			} catch (IOException e) {
 				throw exceptionWrapper.wrap(e);
 			}
