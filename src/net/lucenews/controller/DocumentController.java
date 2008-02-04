@@ -13,7 +13,6 @@ import org.apache.log4j.*;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
-//import org.apache.lucene.search.similar.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
