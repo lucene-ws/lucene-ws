@@ -41,6 +41,7 @@ public class LuceneIndexManager implements LuceneIndexListener {
         }
         
         File directory = directories.get( name );
+        
         if (directory == null) {
             throw new IndexNotFoundException( name );
         }
@@ -98,7 +99,6 @@ public class LuceneIndexManager implements LuceneIndexListener {
         String directoryNames = null;
         
         if ( directoryNames == null ) directoryNames = service.getProperty("index.directories");
-        
         
         // If none of these work, we will attempt to come up with a 
         // logical default based on what operating system this is using.
