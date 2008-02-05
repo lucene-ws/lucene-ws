@@ -18,6 +18,7 @@ import net.lucenews.http.ExceptionWrapper;
  */
 public abstract class ReflectiveVisitor<T> implements Visitor<T> {
 
+	private MethodResolver methodResolver;
 	private Method dispatchMethod;
 	private ExceptionWrapper exceptionWrapper;
 	private Logger logger;
@@ -26,13 +27,22 @@ public abstract class ReflectiveVisitor<T> implements Visitor<T> {
 		this(new DefaultExceptionWrapper());
 	}
 
+	public ReflectiveVisitor(MethodResolver methodResolver) {
+		this(methodResolver, new DefaultExceptionWrapper());
+	}
+	
+	public ReflectiveVisitor(ExceptionWrapper exceptionWrapper) {
+		this(new NativeMethodResolver(), exceptionWrapper);
+	}
+	
 	/**
 	 * Constructs a new instance using the given exception wrapper
 	 * to wrap any checked exceptions encountered into runtime
 	 * exceptions.
 	 * @param exceptionWrapper
 	 */
-	public ReflectiveVisitor(ExceptionWrapper exceptionWrapper) {
+	public ReflectiveVisitor(MethodResolver methodResolver, ExceptionWrapper exceptionWrapper) {
+		this.methodResolver = methodResolver;
 		this.exceptionWrapper = exceptionWrapper;
 		this.logger = Logger.getLogger("net.lucenews3.lucene.support");
 		try {
@@ -44,6 +54,22 @@ public abstract class ReflectiveVisitor<T> implements Visitor<T> {
 		}
 	}
 
+	public ExceptionWrapper getExceptionWrapper() {
+		return exceptionWrapper;
+	}
+
+	public void setExceptionWrapper(ExceptionWrapper exceptionWrapper) {
+		this.exceptionWrapper = exceptionWrapper;
+	}
+
+	public MethodResolver getMethodResolver() {
+		return methodResolver;
+	}
+
+	public void setMethodResolver(MethodResolver methodResolver) {
+		this.methodResolver = methodResolver;
+	}
+
 	/**
 	 * Determines which method of the visitor to invoke.
 	 * 
@@ -51,31 +77,23 @@ public abstract class ReflectiveVisitor<T> implements Visitor<T> {
 	 * @return
 	 */
 	public Method visitationMethod(Class<? extends T> targetClass) {
-		Method result = null;
+		Method result;
 
-		Class<?> thisClass = this.getClass();
-		Class<?> currentTargetClass = targetClass;
-		while (result == null && currentTargetClass != null) {
-			try {
-				result = thisClass.getMethod("visit", currentTargetClass);
-			} catch (SecurityException e) {
-				throw exceptionWrapper.wrap(e);
-			} catch (NoSuchMethodException e) {
-				currentTargetClass = currentTargetClass.getSuperclass();
-			}
+		final Class<?> thisClass = this.getClass();
+		final String methodName = "visit";
+		try {
+			result = methodResolver.resolveMethod(thisClass, methodName, targetClass);
+		} catch (SecurityException e) {
+			throw exceptionWrapper.wrap(e);
+		} catch (NoSuchMethodException e) {
+			throw exceptionWrapper.wrap(e);
 		}
-
-		if (result == null) {
-			throw exceptionWrapper.wrap(new NoSuchMethodException("Object \"" + this
-							+ "\" does not implement visit(" + targetClass
-							+ ")"));
-		} else if (result.equals(dispatchMethod)) {
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning("Visitation method is the dispatch method. May cause infinite loop. Please ensure "
-								+ thisClass.getCanonicalName()
-								+ " implements the method: \"public Object visit("
-								+ targetClass.getCanonicalName() + ")\"");
-			}
+		
+		if (result.equals(dispatchMethod) && logger.isLoggable(Level.WARNING)) {
+			logger.warning("Visitation method is the dispatch method. May cause infinite loop. Please ensure "
+							+ thisClass.getCanonicalName()
+							+ " implements the method: \"public Object visit("
+							+ targetClass.getCanonicalName() + ")\"");
 		}
 
 		return result;
