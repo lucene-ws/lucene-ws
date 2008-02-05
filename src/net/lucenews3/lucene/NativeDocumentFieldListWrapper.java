@@ -1,6 +1,7 @@
 package net.lucenews3.lucene;
 
 import java.util.AbstractList;
+import java.util.Map;
 
 import org.apache.lucene.document.Field;
 
@@ -27,6 +28,18 @@ public class NativeDocumentFieldListWrapper extends AbstractList<Field> implemen
 	public int size() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public Map<String, FieldList> byName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FieldList byName(String name) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

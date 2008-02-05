@@ -2,6 +2,7 @@ package net.lucenews3.lucene.support;
 
 import java.io.IOException;
 import java.util.AbstractList;
+import java.util.BitSet;
 
 import net.lucenews.http.ExceptionWrapper;
 
@@ -9,24 +10,26 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 
 public class IndexReaderDocumentList extends AbstractList<Document> implements DocumentList {
 
 	private IndexReader reader;
 	private IndexWriter writer;
 	private IndexSearcher searcher;
-	private Query criteria;
+	private Filter filter;
+	private FilterMerger filterMerger;
+	private boolean initialized;
+	private boolean includeDeleted;
+	private BitSet eligibleDocuments;
 	private ExceptionWrapper exceptionWrapper;
 	
 	public IndexReaderDocumentList(IndexReaderDocumentList prototype) {
 		this.reader = prototype.reader;
 		this.writer = prototype.writer;
 		this.searcher = prototype.searcher;
-		this.criteria = prototype.criteria;
+		this.filter = prototype.filter;
 		this.exceptionWrapper = prototype.exceptionWrapper;
 	}
 	
@@ -34,6 +37,46 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 		this.reader = reader;
 		this.writer = writer;
 		this.searcher = searcher;
+	}
+	
+	public boolean isInitialized() {
+		return initialized;
+	}
+	
+	public void initialize() {
+		if (!initialized) {
+			if (filter == null) {
+				eligibleDocuments = null;
+			} else {
+				try {
+					eligibleDocuments = filter.bits(reader);
+				} catch (IOException e) {
+					throw exceptionWrapper.wrap(e);
+				}
+			}
+			initialized = true;
+		}
+	}
+	
+	/**
+	 * Determines whether or not a document is eligible to be
+	 * included in this list.
+	 * @param documentNumber
+	 * @return
+	 */
+	public boolean isIncluded(int documentNumber) {
+		boolean result;
+		
+		initialize();
+		if (!includeDeleted && reader.isDeleted(documentNumber)) {
+			result = false;
+		} else if (eligibleDocuments == null) {
+			result = true;
+		} else {
+			result = eligibleDocuments.get(documentNumber);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -48,12 +91,12 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 		int currentIndex = 0;
 		int currentNumber = 0;
 		
-		do {
-			if (!reader.isDeleted(currentNumber)) {
+		while (currentIndex < index) {
+			if (isIncluded(currentNumber)) {
 				currentIndex++;
 			}
 			currentNumber++;
-		} while (currentIndex < index);
+		}
 		
 		return -1;
 	}
@@ -106,16 +149,9 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 	 * @param criteria a Lucene query to dictate the contents of the sub-list
 	 * @return a <code>DocumentList</code> which has been filtered by the given criteria
 	 */
-	public DocumentList where(Query criteria) {
-		IndexReaderDocumentList result = new IndexReaderDocumentList(this);
-		if (result.criteria == null) {
-			result.criteria = criteria;
-		} else {
-			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(result.criteria, BooleanClause.Occur.MUST);
-			booleanQuery.add(criteria, BooleanClause.Occur.MUST);
-			result.criteria = booleanQuery;
-		}
+	public DocumentList filteredBy(Filter filter) {
+		final IndexReaderDocumentList result = new IndexReaderDocumentList(this);
+		result.filter = filterMerger.mergeFilters(result.filter, filter);
 		return result;
 	}
 
