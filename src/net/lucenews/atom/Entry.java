@@ -77,39 +77,40 @@ public class Entry extends Base {
             TransformerConfigurationException, TransformerException,
             ParserConfigurationException, AtomParseException
     {
+        if (!e.getTagName().equals( "entry" )) {
+            throw new AtomParseException("Invalid tag name for Atom entry: " + e.getTagName());
+        }
+        
         Entry entry = new Entry();
-        if (e.getTagName().equals( "entry" )) { 
-               
+        
         NodeList nodes = e.getChildNodes();
         
-            for( int i = 0; i < nodes.getLength(); i++ ) {
-                if (nodes.item( i ).getNodeType() != Node.ELEMENT_NODE && !e.getTagName().equals("feed")) {
-                    continue;
-                }
+        for( int i = 0; i < nodes.getLength(); i++ ) {
+            if (nodes.item( i ).getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
             
-                Element element = (Element) nodes.item( i );
+            Element element = (Element) nodes.item( i );
             
-                if (element.getTagName().equals( "id" )) {
-                    entry.setID( element.getFirstChild().getNodeValue() );
-                }
+            if (element.getTagName().equals( "id" )) {
+                entry.setID( element.getFirstChild().getNodeValue() );
+            }
             
-                if (element.getTagName().equals( "title" )) {
-                    entry.setTitle( element.getFirstChild().getNodeValue() );
-                }
+            if (element.getTagName().equals( "title" )) {
+                entry.setTitle( element.getFirstChild().getNodeValue() );
+            }
             
-                if (element.getTagName().equals( "updated" )) {
-                    entry.setUpdated( element.getFirstChild().getNodeValue() );
+            if (element.getTagName().equals( "updated" )) {
+                entry.setUpdated( element.getFirstChild().getNodeValue() );
+            }
             
-                }
-            
-                if (element.getTagName().equals( "content" )) {
-                    entry.setContent( Content.parse( element ) );
-            
-                }
-           }//close for     
-        }// if 'entry'
+            if (element.getTagName().equals( "content" )) {
+                entry.setContent( Content.parse( element ) );
+            }
+        }
+        
         return entry;
-     }//close method
+    }
     
     
     public Element asElement (Document document) throws TransformerException {
