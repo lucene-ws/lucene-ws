@@ -31,6 +31,23 @@ public class SortFieldParserImpl implements SortFieldParser {
 		this.reverseGroup = 11;
 	}
 	
+	public LocaleParser getLocaleParser() {
+		return localeParser;
+	}
+
+	public void setLocaleParser(LocaleParser localeParser) {
+		this.localeParser = localeParser;
+	}
+
+	public SortComparatorSourceParser getSortComparatorSourceParser() {
+		return sortComparatorSourceParser;
+	}
+
+	public void setSortComparatorSourceParser(
+			SortComparatorSourceParser sortComparatorSourceParser) {
+		this.sortComparatorSourceParser = sortComparatorSourceParser;
+	}
+
 	public SortField parse(String string) {
 		SortField result;
 		
