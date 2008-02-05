@@ -70,17 +70,21 @@ public abstract class ReflectiveVisitor<T> implements Visitor<T> {
 		this.methodResolver = methodResolver;
 	}
 
+	public Method visitationMethod(Class<? extends T> targetClass) {
+		return visitationMethod("visit", targetClass);
+	}
+	
 	/**
 	 * Determines which method of the visitor to invoke.
 	 * 
+	 * @param methodName the name of the visitation method
 	 * @param queryClass
 	 * @return
 	 */
-	public Method visitationMethod(Class<? extends T> targetClass) {
+	public Method visitationMethod(String methodName, Class<? extends T> targetClass) {
 		Method result;
 
 		final Class<?> thisClass = this.getClass();
-		final String methodName = "visit";
 		try {
 			result = methodResolver.resolveMethod(thisClass, methodName, targetClass);
 		} catch (SecurityException e) {
