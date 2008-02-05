@@ -88,7 +88,6 @@ public class ServiceController extends Controller {
             // Index name
             String name = entry.getTitle();
             
-            //Properties properties = ServletUtils.getProperties( entry.getContent() );
             Properties properties = XOXOController.asProperties( c, entry );
             
             File parentDirectory = manager.getCreatedIndicesDirectory();
@@ -260,7 +259,6 @@ public class ServiceController extends Controller {
         Entry entry = new Entry();
         
         entry.setTitle( index.getTitle() );
-        //entry.setUpdated( index.getLastModified() );
         entry.setID( service.getIndexURI( request, index ).toString() );
         
         
