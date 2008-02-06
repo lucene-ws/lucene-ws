@@ -187,7 +187,7 @@ public class SearchController extends Controller {
             hits = searcher.search( query, c.getFilter(), c.getSort() );    
         }
         else {
-            hits = searcher.search(query);  
+            hits = searcher.search( query, c.getFilter() );  
         }
         
         Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
