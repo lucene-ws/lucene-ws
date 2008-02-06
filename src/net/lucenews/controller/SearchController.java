@@ -59,22 +59,66 @@ public class SearchController extends Controller {
          * Prepare searcher
          */
         
-            boolean sort = false;
-            IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
-        LuceneDocument[] docs;
-            for(int i =0; i < indices.length; i++) {
-            docs = indices[i].getDocuments();
-                searchers[ i ] = indices[ i ].getIndexSearcher();
-            if(docs.length > 0){
-                sort=true;
-                break;
-            }
+        IndexSearcher[] searchers = new IndexSearcher[ indices.length ];
+        for (int i = 0; i < indices.length; i++) {
+            searchers[ i ] = indices[ i ].getIndexSearcher();
             
         }
         LuceneMultiSearcher searcher = new LuceneMultiSearcher( searchers, getSearcherIndexField() );
         c.setMultiSearcher( searcher );
         
         
+        /**
+         * Prepare the sort by isolating invalid sort fields
+         */
+
+        boolean isSortable = false;
+        
+        Sort sort = c.getSort();
+        if (sort != null) {
+            IndexReader[] readers = new IndexReader[ indices.length ];
+            
+            // Obtain index readers for each index
+            for (int i = 0; i < indices.length; i++) {
+            	readers[ i ] = indices[ i ].getIndexReader();
+            }
+            
+            // Filter out invalid sort fields instead of merely disabling
+            // any sorting whatsoever.
+	        List<SortField> sortFields = new ArrayList<SortField>();
+	        sortFields.addAll(Arrays.asList(sort.getSort()));
+	        for (Iterator<SortField> i = sortFields.iterator(); i.hasNext();) {
+	        	SortField sortField = i.next();
+	        	
+	        	if (sortField.getField() != null) {
+		        	boolean isValidSortField = true;
+		        	
+		        	for (int j = 0; j < indices.length; j++) {
+		        		TermEnum terms = readers[ j ].terms(new Term(sortField.getField(), ""));
+		        		if (terms.next()) {
+		        			if (terms.term().field() != sortField.getField()) {
+		        				isValidSortField = false;
+		        				break;
+		        			}
+		        		} else {
+		        			isValidSortField = false;
+		        			break;
+		        		}
+		        	}
+		        	
+		        	if (!isValidSortField) {
+		        		i.remove();
+		        	}
+	        	}
+	        }
+	        
+	        // Return index readers for each index
+	        for (int i = 0; i < indices.length; i++) {
+	        	indices[ i ].putIndexReader( readers[ i ] );
+	        }
+	        
+	        c.setSort( new Sort( sortFields.toArray(new SortField[ sortFields.size() ]) ) );
+        }
         
         /**
          * Apply defaults
@@ -139,13 +183,12 @@ public class SearchController extends Controller {
          */
         
         Hits hits= null;
-    if(sort){
+        if (isSortable) {
             hits = searcher.search( query, c.getFilter(), c.getSort() );    
         }
-    else{
-        
-        hits = searcher.search(query);  
-    }
+        else {
+            hits = searcher.search(query);  
+        }
         
         Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
         
