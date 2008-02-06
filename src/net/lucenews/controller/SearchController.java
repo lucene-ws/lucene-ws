@@ -72,7 +72,7 @@ public class SearchController extends Controller {
          * Prepare the sort by isolating invalid sort fields
          */
 
-        boolean isValidSortField = false;
+        boolean isSortable = false;
         
         Sort sort = c.getSort();
         if (sort != null) {
@@ -91,7 +91,7 @@ public class SearchController extends Controller {
 	        	SortField sortField = i.next();
 	        	
 	        	if (sortField.getField() != null) {
-		        	isValidSortField = true;
+		        	boolean isValidSortField = true;
 		        	
 		        	for (int j = 0; j < indices.length; j++) {
 		        		TermEnum terms = readers[ j ].terms(new Term(sortField.getField(), ""));
@@ -183,7 +183,7 @@ public class SearchController extends Controller {
          */
         
         Hits hits= null;
-        if (isValidSortField) {
+        if (isSortable) {
             hits = searcher.search( query, c.getFilter(), c.getSort() );    
         }
         else {
