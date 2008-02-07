@@ -12,6 +12,8 @@ import net.lucenews3.lucene.IndexReader;
  */
 public interface Index extends Closeable {
 
+	public IndexMetaData getMetaData();
+	
 	/**
 	 * Returns a list of documents contained in this index.
 	 * @return

@@ -55,4 +55,9 @@ public class IndexImpl implements Index {
 		
 	}
 
+	public IndexMetaData getMetaData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
