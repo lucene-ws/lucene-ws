@@ -72,8 +72,6 @@ public class SearchController extends Controller {
          * Prepare the sort by isolating invalid sort fields
          */
 
-        boolean isSortable = false;
-        
         Sort sort = c.getSort();
         if (sort != null) {
             IndexReader[] readers = new IndexReader[ indices.length ];
@@ -182,13 +180,7 @@ public class SearchController extends Controller {
          * Perform search
          */
         
-        Hits hits= null;
-        if (isSortable) {
-            hits = searcher.search( query, c.getFilter(), c.getSort() );    
-        }
-        else {
-            hits = searcher.search( query, c.getFilter() );  
-        }
+        Hits hits = searcher.search( query, c.getFilter(), c.getSort() );    
         
         Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
         
