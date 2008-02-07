@@ -5,11 +5,22 @@
 
 	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
 
-	<bean id="handlerMapping"
-		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-		<property name="urlMap">
-			<map>
-			</map>
+	<bean id="serviceController" class="net.lucenews3.lucene.ServiceController">
+	</bean>
+
+	<bean id="indexController" class="net.lucenews3.lucene.IndexController">
+	</bean>
+	
+	<bean id="documentController" class="net.lucenews3.lucene.DocumentController">
+	</bean>
+
+	<bean class="carbonfive.spring.web.pathparameter.ParameterizedUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/">serviceController</prop>
+				<prop key="/(*:index)/">indexController</prop>
+				<prop key="/(*:index)/(*:document)/">documentController</prop>
+			</props>
 		</property>
 	</bean>
 

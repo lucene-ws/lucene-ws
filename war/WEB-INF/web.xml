@@ -60,6 +60,16 @@
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
+	<filter>
+		<filter-name>PathParameterFilter</filter-name>
+		<filter-class>carbonfive.spring.web.pathparameter.ParameterizedPathFilter</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>PathParameterFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
 	<!--
 		- Dispatcher servlet mapping for the main web user interface.
 		- Either refering to "petstore" for the Spring web MVC dispatcher,
