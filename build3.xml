@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+
+<project name="Lucene Web Service 3" basedir="." default="redeploy">
+
+	<property file="${basedir}/build.properties" />
+
+	<property name="application.name" value="lucene3" />
+	<property name="application.path" value="/${application.name}" />
+
+	<property name="war.dir"    value="${basedir}/war" />
+	<property name="src.dir"    value="${basedir}/src" />
+	<property name="build.dir"  value="${basedir}/build" />
+	<property name="lib.dir"    value="${basedir}/lib" />
+	<property name="weblib.dir" value="${war.dir}/WEB-INF/lib" />
+	<property name="dist.dir"   value="dist" />
+	<property name="include.dependencies" value="false" />
+
+	<property name="war.file" value="${dist.dir}/${application.name}.war" />
+
+	<property name="compile.debug"       value="true"/>
+	<property name="compile.deprecation" value="false"/>
+	<property name="compile.optimize"    value="true"/>
+
+	<path id="lib.class.path">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+
+	<target name="clean" description="Clean output dirs (build, weblib, dist)">
+
+		<delete dir="${build.dir}" />
+		<delete dir="${weblib.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete file="client/${application.name}.jar" />
+
+	</target>
+
+	<target name="compile" description="Compile main source tree java files into class files, generate jar files">
+
+		<mkdir dir="${build.dir}" />
+
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="${compile.debug}" optimize="${compile.optimize}" deprecation="${compile.deprecation}">
+			<classpath>
+				<path refid="lib.class.path" />
+			</classpath>
+		</javac>
+
+		<copy todir="${build.dir}" preservelastmodified="true">
+			<fileset dir="${src.dir}">
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
+
+		<mkdir dir="${weblib.dir}" />
+
+		<jar jarfile="${weblib.dir}/${application.name}.jar" compress="true" basedir="${build.dir}" />
+
+		<if>
+			<equals arg1="${include.dependencies}" arg2="true" />
+			<then>
+				<copy todir="${weblib.dir}" preservelastmodified="true">
+					<fileset dir="${lib.dir}">
+						<include name="*.jar" />
+					</fileset>
+				</copy>
+			</then>
+		</if>
+
+	</target>
+
+
+	<target name="dist" depends="war">
+		<!-- 
+			Delegate to war target by depending on it. dist is just to offer
+			a generic target name across all Spring sample apps that may be used
+			for autobuilds testing.
+		-->
+	</target>
+
+
+	<target name="war" depends="compile" description="Build the web application archive">
+		<mkdir dir="${dist.dir}" />
+		<war warfile="${war.file}" basedir="${war.dir}" webxml="${war.dir}/WEB-INF/web.xml">
+			<classes dir="${build.dir}" />
+			<!--
+			<if name="include.dependencies" value="true">
+				<equals arg1="${include.dependencies}" arg2="true"/>
+				<then>
+					<lib dir="${weblib.dir}">
+						<include name="*.jar"/>
+					</lib>
+				</then>
+			</if>
+			-->
+		</war>
+	</target>
+
+	<target name="deploy" depends="war" description="Deploy application to Apache Tomcat">
+		<deploy url="${tomcat.manager.url}" username="${tomcat.manager.user}" password="${tomcat.manager.password}" path="${application.path}" war="file:${war.file}" />
+	</target>
+
+	<target name="undeploy" description="Undeploy application from Apache Tomcat">
+		<undeploy url="${tomcat.manager.url}" username="${tomcat.manager.user}" password="${tomcat.manager.password}" path="${application.path}" />
+	</target>
+
+	<target name="redeploy" description="Undeploy (if currently deployed), then deploy application to Apache Tomcat">
+		<try>
+			<antcall target="undeploy" />
+		</try>
+		<antcall target="deploy" />
+	</target>
+
+	<target name="reload" description="Reload application on Apache Tomcat">
+		<reload url="${tomcat.manager.url}" username="${tomcat.manager.user}" password="${tomcat.manager.password}" path="${application.path}" />
+	</target>
+
+	<target name="start" description="Start application on Apache Tomcat">
+		<start url="${tomcat.manager.url}" username="${tomcat.manager.user}" password="${tomcat.manager.password}" path="${application.path}" />
+	</target>
+
+	<target name="stop" description="Stop application on Apache Tomcat">
+		<start url="${tomcat.manager.url}" username="${tomcat.manager.user}" password="${tomcat.manager.password}" path="${application.path}" />
+	</target>
+
+
+
+	<!-- Register external task definitions -->
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="lib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
+		<classpath>
+			<pathelement location="lib/catalina-ant.jar" />
+		</classpath>
+	</taskdef>
+
+	<taskdef name="list" classname="org.apache.catalina.ant.ListTask">
+		<classpath>
+			<pathelement location="lib/catalina-ant.jar" />
+		</classpath>
+	</taskdef>
+
+	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask">
+		<classpath>
+			<pathelement location="lib/catalina-ant.jar" />
+		</classpath>
+	</taskdef>
+
+	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
+		<classpath>
+			<pathelement location="lib/catalina-ant.jar" />
+		</classpath>
+	</taskdef>
+
+	<taskdef name="try" classname="ise.antelope.tasks.TryTask">
+		<classpath>
+			<pathelement location="lib/AntelopeTasks_3.4.2.jar" />
+		</classpath>
+	</taskdef>
+
+</project>
