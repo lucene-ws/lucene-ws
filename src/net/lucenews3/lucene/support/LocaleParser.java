@@ -4,6 +4,6 @@ import java.util.Locale;
 
 public interface LocaleParser {
 
-	public Locale parse(String string);
+	public Locale parseLocale(String string);
 	
 }

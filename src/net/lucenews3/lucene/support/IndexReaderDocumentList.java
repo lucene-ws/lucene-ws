@@ -6,12 +6,12 @@ import java.util.BitSet;
 
 import net.lucenews.http.ExceptionWrapper;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 
 public class IndexReaderDocumentList extends AbstractList<Document> implements DocumentList {
 
@@ -104,7 +104,7 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 	@Override
 	public boolean add(Document document) {
 		try {
-			writer.addDocument(document);
+			writer.addDocument(document.asNative());
 		} catch (CorruptIndexException e) {
 			throw exceptionWrapper.wrap(e);
 		} catch (IOException e) {
@@ -122,7 +122,7 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 		Document result;
 		
 		try {
-			result = reader.document(indexToDocumentNumber(index));
+			result = new NativeDocumentDocument(reader.document(indexToDocumentNumber(index)));
 		} catch (CorruptIndexException e) {
 			throw exceptionWrapper.wrap(e);
 		} catch (IOException e) {
@@ -152,6 +152,14 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 	public DocumentList filteredBy(Filter filter) {
 		final IndexReaderDocumentList result = new IndexReaderDocumentList(this);
 		result.filter = filterMerger.mergeFilters(result.filter, filter);
+		return result;
+	}
+
+	public ResultList searchBy(Query query) {
+		QueryResultList result = new QueryResultList();
+		result.setFilter(this.filter);
+		result.setSearcher(this.searcher);
+		result.setFilterMerger(this.filterMerger);
 		return result;
 	}
 

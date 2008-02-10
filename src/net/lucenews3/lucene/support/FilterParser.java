@@ -4,6 +4,6 @@ import org.apache.lucene.search.Filter;
 
 public interface FilterParser {
 
-	public Filter parse(String string);
+	public Filter parseFilter(String string);
 	
 }

@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import net.lucenews.http.ExceptionWrapper;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.search.Hits;
 
@@ -26,7 +25,7 @@ public class ResultImpl implements Result {
 	
 	public Document getDocument() {
 		try {
-			return hits.doc(number);
+			return new NativeDocumentDocument(hits.doc(number));
 		} catch (CorruptIndexException e) {
 			throw exceptionWrapper.wrap(e);
 		} catch (IOException e) {

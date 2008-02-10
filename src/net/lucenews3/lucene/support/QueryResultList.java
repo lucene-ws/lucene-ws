@@ -55,11 +55,13 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	}
 	
 	public QueryResultList(Searcher searcher, Query query) {
+		this();
 		this.searcher = searcher;
 		this.query = query;
 	}
 	
 	public QueryResultList(Searcher searcher, QueryParser queryParser) {
+		this();
 		this.searcher = searcher;
 		this.queryParser = queryParser;
 	}

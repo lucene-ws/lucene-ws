@@ -4,6 +4,6 @@ import org.apache.lucene.search.SortField;
 
 public interface SortFieldParser {
 
-	public SortField parse(String string);
+	public SortField parseSortField(String string);
 	
 }

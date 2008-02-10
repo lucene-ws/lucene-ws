@@ -55,7 +55,11 @@
 
 		<mkdir dir="${weblib.dir}" />
 
-		<jar jarfile="${weblib.dir}/${application.name}.jar" compress="true" basedir="${build.dir}" />
+		<jar jarfile="${weblib.dir}/${application.name}.jar" compress="true" basedir="${build.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="net.lucenews3.lucene.support.ServerLauncher" />
+			</manifest>
+		</jar>
 
 		<if>
 			<equals arg1="${include.dependencies}" arg2="true" />

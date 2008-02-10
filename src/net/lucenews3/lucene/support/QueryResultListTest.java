@@ -52,11 +52,12 @@ public class QueryResultListTest {
 			if (index > 10) {
 				break;
 			}
-			Document document = result.getDocument();
-			String book = document.get("book");
-			String chapter = document.get("chapter");
-			String verse = document.get("verse");
-			System.out.println();
+			// TODO
+			//Document document = result.getDocument();
+			//String book = document.get("book");
+			//String chapter = document.get("chapter");
+			//String verse = document.get("verse");
+			//System.out.println();
 			//System.out.println("Document ID: " + result.getDocumentId());
 			index++;
 		}

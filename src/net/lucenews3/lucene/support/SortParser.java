@@ -4,6 +4,6 @@ import org.apache.lucene.search.Sort;
 
 public interface SortParser {
 
-	public Sort parse(String string);
+	public Sort parseSort(String string);
 	
 }

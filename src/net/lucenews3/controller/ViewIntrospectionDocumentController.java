@@ -18,6 +18,7 @@ import net.lucenews3.atom.WorkspaceImpl;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
+@Deprecated
 public class ViewIntrospectionDocumentController implements Controller {
 
 	@Override
@@ -34,7 +35,8 @@ public class ViewIntrospectionDocumentController implements Controller {
 		// Build the collections
 		final CollectionList collections = workspace.getCollections();
 		List<Object> indexes = null;
-		for (Object index : indexes) {
+		for (@SuppressWarnings("unused")
+		Object index : indexes) {
 			Collection collection = new CollectionImpl();
 			collection.getAccepts().add("application/atom+xml;type=entry");
 			collections.add(collection);

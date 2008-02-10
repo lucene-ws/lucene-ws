@@ -1,6 +1,8 @@
 package net.lucenews3.lucene.support;
 
-public interface Document {
+import net.lucenews3.lucene.NativeImplementationProvider;
+
+public interface Document extends NativeImplementationProvider<org.apache.lucene.document.Document> {
 
 	public FieldList getFields();
 	

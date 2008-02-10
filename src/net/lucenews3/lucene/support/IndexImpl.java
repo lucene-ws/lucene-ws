@@ -21,8 +21,13 @@ public class IndexImpl implements Index {
 	}
 	
 	public DocumentList getDocuments() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return new IndexReaderDocumentList(org.apache.lucene.index.IndexReader.open(directory), null, null);
+		} catch (CorruptIndexException e) {
+			throw exceptionWrapper.wrap(e);
+		} catch (IOException e) {
+			throw exceptionWrapper.wrap(e);
+		}
 	}
 
 	public IndexReader getIndexReader() {

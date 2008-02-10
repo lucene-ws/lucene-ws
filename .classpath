@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="lib/spring-webmvc.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-6.1.7.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-util-6.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

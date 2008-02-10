@@ -40,4 +40,30 @@ public class NativeDocumentFieldList extends AbstractList<Field> implements Fiel
 		return nativeDocument.getFields().size();
 	}
 
+	public FieldList byName(String name) {
+		FieldList results = new FieldListImpl();
+		for (Field field : this) {
+			if (field.name().equals(name)) {
+				results.add(field);
+			}
+		}
+		return results;
+	}
+
+	public Field first() {
+		return get(0);
+	}
+
+	public Field only() {
+		final int size = size();
+		switch (size) {
+		case 0:
+			throw new RuntimeException();
+		case 1:
+			return get(0);
+		default:
+			throw new RuntimeException();
+		}
+	}
+
 }
