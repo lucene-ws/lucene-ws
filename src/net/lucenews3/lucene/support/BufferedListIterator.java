@@ -82,26 +82,24 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 			E nextValue = iterator.next();
 			currentLink = new Link(0, nextValue);
 			result = nextValue;
+		} else if (currentLink.next == null) {
+			// The "next" value has not yet been read
+			int nextIndex = currentLink.index + 1;
+			E nextValue = iterator.next();
+			Link nextLink = new Link(nextIndex, nextValue);
+			
+			currentLink.next = nextLink;
+			nextLink.previous = currentLink;
+			
+			result = nextValue;
+			
+			// Move the current link ahead
+			currentLink = nextLink;
 		} else {
-			if (currentLink.next == null) {
-				// The "next" value has not yet been read
-				int nextIndex = currentLink.index + 1;
-				E nextValue = iterator.next();
-				Link nextLink = new Link(nextIndex, nextValue);
-				
-				currentLink.next = nextLink;
-				nextLink.previous = currentLink;
-				
-				result = nextValue;
-				
-				// Move the current link ahead
-				currentLink = nextLink;
-			} else {
-				// The "next" value has already been read
-				Link nextLink = currentLink.next;
-				result = nextLink.value;
-				currentLink = nextLink;
-			}
+			// The "next" value has already been read
+			Link nextLink = currentLink.next;
+			result = nextLink.value;
+			currentLink = nextLink;
 		}
 		
 		return result;
@@ -111,23 +109,10 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 	public int nextIndex() {
 		int result;
 		
-		if (!hasNext()) {
-			if (currentLink == null) {
-				result = 0;
-			} else {
-				result = currentLink.index + 1;
-			}
+		if (currentLink == null) {
+			result = 0;
 		} else {
-			if (currentLink == null) {
-				result = 0;
-			} else {
-				if (currentLink.next != null) {
-					Link nextLink = currentLink.next;
-					result = nextLink.index;
-				} else {
-					result = currentLink.index + 1;
-				}
-			}
+			result = currentLink.index + 1;
 		}
 		
 		return result;
