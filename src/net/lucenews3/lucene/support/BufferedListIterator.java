@@ -1,6 +1,5 @@
 package net.lucenews3.lucene.support;
 
-import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
@@ -23,8 +22,8 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 	protected class Link {
 		public int index;
 		public E value;
-		public WeakReference<Link> previous;
-		public WeakReference<Link> next;
+		public Link previous;
+		public Link next;
 		
 		public Link() {
 			
@@ -90,8 +89,8 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 				E nextValue = iterator.next();
 				Link nextLink = new Link(nextIndex, nextValue);
 				
-				currentLink.next = new WeakReference<Link>(nextLink);
-				nextLink.previous = new WeakReference<Link>(currentLink);
+				currentLink.next = nextLink;
+				nextLink.previous = currentLink;
 				
 				result = nextValue;
 				
@@ -99,7 +98,7 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 				currentLink = nextLink;
 			} else {
 				// The "next" value has already been read
-				Link nextLink = currentLink.next.get();
+				Link nextLink = currentLink.next;
 				result = nextLink.value;
 				currentLink = nextLink;
 			}
@@ -123,7 +122,7 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 				result = 0;
 			} else {
 				if (currentLink.next != null) {
-					Link nextLink = currentLink.next.get();
+					Link nextLink = currentLink.next;
 					result = nextLink.index;
 				} else {
 					result = currentLink.index + 1;
@@ -142,7 +141,7 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 			throw new NoSuchElementException();
 		}
 		
-		Link previousLink = currentLink.previous.get();
+		Link previousLink = currentLink.previous;
 		result = previousLink.value;
 		currentLink = previousLink;
 		
@@ -157,7 +156,7 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 			throw new RuntimeException();
 		}
 		
-		Link previousLink = currentLink.previous.get();
+		Link previousLink = currentLink.previous;
 		result = previousLink.index;
 		
 		return result;
