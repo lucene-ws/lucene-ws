@@ -10,12 +10,12 @@ import java.util.ListIterator;
  *
  * @param <E>
  */
-public class AbstractListIterator<E> implements ListIterator<E> {
+public class BufferedListIterator<E> implements ListIterator<E> {
 
 	private Iterator<E> iterator;
 	private Link currentLink;
 	
-	public AbstractListIterator(Iterator<E> iterator) {
+	public BufferedListIterator(Iterator<E> iterator) {
 		this.iterator = iterator;
 	}
 	
