@@ -3,6 +3,7 @@ package net.lucenews3.lucene.support;
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 /**
  * A list iterator built upon a standard iterator. Caches items as they
@@ -75,7 +76,7 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 		E result;
 		
 		if (!hasNext()) {
-			throw new RuntimeException();
+			throw new NoSuchElementException();
 		}
 		
 		if (currentLink == null) {
@@ -112,11 +113,23 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 		int result;
 		
 		if (!hasNext()) {
-			throw new RuntimeException();
+			if (currentLink == null) {
+				result = 0;
+			} else {
+				result = currentLink.index + 1;
+			}
+		} else {
+			if (currentLink == null) {
+				result = 0;
+			} else {
+				if (currentLink.next != null) {
+					Link nextLink = currentLink.next.get();
+					result = nextLink.index;
+				} else {
+					result = currentLink.index + 1;
+				}
+			}
 		}
-		
-		Link nextLink = currentLink.next.get();
-		result = nextLink.index;
 		
 		return result;
 	}
@@ -126,7 +139,7 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 		E result;
 		
 		if (!hasPrevious()) {
-			throw new RuntimeException();
+			throw new NoSuchElementException();
 		}
 		
 		Link previousLink = currentLink.previous.get();
