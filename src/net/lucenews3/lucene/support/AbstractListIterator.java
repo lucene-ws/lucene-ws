@@ -4,12 +4,16 @@ import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+/**
+ * A list iterator built upon a standard iterator. Caches items as they
+ * are traversed in order to support backwards iteration.
+ *
+ * @param <E>
+ */
 public class AbstractListIterator<E> implements ListIterator<E> {
 
 	private Iterator<E> iterator;
-	private Link first;
-	private Link last;
-	private Link current;
+	private Link currentLink;
 	
 	public AbstractListIterator(Iterator<E> iterator) {
 		this.iterator = iterator;
@@ -20,70 +24,130 @@ public class AbstractListIterator<E> implements ListIterator<E> {
 		public E value;
 		public WeakReference<Link> previous;
 		public WeakReference<Link> next;
+		
+		public Link() {
+			
+		}
+		
+		public Link(int index, E value) {
+			this.index = index;
+			this.value = value;
+		}
 	}
 	
 	@Override
 	public void add(E e) {
 		throw new UnsupportedOperationException();
 	}
-
-	protected Link getCurrentLink() {
-		return current;
-	}
 	
+	/**
+	 * Reads the next value if necessary to determine whether
+	 * or not a next value exists.
+	 */
 	@Override
 	public boolean hasNext() {
-		if (current == null) {
-			if (iterator.hasNext()) {
-				E value = iterator.next();
-				current = new Link();
-				current.index = 0;
-				current.value = value;
-				current.previous = null;
-				current.next = null;
-			} else {
-				
-			}
+		boolean result;
+		
+		if (currentLink == null || currentLink.next == null) {
+			result = iterator.hasNext();
 		} else {
-			if (iterator.hasNext()) {
-				E value = iterator.next();
-				Link next = new Link();
-				next.index = current.index + 1;
-				next.value = value;
-				next.previous = new WeakReference<Link>(current);
-				current.next = new WeakReference<Link>(next);
-				current = next;
-			}
+			result = true;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		
+		return result;
 	}
 
 	@Override
 	public boolean hasPrevious() {
-		// TODO Auto-generated method stub
-		return false;
+		boolean result;
+		
+		if (currentLink == null) {
+			result = false;
+		} else {
+			result = (currentLink.previous != null);
+		}
+		
+		return result;
 	}
 
 	@Override
 	public E next() {
-		// TODO Auto-generated method stub
-		return null;
+		E result;
+		
+		if (!hasNext()) {
+			throw new RuntimeException();
+		}
+		
+		if (currentLink == null) {
+			E nextValue = iterator.next();
+			currentLink = new Link(0, nextValue);
+			result = nextValue;
+		} else {
+			if (currentLink.next == null) {
+				// The "next" value has not yet been read
+				int nextIndex = currentLink.index + 1;
+				E nextValue = iterator.next();
+				Link nextLink = new Link(nextIndex, nextValue);
+				
+				currentLink.next = new WeakReference<Link>(nextLink);
+				nextLink.previous = new WeakReference<Link>(currentLink);
+				
+				result = nextValue;
+				
+				// Move the current link ahead
+				currentLink = nextLink;
+			} else {
+				// The "next" value has already been read
+				Link nextLink = currentLink.next.get();
+				result = nextLink.value;
+				currentLink = nextLink;
+			}
+		}
+		
+		return result;
 	}
 
 	@Override
 	public int nextIndex() {
-		return getCurrentLink().index + 1;
+		int result;
+		
+		if (!hasNext()) {
+			throw new RuntimeException();
+		}
+		
+		Link nextLink = currentLink.next.get();
+		result = nextLink.index;
+		
+		return result;
 	}
 
 	@Override
 	public E previous() {
-		return getCurrentLink().previous.get().value;
+		E result;
+		
+		if (!hasPrevious()) {
+			throw new RuntimeException();
+		}
+		
+		Link previousLink = currentLink.previous.get();
+		result = previousLink.value;
+		currentLink = previousLink;
+		
+		return result;
 	}
 
 	@Override
 	public int previousIndex() {
-		return getCurrentLink().index - 1;
+		int result;
+		
+		if (!hasPrevious()) {
+			throw new RuntimeException();
+		}
+		
+		Link previousLink = currentLink.previous.get();
+		result = previousLink.index;
+		
+		return result;
 	}
 
 	@Override
