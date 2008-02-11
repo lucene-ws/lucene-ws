@@ -182,8 +182,7 @@ public class IndexReaderImpl implements IndexReader {
 	}
 
 	public org.apache.lucene.index.IndexReader asNative() {
-		// TODO Auto-generated method stub
-		return null;
+		return nativeIndexReader;
 	}
 
 	public void close() {
