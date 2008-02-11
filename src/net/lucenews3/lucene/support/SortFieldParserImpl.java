@@ -83,7 +83,7 @@ public class SortFieldParserImpl implements SortFieldParser {
 				SortComparatorSource sortComparatorSource = sortComparatorSourceParser.parse(customFactory);
 				result = new SortField(customField, sortComparatorSource, isReversed);
 			} else if (isField) {
-				result = new SortField(fieldName, isReversed);
+				result = new SortField(fieldName, locale, isReversed);
 			} else {
 				throw new RuntimeException("Cannot parse sort field from '" + string + "'");
 			}
