@@ -9,7 +9,6 @@ import net.lucenews.test.support.FileSystemUtility;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.QueryParser;
@@ -52,13 +51,13 @@ public class QueryResultListTest {
 			if (index > 10) {
 				break;
 			}
-			// TODO
-			//Document document = result.getDocument();
-			//String book = document.get("book");
-			//String chapter = document.get("chapter");
-			//String verse = document.get("verse");
-			//System.out.println();
-			//System.out.println("Document ID: " + result.getDocumentId());
+			Document document = result.getDocument();
+			FieldList fields = document.getFields();
+			String book = fields.byName("book").first().stringValue();
+			String chapter = fields.byName("chapter").first().stringValue();
+			String verse = fields.byName("verse").first().stringValue();
+			System.out.println();
+			System.out.println("Document ID: " + result.getDocumentId() + ", book: " + book + ", chapter: " + chapter + ", verse: " + verse);
 			index++;
 		}
 	}
