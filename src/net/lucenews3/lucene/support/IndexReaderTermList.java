@@ -93,8 +93,7 @@ public class IndexReaderTermList extends AbstractIteratorList<Term> implements T
 
 	@Override
 	public TermListIterator listIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new BufferedTermListIterator(iterator());
 	}
 	
 	@Override
