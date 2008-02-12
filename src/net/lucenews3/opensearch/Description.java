@@ -38,7 +38,7 @@ public interface Description {
 
 	public List<Url> getUrls();
 	
-	public List<Url> setUrls(List<Url> urls);
+	public void setUrls(List<Url> urls);
 
 	/**
 	 * Contact - An email address at which the developer can be reached.

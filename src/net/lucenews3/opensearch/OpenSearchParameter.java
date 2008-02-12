@@ -1,7 +1,5 @@
 package net.lucenews3.opensearch;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class OpenSearchParameter {
 
@@ -79,47 +77,6 @@ public class OpenSearchParameter {
 			maximumUnbounded = false;
 			setMaximum(Integer.valueOf(maximum));
 		}
-	}
-
-	public static OpenSearchParameter asOpenSearchParameter(Element element) {
-		OpenSearchParameter parameter = new OpenSearchParameter();
-
-		parameter.setName(element.getAttribute("name"));
-		parameter.setValue(element.getAttribute("value"));
-		parameter.setMinimum(element.getAttribute("minimum"));
-		parameter.setMaximum(element.getAttribute("maximum"));
-
-		return parameter;
-	}
-
-	public Element asElement(Document document, OpenSearch.Format format,
-			OpenSearch.Mode mode) throws OpenSearchException {
-		Element parameter = document.createElementNS(
-				"http://a9.com/-/spec/opensearch/extensions/parameters/1.0/",
-				"parameters:Parameter");
-
-		if (getName() == null) {
-			if (mode == OpenSearch.STRICT) {
-				throw new OpenSearchException("Parameter name cannot be null");
-			} else {
-				return parameter;
-			}
-		}
-
-		// set the name
-		parameter.setAttribute("name", getName());
-
-		if (getValue() == null) {
-			if (mode == OpenSearch.STRICT) {
-				throw new OpenSearchException("Parameter value cannot be null");
-			} else {
-				parameter.setAttribute("value", "");
-			}
-		} else {
-			parameter.setAttribute("value", getValue());
-		}
-
-		return parameter;
 	}
 
 	public boolean equals(Object other) {

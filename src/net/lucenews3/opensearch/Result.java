@@ -3,11 +3,6 @@ package net.lucenews3.opensearch;
 import java.util.Calendar;
 import java.util.List;
 
-import net.lucenews.atom.Link;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 public interface Result {
 
 	public String getTitle();
@@ -40,20 +35,16 @@ public interface Result {
 
 	public boolean removePerson(OpenSearchPerson person);
 
-	public List<Link> getLinks();
+	public LinkList getLinks();
+	
+	public void setLinks(LinkList links);
 
-	public OpenSearchText getContent();
+	public Content getContent();
 
-	public void setContent(OpenSearchText content);
+	public void setContent(Content content);
 
-	public void setContent(String content);
+	public Content getRights();
 
-	public void setContent(Node content);
-
-	public void setContent(NodeList content);
-
-	public OpenSearchText getRights();
-
-	public void setRights(OpenSearchText rights);
+	public void setRights(Content rights);
 
 }

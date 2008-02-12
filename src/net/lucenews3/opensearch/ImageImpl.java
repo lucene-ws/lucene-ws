@@ -1,8 +1,5 @@
 package net.lucenews3.opensearch;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 public class ImageImpl implements Image {
 
 	private String url;
@@ -74,60 +71,6 @@ public class ImageImpl implements Image {
 	 */
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public static Image asOpenSearchImage(Element element) {
-		Image image = new ImageImpl();
-
-		// String url = element.getChildNodes().item(0).getNodeValue();
-
-		String width = element.getAttribute("width");
-		if (width != null) {
-			image.setWidth(Integer.valueOf(width));
-		}
-
-		String height = element.getAttribute("height");
-		if (height != null) {
-			image.setWidth(Integer.valueOf(height));
-		}
-
-		String type = element.getAttribute("type");
-		if (type != null) {
-			image.setType(type);
-		}
-
-		return image;
-	}
-
-	/**
-	 * Transforms the OpenSearch image into a DOM Element.
-	 */
-
-	public Element asElement(Document document) throws OpenSearchException {
-		return asElement(document, OpenSearch.getDefaultMode());
-	}
-
-	public Element asElement(Document document, OpenSearch.Mode mode)
-			throws OpenSearchException {
-		Element element = document.createElement("Image");
-
-		if (getUrl() != null) {
-			element.appendChild(document.createTextNode(getUrl()));
-		}
-
-		if (getHeight() != null) {
-			element.setAttribute("height", getHeight().toString());
-		}
-
-		if (getWidth() != null) {
-			element.setAttribute("width", getWidth().toString());
-		}
-
-		if (getType() != null) {
-			element.setAttribute("type", getType().toString());
-		}
-
-		return element;
 	}
 
 }

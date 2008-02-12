@@ -1,14 +1,9 @@
 package net.lucenews3.opensearch;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * OpenSearch Query Syntax is a simple way of specifying HTTP queries for the
@@ -212,100 +207,6 @@ public class UrlImpl implements Url {
 	 */
 	public void setNamespace(String namespace, String uri) {
 		namespaces.put(namespace, uri);
-	}
-
-	public static Url asOpenSearchUrl(Element element) {
-		UrlImpl url = new UrlImpl();
-
-		// template
-		String template = element.getAttribute("template");
-		url.setTemplate(template);
-
-		// type
-		String type = element.getAttribute("type");
-		url.setType(type);
-
-		// method
-		String method = element.getAttribute("method");
-		url.setMethod(method);
-
-		// enctype
-		String enctype = element.getAttribute("enctype");
-		url.setEncodingType(enctype);
-
-		// Parameter
-		NodeList parameters = element.getElementsByTagName("Parameter");
-		for (int i = 0; i < parameters.getLength(); i++) {
-			Element parameter = (Element) parameters.item(i);
-			url.addParameter(OpenSearchParameter
-					.asOpenSearchParameter(parameter));
-		}
-
-		return url;
-	}
-
-	public Element asElement(Document document, OpenSearch.Format format)
-			throws OpenSearchException {
-		return asElement(document, format, OpenSearch.STRICT);
-	}
-
-	public Element asElement(Document document, OpenSearch.Format format,
-			OpenSearch.Mode mode) throws OpenSearchException {
-		Element element = document.createElement("Url");
-
-		// type
-		if (getType() != null) {
-			element.setAttribute("type", getType());
-		}
-
-		// method
-		if (getMethod() != null) {
-			element
-					.setAttributeNS(
-							"http://a9.com/-/spec/opensearch/extensions/parameters/1.0/",
-							"parameters:method", getMethod());
-		}
-
-		// enctype
-		if (getEncodingType() != null) {
-			element
-					.setAttributeNS(
-							"http://a9.com/-/spec/opensearch/extensions/parameters/1.0/",
-							"parameters:enctype", getEncodingType());
-		}
-
-		// indexOffset
-		if (getIndexOffset() != null) {
-			element.setAttribute("indexOffset", getIndexOffset().toString());
-		}
-
-		// pageOffset
-		if (getPageOffset() != null) {
-			element.setAttribute("pageOffset", getPageOffset().toString());
-		}
-
-		// template
-		if (getTemplate() != null) {
-			element.setAttribute("template", getTemplate());
-		}
-
-		// namespaces
-		Iterator<Map.Entry<String, String>> namespaceIterator = namespaces
-				.entrySet().iterator();
-		while (namespaceIterator.hasNext()) {
-			Map.Entry<String, String> namespace = namespaceIterator.next();
-			element.setAttribute("xmlns:" + namespace.getKey(), namespace
-					.getValue());
-		}
-
-		// Parameter
-		Iterator<OpenSearchParameter> parameters = getParameters().iterator();
-		while (parameters.hasNext()) {
-			OpenSearchParameter parameter = parameters.next();
-			element.appendChild(parameter.asElement(document, format, mode));
-		}
-
-		return element;
 	}
 
 }
