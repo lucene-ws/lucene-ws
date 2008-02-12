@@ -20,6 +20,7 @@ public class ViewServiceController implements Controller {
 				return "text/html";
 			}
 
+			@SuppressWarnings("unchecked")
 			public void render(Map arg0, HttpServletRequest arg1, HttpServletResponse arg2) throws Exception {
 				arg2.getWriter().print("service view");
 			}});

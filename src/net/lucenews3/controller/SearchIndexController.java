@@ -38,6 +38,7 @@ public class SearchIndexController implements Controller {
 				return "text/html";
 			}
 
+			@SuppressWarnings("unchecked")
 			public void render(Map arg0, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
 				PrintWriter out = response.getWriter();

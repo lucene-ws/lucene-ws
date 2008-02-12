@@ -15,19 +15,18 @@ public class NativeDocumentFieldListWrapper extends AbstractList<Field> implemen
 
 	@Override
 	public boolean add(Field field) {
-		return false;
+		nativeDocument.add(field);
+		return true;
 	}
 	
 	@Override
 	public Field get(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		return (Field) nativeDocument.getFields().get(index);
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return nativeDocument.getFields().size();
 	}
 
 	@Override
