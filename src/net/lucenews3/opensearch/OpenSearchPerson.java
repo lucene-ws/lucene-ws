@@ -4,11 +4,8 @@ package net.lucenews3.opensearch;
 public class OpenSearchPerson {
 
 	private String name;
-
 	private String uri;
-
 	private String email;
-
 	private String role;
 
 	public OpenSearchPerson() {

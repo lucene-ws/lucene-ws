@@ -97,6 +97,4 @@ public interface Query {
 
 	public Integer getLastPage();
 
-	public void setNamespace(String namespace, String uri);
-
 }

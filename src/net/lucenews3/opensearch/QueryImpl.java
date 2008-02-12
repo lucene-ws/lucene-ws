@@ -335,11 +335,4 @@ public class QueryImpl implements Query {
 	public Integer getLastPage() {
 		return getPagingBoundaries()[1];
 	}
-
-	/* (non-Javadoc)
-	 * @see net.lucenews3.opensearch.Query#setNamespace(java.lang.String, java.lang.String)
-	 */
-	public void setNamespace(String namespace, String uri) {
-		namespaces.put(namespace, uri);
-	}
 }

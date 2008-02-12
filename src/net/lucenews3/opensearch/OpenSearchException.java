@@ -5,7 +5,7 @@ public class OpenSearchException extends RuntimeException {
 	private static final long serialVersionUID = 4087231066698720826L;
 
 	public OpenSearchException() {
-		
+		super();
 	}
 	
 	public OpenSearchException(String message) {
