@@ -18,7 +18,7 @@ public class DescriptionImpl implements Description {
 
 	private String shortName;
 	private String description;
-	private List<Url> urls;
+	private UrlList urls;
 	private String contact;
 	private String tags;
 	private String longName;
@@ -33,7 +33,7 @@ public class DescriptionImpl implements Description {
 	private List<String> outputEncodings;
 
 	public DescriptionImpl() {
-		urls = new LinkedList<Url>();
+		urls = new UrlListImpl();
 		images = new LinkedList<Image>();
 		queries = new QueryListImpl();
 		languages = new LinkedList<String>();
@@ -57,11 +57,11 @@ public class DescriptionImpl implements Description {
 		this.description = description;
 	}
 
-	public List<Url> getUrls() {
+	public UrlList getUrls() {
 		return urls;
 	}
 
-	public void setUrls(List<Url> urls) {
+	public void setUrls(UrlList urls) {
 		this.urls = urls;
 	}
 

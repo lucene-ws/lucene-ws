@@ -36,9 +36,9 @@ public interface Description {
 	 * Must appear one or more times.
 	 */
 
-	public List<Url> getUrls();
+	public UrlList getUrls();
 	
-	public void setUrls(List<Url> urls);
+	public void setUrls(UrlList urls);
 
 	/**
 	 * Contact - An email address at which the developer can be reached.
