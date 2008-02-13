@@ -93,9 +93,9 @@ public interface Description {
 	 * one, or more times.
 	 */
 
-	public List<Image> getImages();
+	public ImageList getImages();
 	
-	public void setImages(List<Image> images);
+	public void setImages(ImageList images);
 
 	/**
 	 * Query - used to indicate an example search; please see the OpenSearch

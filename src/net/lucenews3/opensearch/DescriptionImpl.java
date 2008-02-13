@@ -22,7 +22,7 @@ public class DescriptionImpl implements Description {
 	private String contact;
 	private String tags;
 	private String longName;
-	private List<Image> images;
+	private ImageList images;
 	private QueryList queries;
 	private String developer;
 	private String attribution;
@@ -34,7 +34,7 @@ public class DescriptionImpl implements Description {
 
 	public DescriptionImpl() {
 		urls = new UrlListImpl();
-		images = new LinkedList<Image>();
+		images = new ImageListImpl();
 		queries = new QueryListImpl();
 		languages = new LinkedList<String>();
 		inputEncodings = new LinkedList<String>();
@@ -89,11 +89,11 @@ public class DescriptionImpl implements Description {
 		this.longName = longName;
 	}
 
-	public List<Image> getImages() {
+	public ImageList getImages() {
 		return images;
 	}
 
-	public void setImages(List<Image> images) {
+	public void setImages(ImageList images) {
 		this.images = images;
 	}
 
