@@ -32,9 +32,9 @@ public class ChildNodeList extends AbstractList<org.w3c.dom.Node> implements Nod
 	@Override
 	public void add(int index, Node node) {
 		if (parent.hasChildNodes()) {
-			parent.appendChild(node);
-		} else {
 			parent.insertBefore(node, parent.getChildNodes().item(index));
+		} else {
+			parent.appendChild(node);
 		}
 	}
 	
