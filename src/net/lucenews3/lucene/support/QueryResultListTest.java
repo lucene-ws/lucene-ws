@@ -41,8 +41,8 @@ public class QueryResultListTest {
 		results = results.where("text:the");
 
 		results.initialize();
-		System.out.println("Query: " + results.getQuery());
-		System.out.println("Sort: " + results.getSort());
+		System.out.println("Query: " + results.getSearchRequest().getQuery());
+		System.out.println("Sort: " + results.getSearchRequest().getSort());
 		
 		System.out.println(formatter.format(results.size()) + " result(s)");
 		

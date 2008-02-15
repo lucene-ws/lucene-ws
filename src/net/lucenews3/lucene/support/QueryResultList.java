@@ -1,6 +1,5 @@
 package net.lucenews3.lucene.support;
 
-import java.io.IOException;
 import java.util.AbstractList;
 
 import net.lucenews.http.ExceptionWrapper;
@@ -19,11 +18,9 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	private ExceptionWrapper exceptionWrapper;
 	private Searcher searcher;
 	private QueryParser queryParser;
-	private Query query;
+	private SearchRequest searchRequest;
 	private QueryMerger queryMerger;
-	private Filter filter;
 	private FilterMerger filterMerger;
-	private Sort sort;
 	private SortMerger sortMerger;
 	private Hits hits;
 	private boolean initialized;
@@ -32,11 +29,9 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		this.exceptionWrapper = prototype.exceptionWrapper;
 		this.searcher = prototype.searcher;
 		this.queryParser = prototype.queryParser;
-		this.query = prototype.query;
+		this.searchRequest = prototype.searchRequest;
 		this.queryMerger = prototype.queryMerger;
-		this.filter = prototype.filter;
 		this.filterMerger = prototype.filterMerger;
-		this.sort = prototype.sort;
 		this.sortMerger = prototype.sortMerger;
 		this.hits = prototype.hits;
 		this.initialized = prototype.initialized;
@@ -48,6 +43,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		this.queryMerger = new QueryMergerImpl();
 		this.sortMerger = new SortMergerImpl();
 		this.initialized = false;
+		this.searchRequest = new SearchRequestImpl();
 	}
 	
 	public QueryResultList(Searcher searcher) {
@@ -57,7 +53,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	public QueryResultList(Searcher searcher, Query query) {
 		this();
 		this.searcher = searcher;
-		this.query = query;
+		this.searchRequest.setQuery(query);
 	}
 	
 	public QueryResultList(Searcher searcher, QueryParser queryParser) {
@@ -66,20 +62,17 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		this.queryParser = queryParser;
 	}
 	
+	public QueryResultList(Searcher searcher, SearchRequest searchRequest) {
+		this();
+		this.searcher = searcher;
+	}
+	
 	public ExceptionWrapper getExceptionWrapper() {
 		return exceptionWrapper;
 	}
 
 	public void setExceptionWrapper(ExceptionWrapper exceptionWrapper) {
 		this.exceptionWrapper = exceptionWrapper;
-	}
-
-	public Filter getFilter() {
-		return filter;
-	}
-
-	public void setFilter(Filter filter) {
-		this.filter = filter;
 	}
 
 	public FilterMerger getFilterMerger() {
@@ -106,14 +99,6 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		this.initialized = initialized;
 	}
 
-	public Query getQuery() {
-		return query;
-	}
-
-	public void setQuery(Query query) {
-		this.query = query;
-	}
-
 	public QueryMerger getQueryMerger() {
 		return queryMerger;
 	}
@@ -138,12 +123,12 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		this.searcher = searcher;
 	}
 
-	public Sort getSort() {
-		return sort;
+	public SearchRequest getSearchRequest() {
+		return searchRequest;
 	}
 
-	public void setSort(Sort sort) {
-		this.sort = sort;
+	public void setSearchRequest(SearchRequest searchRequest) {
+		this.searchRequest = searchRequest;
 	}
 
 	public SortMerger getSortMerger() {
@@ -156,14 +141,10 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 
 	public void initialize() {
 		if (!initialized) {
-			if (query == null) {
-				query = new MatchAllDocsQuery();
+			if (searchRequest == null) {
+				searchRequest = new SearchRequestImpl(new MatchAllDocsQuery());
 			}
-			try {
-				hits = searcher.search(query, filter, sort);
-			} catch (IOException e) {
-				throw exceptionWrapper.wrap(e);
-			}
+			hits = searchRequest.search(searcher);
 			initialized = true;
 		}
 	}
@@ -183,7 +164,9 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	@Override
 	public QueryResultList filteredBy(Filter filter) {
 		final QueryResultList result = new QueryResultList(this);
-		result.filter = filterMerger.mergeFilters(result.filter, filter);
+		final Filter base = result.searchRequest.getFilter();
+		final Filter delta = filter;
+		result.searchRequest.setFilter(filterMerger.mergeFilters(base, delta));
 		result.initialized = false;
 		return result;
 	}
@@ -191,7 +174,9 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	@Override
 	public QueryResultList sortedBy(Sort sort) {
 		final QueryResultList result = new QueryResultList(this);
-		result.sort = sortMerger.mergeSorts(result.sort, sort);
+		final Sort base = result.searchRequest.getSort();
+		final Sort delta = sort;
+		result.searchRequest.setSort(sortMerger.mergeSorts(base, delta));
 		result.initialized = false;
 		return result;
 	}
@@ -199,7 +184,9 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	@Override
 	public QueryResultList where(Query criteria) {
 		final QueryResultList result = new QueryResultList(this);
-		result.query = queryMerger.mergeQueries(result.query, criteria);
+		final Query base = result.searchRequest.getQuery();
+		final Query delta = criteria;
+		result.searchRequest.setQuery(queryMerger.mergeQueries(base, delta));
 		result.initialized = false;
 		return result;
 	}

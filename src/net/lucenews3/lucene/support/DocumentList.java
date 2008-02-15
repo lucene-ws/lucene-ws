@@ -10,5 +10,7 @@ public interface DocumentList extends List<Document> {
 	public DocumentList filteredBy(Filter filter);
 	
 	public ResultList searchBy(Query query);
+	
+	public ResultList searchBy(SearchRequest searchRequest);
 
 }

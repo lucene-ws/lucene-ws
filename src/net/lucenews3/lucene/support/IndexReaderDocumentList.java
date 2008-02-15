@@ -157,9 +157,16 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 
 	public ResultList searchBy(Query query) {
 		QueryResultList result = new QueryResultList();
-		result.setFilter(this.filter);
+		result.getSearchRequest().setFilter(this.filter);
 		result.setSearcher(this.searcher);
 		result.setFilterMerger(this.filterMerger);
+		return result;
+	}
+
+	@Override
+	public ResultList searchBy(SearchRequest searchRequest) {
+		final QueryResultList result = new QueryResultList();
+		result.setSearchRequest(searchRequest);
 		return result;
 	}
 

@@ -2,8 +2,8 @@ package net.lucenews3.lucene.support;
 
 import java.util.Locale;
 
-public interface LocaleParser {
+public interface LocaleParser<I> {
 
-	public Locale parseLocale(String string);
+	public Locale parseLocale(I input);
 	
 }

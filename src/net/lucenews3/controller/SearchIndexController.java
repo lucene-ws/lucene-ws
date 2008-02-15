@@ -10,26 +10,25 @@ import net.lucenews3.lucene.support.Document;
 import net.lucenews3.lucene.support.DocumentList;
 import net.lucenews3.lucene.support.FieldList;
 import net.lucenews3.lucene.support.Index;
-import net.lucenews3.lucene.support.IndexProvider;
 import net.lucenews3.lucene.support.Result;
 import net.lucenews3.lucene.support.ResultList;
+import net.lucenews3.lucene.support.SearchRequest;
+import net.lucenews3.lucene.support.SearchRequestParser;
 
 import org.apache.lucene.document.Field;
-import org.apache.lucene.search.Query;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.mvc.Controller;
 
-public class SearchIndexController implements Controller {
-
-	private IndexProvider indexProvider;
+public class SearchIndexController extends AbstractController {
+	
+	private SearchRequestParser<HttpServletRequest> searchRequestParser;
 	
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		final Index index = indexProvider.getIndex(request.getAttribute("index").toString());
-		final Query query = null;
+		final Index index = service.getIndex(request.getAttribute("indexName").toString());
+		final SearchRequest searchRequest = searchRequestParser.parseSearchRequest(request);
 		final DocumentList documents = index.getDocuments();
-		final ResultList results = documents.searchBy(query);
+		final ResultList results = documents.searchBy(searchRequest);
 		
 		// Temporary ModelAndView for experimental purposes
 		return new ModelAndView(new View() {
@@ -48,7 +47,7 @@ public class SearchIndexController implements Controller {
 								+ documents.size()
 								+ " documents! Surely one of them matches your search...</p>");
 
-				out.println("<p>Your search for \"" + query + "\" returned "
+				out.println("<p>Your search for \"" + searchRequest.getQuery() + "\" returned "
 						+ results.size() + " results!</p>");
 
 				out.println("<ol>");

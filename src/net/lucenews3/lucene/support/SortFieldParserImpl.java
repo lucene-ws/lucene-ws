@@ -7,9 +7,9 @@ import java.util.regex.Pattern;
 import org.apache.lucene.search.SortComparatorSource;
 import org.apache.lucene.search.SortField;
 
-public class SortFieldParserImpl implements SortFieldParser {
+public class SortFieldParserImpl implements SortFieldParser<String> {
 
-	private LocaleParser localeParser;
+	private LocaleParser<String> localeParser;
 	private SortComparatorSourceParser sortComparatorSourceParser;
 	private Pattern pattern;
 	private int scoreGroup;
@@ -31,11 +31,11 @@ public class SortFieldParserImpl implements SortFieldParser {
 		this.reverseGroup = 11;
 	}
 	
-	public LocaleParser getLocaleParser() {
+	public LocaleParser<String> getLocaleParser() {
 		return localeParser;
 	}
 
-	public void setLocaleParser(LocaleParser localeParser) {
+	public void setLocaleParser(LocaleParser<String> localeParser) {
 		this.localeParser = localeParser;
 	}
 

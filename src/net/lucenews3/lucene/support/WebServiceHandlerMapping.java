@@ -58,6 +58,7 @@ public class WebServiceHandlerMapping implements HandlerMapping {
 				return getServicePropertiesHandler(request);
 			} else {
 				String indexName = token0;
+				request.setAttribute("indexName", indexName);
 				if (tokens.isEmpty()) {
 					return getIndexHandler(request);
 				} else {
@@ -66,6 +67,7 @@ public class WebServiceHandlerMapping implements HandlerMapping {
 						return getIndexPropertiesHandler(request, indexName);
 					} else {
 						String documentId = token1;
+						request.setAttribute("documentId", documentId);
 						return getDocumentHandler(request, indexName, documentId);
 					}
 				}

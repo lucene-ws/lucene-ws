@@ -7,13 +7,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.mvc.Controller;
 
-public class ViewServiceController implements Controller {
+public class ViewServiceController extends AbstractController {
 
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
+		
+		
+		
 		return new ModelAndView(new View(){
 
 			public String getContentType() {

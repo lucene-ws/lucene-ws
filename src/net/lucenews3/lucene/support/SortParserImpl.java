@@ -3,25 +3,25 @@ package net.lucenews3.lucene.support;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 
-public class SortParserImpl implements SortParser {
+public class SortParserImpl implements SortParser<String> {
 
-	private SortFieldParser sortFieldParser;
+	private SortFieldParser<String> sortFieldParser;
 	private String sortFieldDelimiter;
 	
 	public SortParserImpl() {
 		this(new SortFieldParserImpl());
 	}
 	
-	public SortParserImpl(SortFieldParser sortFieldParser) {
+	public SortParserImpl(SortFieldParser<String> sortFieldParser) {
 		this.sortFieldParser = sortFieldParser;
 		this.sortFieldDelimiter = ",";
 	}
 	
-	public SortFieldParser getSortFieldParser() {
+	public SortFieldParser<String> getSortFieldParser() {
 		return sortFieldParser;
 	}
 
-	public void setSortFieldParser(SortFieldParser sortFieldParser) {
+	public void setSortFieldParser(SortFieldParser<String> sortFieldParser) {
 		this.sortFieldParser = sortFieldParser;
 	}
 

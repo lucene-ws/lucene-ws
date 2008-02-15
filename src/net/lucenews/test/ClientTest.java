@@ -31,7 +31,6 @@ import net.lucenews.test.support.LuceneUtility;
 import net.lucenews.test.support.MapUtility;
 import net.lucenews.test.support.StringUtility;
 import net.lucenews.test.support.XoxoUtility;
-import net.lucenews3.WebService;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -62,8 +61,7 @@ public class ClientTest {
 	protected Logger logger;
 	
 	public ClientTest() {
-		//this(LuceneWebService.class);
-		this(WebService.class);
+		this(LuceneWebService.class);
 	}
 	
 	public ClientTest(Class<? extends HttpServlet> servletClass) {
