@@ -3,13 +3,15 @@ package net.lucenews3.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import net.lucenews3.lucene.support.Index;
 
-public class RemoveDocumentController implements Controller {
+import org.springframework.web.servlet.ModelAndView;
+
+public class RemoveDocumentController extends AbstractController {
 
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
+		Index index = service.getIndex(request.getAttribute("index").toString());
 		// TODO Auto-generated method stub
 		return null;
 	}
