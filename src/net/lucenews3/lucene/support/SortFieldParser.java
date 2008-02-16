@@ -2,8 +2,9 @@ package net.lucenews3.lucene.support;
 
 import org.apache.lucene.search.SortField;
 
-public interface SortFieldParser<I> {
+public interface SortFieldParser<I> extends Parser<I, SortField> {
 
-	public SortField parseSortField(I input);
+	@Override
+	public SortField parse(I input);
 	
 }

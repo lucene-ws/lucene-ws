@@ -15,7 +15,7 @@ public class NativeQueryParser implements QueryParser<String> {
 	}
 	
 	@Override
-	public Query parseQuery(String string) {
+	public Query parse(String string) {
 		try {
 			return queryParser.parse(string);
 		} catch (ParseException e) {

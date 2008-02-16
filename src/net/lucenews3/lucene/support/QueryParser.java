@@ -2,8 +2,9 @@ package net.lucenews3.lucene.support;
 
 import org.apache.lucene.search.Query;
 
-public interface QueryParser<I> {
+public interface QueryParser<I> extends Parser<I, Query> {
 
-	public Query parseQuery(I input);
+	@Override
+	public Query parse(I input);
 	
 }

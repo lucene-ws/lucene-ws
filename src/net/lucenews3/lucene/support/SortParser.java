@@ -2,8 +2,9 @@ package net.lucenews3.lucene.support;
 
 import org.apache.lucene.search.Sort;
 
-public interface SortParser<I> {
+public interface SortParser<I> extends Parser<I, Sort> {
 
-	public Sort parseSort(I input);
+	@Override
+	public Sort parse(I input);
 	
 }

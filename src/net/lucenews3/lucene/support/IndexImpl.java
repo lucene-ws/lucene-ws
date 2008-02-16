@@ -14,10 +14,20 @@ import org.apache.lucene.store.Directory;
 public class IndexImpl implements Index {
 
 	private Directory directory;
+	private IndexMetaData metaData;
 	private ExceptionWrapper exceptionWrapper;
 
 	public IndexImpl(Directory directory) {
 		this.directory = directory;
+	}
+
+	public IndexImpl(Directory directory, IndexMetaData metaData) {
+		this.directory = directory;
+		this.metaData = metaData;
+	}
+
+	public IndexImpl(IndexMetaData metaData) {
+		this.metaData = metaData;
 	}
 	
 	public DocumentList getDocuments() {
@@ -61,8 +71,7 @@ public class IndexImpl implements Index {
 	}
 
 	public IndexMetaData getMetaData() {
-		// TODO Auto-generated method stub
-		return null;
+		return metaData;
 	}
 
 }

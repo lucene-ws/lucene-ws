@@ -13,14 +13,14 @@ public class HttpFilterParser implements FilterParser<HttpServletRequest> {
 	}
 	
 	@Override
-	public Filter parseFilter(HttpServletRequest request) {
+	public Filter parse(HttpServletRequest request) {
 		Filter result;
 		
 		String string = request.getParameter("filter");
 		if (string == null) {
 			result = null;
 		} else {
-			result = filterParser.parseFilter(string);
+			result = filterParser.parse(string);
 		}
 		
 		return result;

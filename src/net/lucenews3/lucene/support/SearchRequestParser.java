@@ -1,7 +1,8 @@
 package net.lucenews3.lucene.support;
 
-public interface SearchRequestParser<I> {
+public interface SearchRequestParser<I> extends Parser<I, SearchRequest> {
 
-	public SearchRequest parseSearchRequest(I input);
+	@Override
+	public SearchRequest parse(I input);
 	
 }

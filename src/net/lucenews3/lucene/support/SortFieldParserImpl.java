@@ -48,7 +48,8 @@ public class SortFieldParserImpl implements SortFieldParser<String> {
 		this.sortComparatorSourceParser = sortComparatorSourceParser;
 	}
 
-	public SortField parseSortField(String string) {
+	@Override
+	public SortField parse(String string) {
 		SortField result;
 		
 		Matcher matcher = pattern.matcher(string);
@@ -72,7 +73,7 @@ public class SortFieldParserImpl implements SortFieldParser<String> {
 			if (localeString == null) {
 				locale = null;
 			} else {
-				locale = localeParser.parseLocale(localeString);
+				locale = localeParser.parse(localeString);
 			}
 			
 			if (isScore) {

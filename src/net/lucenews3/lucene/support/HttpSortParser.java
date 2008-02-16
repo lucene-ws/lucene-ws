@@ -13,14 +13,14 @@ public class HttpSortParser implements SortParser<HttpServletRequest> {
 	}
 	
 	@Override
-	public Sort parseSort(HttpServletRequest request) {
+	public Sort parse(HttpServletRequest request) {
 		Sort result;
 		
 		final String string = request.getParameter("sort");
 		if (string == null) {
 			result = null;
 		} else {
-			result = sortParser.parseSort(string);
+			result = sortParser.parse(string);
 		}
 		
 		return result;

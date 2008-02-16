@@ -26,7 +26,7 @@ public class SearchIndexController extends AbstractController {
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		final Index index = service.getIndex(request.getAttribute("indexName").toString());
-		final SearchRequest searchRequest = searchRequestParser.parseSearchRequest(request);
+		final SearchRequest searchRequest = searchRequestParser.parse(request);
 		final ResultList results = index.getDocuments().searchBy(searchRequest);
 		
 		return new ModelAndView("search/results", "results", results);

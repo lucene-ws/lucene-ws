@@ -37,10 +37,10 @@ public class HttpSearchRequestParser implements SearchRequestParser<HttpServletR
 	}
 
 	@Override
-	public SearchRequest parseSearchRequest(HttpServletRequest request) {
-		final Query query = queryParser.parseQuery(request);
-		final Filter filter = filterParser.parseFilter(request);
-		final Sort sort = sortParser.parseSort(request);
+	public SearchRequest parse(HttpServletRequest request) {
+		final Query query = queryParser.parse(request);
+		final Filter filter = filterParser.parse(request);
+		final Sort sort = sortParser.parse(request);
 		return new SearchRequestImpl(query, filter, sort);
 	}
 
