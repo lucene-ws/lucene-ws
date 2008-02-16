@@ -6,8 +6,10 @@ import org.apache.lucene.search.Query;
 
 public class QueryMergerImpl implements QueryMerger {
 
-	public Query mergeQueries(Query base, Query delta) {
+	@Override
+	public Query merge(Query base, Query delta) {
 		Query result;
+		
 		if (delta == null) {
 			result = null;
 		} else if (base == null) {
@@ -18,6 +20,7 @@ public class QueryMergerImpl implements QueryMerger {
 			booleanQuery.add(delta, BooleanClause.Occur.MUST);
 			result = booleanQuery;
 		}
+		
 		return result;
 	}
 

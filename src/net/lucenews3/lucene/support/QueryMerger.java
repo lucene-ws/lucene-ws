@@ -2,8 +2,9 @@ package net.lucenews3.lucene.support;
 
 import org.apache.lucene.search.Query;
 
-public interface QueryMerger {
+public interface QueryMerger extends Merger<Query> {
 
-	public Query mergeQueries(Query base, Query delta);
+	@Override
+	public Query merge(Query base, Query delta);
 	
 }

@@ -2,8 +2,9 @@ package net.lucenews3.lucene.support;
 
 import org.apache.lucene.search.Sort;
 
-public interface SortMerger {
+public interface SortMerger extends Merger<Sort> {
 
-	public Sort mergeSorts(Sort base, Sort delta);
+	@Override
+	public Sort merge(Sort base, Sort delta);
 	
 }

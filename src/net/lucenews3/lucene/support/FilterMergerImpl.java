@@ -5,8 +5,10 @@ import org.apache.lucene.search.Filter;
 
 public class FilterMergerImpl implements FilterMerger {
 
-	public Filter mergeFilters(Filter base, Filter delta) {
+	@Override
+	public Filter merge(Filter base, Filter delta) {
 		Filter result;
+		
 		if (delta == null) {
 			result = null;
 		} else if (base == null) {
@@ -14,6 +16,7 @@ public class FilterMergerImpl implements FilterMerger {
 		} else {
 			result = new ChainedFilter(new Filter[]{ base, delta }, ChainedFilter.AND);
 		}
+		
 		return result;
 	}
 

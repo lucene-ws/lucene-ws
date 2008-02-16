@@ -11,8 +11,10 @@ import org.apache.lucene.search.SortField;
 
 public class SortMergerImpl implements SortMerger {
 
-	public Sort mergeSorts(Sort base, Sort delta) {
+	@Override
+	public Sort merge(Sort base, Sort delta) {
 		Sort result;
+		
 		if (delta == null) {
 			result = null;
 		} else if (base == null) {
@@ -39,11 +41,22 @@ public class SortMergerImpl implements SortMerger {
 			
 			result = new Sort(mergedSortFields.toArray(new SortField[]{}));
 		}
+		
 		return result;
 	}
 	
+	/**
+	 * Retrieves an object which identifies what the given
+	 * sort field actually sorts. If the result is an integer,
+	 * the sort field is sorting either by score or by document
+	 * id. If the result is a string, the sort field is sorting
+	 * by a regular document field of that name.
+	 * @param field
+	 * @return
+	 */
 	protected Object getSortFieldKey(SortField field) {
 		Object result;
+		
 		switch (field.getType()) {
 		case SortField.SCORE:
 		case SortField.DOC:
@@ -53,6 +66,7 @@ public class SortMergerImpl implements SortMerger {
 			result = field.getField();
 			break;
 		}
+		
 		return result;
 	}
 

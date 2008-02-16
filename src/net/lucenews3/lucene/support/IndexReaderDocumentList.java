@@ -151,7 +151,7 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 	 */
 	public DocumentList filteredBy(Filter filter) {
 		final IndexReaderDocumentList result = new IndexReaderDocumentList(this);
-		result.filter = filterMerger.mergeFilters(result.filter, filter);
+		result.filter = filterMerger.merge(result.filter, filter);
 		return result;
 	}
 

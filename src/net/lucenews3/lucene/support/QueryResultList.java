@@ -166,7 +166,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		final QueryResultList result = new QueryResultList(this);
 		final Filter base = result.searchRequest.getFilter();
 		final Filter delta = filter;
-		result.searchRequest.setFilter(filterMerger.mergeFilters(base, delta));
+		result.searchRequest.setFilter(filterMerger.merge(base, delta));
 		result.initialized = false;
 		return result;
 	}
@@ -176,7 +176,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		final QueryResultList result = new QueryResultList(this);
 		final Sort base = result.searchRequest.getSort();
 		final Sort delta = sort;
-		result.searchRequest.setSort(sortMerger.mergeSorts(base, delta));
+		result.searchRequest.setSort(sortMerger.merge(base, delta));
 		result.initialized = false;
 		return result;
 	}
@@ -186,7 +186,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		final QueryResultList result = new QueryResultList(this);
 		final Query base = result.searchRequest.getQuery();
 		final Query delta = criteria;
-		result.searchRequest.setQuery(queryMerger.mergeQueries(base, delta));
+		result.searchRequest.setQuery(queryMerger.merge(base, delta));
 		result.initialized = false;
 		return result;
 	}
