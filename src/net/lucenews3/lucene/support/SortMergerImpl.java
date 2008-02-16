@@ -25,12 +25,12 @@ public class SortMergerImpl implements SortMerger {
 			// Establish which sort fields are mentioned in the delta.
 			final Set<Object> deltaSortFieldKeys = new HashSet<Object>();
 			for (SortField deltaSortField : delta.getSort()) {
-				deltaSortFieldKeys.add(getSortFieldKey(deltaSortField));
+				deltaSortFieldKeys.add(getKey(deltaSortField));
 			}
 			
 			// Add the base fields which are not mentioned in the delta
 			for (SortField baseSortField : base.getSort()) {
-				final Object baseSortFieldKey = getSortFieldKey(baseSortField);
+				final Object baseSortFieldKey = getKey(baseSortField);
 				if (!deltaSortFieldKeys.contains(baseSortFieldKey)) {
 					mergedSortFields.add(baseSortField);
 				}
@@ -54,7 +54,7 @@ public class SortMergerImpl implements SortMerger {
 	 * @param field
 	 * @return
 	 */
-	protected Object getSortFieldKey(SortField field) {
+	protected Object getKey(SortField field) {
 		Object result;
 		
 		switch (field.getType()) {
