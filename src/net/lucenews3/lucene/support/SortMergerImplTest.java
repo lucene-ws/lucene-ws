@@ -28,13 +28,6 @@ public class SortMergerImplTest {
 	}
 	
 	@Test
-	public void testEmptySortEquality() {
-		Sort sort1 = new Sort();
-		Sort sort2 = new Sort();
-		Assert.assertTrue(isEqual(sort1, sort2));
-	}
-	
-	@Test
 	public void testStaticScoreKey() {
 		SortField field = SortField.FIELD_SCORE;
 		Assert.assertEquals(SortField.SCORE, merger.getKey(field));
@@ -56,36 +49,6 @@ public class SortMergerImplTest {
 	public void testConstructedDocKey() {
 		SortField field = new SortField(null, SortField.DOC);
 		Assert.assertEquals(SortField.DOC, merger.getKey(field));
-	}
-	
-	@Test
-	public void testScoreFieldEquality() {
-		SortField field1 = new SortField(null, SortField.SCORE);
-		SortField field2 = new SortField(null, SortField.SCORE);
-		Assert.assertTrue(isEqual(field1, field2));
-	}
-	
-	@Test
-	public void testScoreFieldInequality() {
-		boolean reversed = true;
-		SortField field1 = new SortField(null, SortField.SCORE, reversed);
-		SortField field2 = new SortField(null, SortField.SCORE, !reversed);
-		Assert.assertFalse(isEqual(field1, field2));
-	}
-	
-	@Test
-	public void testDocFieldEquality() {
-		SortField field1 = new SortField(null, SortField.DOC);
-		SortField field2 = new SortField(null, SortField.DOC);
-		Assert.assertTrue(isEqual(field1, field2));
-	}
-	
-	@Test
-	public void testDocFieldInequality() {
-		boolean reversed = true;
-		SortField field1 = new SortField(null, SortField.DOC, reversed);
-		SortField field2 = new SortField(null, SortField.DOC, !reversed);
-		Assert.assertFalse(isEqual(field1, field2));
 	}
 	
 	@Test

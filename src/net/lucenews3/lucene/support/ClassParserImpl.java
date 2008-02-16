@@ -4,16 +4,16 @@ import net.lucenews.http.ExceptionWrapper;
 
 public class ClassParserImpl<T> implements ClassParser<T, String> {
 
-	private Class<T> type;
+	private Class<T> assignableType;
 	private ExceptionWrapper exceptionWrapper;
 	
 	public ClassParserImpl() {
 		this.exceptionWrapper = new DefaultExceptionWrapper();
 	}
 	
-	public ClassParserImpl(Class<T> type) {
+	public ClassParserImpl(Class<T> assignableType) {
 		this();
-		this.type = type;
+		this.assignableType = assignableType;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -29,7 +29,7 @@ public class ClassParserImpl<T> implements ClassParser<T, String> {
 		
 		// If the base class has been explicitly set, ensure that the
 		// parsed class can be assigned to it.
-		if (type != null && !type.isAssignableFrom(result)) {
+		if (assignableType != null && !assignableType.isAssignableFrom(result)) {
 			throw new ClassCastException();
 		}
 		
