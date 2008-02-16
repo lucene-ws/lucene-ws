@@ -2,8 +2,9 @@ package net.lucenews3.lucene.support;
 
 import org.apache.lucene.search.SortComparatorSource;
 
-public interface SortComparatorSourceParser {
+public interface SortComparatorSourceParser<I> extends Parser<I, SortComparatorSource> {
 
-	public SortComparatorSource parse(String string);
+	@Override
+	public SortComparatorSource parse(I input);
 	
 }

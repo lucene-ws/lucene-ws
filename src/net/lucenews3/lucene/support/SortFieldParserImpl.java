@@ -10,7 +10,7 @@ import org.apache.lucene.search.SortField;
 public class SortFieldParserImpl implements SortFieldParser<String> {
 
 	private LocaleParser<String> localeParser;
-	private SortComparatorSourceParser sortComparatorSourceParser;
+	private SortComparatorSourceParser<String> sortComparatorSourceParser;
 	private Pattern pattern;
 	private int scoreGroup;
 	private int docGroup;
@@ -39,12 +39,12 @@ public class SortFieldParserImpl implements SortFieldParser<String> {
 		this.localeParser = localeParser;
 	}
 
-	public SortComparatorSourceParser getSortComparatorSourceParser() {
+	public SortComparatorSourceParser<String> getSortComparatorSourceParser() {
 		return sortComparatorSourceParser;
 	}
 
 	public void setSortComparatorSourceParser(
-			SortComparatorSourceParser sortComparatorSourceParser) {
+			SortComparatorSourceParser<String> sortComparatorSourceParser) {
 		this.sortComparatorSourceParser = sortComparatorSourceParser;
 	}
 
