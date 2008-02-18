@@ -1,13 +1,13 @@
 package net.lucenews3.atom;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.w3c.dom.Node;
 
 public interface InlineXhtmlContent extends Content {
 
-	public Collection<Node> getContentNodes();
+	public List<Node> getContentNodes();
 	
-	public void setContentNodes(Collection<Node> nodes);
+	public void setContentNodes(List<Node> nodes);
 	
 }
