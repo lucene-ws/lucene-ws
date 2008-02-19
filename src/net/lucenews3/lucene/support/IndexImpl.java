@@ -6,6 +6,7 @@ import net.lucenews3.ExceptionTranslator;
 import net.lucenews3.lucene.IndexReader;
 import net.lucenews3.lucene.IndexReaderImpl;
 
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Searcher;
@@ -17,6 +18,10 @@ public class IndexImpl implements Index {
 	private IndexMetaData metaData;
 	private ExceptionTranslator exceptionTranslator;
 
+	public IndexImpl() {
+		
+	}
+	
 	public IndexImpl(Directory directory) {
 		this.directory = directory;
 	}
@@ -30,8 +35,29 @@ public class IndexImpl implements Index {
 		this.metaData = metaData;
 	}
 	
+	public Directory getDirectory() {
+		return directory;
+	}
+
+	public void setDirectory(Directory directory) {
+		this.directory = directory;
+	}
+
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
+	}
+
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
+	}
+
+	public void setMetaData(IndexMetaData metaData) {
+		this.metaData = metaData;
+	}
+
 	public DocumentList getDocuments() {
 		try {
+			new IndexWriter(directory, new StandardAnalyzer(), true).close();
 			return new IndexReaderDocumentList(org.apache.lucene.index.IndexReader.open(directory), null, null);
 		} catch (CorruptIndexException e) {
 			throw exceptionTranslator.translate(e);

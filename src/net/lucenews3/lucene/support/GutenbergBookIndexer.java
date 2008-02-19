@@ -21,15 +21,22 @@ public class GutenbergBookIndexer {
 	private int paragraph;
 	private StringBuffer buffer;
 	private IndexWriter writer;
+	private int count;
 	
 	public static void main(String... arguments) throws Exception {
 		GutenbergBookIndexer indexer = new GutenbergBookIndexer();
 		Reader reader = new FileReader(new File("test/data/A Christmas Carol by Charles Dickens.txt"));
 		FileSystemUtility fileSystem = new FileSystemUtility();
-		File indexDirectory = fileSystem.getTemporaryDirectory();
+		File indexDirectory;
+		if (arguments.length > 0) {
+			indexDirectory = new File(arguments[0]);
+		} else {
+			indexDirectory = fileSystem.getTemporaryDirectory();
+		}
 		IndexWriter writer = new IndexWriter(indexDirectory, new StandardAnalyzer(), true);
 		indexer.index(reader, writer);
 		writer.close();
+		System.out.println("Indexed " + indexer.count + " documents");
 	}
 	
 	public void index(Reader reader, IndexWriter writer) throws IOException {
@@ -81,6 +88,7 @@ public class GutenbergBookIndexer {
 			document.add(new Field("paragraph", String.valueOf(paragraph), Field.Store.YES, Field.Index.UN_TOKENIZED));
 			document.add(new Field("text", text, Field.Store.YES, Field.Index.TOKENIZED));
 			writer.addDocument(document);
+			count++;
 			buffer = null;
 		}
 	}

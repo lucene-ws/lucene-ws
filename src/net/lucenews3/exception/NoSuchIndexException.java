@@ -1,26 +1,33 @@
 package net.lucenews3.exception;
 
+import net.lucenews3.lucene.support.IndexIdentity;
+
 public class NoSuchIndexException extends WebServiceException {
 
 	private static final long serialVersionUID = 3136593687792069053L;
 	
-	private String indexName;
+	private IndexIdentity indexIdentity;
 	
 	public NoSuchIndexException() {
 		super();
 	}
 	
-	public NoSuchIndexException(String indexName) {
+	public NoSuchIndexException(IndexIdentity indexIdentity) {
 		super();
-		this.indexName = indexName;
+		this.indexIdentity = indexIdentity;
 	}
 
-	public String getIndexName() {
-		return indexName;
+	public IndexIdentity getIndexIdentity() {
+		return indexIdentity;
 	}
 
-	public void setIndexName(String indexName) {
-		this.indexName = indexName;
+	public void setIndexIdentity(IndexIdentity indexIdentity) {
+		this.indexIdentity = indexIdentity;
+	}
+	
+	@Override
+	public String getMessage() {
+		return "Index \"" + indexIdentity + "\" does not exist";
 	}
 
 }

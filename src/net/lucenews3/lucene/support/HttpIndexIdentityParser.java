@@ -6,7 +6,7 @@ public class HttpIndexIdentityParser implements IndexIdentityParser<HttpServletR
 
 	@Override
 	public IndexIdentity parse(HttpServletRequest request) {
-		return null;
+		return new IndexIdentityImpl(request.getAttribute("indexName"));
 	}
 
 }

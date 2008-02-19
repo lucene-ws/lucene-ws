@@ -3,15 +3,129 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="viewServiceController" class="net.lucenews3.controller.ViewServiceController">
+	<bean id="testIndexDirectory" class="net.lucenews3.lucene.support.FSDirectoryFactoryBean">
+		<property name="path" value="C:\apaynter\christmascarol" />
 	</bean>
 	
-	<bean id="searchIndexController" class="net.lucenews3.controller.SearchIndexController">
+	<bean id="testIndex" class="net.lucenews3.lucene.support.IndexImpl">
+		<property name="directory" ref="testIndexDirectory" />
+		<property name="exceptionTranslator" ref="exceptionTranslator" />
+	</bean>
+
+	<bean id="indexRepository"
+		class="net.lucenews3.lucene.support.IndexRepositoryImpl">
+		<constructor-arg>
+			<map>
+				<entry value-ref="testIndex">
+					<key>
+						<bean class="net.lucenews3.lucene.support.IndexIdentityImpl">
+							<constructor-arg value="test" />
+						</bean>
+					</key>
+				</entry>
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<bean id="exceptionTranslator"
+		class="net.lucenews3.ExceptionTranslatorImpl">
+	</bean>
+
+	<bean id="httpIndexIdentityParser"
+		class="net.lucenews3.lucene.support.HttpIndexIdentityParser">
 	</bean>
 	
-	<bean class="net.lucenews3.lucene.support.WebServiceHandlerMapping">
-		<property name="viewServiceController" ref="viewServiceController" />
-		<property name="searchIndexController" ref="searchIndexController" />
+	<bean id="stringQueryParser" class="net.lucenews3.lucene.support.NativeQueryParser">
+		<property name="queryParser">
+			<bean class="org.apache.lucene.queryParser.QueryParser">
+				<constructor-arg index="0" value="text" />
+				<constructor-arg index="1">
+					<bean class="org.apache.lucene.analysis.standard.StandardAnalyzer" />
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="httpQueryParser"
+		class="net.lucenews3.lucene.support.HttpQueryParser">
+		<property name="stringParser" ref="stringQueryParser" />
+	</bean>
+
+	<bean id="httpFilterParser"
+		class="net.lucenews3.lucene.support.HttpFilterParser">
+	</bean>
+
+	<bean id="httpSortParser"
+		class="net.lucenews3.lucene.support.HttpSortParser">
+	</bean>
+
+	<bean id="httpSearchRequestParser"
+		class="net.lucenews3.lucene.support.HttpSearchRequestParser">
+		<property name="queryParser" ref="httpQueryParser" />
+		<property name="filterParser" ref="httpFilterParser" />
+		<property name="sortParser" ref="httpSortParser" />
+	</bean>
+
+	<bean id="controller" abstract="true"></bean>
+
+	<bean id="indexController" abstract="true" parent="controller">
+		<property name="indexIdentityParser"
+			ref="httpIndexIdentityParser" />
+		<property name="indexesByIdentity" ref="indexRepository" />
+	</bean>
+
+	<!-- Service controllers -->
+	<bean id="viewServiceController"
+		class="net.lucenews3.controller.ViewServiceController"
+		parent="controller">
+	</bean>
+
+	<!-- Service properties controllers -->
+	<bean id="viewServicePropertiesController"
+		class="net.lucenews3.controller.ViewServicePropertiesController"
+		parent="controller">
+	</bean>
+
+	<!-- Index controllers -->
+	<bean id="createIndexController"
+		class="net.lucenews3.controller.CreateIndexController"
+		parent="indexController">
+	</bean>
+
+	<bean id="searchIndexController"
+		class="net.lucenews3.controller.SearchIndexController"
+		parent="indexController">
+		<property name="searchRequestParser"
+			ref="httpSearchRequestParser" />
+	</bean>
+
+	<bean id="removeIndexController"
+		class="net.lucenews3.controller.RemoveIndexController"
+		parent="indexController">
+	</bean>
+
+	<!-- Document controllers -->
+	<bean id="createDocumentController"
+		class="net.lucenews3.controller.CreateDocumentController"
+		parent="controller">
+	</bean>
+
+	<bean id="viewDocumentController"
+		class="net.lucenews3.controller.ViewDocumentController"
+		parent="controller">
+	</bean>
+
+	<bean id="removeDocumentController"
+		class="net.lucenews3.controller.RemoveDocumentController"
+		parent="controller">
+	</bean>
+
+	<bean
+		class="net.lucenews3.lucene.support.WebServiceHandlerMapping">
+		<property name="viewServiceController"
+			ref="viewServiceController" />
+		<property name="searchIndexController"
+			ref="searchIndexController" />
 	</bean>
 
 </beans>

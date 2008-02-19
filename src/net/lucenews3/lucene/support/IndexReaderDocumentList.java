@@ -158,7 +158,11 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 	public ResultList searchBy(Query query) {
 		QueryResultList result = new QueryResultList();
 		result.getSearchRequest().setFilter(this.filter);
-		result.setSearcher(this.searcher);
+		if (this.searcher == null) {
+			result.setSearcher(new IndexSearcher(reader));
+		} else {
+			result.setSearcher(this.searcher);
+		}
 		result.setFilterMerger(this.filterMerger);
 		return result;
 	}
@@ -167,6 +171,11 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 	public ResultList searchBy(SearchRequest searchRequest) {
 		final QueryResultList result = new QueryResultList();
 		result.setSearchRequest(searchRequest);
+		if (this.searcher == null) {
+			result.setSearcher(new IndexSearcher(reader));
+		} else {
+			result.setSearcher(this.searcher);
+		}
 		return result;
 	}
 

@@ -31,4 +31,21 @@ public class CreateDocumentController implements Controller {
 		return new ModelAndView("document/create", "documents", documents);
 	}
 
+	public IndexIdentityParser<HttpServletRequest> getIndexIdentityParser() {
+		return indexIdentityParser;
+	}
+
+	public void setIndexIdentityParser(
+			IndexIdentityParser<HttpServletRequest> indexIdentityParser) {
+		this.indexIdentityParser = indexIdentityParser;
+	}
+
+	public Map<IndexIdentity, Index> getIndexesByIdentity() {
+		return indexesByIdentity;
+	}
+
+	public void setIndexesByIdentity(Map<IndexIdentity, Index> indexesByIdentity) {
+		this.indexesByIdentity = indexesByIdentity;
+	}
+
 }

@@ -14,8 +14,28 @@ public class NativeQueryParser implements QueryParser<String> {
 	private org.apache.lucene.queryParser.QueryParser queryParser;
 	private ExceptionTranslator exceptionTranslator;
 
+	public NativeQueryParser() {
+		
+	}
+	
 	public NativeQueryParser(org.apache.lucene.queryParser.QueryParser queryParser) {
 		this.queryParser = queryParser;
+	}
+
+	public org.apache.lucene.queryParser.QueryParser getQueryParser() {
+		return queryParser;
+	}
+
+	public void setQueryParser(org.apache.lucene.queryParser.QueryParser queryParser) {
+		this.queryParser = queryParser;
+	}
+
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
+	}
+
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
 	}
 
 	@Override
