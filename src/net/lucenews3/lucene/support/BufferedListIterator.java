@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
  */
 public class BufferedListIterator<E> implements ListIterator<E> {
 
-	private Iterator<E> iterator;
+	private final Iterator<E> iterator;
 	private Link currentLink;
 	
 	public BufferedListIterator(Iterator<E> iterator) {
@@ -24,10 +24,6 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 		public E value;
 		public Link previous;
 		public Link next;
-		
-		public Link() {
-			
-		}
 		
 		public Link(int index, E value) {
 			this.index = index;
