@@ -2,10 +2,10 @@ package net.lucenews3.lucene.support;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class HttpIndexIdentityParser implements IndexKeyParser<HttpServletRequest> {
+public class HttpIndexIdentityParser implements IndexIdentityParser<HttpServletRequest> {
 
 	@Override
-	public Object parse(HttpServletRequest request) {
+	public IndexIdentity parse(HttpServletRequest request) {
 		return null;
 	}
 
