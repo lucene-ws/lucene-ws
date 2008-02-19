@@ -1,5 +1,5 @@
 package net.lucenews3.lucene.support;
 
-public interface IndexIdentity {
+public interface IndexIdentity extends Identity<Index> {
 
 }

@@ -1,11 +1,12 @@
 package net.lucenews3.controller;
 
-import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.lucenews3.lucene.support.Index;
+import net.lucenews3.lucene.support.IndexIdentity;
 import net.lucenews3.lucene.support.IndexImpl;
 import net.lucenews3.lucene.support.IndexMetaData;
 
@@ -14,20 +15,21 @@ import org.springframework.web.servlet.mvc.Controller;
 
 public class CreateIndexController implements Controller {
 
-	private List<Index> indexes;
+	private Map<IndexIdentity, Index> indexesByIdentity;
 	
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
+		final IndexIdentity identity = null;
 		
 		// Retrieve meta data from request
-		IndexMetaData metaData = null;
+		final IndexMetaData metaData = null;
 		
 		// Construct an empty index with this meta data
-		Index index = new IndexImpl(metaData);
+		final Index index = new IndexImpl(metaData);
 		
-		indexes.add(index);
+		indexesByIdentity.put(identity, index);
 		
-		return null;
+		return new ModelAndView("index/create", "index", index);
 	}
 
 }
