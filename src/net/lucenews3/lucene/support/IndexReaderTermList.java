@@ -2,7 +2,7 @@ package net.lucenews3.lucene.support;
 
 import java.io.IOException;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -13,13 +13,13 @@ import org.apache.lucene.index.Term;
  */
 public class IndexReaderTermList extends AbstractIteratorList<Term> implements TermList {
 
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	private IndexReader indexReader;
 	private Term fromTerm;
 	private Term toTerm;
 
 	public IndexReaderTermList(IndexReaderTermList prototype) {
-		this.exceptionWrapper = prototype.exceptionWrapper;
+		this.exceptionTranslator = prototype.exceptionTranslator;
 		this.indexReader = prototype.indexReader;
 		this.fromTerm = prototype.fromTerm;
 		this.toTerm = prototype.toTerm;
@@ -50,7 +50,7 @@ public class IndexReaderTermList extends AbstractIteratorList<Term> implements T
 				result = new TermEnumIterator(indexReader.terms(fromTerm));
 			}
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 		return result;
 	}

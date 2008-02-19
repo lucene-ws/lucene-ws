@@ -3,12 +3,12 @@ package net.lucenews3.lucene.support;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
 
 public class MethodInvokerImpl implements MethodInvoker {
 
 	private MethodResolver methodResolver;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	
 	public MethodInvokerImpl() {
 		this(new NativeMethodResolver());
@@ -40,15 +40,15 @@ public class MethodInvokerImpl implements MethodInvoker {
 			method = methodResolver.resolveMethod(clazz, methodName, parameterTypes);
 			result = method.invoke(object, arguments);
 		} catch (SecurityException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (NoSuchMethodException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IllegalArgumentException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IllegalAccessException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (InvocationTargetException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 		
 		return result;

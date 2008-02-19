@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.AbstractList;
 import java.util.BitSet;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -23,14 +23,14 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 	private boolean initialized;
 	private boolean includeDeleted;
 	private BitSet eligibleDocuments;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	
 	public IndexReaderDocumentList(IndexReaderDocumentList prototype) {
 		this.reader = prototype.reader;
 		this.writer = prototype.writer;
 		this.searcher = prototype.searcher;
 		this.filter = prototype.filter;
-		this.exceptionWrapper = prototype.exceptionWrapper;
+		this.exceptionTranslator = prototype.exceptionTranslator;
 	}
 	
 	public IndexReaderDocumentList(IndexReader reader, IndexWriter writer, IndexSearcher searcher) {
@@ -51,7 +51,7 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 				try {
 					eligibleDocuments = filter.bits(reader);
 				} catch (IOException e) {
-					throw exceptionWrapper.wrap(e);
+					throw exceptionTranslator.translate(e);
 				}
 			}
 			initialized = true;
@@ -106,9 +106,9 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 		try {
 			writer.addDocument(document.asNative());
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 		return true;
 	}
@@ -124,9 +124,9 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 		try {
 			result = new NativeDocumentDocument(reader.document(indexToDocumentNumber(index)));
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 		
 		return result;

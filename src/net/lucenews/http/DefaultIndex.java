@@ -2,6 +2,8 @@ package net.lucenews.http;
 
 import java.io.IOException;
 
+import net.lucenews3.ExceptionTranslator;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexDeletionPolicy;
@@ -23,7 +25,7 @@ public class DefaultIndex implements Index {
 	private Analyzer analyzer;
 	private boolean autoCreate;
 	private IndexDeletionPolicy deletionPolicy;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	
 	public DefaultIndex() {
 		
@@ -42,9 +44,9 @@ public class DefaultIndex implements Index {
 		try {
 			return IndexReader.open(directory);
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 
@@ -53,11 +55,11 @@ public class DefaultIndex implements Index {
 		try {
 			return new IndexWriter(directory, autoCommit, analyzer, autoCreate, deletionPolicy);
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (LockObtainFailedException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 	
@@ -66,9 +68,9 @@ public class DefaultIndex implements Index {
 		try {
 			return new IndexSearcher(directory);
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 	
@@ -112,12 +114,12 @@ public class DefaultIndex implements Index {
 		this.deletionPolicy = deletionPolicy;
 	}
 
-	public ExceptionWrapper getExceptionWrapper() {
-		return exceptionWrapper;
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
 	}
 
-	public void setExceptionWrapper(ExceptionWrapper exceptionWrapper) {
-		this.exceptionWrapper = exceptionWrapper;
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
 	}
 
 }

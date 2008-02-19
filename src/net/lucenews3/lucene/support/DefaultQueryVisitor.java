@@ -2,7 +2,7 @@ package net.lucenews3.lucene.support;
 
 import java.util.List;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -27,8 +27,8 @@ public class DefaultQueryVisitor extends ReflectiveQueryVisitor {
 		super();
 	}
 	
-	public DefaultQueryVisitor(ExceptionWrapper exceptionWrapper) {
-		super(exceptionWrapper);
+	public DefaultQueryVisitor(ExceptionTranslator exceptionTranslator) {
+		super(exceptionTranslator);
 	}
 	
 	/**

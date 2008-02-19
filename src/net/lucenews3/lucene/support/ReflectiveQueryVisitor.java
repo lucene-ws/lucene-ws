@@ -1,6 +1,6 @@
 package net.lucenews3.lucene.support;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
 
 import org.apache.lucene.search.Query;
 
@@ -15,8 +15,8 @@ public class ReflectiveQueryVisitor extends ReflectiveVisitor<Query> implements 
 		super();
 	}
 	
-	public ReflectiveQueryVisitor(ExceptionWrapper exceptionWrapper) {
-		super(exceptionWrapper);
+	public ReflectiveQueryVisitor(ExceptionTranslator exceptionTranslator) {
+		super(exceptionTranslator);
 	}
 	
 }

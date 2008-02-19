@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import net.lucenews3.ExceptionTranslator;
+
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.MultiReader;
@@ -14,7 +16,7 @@ public class DefaultCompositeIndex implements CompositeIndex {
 
 	private Collection<Index> indexes;
 	private boolean closeSubReaders;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	
 	public DefaultCompositeIndex() {
 		
@@ -40,12 +42,12 @@ public class DefaultCompositeIndex implements CompositeIndex {
 		this.closeSubReaders = closeSubReaders;
 	}
 
-	public ExceptionWrapper getExceptionWrapper() {
-		return exceptionWrapper;
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
 	}
 
-	public void setExceptionWrapper(ExceptionWrapper exceptionWrapper) {
-		this.exceptionWrapper = exceptionWrapper;
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
 	}
 
 	/**
@@ -114,7 +116,7 @@ public class DefaultCompositeIndex implements CompositeIndex {
 		try {
 			return new MultiSearcher(getSearchers().toArray(new Searcher[]{}));
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 

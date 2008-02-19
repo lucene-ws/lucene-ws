@@ -2,7 +2,8 @@ package net.lucenews3.lucene.support;
 
 import java.util.AbstractList;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
+import net.lucenews3.ExceptionTranslatorImpl;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -15,7 +16,7 @@ import org.apache.lucene.search.Sort;
 
 public class QueryResultList extends AbstractList<Result> implements ResultList {
 
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	private Searcher searcher;
 	private QueryParser queryParser;
 	private SearchRequest searchRequest;
@@ -26,7 +27,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	private boolean initialized;
 	
 	public QueryResultList(QueryResultList prototype) {
-		this.exceptionWrapper = prototype.exceptionWrapper;
+		this.exceptionTranslator = prototype.exceptionTranslator;
 		this.searcher = prototype.searcher;
 		this.queryParser = prototype.queryParser;
 		this.searchRequest = prototype.searchRequest;
@@ -38,7 +39,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	}
 	
 	public QueryResultList() {
-		this.exceptionWrapper = new DefaultExceptionWrapper();
+		this.exceptionTranslator = new ExceptionTranslatorImpl();
 		this.filterMerger = new FilterMergerImpl();
 		this.queryMerger = new QueryMergerImpl();
 		this.sortMerger = new SortMergerImpl();
@@ -67,12 +68,12 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		this.searcher = searcher;
 	}
 	
-	public ExceptionWrapper getExceptionWrapper() {
-		return exceptionWrapper;
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
 	}
 
-	public void setExceptionWrapper(ExceptionWrapper exceptionWrapper) {
-		this.exceptionWrapper = exceptionWrapper;
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
 	}
 
 	public FilterMerger getFilterMerger() {
@@ -152,7 +153,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	@Override
 	public Result get(int index) {
 		initialize();
-		return new ResultImpl(hits, index, exceptionWrapper);
+		return new ResultImpl(hits, index, exceptionTranslator);
 	}
 
 	@Override
@@ -196,7 +197,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		try {
 			return where(queryParser.parse(criteria));
 		} catch (ParseException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 

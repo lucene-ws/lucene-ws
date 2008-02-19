@@ -3,7 +3,7 @@ package net.lucenews3.lucene.support;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
@@ -14,7 +14,7 @@ import org.apache.lucene.index.TermEnum;
  */
 public class TermEnumIterator implements TermIterator {
 
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	private TermEnum enumeration;
 	private Boolean hasNext;
 	private Term next;
@@ -41,7 +41,7 @@ public class TermEnumIterator implements TermIterator {
 		try {
 			enumeration.skipTo(target);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 
@@ -65,7 +65,7 @@ public class TermEnumIterator implements TermIterator {
 					result = hasNext = false;
 				}
 			} catch (IOException e) {
-				throw exceptionWrapper.wrap(e);
+				throw exceptionTranslator.translate(e);
 			}
 		} else {
 			result = hasNext;

@@ -2,7 +2,7 @@ package net.lucenews3.lucene;
 
 import java.io.IOException;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -11,7 +11,7 @@ public class NativeDocumentProviderImpl implements Provider<org.apache.lucene.do
 
 	private org.apache.lucene.index.IndexReader indexReader;
 	private int docNum;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	
 	public NativeDocumentProviderImpl(org.apache.lucene.index.IndexReader indexReader, int docNum) {
 		this.indexReader = indexReader;
@@ -23,9 +23,9 @@ public class NativeDocumentProviderImpl implements Provider<org.apache.lucene.do
 		try {
 			return indexReader.document(docNum);
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 

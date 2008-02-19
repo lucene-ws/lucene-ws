@@ -2,7 +2,7 @@ package net.lucenews3.lucene.support;
 
 import java.io.IOException;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
 import net.lucenews3.lucene.IndexReader;
 import net.lucenews3.lucene.IndexReaderImpl;
 
@@ -15,7 +15,7 @@ public class IndexImpl implements Index {
 
 	private Directory directory;
 	private IndexMetaData metaData;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 
 	public IndexImpl(Directory directory) {
 		this.directory = directory;
@@ -34,9 +34,9 @@ public class IndexImpl implements Index {
 		try {
 			return new IndexReaderDocumentList(org.apache.lucene.index.IndexReader.open(directory), null, null);
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 
@@ -44,9 +44,9 @@ public class IndexImpl implements Index {
 		try {
 			return new IndexReaderImpl(org.apache.lucene.index.IndexReader.open(directory));
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 

@@ -2,7 +2,7 @@ package net.lucenews3.lucene.support;
 
 import java.io.IOException;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
 
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Hits;
@@ -15,7 +15,7 @@ public class SearchRequestImpl implements SearchRequest {
 	private Query query;
 	private Filter filter;
 	private Sort sort;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	
 	public SearchRequestImpl() {
 		
@@ -70,7 +70,7 @@ public class SearchRequestImpl implements SearchRequest {
 		try {
 			return searcher.search(query, filter, sort);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 	

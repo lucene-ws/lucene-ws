@@ -2,34 +2,35 @@ package net.lucenews3.lucene.support;
 
 import java.io.IOException;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
+import net.lucenews3.ExceptionTranslatorImpl;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.search.Hits;
 
 public class ResultImpl implements Result {
 
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	private Hits hits;
 	private int number;
 	
 	public ResultImpl(Hits hits, int number) {
-		this(hits, number, new DefaultExceptionWrapper());
+		this(hits, number, new ExceptionTranslatorImpl());
 	}
 	
-	public ResultImpl(Hits hits, int number, ExceptionWrapper exceptionWrapper) {
+	public ResultImpl(Hits hits, int number, ExceptionTranslator exceptionTranslator) {
 		this.hits = hits;
 		this.number = number;
-		this.exceptionWrapper = exceptionWrapper;
+		this.exceptionTranslator = exceptionTranslator;
 	}
 	
 	public Document getDocument() {
 		try {
 			return new NativeDocumentDocument(hits.doc(number));
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 
@@ -37,7 +38,7 @@ public class ResultImpl implements Result {
 		try {
 			return hits.id(number);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 
@@ -49,7 +50,7 @@ public class ResultImpl implements Result {
 		try {
 			return hits.score(number);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 	

@@ -1,14 +1,15 @@
 package net.lucenews3.lucene.support;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
+import net.lucenews3.ExceptionTranslatorImpl;
 
 public class ClassParserImpl<T> implements ClassParser<T, String> {
 
 	private Class<T> assignableType;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	
 	public ClassParserImpl() {
-		this.exceptionWrapper = new DefaultExceptionWrapper();
+		this.exceptionTranslator = new ExceptionTranslatorImpl();
 	}
 	
 	public ClassParserImpl(Class<T> assignableType) {
@@ -24,7 +25,7 @@ public class ClassParserImpl<T> implements ClassParser<T, String> {
 		try {
 			result = (Class<T>) Class.forName(string);
 		} catch (ClassNotFoundException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 		
 		// If the base class has been explicitly set, ensure that the

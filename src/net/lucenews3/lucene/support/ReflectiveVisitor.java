@@ -5,7 +5,8 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.lucenews.http.ExceptionWrapper;
+import net.lucenews3.ExceptionTranslator;
+import net.lucenews3.ExceptionTranslatorImpl;
 
 /**
  * Implements the visitor pattern using Java's reflection facilities. Subclasses
@@ -20,19 +21,19 @@ public abstract class ReflectiveVisitor<T> implements Visitor<T> {
 
 	private MethodResolver methodResolver;
 	private Method dispatchMethod;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	private Logger logger;
 
 	public ReflectiveVisitor() {
-		this(new DefaultExceptionWrapper());
+		this(new ExceptionTranslatorImpl());
 	}
 
 	public ReflectiveVisitor(MethodResolver methodResolver) {
-		this(methodResolver, new DefaultExceptionWrapper());
+		this(methodResolver, new ExceptionTranslatorImpl());
 	}
 	
-	public ReflectiveVisitor(ExceptionWrapper exceptionWrapper) {
-		this(new NativeMethodResolver(), exceptionWrapper);
+	public ReflectiveVisitor(ExceptionTranslator exceptionTranslator) {
+		this(new NativeMethodResolver(), exceptionTranslator);
 	}
 	
 	/**
@@ -41,25 +42,25 @@ public abstract class ReflectiveVisitor<T> implements Visitor<T> {
 	 * exceptions.
 	 * @param exceptionWrapper
 	 */
-	public ReflectiveVisitor(MethodResolver methodResolver, ExceptionWrapper exceptionWrapper) {
+	public ReflectiveVisitor(MethodResolver methodResolver, ExceptionTranslator exceptionTranslator) {
 		this.methodResolver = methodResolver;
-		this.exceptionWrapper = exceptionWrapper;
+		this.exceptionTranslator = exceptionTranslator;
 		this.logger = Logger.getLogger("net.lucenews3.lucene.support");
 		try {
 			this.dispatchMethod = this.getClass().getMethod("visit", Object.class);
 		} catch (SecurityException e) {
-			throw this.exceptionWrapper.wrap(e);
+			throw this.exceptionTranslator.translate(e);
 		} catch (NoSuchMethodException e) {
-			throw this.exceptionWrapper.wrap(e);
+			throw this.exceptionTranslator.translate(e);
 		}
 	}
 
-	public ExceptionWrapper getExceptionWrapper() {
-		return exceptionWrapper;
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
 	}
 
-	public void setExceptionWrapper(ExceptionWrapper exceptionWrapper) {
-		this.exceptionWrapper = exceptionWrapper;
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
 	}
 
 	public MethodResolver getMethodResolver() {
@@ -88,9 +89,9 @@ public abstract class ReflectiveVisitor<T> implements Visitor<T> {
 		try {
 			result = methodResolver.resolveMethod(thisClass, methodName, targetClass);
 		} catch (SecurityException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (NoSuchMethodException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 		
 		if (result.equals(dispatchMethod) && logger.isLoggable(Level.WARNING)) {
@@ -112,11 +113,11 @@ public abstract class ReflectiveVisitor<T> implements Visitor<T> {
 		try {
 			result = method.invoke(this, target);
 		} catch (IllegalArgumentException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IllegalAccessException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (InvocationTargetException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 
 		return result;

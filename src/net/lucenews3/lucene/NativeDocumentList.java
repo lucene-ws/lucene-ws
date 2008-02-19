@@ -3,24 +3,24 @@ package net.lucenews3.lucene;
 import java.io.IOException;
 import java.util.AbstractList;
 
-import org.apache.lucene.index.CorruptIndexException;
+import net.lucenews3.ExceptionTranslator;
 
-import net.lucenews.http.ExceptionWrapper;
+import org.apache.lucene.index.CorruptIndexException;
 
 public class NativeDocumentList extends AbstractList<org.apache.lucene.document.Document> implements DocumentList {
 
 	private org.apache.lucene.index.IndexReader indexReader;
 	private org.apache.lucene.index.IndexWriter indexWriter;
-	private ExceptionWrapper exceptionWrapper;
+	private ExceptionTranslator exceptionTranslator;
 	
 	@Override
 	public boolean add(org.apache.lucene.document.Document document) {
 		try {
 			indexWriter.addDocument(document);
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 		return false;
 	}
@@ -29,9 +29,9 @@ public class NativeDocumentList extends AbstractList<org.apache.lucene.document.
 		try {
 			return indexReader.document(index);
 		} catch (CorruptIndexException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		} catch (IOException e) {
-			throw exceptionWrapper.wrap(e);
+			throw exceptionTranslator.translate(e);
 		}
 	}
 	
