@@ -23,15 +23,15 @@ import org.springframework.web.servlet.HandlerMapping;
 
 public class WebServiceHandlerMapping implements HandlerMapping {
 
-	private ViewServiceController viewServiceController;
-	private ViewServicePropertiesController viewServicePropertiesController;
-	private CreateIndexController createIndexController;
-	private SearchIndexController searchIndexController;
-	private RemoveIndexController removeIndexController;
-	private ViewDocumentController viewDocumentController;
-	private CreateDocumentController createDocumentController;
-	private UpdateDocumentController updateDocumentController;
-	private RemoveDocumentController removeDocumentController;
+	private ViewServiceController<?, ?> viewServiceController;
+	private ViewServicePropertiesController<?, ?> viewServicePropertiesController;
+	private CreateIndexController<?, ?> createIndexController;
+	private SearchIndexController<?, ?> searchIndexController;
+	private RemoveIndexController<?, ?> removeIndexController;
+	private ViewDocumentController<?, ?> viewDocumentController;
+	private CreateDocumentController<?, ?> createDocumentController;
+	private UpdateDocumentController<?, ?> updateDocumentController;
+	private RemoveDocumentController<?, ?> removeDocumentController;
 	
 	public HandlerExecutionChain getHandler(HttpServletRequest request)
 			throws Exception {
@@ -123,80 +123,80 @@ public class WebServiceHandlerMapping implements HandlerMapping {
 		return null;
 	}
 
-	public CreateDocumentController getCreateDocumentController() {
+	public CreateDocumentController<?, ?> getCreateDocumentController() {
 		return createDocumentController;
 	}
 
 	public void setCreateDocumentController(
-			CreateDocumentController createDocumentController) {
+			CreateDocumentController<?, ?> createDocumentController) {
 		this.createDocumentController = createDocumentController;
 	}
 
-	public CreateIndexController getCreateIndexController() {
+	public CreateIndexController<?, ?> getCreateIndexController() {
 		return createIndexController;
 	}
 
-	public void setCreateIndexController(CreateIndexController createIndexController) {
+	public void setCreateIndexController(CreateIndexController<?, ?> createIndexController) {
 		this.createIndexController = createIndexController;
 	}
 
-	public RemoveDocumentController getRemoveDocumentController() {
+	public RemoveDocumentController<?, ?> getRemoveDocumentController() {
 		return removeDocumentController;
 	}
 
 	public void setRemoveDocumentController(
-			RemoveDocumentController removeDocumentController) {
+			RemoveDocumentController<?, ?> removeDocumentController) {
 		this.removeDocumentController = removeDocumentController;
 	}
 
-	public RemoveIndexController getRemoveIndexController() {
+	public RemoveIndexController<?, ?> getRemoveIndexController() {
 		return removeIndexController;
 	}
 
-	public void setRemoveIndexController(RemoveIndexController removeIndexController) {
+	public void setRemoveIndexController(RemoveIndexController<?, ?> removeIndexController) {
 		this.removeIndexController = removeIndexController;
 	}
 
-	public SearchIndexController getSearchIndexController() {
+	public SearchIndexController<?, ?> getSearchIndexController() {
 		return searchIndexController;
 	}
 
-	public void setSearchIndexController(SearchIndexController searchIndexController) {
+	public void setSearchIndexController(SearchIndexController<?, ?> searchIndexController) {
 		this.searchIndexController = searchIndexController;
 	}
 
-	public UpdateDocumentController getUpdateDocumentController() {
+	public UpdateDocumentController<?, ?> getUpdateDocumentController() {
 		return updateDocumentController;
 	}
 
 	public void setUpdateDocumentController(
-			UpdateDocumentController updateDocumentController) {
+			UpdateDocumentController<?, ?> updateDocumentController) {
 		this.updateDocumentController = updateDocumentController;
 	}
 
-	public ViewDocumentController getViewDocumentController() {
+	public ViewDocumentController<?, ?> getViewDocumentController() {
 		return viewDocumentController;
 	}
 
 	public void setViewDocumentController(
-			ViewDocumentController viewDocumentController) {
+			ViewDocumentController<?, ?> viewDocumentController) {
 		this.viewDocumentController = viewDocumentController;
 	}
 
-	public ViewServiceController getViewServiceController() {
+	public ViewServiceController<?, ?> getViewServiceController() {
 		return viewServiceController;
 	}
 
-	public void setViewServiceController(ViewServiceController viewServiceController) {
+	public void setViewServiceController(ViewServiceController<?, ?> viewServiceController) {
 		this.viewServiceController = viewServiceController;
 	}
 
-	public ViewServicePropertiesController getViewServicePropertiesController() {
+	public ViewServicePropertiesController<?, ?> getViewServicePropertiesController() {
 		return viewServicePropertiesController;
 	}
 
 	public void setViewServicePropertiesController(
-			ViewServicePropertiesController viewServicePropertiesController) {
+			ViewServicePropertiesController<?, ?> viewServicePropertiesController) {
 		this.viewServicePropertiesController = viewServicePropertiesController;
 	}
 
