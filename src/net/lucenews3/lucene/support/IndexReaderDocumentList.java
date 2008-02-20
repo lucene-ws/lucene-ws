@@ -179,4 +179,12 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 		return result;
 	}
 
+	public IndexReader getReader() {
+		return reader;
+	}
+
+	public void setReader(IndexReader reader) {
+		this.reader = reader;
+	}
+
 }

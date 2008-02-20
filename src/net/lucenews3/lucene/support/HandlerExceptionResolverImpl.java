@@ -1,5 +1,6 @@
 package net.lucenews3.lucene.support;
 
+import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +14,7 @@ public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request,
-			HttpServletResponse response, Object handler, Exception exception) {
+			HttpServletResponse response, Object handler, final Exception exception) {
 		// TODO Auto-generated method stub
 		return new ModelAndView(new View(){
 
@@ -23,10 +24,14 @@ public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
 				return "text/plain";
 			}
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void render(Map arg0, HttpServletRequest arg1,
 					HttpServletResponse response) throws Exception {
-				response.getWriter().println("What did you do?");
+				PrintWriter out = response.getWriter();
+				out.println("What did you do? Here's what:");
+				exception.printStackTrace(out);
+				out.flush();
 			}});
 	}
 

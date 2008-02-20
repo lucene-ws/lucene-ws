@@ -16,4 +16,6 @@ public interface ResultList extends List<Result> {
 	
 	public ResultList sortedBy(Sort sort);
 	
+	public ResultList subList(int fromIndex, int toIndex);
+	
 }

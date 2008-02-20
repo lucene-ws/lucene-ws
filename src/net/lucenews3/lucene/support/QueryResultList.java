@@ -145,6 +145,9 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 			if (searchRequest == null) {
 				searchRequest = new SearchRequestImpl(new MatchAllDocsQuery());
 			}
+			if (searchRequest.getQuery() == null) {
+				searchRequest.setQuery(new MatchAllDocsQuery());
+			}
 			hits = searchRequest.search(searcher);
 			initialized = true;
 		}
@@ -199,6 +202,11 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		} catch (ParseException e) {
 			throw exceptionTranslator.translate(e);
 		}
+	}
+	
+	@Override
+	public QueryResultList subList(int fromIndex, int toIndex) {
+		return null;
 	}
 
 }

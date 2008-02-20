@@ -46,6 +46,9 @@
 		</property>
 	</bean>
 
+	<bean id="httpIndexRangeParser" class="net.lucenews3.lucene.support.HttpIndexRangeParser">
+	</bean>
+
 	<bean id="httpQueryParser"
 		class="net.lucenews3.lucene.support.HttpQueryParser">
 		<property name="stringParser" ref="stringQueryParser" />
@@ -126,6 +129,9 @@
 			ref="viewServiceController" />
 		<property name="searchIndexController"
 			ref="searchIndexController" />
+	</bean>
+	
+	<bean class="net.lucenews3.lucene.support.HandlerExceptionResolverImpl">
 	</bean>
 
 </beans>
