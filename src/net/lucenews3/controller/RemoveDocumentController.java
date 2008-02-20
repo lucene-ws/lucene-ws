@@ -20,8 +20,10 @@ public class RemoveDocumentController<I, O> implements Controller<I, O> {
 		final Index index = indexesByIdentity.get(indexIdentity);
 		
 		
-		
-		return new ModelAndView("document/remove", "index", index);
+		final ModelAndView result = new ModelAndView("document/remove");
+		result.addObject("indexIdentity", indexIdentity);
+		result.addObject("index", index);
+		return result;
 	}
 
 }

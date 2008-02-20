@@ -4,9 +4,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class ViewServicePropertiesController<I, O> implements Controller<I, O> {
 
+	@Override
 	public ModelAndView handleRequest(I input, O output) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return new ModelAndView("serviceProperties/view");
 	}
 
 }

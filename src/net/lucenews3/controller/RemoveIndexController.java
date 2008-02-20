@@ -13,10 +13,18 @@ public class RemoveIndexController<I, O> implements Controller<I, O> {
 	private IndexIdentityParser<I> indexIdentityParser;
 	private Map<IndexIdentity, Index> indexesByIdentity;
 	
+	/**
+	 * Identifies the index to be removed using the index identity parser.
+	 * Removes this identity from the index map.
+	 */
 	public ModelAndView handleRequest(I input, O output) throws Exception {
-		final IndexIdentity identity = indexIdentityParser.parse(input);
-		final Index index = indexesByIdentity.remove(identity);
-		return new ModelAndView("index/removed", "index", index);
+		final IndexIdentity indexIdentity = indexIdentityParser.parse(input);
+		final Index index = indexesByIdentity.remove(indexIdentity);
+		
+		final ModelAndView result = new ModelAndView("index/removed");
+		result.addObject("indexIdentity", indexIdentity);
+		result.addObject("index", index);
+		return result;
 	}
 
 	public IndexIdentityParser<I> getIndexIdentityParser() {

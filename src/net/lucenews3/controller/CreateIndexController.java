@@ -7,27 +7,29 @@ import net.lucenews3.lucene.support.IndexIdentity;
 import net.lucenews3.lucene.support.IndexIdentityParser;
 import net.lucenews3.lucene.support.IndexImpl;
 import net.lucenews3.lucene.support.IndexMetaData;
+import net.lucenews3.lucene.support.IndexMetaDataParser;
 
 import org.springframework.web.servlet.ModelAndView;
 
 public class CreateIndexController<I, O> implements Controller<I, O> {
 
 	private IndexIdentityParser<I> indexIdentityParser;
+	private IndexMetaDataParser<I> indexMetaDataParser;
 	private Map<IndexIdentity, Index> indexesByIdentity;
 	
 	@Override
 	public ModelAndView handleRequest(I input, O output) throws Exception {
-		final IndexIdentity identity = null;
+		final IndexIdentity indexIdentity = indexIdentityParser.parse(input);
+		final IndexMetaData indexMetaData = indexMetaDataParser.parse(input);
+		final Index index = new IndexImpl(indexMetaData);
 		
-		// Retrieve meta data from request
-		final IndexMetaData metaData = null;
+		indexesByIdentity.put(indexIdentity, index);
 		
-		// Construct an empty index with this meta data
-		final Index index = new IndexImpl(metaData);
-		
-		indexesByIdentity.put(identity, index);
-		
-		return new ModelAndView("index/create", "index", index);
+		final ModelAndView result = new ModelAndView("index/create");
+		result.addObject("indexIdentity", indexIdentity);
+		result.addObject("indexMetaData", indexMetaData);
+		result.addObject("index", index);
+		return result;
 	}
 
 	public IndexIdentityParser<I> getIndexIdentityParser() {
@@ -36,6 +38,14 @@ public class CreateIndexController<I, O> implements Controller<I, O> {
 
 	public void setIndexIdentityParser(IndexIdentityParser<I> indexIdentityParser) {
 		this.indexIdentityParser = indexIdentityParser;
+	}
+
+	public IndexMetaDataParser<I> getIndexMetaDataParser() {
+		return indexMetaDataParser;
+	}
+
+	public void setIndexMetaDataParser(IndexMetaDataParser<I> indexMetaDataParser) {
+		this.indexMetaDataParser = indexMetaDataParser;
 	}
 
 	public Map<IndexIdentity, Index> getIndexesByIdentity() {

@@ -1,13 +1,9 @@
 package net.lucenews3.controller;
 
-import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import net.lucenews3.exception.NoSuchIndexException;
-import net.lucenews3.lucene.support.Document;
 import net.lucenews3.lucene.support.Index;
 import net.lucenews3.lucene.support.IndexIdentity;
 import net.lucenews3.lucene.support.IndexIdentityParser;
@@ -19,7 +15,6 @@ import net.lucenews3.lucene.support.SearchRequest;
 import net.lucenews3.lucene.support.SearchRequestParser;
 
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 
 public class SearchIndexController<I, O> implements Controller<I, O> {
 	
@@ -40,29 +35,16 @@ public class SearchIndexController<I, O> implements Controller<I, O> {
 		final SearchRequest searchRequest = searchRequestParser.parse(input);
 		final IndexRange indexRange = indexRangeParser.parse(input);
 		final ResultList results = index.getDocuments().searchBy(searchRequest);
-		final ResultList displayedResults = results.subList(indexRange.fromIndex(), indexRange.toIndex());
+		final List<Result> displayedResults = results.subList(indexRange.fromIndex(), Math.min(indexRange.toIndex(), results.size()));
 		
-		//return new ModelAndView("search/results", "results", results);
-		return new ModelAndView(new View() {
-
-			@Override
-			public String getContentType() {
-				return "text/plain";
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void render(Map arg0, HttpServletRequest arg1,
-					HttpServletResponse response) throws Exception {
-				PrintWriter out = response.getWriter();
-				out.println("Search for \"" + searchRequest.getQuery() + "\" returned " + results.size() + " results!");
-				out.println(index.getDocuments().size() + " documents");
-				for (Result result : displayedResults) {
-					Document document = result.getDocument();
-					out.println(result.getNumber() + " " + document.getFields().byName("text").only().stringValue());
-				}
-			}
-		});
+		final ModelAndView result = new ModelAndView();
+		result.addObject("indexIdentity", indexIdentity);
+		result.addObject("index", index);
+		result.addObject("searchRequest", searchRequest);
+		result.addObject("indexRange", indexRange);
+		result.addObject("results", results);
+		result.addObject("displayedResults", displayedResults);
+		return result;
 	}
 	
 	public IndexIdentityParser<I> getIndexIdentityParser() {

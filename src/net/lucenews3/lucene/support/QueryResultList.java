@@ -1,6 +1,7 @@
 package net.lucenews3.lucene.support;
 
 import java.util.AbstractList;
+import java.util.List;
 
 import net.lucenews3.ExceptionTranslator;
 import net.lucenews3.ExceptionTranslatorImpl;
@@ -205,9 +206,8 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	}
 	
 	@Override
-	public QueryResultList subList(int fromIndex, int toIndex) {
-		// TODO Actually limit this thing!
-		return this;
+	public List<Result> subList(int fromIndex, int toIndex) {
+		return super.subList(fromIndex, toIndex);
 	}
 
 }
