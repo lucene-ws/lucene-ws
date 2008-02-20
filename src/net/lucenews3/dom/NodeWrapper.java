@@ -5,11 +5,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.UserDataHandler;
 
-public class NodeImpl implements Node {
+public class NodeWrapper implements Node {
 
 	private org.w3c.dom.Node node;
 	
-	public NodeImpl(org.w3c.dom.Node node) {
+	public NodeWrapper(org.w3c.dom.Node node) {
 		this.node = node;
 	}
 	
