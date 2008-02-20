@@ -206,7 +206,8 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	
 	@Override
 	public QueryResultList subList(int fromIndex, int toIndex) {
-		return null;
+		// TODO Actually limit this thing!
+		return this;
 	}
 
 }

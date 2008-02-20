@@ -79,47 +79,48 @@
 
 	<!-- Service controllers -->
 	<bean id="viewServiceController"
-		class="net.lucenews3.controller.ViewServiceController"
+		class="net.lucenews3.controller.ViewServiceHttpController"
 		parent="controller">
 	</bean>
 
 	<!-- Service properties controllers -->
 	<bean id="viewServicePropertiesController"
-		class="net.lucenews3.controller.ViewServicePropertiesController"
+		class="net.lucenews3.controller.ViewServicePropertiesHttpController"
 		parent="controller">
 	</bean>
 
 	<!-- Index controllers -->
 	<bean id="createIndexController"
-		class="net.lucenews3.controller.CreateIndexController"
+		class="net.lucenews3.controller.CreateIndexHttpController"
 		parent="indexController">
 	</bean>
 
 	<bean id="searchIndexController"
-		class="net.lucenews3.controller.SearchIndexController"
+		class="net.lucenews3.controller.SearchIndexHttpController"
 		parent="indexController">
 		<property name="searchRequestParser"
 			ref="httpSearchRequestParser" />
+		<property name="indexRangeParser" ref="httpIndexRangeParser" />
 	</bean>
 
 	<bean id="removeIndexController"
-		class="net.lucenews3.controller.RemoveIndexController"
+		class="net.lucenews3.controller.RemoveIndexHttpController"
 		parent="indexController">
 	</bean>
 
 	<!-- Document controllers -->
 	<bean id="createDocumentController"
-		class="net.lucenews3.controller.CreateDocumentController"
+		class="net.lucenews3.controller.CreateDocumentHttpController"
 		parent="controller">
 	</bean>
 
 	<bean id="viewDocumentController"
-		class="net.lucenews3.controller.ViewDocumentController"
+		class="net.lucenews3.controller.ViewDocumentHttpController"
 		parent="controller">
 	</bean>
 
 	<bean id="removeDocumentController"
-		class="net.lucenews3.controller.RemoveDocumentController"
+		class="net.lucenews3.controller.RemoveDocumentHttpController"
 		parent="controller">
 	</bean>
 

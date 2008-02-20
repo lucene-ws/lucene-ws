@@ -2,26 +2,21 @@ package net.lucenews3.controller;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import net.lucenews3.lucene.support.DocumentList;
 import net.lucenews3.lucene.support.Index;
 import net.lucenews3.lucene.support.IndexIdentity;
 import net.lucenews3.lucene.support.IndexIdentityParser;
 
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
-public class CreateDocumentController implements Controller {
+public class CreateDocumentController<I, O> implements Controller<I, O> {
 
-	private IndexIdentityParser<HttpServletRequest> indexIdentityParser;
+	private IndexIdentityParser<I> indexIdentityParser;
 	private Map<IndexIdentity, Index> indexesByIdentity;
 	
-	public ModelAndView handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	public ModelAndView handleRequest(I input, O output) throws Exception {
 		// Resolve index
-		final IndexIdentity indexIdentity = indexIdentityParser.parse(request);
+		final IndexIdentity indexIdentity = indexIdentityParser.parse(input);
 		final Index index = indexesByIdentity.get(indexIdentity);
 		
 		// Resolve documents
@@ -31,12 +26,11 @@ public class CreateDocumentController implements Controller {
 		return new ModelAndView("document/create", "documents", documents);
 	}
 
-	public IndexIdentityParser<HttpServletRequest> getIndexIdentityParser() {
+	public IndexIdentityParser<I> getIndexIdentityParser() {
 		return indexIdentityParser;
 	}
 
-	public void setIndexIdentityParser(
-			IndexIdentityParser<HttpServletRequest> indexIdentityParser) {
+	public void setIndexIdentityParser(IndexIdentityParser<I> indexIdentityParser) {
 		this.indexIdentityParser = indexIdentityParser;
 	}
 

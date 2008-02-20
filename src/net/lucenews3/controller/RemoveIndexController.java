@@ -2,34 +2,28 @@ package net.lucenews3.controller;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import net.lucenews3.lucene.support.Index;
 import net.lucenews3.lucene.support.IndexIdentity;
 import net.lucenews3.lucene.support.IndexIdentityParser;
 
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
-public class RemoveIndexController implements Controller {
+public class RemoveIndexController<I, O> implements Controller<I, O> {
 
-	private IndexIdentityParser<HttpServletRequest> indexIdentityParser;
+	private IndexIdentityParser<I> indexIdentityParser;
 	private Map<IndexIdentity, Index> indexesByIdentity;
 	
-	public ModelAndView handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		final IndexIdentity identity = indexIdentityParser.parse(request);
+	public ModelAndView handleRequest(I input, O output) throws Exception {
+		final IndexIdentity identity = indexIdentityParser.parse(input);
 		final Index index = indexesByIdentity.remove(identity);
 		return new ModelAndView("index/removed", "index", index);
 	}
 
-	public IndexIdentityParser<HttpServletRequest> getIndexIdentityParser() {
+	public IndexIdentityParser<I> getIndexIdentityParser() {
 		return indexIdentityParser;
 	}
 
-	public void setIndexIdentityParser(
-			IndexIdentityParser<HttpServletRequest> indexIdentityParser) {
+	public void setIndexIdentityParser(IndexIdentityParser<I> indexIdentityParser) {
 		this.indexIdentityParser = indexIdentityParser;
 	}
 

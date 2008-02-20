@@ -8,13 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
-public class ViewServiceController extends AbstractController {
+public class ViewServiceController<I, O> implements Controller<I, O> {
 
-	public ModelAndView handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		
-		
-		
+	public ModelAndView handleRequest(I input, O output) throws Exception {
 		return new ModelAndView(new View(){
 
 			public String getContentType() {

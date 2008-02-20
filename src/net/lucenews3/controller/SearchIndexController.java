@@ -21,24 +21,24 @@ import net.lucenews3.lucene.support.SearchRequestParser;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
-public class SearchIndexController extends AbstractController {
+public class SearchIndexController<I, O> implements Controller<I, O> {
 	
-	private IndexIdentityParser<HttpServletRequest> indexIdentityParser;
-	private SearchRequestParser<HttpServletRequest> searchRequestParser;
+	private IndexIdentityParser<I> indexIdentityParser;
+	private SearchRequestParser<I> searchRequestParser;
+	private IndexRangeParser<I> indexRangeParser;
 	private Map<IndexIdentity, Index> indexesByIdentity;
-	private IndexRangeParser<HttpServletRequest> indexRangeParser;
 
-	public ModelAndView handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		final IndexIdentity indexIdentity = indexIdentityParser.parse(request);
+	@Override
+	public ModelAndView handleRequest(I input, O output) throws Exception {
+		final IndexIdentity indexIdentity = indexIdentityParser.parse(input);
 		final Index index = indexesByIdentity.get(indexIdentity);
 		
 		if (index == null) {
 			throw new NoSuchIndexException(indexIdentity);
 		}
 		
-		final SearchRequest searchRequest = searchRequestParser.parse(request);
-		final IndexRange indexRange = indexRangeParser.parse(request);
+		final SearchRequest searchRequest = searchRequestParser.parse(input);
+		final IndexRange indexRange = indexRangeParser.parse(input);
 		final ResultList results = index.getDocuments().searchBy(searchRequest);
 		final ResultList displayedResults = results.subList(indexRange.fromIndex(), indexRange.toIndex());
 		
@@ -57,7 +57,7 @@ public class SearchIndexController extends AbstractController {
 				PrintWriter out = response.getWriter();
 				out.println("Search for \"" + searchRequest.getQuery() + "\" returned " + results.size() + " results!");
 				out.println(index.getDocuments().size() + " documents");
-				for (Result result : results) {
+				for (Result result : displayedResults) {
 					Document document = result.getDocument();
 					out.println(result.getNumber() + " " + document.getFields().byName("text").only().stringValue());
 				}
@@ -65,11 +65,11 @@ public class SearchIndexController extends AbstractController {
 		});
 	}
 	
-	public IndexIdentityParser<HttpServletRequest> getIndexIdentityParser() {
+	public IndexIdentityParser<I> getIndexIdentityParser() {
 		return indexIdentityParser;
 	}
 
-	public void setIndexIdentityParser(IndexIdentityParser<HttpServletRequest> indexIdentityParser) {
+	public void setIndexIdentityParser(IndexIdentityParser<I> indexIdentityParser) {
 		this.indexIdentityParser = indexIdentityParser;
 	}
 
@@ -81,12 +81,20 @@ public class SearchIndexController extends AbstractController {
 		this.indexesByIdentity = indexesByIdentity;
 	}
 
-	public SearchRequestParser<HttpServletRequest> getSearchRequestParser() {
+	public SearchRequestParser<I> getSearchRequestParser() {
 		return searchRequestParser;
 	}
 
-	public void setSearchRequestParser(SearchRequestParser<HttpServletRequest> searchRequestParser) {
+	public void setSearchRequestParser(SearchRequestParser<I> searchRequestParser) {
 		this.searchRequestParser = searchRequestParser;
+	}
+
+	public IndexRangeParser<I> getIndexRangeParser() {
+		return indexRangeParser;
+	}
+
+	public void setIndexRangeParser(IndexRangeParser<I> indexRangeParser) {
+		this.indexRangeParser = indexRangeParser;
 	}
 
 }
