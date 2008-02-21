@@ -1,4 +1,4 @@
-package net.lucenews.test;
+package net.lucenews3.test;
 
 import java.io.File;
 import java.util.List;

@@ -1,4 +1,4 @@
-package net.lucenews.test;
+package net.lucenews3.test;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -8,7 +8,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import net.lucenews.http.HttpRequest;
 import net.lucenews.http.HttpResponse;
-import net.lucenews.test.support.IntrospectionDocumentAsserter;
+import net.lucenews3.test.support.IntrospectionDocumentAsserter;
 
 import org.apache.commons.httpclient.HttpException;
 import org.junit.Assert;

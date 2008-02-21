@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.text.NumberFormat;
 
-import net.lucenews.test.support.FileSystemUtility;
+import net.lucenews3.test.support.FileSystemUtility;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;

@@ -6,8 +6,8 @@ import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.lucenews.test.support.LuceneUtility;
-import net.lucenews.test.support.MapUtility;
+import net.lucenews3.test.support.LuceneUtility;
+import net.lucenews3.test.support.MapUtility;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;

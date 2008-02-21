@@ -8,7 +8,7 @@ import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.lucenews.test.support.FileSystemUtility;
+import net.lucenews3.test.support.FileSystemUtility;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;

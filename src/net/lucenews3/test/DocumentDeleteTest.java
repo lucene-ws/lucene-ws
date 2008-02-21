@@ -1,4 +1,4 @@
-package net.lucenews.test;
+package net.lucenews3.test;
 
 import net.lucenews.http.HttpResponse;
 
