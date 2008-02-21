@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
-import net.lucenews.http.IteratorEnumeration;
+import net.lucenews3.http.IteratorEnumeration;
 
 public class DefaultServletConfig implements ServletConfig {
 

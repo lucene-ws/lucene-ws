@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import net.lucenews.http.HttpConversation;
-import net.lucenews.http.HttpRequest;
+import net.lucenews3.http.HttpConversation;
+import net.lucenews3.http.HttpRequest;
 
 public class ClientUtility {
 	

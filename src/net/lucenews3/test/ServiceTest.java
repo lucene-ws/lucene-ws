@@ -6,8 +6,8 @@ import java.net.MalformedURLException;
 import javax.servlet.ServletException;
 import javax.xml.xpath.XPathExpressionException;
 
-import net.lucenews.http.HttpRequest;
-import net.lucenews.http.HttpResponse;
+import net.lucenews3.http.HttpRequest;
+import net.lucenews3.http.HttpResponse;
 import net.lucenews3.test.support.IntrospectionDocumentAsserter;
 
 import org.apache.commons.httpclient.HttpException;

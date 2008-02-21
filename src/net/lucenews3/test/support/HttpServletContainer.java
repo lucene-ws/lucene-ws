@@ -3,8 +3,8 @@ package net.lucenews3.test.support;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.lucenews.http.HttpRequest;
-import net.lucenews.http.HttpResponse;
+import net.lucenews3.http.HttpRequest;
+import net.lucenews3.http.HttpResponse;
 
 public interface HttpServletContainer {
 	

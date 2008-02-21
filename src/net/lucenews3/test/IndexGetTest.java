@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import net.lucenews.http.HttpResponse;
+import net.lucenews3.http.HttpResponse;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Assert;

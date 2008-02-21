@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.lucenews.http.HttpRequest;
-import net.lucenews.http.HttpResponse;
-import net.lucenews.http.HttpServletRequestBridge;
-import net.lucenews.http.HttpServletResponseBridge;
+import net.lucenews3.http.HttpRequest;
+import net.lucenews3.http.HttpResponse;
+import net.lucenews3.http.HttpServletRequestBridge;
+import net.lucenews3.http.HttpServletResponseBridge;
 
 public class DefaultHttpServletContainer implements HttpServletContainer {
 

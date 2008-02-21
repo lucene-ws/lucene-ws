@@ -7,13 +7,13 @@ import java.nio.ByteBuffer;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Assert;
 
-import net.lucenews.http.DefaultHttpConversation;
-import net.lucenews.http.DefaultHttpRequest;
-import net.lucenews.http.DefaultHttpResponse;
-import net.lucenews.http.HttpCommunication;
-import net.lucenews.http.HttpConversation;
-import net.lucenews.http.HttpRequest;
-import net.lucenews.http.HttpResponse;
+import net.lucenews3.http.DefaultHttpConversation;
+import net.lucenews3.http.DefaultHttpRequest;
+import net.lucenews3.http.DefaultHttpResponse;
+import net.lucenews3.http.HttpCommunication;
+import net.lucenews3.http.HttpConversation;
+import net.lucenews3.http.HttpRequest;
+import net.lucenews3.http.HttpResponse;
 
 public class HttpUtility {
 	

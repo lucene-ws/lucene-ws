@@ -15,8 +15,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.lucenews.LuceneWebService;
-import net.lucenews.http.ByteBufferInputStream;
-import net.lucenews.http.HttpCommunication;
+import net.lucenews3.http.ByteBufferInputStream;
+import net.lucenews3.http.HttpCommunication;
 import net.lucenews3.test.support.ClientUtility;
 import net.lucenews3.test.support.CollectionAsserter;
 import net.lucenews3.test.support.DefaultHttpServletContainer;

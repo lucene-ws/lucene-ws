@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.lucenews.http.HttpResponse;
+import net.lucenews3.http.HttpResponse;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Assert;

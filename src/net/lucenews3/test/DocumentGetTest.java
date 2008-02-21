@@ -2,7 +2,7 @@ package net.lucenews3.test;
 
 import java.util.Map;
 
-import net.lucenews.http.HttpResponse;
+import net.lucenews3.http.HttpResponse;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
