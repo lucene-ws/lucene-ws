@@ -3,22 +3,22 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="testIndexDirectory" class="net.lucenews3.lucene.support.FSDirectoryFactoryBean">
+	<bean id="testIndexDirectory" class="net.lucenews3.model.FSDirectoryFactoryBean">
 		<property name="path" value="C:\apaynter\christmascarol" />
 	</bean>
 	
-	<bean id="testIndex" class="net.lucenews3.lucene.support.IndexImpl">
+	<bean id="testIndex" class="net.lucenews3.model.IndexImpl">
 		<property name="directory" ref="testIndexDirectory" />
 		<property name="exceptionTranslator" ref="exceptionTranslator" />
 	</bean>
 
 	<bean id="indexRepository"
-		class="net.lucenews3.lucene.support.IndexRepositoryImpl">
+		class="net.lucenews3.model.IndexRepositoryImpl">
 		<constructor-arg>
 			<map>
 				<entry value-ref="testIndex">
 					<key>
-						<bean class="net.lucenews3.lucene.support.IndexIdentityImpl">
+						<bean class="net.lucenews3.model.IndexIdentityImpl">
 							<constructor-arg value="test" />
 						</bean>
 					</key>
@@ -32,10 +32,10 @@
 	</bean>
 
 	<bean id="httpIndexIdentityParser"
-		class="net.lucenews3.lucene.support.HttpIndexIdentityParser">
+		class="net.lucenews3.model.HttpIndexIdentityParser">
 	</bean>
 	
-	<bean id="stringQueryParser" class="net.lucenews3.lucene.support.NativeQueryParser">
+	<bean id="stringQueryParser" class="net.lucenews3.model.NativeQueryParser">
 		<property name="queryParser">
 			<bean class="org.apache.lucene.queryParser.QueryParser">
 				<constructor-arg index="0" value="text" />
@@ -46,7 +46,7 @@
 		</property>
 	</bean>
 
-	<bean id="httpIndexRangeParser" class="net.lucenews3.lucene.support.HttpIndexRangeParser">
+	<bean id="httpIndexRangeParser" class="net.lucenews3.model.HttpIndexRangeParser">
 		<property name="defaultOrdinal" value="1" />
 		<property name="defaultSize" value="20" />
 		<property name="ordinalParameterName" value="page" />
@@ -54,20 +54,20 @@
 	</bean>
 
 	<bean id="httpQueryParser"
-		class="net.lucenews3.lucene.support.HttpQueryParser">
+		class="net.lucenews3.model.HttpQueryParser">
 		<property name="stringParser" ref="stringQueryParser" />
 	</bean>
 
 	<bean id="httpFilterParser"
-		class="net.lucenews3.lucene.support.HttpFilterParser">
+		class="net.lucenews3.model.HttpFilterParser">
 	</bean>
 
 	<bean id="httpSortParser"
-		class="net.lucenews3.lucene.support.HttpSortParser">
+		class="net.lucenews3.model.HttpSortParser">
 	</bean>
 
 	<bean id="httpSearchRequestParser"
-		class="net.lucenews3.lucene.support.HttpSearchRequestParser">
+		class="net.lucenews3.model.HttpSearchRequestParser">
 		<property name="queryParser" ref="httpQueryParser" />
 		<property name="filterParser" ref="httpFilterParser" />
 		<property name="sortParser" ref="httpSortParser" />
@@ -129,14 +129,17 @@
 	</bean>
 
 	<bean
-		class="net.lucenews3.lucene.support.WebServiceHandlerMapping">
+		class="net.lucenews3.model.WebServiceHandlerMapping">
 		<property name="viewServiceController"
 			ref="viewServiceController" />
 		<property name="searchIndexController"
 			ref="searchIndexController" />
 	</bean>
 	
-	<bean class="net.lucenews3.lucene.support.HandlerExceptionResolverImpl">
+	<bean class="net.lucenews3.model.HandlerExceptionResolverImpl">
+	</bean>
+
+	<bean class="net.lucenews3.model.BeanXmlView">
 	</bean>
 
 </beans>

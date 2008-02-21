@@ -3,11 +3,11 @@ package net.lucenews3.controller;
 import java.util.List;
 import java.util.Map;
 
-import net.lucenews3.lucene.support.Document;
-import net.lucenews3.lucene.support.DocumentListParser;
-import net.lucenews3.lucene.support.Index;
-import net.lucenews3.lucene.support.IndexIdentity;
-import net.lucenews3.lucene.support.IndexIdentityParser;
+import net.lucenews3.model.Document;
+import net.lucenews3.model.DocumentListParser;
+import net.lucenews3.model.Index;
+import net.lucenews3.model.IndexIdentity;
+import net.lucenews3.model.IndexIdentityParser;
 
 import org.springframework.web.servlet.ModelAndView;
 

@@ -1,6 +1,6 @@
 package net.lucenews3;
 
-import net.lucenews3.lucene.support.Index;
+import net.lucenews3.model.Index;
 
 /**
  * An interface to the Lucene Web Service.

@@ -25,11 +25,11 @@ public interface Query {
 
 	public Integer getTotalResults();
 
-	public void setTotalResults(Integer total_results);
+	public void setTotalResults(Integer totalResults);
 
 	public String getSearchTerms();
 
-	public void setSearchTerms(String search_terms);
+	public void setSearchTerms(String searchTerms);
 
 	public Integer getCount();
 
@@ -44,7 +44,7 @@ public interface Query {
 
 	public Integer getStartIndex();
 
-	public void setStartIndex(Integer start_index);
+	public void setStartIndex(Integer startIndex);
 
 	/**
 	 * startPage
@@ -55,7 +55,7 @@ public interface Query {
 
 	public Integer getStartPage();
 
-	public void setStartPage(Integer start_page);
+	public void setStartPage(Integer startPage);
 
 	public String getLanguage();
 
@@ -63,11 +63,11 @@ public interface Query {
 
 	public String getOutputEncoding();
 
-	public void setOutputEncoding(String output_encoding);
+	public void setOutputEncoding(String outputEncoding);
 
 	public String getInputEncoding();
 
-	public void setInputEncoding(String input_encoding);
+	public void setInputEncoding(String inputEncoding);
 
 	public Integer[] getBoundingIndices();
 

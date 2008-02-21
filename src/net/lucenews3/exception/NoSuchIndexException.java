@@ -1,6 +1,6 @@
 package net.lucenews3.exception;
 
-import net.lucenews3.lucene.support.IndexIdentity;
+import net.lucenews3.model.IndexIdentity;
 
 public class NoSuchIndexException extends WebServiceException {
 

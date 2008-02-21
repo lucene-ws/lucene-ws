@@ -1,6 +1,6 @@
 package net.lucenews3.controller;
 
-import net.lucenews3.lucene.support.Index;
+import net.lucenews3.model.Index;
 
 public interface IndexAccess {
 

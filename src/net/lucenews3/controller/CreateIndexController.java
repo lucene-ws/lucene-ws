@@ -2,12 +2,12 @@ package net.lucenews3.controller;
 
 import java.util.Map;
 
-import net.lucenews3.lucene.support.Index;
-import net.lucenews3.lucene.support.IndexIdentity;
-import net.lucenews3.lucene.support.IndexIdentityParser;
-import net.lucenews3.lucene.support.IndexImpl;
-import net.lucenews3.lucene.support.IndexMetaData;
-import net.lucenews3.lucene.support.IndexMetaDataParser;
+import net.lucenews3.model.Index;
+import net.lucenews3.model.IndexIdentity;
+import net.lucenews3.model.IndexIdentityParser;
+import net.lucenews3.model.IndexImpl;
+import net.lucenews3.model.IndexMetaData;
+import net.lucenews3.model.IndexMetaDataParser;
 
 import org.springframework.web.servlet.ModelAndView;
 

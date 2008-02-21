@@ -14,14 +14,14 @@ public class QueryImpl implements Query {
 	private String role;
 	private String title;
 	private String osd;
-	private Integer total_results;
-	private String search_terms;
+	private Integer totalResults;
+	private String searchTerms;
 	private Integer count;
-	private Integer start_index;
-	private Integer start_page;
+	private Integer startIndex;
+	private Integer startPage;
 	private String language;
-	private String output_encoding;
-	private String input_encoding;
+	private String outputEncoding;
+	private String inputEncoding;
 
 	public String getRole() {
 		return role;
@@ -48,19 +48,19 @@ public class QueryImpl implements Query {
 	}
 
 	public Integer getTotalResults() {
-		return total_results;
+		return totalResults;
 	}
 
-	public void setTotalResults(Integer total_results) {
-		this.total_results = total_results;
+	public void setTotalResults(Integer totalResults) {
+		this.totalResults = totalResults;
 	}
 
 	public String getSearchTerms() {
-		return search_terms;
+		return searchTerms;
 	}
 
-	public void setSearchTerms(String search_terms) {
-		this.search_terms = search_terms;
+	public void setSearchTerms(String searchTerms) {
+		this.searchTerms = searchTerms;
 	}
 
 	public Integer getCount() {
@@ -72,19 +72,19 @@ public class QueryImpl implements Query {
 	}
 
 	public Integer getStartIndex() {
-		return start_index;
+		return startIndex;
 	}
 
-	public void setStartIndex(Integer start_index) {
-		this.start_index = start_index;
+	public void setStartIndex(Integer startIndex) {
+		this.startIndex = startIndex;
 	}
 
 	public Integer getStartPage() {
-		return start_page;
+		return startPage;
 	}
 
-	public void setStartPage(Integer start_page) {
-		this.start_page = start_page;
+	public void setStartPage(Integer startPage) {
+		this.startPage = startPage;
 	}
 
 	public String getLanguage() {
@@ -96,19 +96,19 @@ public class QueryImpl implements Query {
 	}
 
 	public String getOutputEncoding() {
-		return output_encoding;
+		return outputEncoding;
 	}
 
-	public void setOutputEncoding(String output_encoding) {
-		this.output_encoding = output_encoding;
+	public void setOutputEncoding(String outputEncoding) {
+		this.outputEncoding = outputEncoding;
 	}
 
 	public String getInputEncoding() {
-		return input_encoding;
+		return inputEncoding;
 	}
 
-	public void setInputEncoding(String input_encoding) {
-		this.input_encoding = input_encoding;
+	public void setInputEncoding(String inputEncoding) {
+		this.inputEncoding = inputEncoding;
 	}
 
 	public Integer[] getBoundingIndices() {
