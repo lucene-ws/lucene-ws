@@ -24,7 +24,7 @@ public class DocumentGetTest extends ClientTest {
 		
 		Document domdoc = toDocument(response);
 		Element entry = dom.elementByPath(domdoc, "/entry");
-		//entryAsserter.assertEntry(entry);
+		entryAsserter.assertEntry(entry);
 	}
 	
 	@Test
