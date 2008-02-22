@@ -8,15 +8,15 @@ import net.lucenews3.KeyValue;
 import net.lucenews3.KeyValueList;
 import net.lucenews3.Transformer;
 
-public class FieldListToKeyValueCollectionTransformer implements Transformer<List<Field>, KeyValueList<String, String>> {
+public class FieldListToKeyValueListTransformer implements Transformer<List<Field>, KeyValueList<String, String>> {
 
 	private Transformer<Field, KeyValue<String, String>> fieldTransformer;
 
-	public FieldListToKeyValueCollectionTransformer() {
+	public FieldListToKeyValueListTransformer() {
 		this.fieldTransformer = new FieldToKeyValueTransformer();
 	}
 	
-	public FieldListToKeyValueCollectionTransformer(Transformer<Field, KeyValue<String, String>> fieldTransformer) {
+	public FieldListToKeyValueListTransformer(Transformer<Field, KeyValue<String, String>> fieldTransformer) {
 		this.fieldTransformer = fieldTransformer;
 	}
 	
