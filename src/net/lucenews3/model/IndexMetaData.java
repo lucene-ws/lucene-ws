@@ -6,4 +6,8 @@ public interface IndexMetaData {
 	
 	public void setName(String name);
 	
+	public String getPrimaryField();
+	
+	public void setPrimaryField(String primaryField);
+	
 }

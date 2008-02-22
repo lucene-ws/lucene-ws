@@ -1,6 +1,7 @@
 package net.lucenews3.model;
 
 import java.io.IOException;
+import java.util.Map;
 
 import net.lucenews3.ExceptionTranslator;
 
@@ -104,6 +105,18 @@ public class IndexReaderTermList extends AbstractIteratorList<Term> implements T
 	
 	@Override
 	public TermListIterator listIterator(Term term) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<Document, TermList> byDocument() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TermList byDocument(Document document) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -3,12 +3,14 @@ package net.lucenews3.model;
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.BitSet;
+import java.util.Map;
 
 import net.lucenews3.ExceptionTranslator;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -185,6 +187,18 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 
 	public void setReader(IndexReader reader) {
 		this.reader = reader;
+	}
+
+	@Override
+	public DocumentList byTerm(Term term) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<Term, DocumentList> byTerm() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

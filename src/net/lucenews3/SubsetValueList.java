@@ -39,7 +39,14 @@ public class SubsetValueList<K, V> extends AbstractList<V> {
 	@Override
 	public V get(int index) {
 		// TODO Auto-generated method stub
-		return null;
+		Iterator<V> iterator = iterator();
+		int currentIndex = -1;
+		V value = null;
+		while (currentIndex < index) {
+			value = iterator.next();
+			currentIndex++;
+		}
+		return value;
 	}
 
 }
