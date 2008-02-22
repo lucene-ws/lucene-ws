@@ -9,7 +9,7 @@ public class ResultImpl implements Result {
 	private String title;
 	private String id;
 	private Calendar updated;
-	private Float score;
+	private Double relevance;
 	private LinkList links;
 	private Content content;
 	private List<OpenSearchPerson> people;
@@ -52,22 +52,12 @@ public class ResultImpl implements Result {
 		this.updated = updated;
 	}
 
-	public Float getScore() {
-		return score;
+	public Double getRelevance() {
+		return relevance;
 	}
 
-	public void setScore(Float score) {
-		this.score = score;
-	}
-
-	@Deprecated
-	public Float getRelevance() {
-		return getScore();
-	}
-
-	@Deprecated
-	public void setRelevance(Float relevance) {
-		setScore(relevance);
+	public void setRelevance(Double relevance) {
+		this.relevance = relevance;
 	}
 
 	public List<OpenSearchPerson> getPeople() {

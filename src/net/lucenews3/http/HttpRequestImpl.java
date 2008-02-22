@@ -6,12 +6,12 @@ public class HttpRequestImpl extends HttpCommunicationImpl implements HttpReques
 	private String host;
 	private Integer port;
 	private String resource;
-	private ParameterCollection parameters;
+	private ParameterList parameters;
 	private String protocol;
 
 	public HttpRequestImpl() {
 		this.method = "GET";
-		this.parameters = new ParameterCollectionImpl();
+		this.parameters = new ParameterListImpl();
 		this.protocol = "HTTP/1.0";
 	}
 	
@@ -49,11 +49,11 @@ public class HttpRequestImpl extends HttpCommunicationImpl implements HttpReques
 	}
 
 	@Override
-	public ParameterCollection getParameters() {
+	public ParameterList getParameters() {
 		return parameters;
 	}
 
-	public void setParameters(ParameterCollection parameters) {
+	public void setParameters(ParameterList parameters) {
 		this.parameters = parameters;
 	}
 

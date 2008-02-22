@@ -7,9 +7,9 @@ import java.nio.ByteBuffer;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Assert;
 
-import net.lucenews3.http.DefaultHttpConversation;
-import net.lucenews3.http.DefaultHttpRequest;
-import net.lucenews3.http.DefaultHttpResponse;
+import net.lucenews3.http.HttpConversationImpl;
+import net.lucenews3.http.HttpRequestImpl;
+import net.lucenews3.http.HttpResponseImpl;
 import net.lucenews3.http.HttpCommunication;
 import net.lucenews3.http.HttpConversation;
 import net.lucenews3.http.HttpRequest;
@@ -58,7 +58,7 @@ public class HttpUtility {
 	}
 
 	public HttpRequest buildRequest() {
-		return new DefaultHttpRequest();
+		return new HttpRequestImpl();
 	}
 
 	public HttpRequest buildRequest(final String url) {
@@ -86,7 +86,7 @@ public class HttpUtility {
 	}
 	
 	public HttpResponse buildResponse() {
-		return new DefaultHttpResponse();
+		return new HttpResponseImpl();
 	}
 	
 	public HttpConversation sendRequest(final String url) {
@@ -108,7 +108,7 @@ public class HttpUtility {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		return new DefaultHttpConversation(request, response);
+		return new HttpConversationImpl(request, response);
 	}
 	
 	public HttpConversation send(final HttpRequest request) {

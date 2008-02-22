@@ -58,7 +58,7 @@ public class SearchIndexController<I, O> implements Controller<I, O> {
 			final FieldList fields = document.getFields();
 			net.lucenews3.opensearch.Result openSearchResult = new net.lucenews3.opensearch.ResultImpl();
 			openSearchResult.setId("http://localhost:8080/lucene/" + indexIdentity + "/" + fields.byName("text").first().stringValue());
-			openSearchResult.setScore(result.getScore());
+			openSearchResult.setRelevance(new Double(result.getScore()));
 			openSearchResult.setTitle(fields.first().stringValue());
 			openSearchResults.add(openSearchResult);
 		}

@@ -1,25 +1,25 @@
 package net.lucenews3.http.test;
 
 import java.util.Iterator;
+import java.util.List;
+
+import net.lucenews3.http.Header;
+import net.lucenews3.http.HeaderImpl;
+import net.lucenews3.http.HeaderListImpl;
+import net.lucenews3.http.KeyValue;
+import net.lucenews3.http.KeyValueMap;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.lucenews3.http.HeaderImpl;
-import net.lucenews3.http.HeaderCollectionImpl;
-import net.lucenews3.http.Header;
-import net.lucenews3.http.KeyValue;
-import net.lucenews3.http.KeyValueMap;
-import net.lucenews3.http.ValueCollection;
+public class HeaderListImplTest {
 
-public class DefaultHeaderCollectionTest {
-
-	private HeaderCollectionImpl headers;
+	private HeaderListImpl headers;
 	
 	@Before
 	public void setup() {
-		headers = new HeaderCollectionImpl();
+		headers = new HeaderListImpl();
 	}
 	
 	@Test
@@ -32,7 +32,7 @@ public class DefaultHeaderCollectionTest {
 		KeyValueMap<String, String> headersByName = headers.byKey();
 		Assert.assertNotNull("headers by name is not null", headersByName);
 		Assert.assertEquals("single key in by-key mapping", 1, headersByName.size());
-		ValueCollection<String> values = headersByName.get(header.getKey());
+		List<String> values = headersByName.get(header.getKey());
 		Assert.assertNotNull(values);
 		Assert.assertEquals("single value in by-key mapping", 1, values.size());
 	}
@@ -51,7 +51,7 @@ public class DefaultHeaderCollectionTest {
 		KeyValueMap<String, String> headersByName = headers.byKey();
 		Assert.assertNotNull("headers by name is not null", headersByName);
 		Assert.assertEquals("single key in by-key mapping", 1, headersByName.size());
-		ValueCollection<String> values = headersByName.get(header1.getKey());
+		List<String> values = headersByName.get(header1.getKey());
 		Assert.assertNotNull(values);
 		Assert.assertEquals("two values in by-key mapping", 2, values.size());
 	}

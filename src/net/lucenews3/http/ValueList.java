@@ -1,8 +1,8 @@
 package net.lucenews3.http;
 
-import java.util.Collection;
+import java.util.List;
 
-public interface ValueCollection<V> extends Collection<V> {
+public interface ValueList<V> extends List<V> {
 
 	/**
 	 * Obtains the first value in this collection.

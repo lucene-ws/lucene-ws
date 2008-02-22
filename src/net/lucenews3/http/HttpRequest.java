@@ -22,8 +22,8 @@ public interface HttpRequest extends HttpCommunication {
 	
 	public void setProtocol(String protocol);
 
-	public ParameterCollection getParameters();
+	public ParameterList getParameters();
 	
-	public void setParameters(ParameterCollection parameters);
+	public void setParameters(ParameterList parameters);
 	
 }

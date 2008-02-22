@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 
 public interface HttpCommunication {
 	
-	public HeaderCollection getHeaders();
+	public HeaderList getHeaders();
 	
-	public void setHeaders(HeaderCollection headers);
+	public void setHeaders(HeaderList headers);
 	
 	public ByteBuffer getBody();
 	

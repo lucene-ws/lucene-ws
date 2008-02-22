@@ -17,7 +17,7 @@ public class DocumentDeleteTest extends ClientTest {
 		
 		Assert.assertEquals("response status", HttpStatus.SC_OK, response.getStatus());
 		
-		String location = response.getHeaders().byKey().get("Location").only();
+		String location = response.getHeaders().byKey().get("Location").get(0);
 		Assert.assertEquals("location header", "http://localhost/lucene/" + indexName + "/5", location);
 	}
 

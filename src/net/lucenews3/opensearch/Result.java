@@ -21,15 +21,9 @@ public interface Result {
 
 	public void setUpdated(Calendar updated);
 
-	public Float getScore();
+	public Double getRelevance();
 
-	public void setScore(Float score);
-
-	@Deprecated
-	public Float getRelevance();
-
-	@Deprecated
-	public void setRelevance(Float relevance);
+	public void setRelevance(Double relevance);
 
 	public List<OpenSearchPerson> getPeople();
 

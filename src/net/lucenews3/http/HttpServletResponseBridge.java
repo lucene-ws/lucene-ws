@@ -9,11 +9,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-public class HttpServletResponseBridge implements HttpServletResponse {
+public class HttpServletResponseBridge extends HttpServletCommunicationBridge implements HttpServletResponse {
 
 	private HttpResponse response;
 	
 	public HttpServletResponseBridge(HttpResponse response) {
+		super(response);
 		this.response = response;
 	}
 	
@@ -21,32 +22,6 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 	public void addCookie(Cookie cookie) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void addDateHeader(String name, long date) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addHeader(String name, String value) {
-		final HeaderCollection headers = response.getHeaders();
-		headers.add(new HeaderImpl(name, value));
-	}
-
-	@Override
-	public void addIntHeader(String name, int value) {
-		final HeaderCollection headers = response.getHeaders();
-		headers.add(new HeaderImpl(name, String.valueOf(value)));
-	}
-
-	@Override
-	public boolean containsHeader(String name) {
-		boolean result;
-		final KeyValueMap<String, String> headersByName = response.getHeaders().byKey();
-		result = headersByName.containsKey(name);
-		return result;
 	}
 
 	@Override
@@ -91,37 +66,6 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 	}
 
 	@Override
-	public void setDateHeader(String name, long date) {
-		final HeaderCollection headers = response.getHeaders();
-		final KeyValueMap<String, String> headersByName = headers.byKey();
-		if (headersByName.containsKey(name)) {
-			headersByName.remove(name);
-		}
-		// TODO
-		headers.add(new HeaderImpl(name, String.valueOf(date)));
-	}
-
-	@Override
-	public void setHeader(String name, String value) {
-		final HeaderCollection headers = response.getHeaders();
-		final KeyValueMap<String, String> headersByName = headers.byKey();
-		if (headersByName.containsKey(name)) {
-			headersByName.remove(name);
-		}
-		headers.add(new HeaderImpl(name, value));
-	}
-
-	@Override
-	public void setIntHeader(String name, int value) {
-		final HeaderCollection headers = response.getHeaders();
-		final KeyValueMap<String, String> headersByName = headers.byKey();
-		if (headersByName.containsKey(name)) {
-			headersByName.remove(name);
-		}
-		headers.add(new HeaderImpl(name, String.valueOf(value)));
-	}
-
-	@Override
 	public void setStatus(int statusCode) {
 		response.setStatus(statusCode);
 	}
@@ -147,17 +91,6 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 	public String getCharacterEncoding() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	protected String getHeader(String name) {
-		String result;
-		final KeyValueMap<String, String> headersByName = response.getHeaders().byKey();
-		if (headersByName.containsKey(name)) {
-			result = headersByName.get(name).first();
-		} else {
-			result = null;
-		}
-		return result;
 	}
 	
 	@Override
@@ -205,7 +138,7 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 	}
 
 	@Override
-	public void setCharacterEncoding(String arg0) {
+	public void setCharacterEncoding(String characterEncoding) {
 		// TODO Auto-generated method stub
 		
 	}

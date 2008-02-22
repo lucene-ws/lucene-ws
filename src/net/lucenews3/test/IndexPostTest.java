@@ -199,7 +199,7 @@ public class IndexPostTest extends ClientTest {
 		Assert.assertEquals("response status", HttpStatus.SC_CREATED, response.getStatus());
 		
 		String id = "1";
-		String location = response.getHeaders().byKey().get("Location").only();
+		String location = response.getHeaders().byKey().get("Location").get(0);
 		Assert.assertEquals("location header", "http://localhost/lucene/" + indexName + "/" + id, location);
 		
 		Document document = toDocument(response);

@@ -4,21 +4,21 @@ import java.nio.ByteBuffer;
 
 public class HttpCommunicationImpl implements HttpCommunication {
 
-	private HeaderCollection headers;
+	private HeaderList headers;
 	private ByteBuffer body;
 	
 	public HttpCommunicationImpl() {
-		this.headers = new HeaderCollectionImpl();
+		this.headers = new HeaderListImpl();
 		this.body = ByteBuffer.allocate(20000);
 	}
 	
 	@Override
-	public HeaderCollection getHeaders() {
+	public HeaderList getHeaders() {
 		return headers;
 	}
 
 	@Override
-	public void setHeaders(HeaderCollection headers) {
+	public void setHeaders(HeaderList headers) {
 		this.headers = headers;
 	}
 

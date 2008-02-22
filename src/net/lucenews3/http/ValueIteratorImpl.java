@@ -4,14 +4,14 @@ import java.util.Iterator;
 
 public class ValueIteratorImpl<K, V> implements Iterator<V> {
 	
-	private KeyValueCollection<K, V> collection;
+	private KeyValueList<K, V> collection;
 	private Iterator<KeyValue<K, V>> iterator;
 	private Object key;
 	private Boolean hasNext;
 	private KeyValue<K, V> next;
 	private KeyValue<K, V> current;
 
-	public ValueIteratorImpl(KeyValueCollection<K, V> collection, Object key) {
+	public ValueIteratorImpl(KeyValueList<K, V> collection, Object key) {
 		this.collection = collection;
 		this.iterator = this.collection.iterator();
 		this.key = key;

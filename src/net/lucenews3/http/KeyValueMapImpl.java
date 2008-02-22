@@ -3,13 +3,14 @@ package net.lucenews3.http;
 import java.util.AbstractMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
-public class KeyValueMapImpl<K, V> extends AbstractMap<K, ValueCollection<V>> implements KeyValueMap<K, V> {
+public class KeyValueMapImpl<K, V> extends AbstractMap<K, List<V>> implements KeyValueMap<K, V> {
 
-	private KeyValueCollection<K, V> collection;
+	private KeyValueList<K, V> collection;
 	
-	public KeyValueMapImpl(KeyValueCollection<K, V> collection) {
+	public KeyValueMapImpl(KeyValueList<K, V> collection) {
 		this.collection = collection;
 	}
 	
@@ -33,12 +34,12 @@ public class KeyValueMapImpl<K, V> extends AbstractMap<K, ValueCollection<V>> im
 	}
 	
 	@Override
-	public ValueCollection<V> get(Object key) {
-		return new ValueCollectionImpl<K, V>(collection, key);
+	public ValueList<V> get(Object key) {
+		return new ValueListImpl<K, V>(collection, key);
 	}
 	
 	@Override
-	public ValueCollection<V> remove(Object key) {
+	public ValueList<V> remove(Object key) {
 		Iterator<KeyValue<K, V>> i = collection.iterator();
 		while (i.hasNext()) {
 			KeyValue<K, V> pair = i.next();
@@ -50,7 +51,7 @@ public class KeyValueMapImpl<K, V> extends AbstractMap<K, ValueCollection<V>> im
 	}
 	
 	@Override
-	public Set<java.util.Map.Entry<K, ValueCollection<V>>> entrySet() {
+	public Set<java.util.Map.Entry<K, List<V>>> entrySet() {
 		// TODO Auto-generated method stub
 		return null;
 	}

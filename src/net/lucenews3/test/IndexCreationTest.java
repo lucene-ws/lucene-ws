@@ -96,7 +96,7 @@ public class IndexCreationTest extends ClientTest {
 		
 		Assert.assertEquals("response status", HttpStatus.SC_CREATED, response.getStatus());
 		
-		String location = response.getHeaders().byKey().get("Location").only();
+		String location = response.getHeaders().byKey().get("Location").get(0);
 		
 		Assert.assertEquals("index location", "http://localhost/lucene/testindex04", location);
 		

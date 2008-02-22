@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
  * calls to a <code>HttpRequest</code> object.
  * 
  */
-public class HttpServletRequestBridge implements HttpServletRequest {
+public class HttpServletRequestBridge extends HttpServletCommunicationBridge implements HttpServletRequest {
 
 	private HttpRequest request;
 	private String authType;
@@ -32,6 +32,7 @@ public class HttpServletRequestBridge implements HttpServletRequest {
 	private Cookie[] cookies;
 
 	public HttpServletRequestBridge(HttpRequest request) {
+		super(request);
 		this.request = request;
 	}
 
@@ -52,58 +53,6 @@ public class HttpServletRequestBridge implements HttpServletRequest {
 	@Override
 	public Cookie[] getCookies() {
 		return cookies;
-	}
-
-	@Override
-	public long getDateHeader(String name) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public String getHeader(String name) {
-		String result;
-		KeyValueMap<String, String> headersByName = request.getHeaders()
-				.byKey();
-		if (headersByName.containsKey(name)) {
-			result = headersByName.get(name).first();
-		} else {
-			result = null;
-		}
-		return result;
-	}
-
-	@Override
-	public Enumeration<String> getHeaderNames() {
-		return new IteratorEnumeration<String>(request.getHeaders().byKey()
-				.keySet().iterator());
-	}
-
-	@Override
-	public Enumeration<String> getHeaders(String name) {
-		Enumeration<String> result;
-		final KeyValueMap<String, String> headersByName = request.getHeaders()
-				.byKey();
-		if (headersByName.containsKey(name)) {
-			result = new IteratorEnumeration<String>(headersByName.get(name)
-					.iterator());
-		} else {
-			result = new EmptyEnumeration<String>();
-		}
-		return result;
-	}
-
-	@Override
-	public int getIntHeader(String name) {
-		int result;
-		final KeyValueMap<String, String> headersByName = request.getHeaders()
-				.byKey();
-		if (headersByName.containsKey(name)) {
-			result = Integer.parseInt(headersByName.get(name).first());
-		} else {
-			result = -1;
-		}
-		return result;
 	}
 
 	@Override
@@ -287,7 +236,7 @@ public class HttpServletRequestBridge implements HttpServletRequest {
 		final KeyValueMap<String, String> parametersByName = request
 				.getParameters().byKey();
 		if (parametersByName.containsKey(name)) {
-			result = parametersByName.get(name).first();
+			result = parametersByName.get(name).get(0);
 		} else {
 			result = null;
 		}
