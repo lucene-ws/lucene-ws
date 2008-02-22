@@ -6,6 +6,7 @@ import org.apache.lucene.document.Field;
 
 import net.lucenews3.KeyValue;
 import net.lucenews3.KeyValueList;
+import net.lucenews3.KeyValueListImpl;
 import net.lucenews3.Transformer;
 
 public class FieldListToKeyValueListTransformer implements Transformer<List<Field>, KeyValueList<String, String>> {
@@ -22,7 +23,7 @@ public class FieldListToKeyValueListTransformer implements Transformer<List<Fiel
 	
 	@Override
 	public KeyValueList<String, String> transform(List<Field> input) {
-		final KeyValueList<String, String> output = null; // TODO
+		final KeyValueList<String, String> output = new KeyValueListImpl<String, String>();
 		transform(input, output);
 		return output;
 	}
