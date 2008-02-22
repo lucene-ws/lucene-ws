@@ -18,7 +18,7 @@ import org.apache.lucene.store.LockObtainFailedException;
  * The default implementation of <code>Index</code>.
  *
  */
-public class DefaultIndex implements Index {
+public class IndexImpl implements Index {
 
 	private Directory directory;
 	private boolean autoCommit;
@@ -27,11 +27,11 @@ public class DefaultIndex implements Index {
 	private IndexDeletionPolicy deletionPolicy;
 	private ExceptionTranslator exceptionTranslator;
 	
-	public DefaultIndex() {
+	public IndexImpl() {
 		
 	}
 	
-	public DefaultIndex(Directory directory, Analyzer analyzer) {
+	public IndexImpl(Directory directory, Analyzer analyzer) {
 		this.directory = directory;
 		this.analyzer = analyzer;
 	}

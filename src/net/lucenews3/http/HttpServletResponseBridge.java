@@ -32,13 +32,13 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 	@Override
 	public void addHeader(String name, String value) {
 		final HeaderCollection headers = response.getHeaders();
-		headers.add(new DefaultHeader(name, value));
+		headers.add(new HeaderImpl(name, value));
 	}
 
 	@Override
 	public void addIntHeader(String name, int value) {
 		final HeaderCollection headers = response.getHeaders();
-		headers.add(new DefaultHeader(name, String.valueOf(value)));
+		headers.add(new HeaderImpl(name, String.valueOf(value)));
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 	@Override
 	public void sendRedirect(String location) throws IOException {
 		response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
-		response.getHeaders().add(new DefaultHeader("Location", location));
+		response.getHeaders().add(new HeaderImpl("Location", location));
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 			headersByName.remove(name);
 		}
 		// TODO
-		headers.add(new DefaultHeader(name, String.valueOf(date)));
+		headers.add(new HeaderImpl(name, String.valueOf(date)));
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 		if (headersByName.containsKey(name)) {
 			headersByName.remove(name);
 		}
-		headers.add(new DefaultHeader(name, value));
+		headers.add(new HeaderImpl(name, value));
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 		if (headersByName.containsKey(name)) {
 			headersByName.remove(name);
 		}
-		headers.add(new DefaultHeader(name, String.valueOf(value)));
+		headers.add(new HeaderImpl(name, String.valueOf(value)));
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class HttpServletResponseBridge implements HttpServletResponse {
 
 	@Override
 	public ServletOutputStream getOutputStream() throws IOException {
-		return new DefaultServletOutputStream(new ByteBufferOutputStream(response.getBody()));
+		return new ServletOutputStreamImpl(new ByteBufferOutputStream(response.getBody()));
 	}
 
 	@Override

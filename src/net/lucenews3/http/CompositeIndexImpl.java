@@ -12,17 +12,17 @@ import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searcher;
 
-public class DefaultCompositeIndex implements CompositeIndex {
+public class CompositeIndexImpl implements CompositeIndex {
 
 	private Collection<Index> indexes;
 	private boolean closeSubReaders;
 	private ExceptionTranslator exceptionTranslator;
 	
-	public DefaultCompositeIndex() {
+	public CompositeIndexImpl() {
 		
 	}
 	
-	public DefaultCompositeIndex(Collection<Index> indexes) {
+	public CompositeIndexImpl(Collection<Index> indexes) {
 		this.indexes = indexes;
 	}
 	

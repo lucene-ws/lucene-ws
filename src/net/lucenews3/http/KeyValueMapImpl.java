@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class DefaultKeyValueMap<K, V> extends AbstractMap<K, ValueCollection<V>> implements KeyValueMap<K, V> {
+public class KeyValueMapImpl<K, V> extends AbstractMap<K, ValueCollection<V>> implements KeyValueMap<K, V> {
 
 	private KeyValueCollection<K, V> collection;
 	
-	public DefaultKeyValueMap(KeyValueCollection<K, V> collection) {
+	public KeyValueMapImpl(KeyValueCollection<K, V> collection) {
 		this.collection = collection;
 	}
 	
@@ -34,7 +34,7 @@ public class DefaultKeyValueMap<K, V> extends AbstractMap<K, ValueCollection<V>>
 	
 	@Override
 	public ValueCollection<V> get(Object key) {
-		return new DefaultValueCollection<K, V>(collection, key);
+		return new ValueCollectionImpl<K, V>(collection, key);
 	}
 	
 	@Override

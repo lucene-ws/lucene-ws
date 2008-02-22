@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.store.LockObtainFailedException;
 
-public class DefaultExceptionWrapper implements ExceptionWrapper {
+public class ExceptionWrapperImpl implements ExceptionWrapper {
 
 	public RuntimeException wrap(IOException io) {
 		return wrap((Exception) io);

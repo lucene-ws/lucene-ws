@@ -2,15 +2,15 @@ package net.lucenews3.http;
 
 import java.io.File;
 
-public class DefaultIndexSource implements IndexSource {
+public class IndexSourceImpl implements IndexSource {
 	
 	private File directory;
 	
-	public DefaultIndexSource() {
+	public IndexSourceImpl() {
 		
 	}
 	
-	public DefaultIndexSource(File directory) {
+	public IndexSourceImpl(File directory) {
 		this.directory = directory;
 	}
 

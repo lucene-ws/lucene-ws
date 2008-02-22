@@ -5,11 +5,11 @@ import java.io.InputStream;
 
 import javax.servlet.ServletInputStream;
 
-public class DefaultServletInputStream extends ServletInputStream {
+public class ServletInputStreamImpl extends ServletInputStream {
 
 	private InputStream inputStream;
 	
-	public DefaultServletInputStream(InputStream inputStream) {
+	public ServletInputStreamImpl(InputStream inputStream) {
 		this.inputStream = inputStream;
 	}
 	

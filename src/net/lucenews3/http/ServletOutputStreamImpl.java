@@ -5,11 +5,11 @@ import java.io.OutputStream;
 
 import javax.servlet.ServletOutputStream;
 
-public class DefaultServletOutputStream extends ServletOutputStream {
+public class ServletOutputStreamImpl extends ServletOutputStream {
 
 	private OutputStream outputStream;
 	
-	public DefaultServletOutputStream(OutputStream outputStream) {
+	public ServletOutputStreamImpl(OutputStream outputStream) {
 		this.outputStream = outputStream;
 	}
 	

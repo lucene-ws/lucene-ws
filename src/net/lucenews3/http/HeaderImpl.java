@@ -1,11 +1,11 @@
 package net.lucenews3.http;
 
-public class DefaultHeader implements Header {
+public class HeaderImpl implements Header {
 
 	private String key;
 	private String value;
 	
-	public DefaultHeader(String key, String value) {
+	public HeaderImpl(String key, String value) {
 		this.key = key;
 		this.value = value;
 	}

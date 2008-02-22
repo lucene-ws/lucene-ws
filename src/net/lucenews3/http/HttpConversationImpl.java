@@ -1,15 +1,15 @@
 package net.lucenews3.http;
 
-public class DefaultHttpConversation implements HttpConversation {
+public class HttpConversationImpl implements HttpConversation {
 
 	private HttpRequest request;
 	private HttpResponse response;
 
-	public DefaultHttpConversation() {
+	public HttpConversationImpl() {
 		
 	}
 
-	public DefaultHttpConversation(HttpRequest request, HttpResponse response) {
+	public HttpConversationImpl(HttpRequest request, HttpResponse response) {
 		this.request = request;
 		this.response = response;
 	}

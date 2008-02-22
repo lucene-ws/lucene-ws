@@ -1,6 +1,6 @@
 package net.lucenews3.http;
 
-public class DefaultHttpResponse extends DefaultHttpCommunication implements HttpResponse {
+public class HttpResponseImpl extends HttpCommunicationImpl implements HttpResponse {
 
 	private Integer status;
 	private String message;

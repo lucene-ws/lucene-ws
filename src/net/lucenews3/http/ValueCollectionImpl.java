@@ -3,13 +3,13 @@ package net.lucenews3.http;
 import java.util.AbstractCollection;
 import java.util.Iterator;
 
-public class DefaultValueCollection<K, V> extends AbstractCollection<V> implements ValueCollection<V> {
+public class ValueCollectionImpl<K, V> extends AbstractCollection<V> implements ValueCollection<V> {
 
 	private static final long serialVersionUID = -7351471183123387133L;
 	private KeyValueCollection<K, V> collection;
 	private Object key;
 
-	public DefaultValueCollection(KeyValueCollection<K, V> collection, Object key) {
+	public ValueCollectionImpl(KeyValueCollection<K, V> collection, Object key) {
 		this.collection = collection;
 		this.key = key;
 	}
@@ -49,7 +49,7 @@ public class DefaultValueCollection<K, V> extends AbstractCollection<V> implemen
 
 	@Override
 	public Iterator<V> iterator() {
-		return new DefaultValueIterator<K, V>(collection, key);
+		return new ValueIteratorImpl<K, V>(collection, key);
 	}
 
 }

@@ -2,13 +2,13 @@ package net.lucenews3.http;
 
 import java.nio.ByteBuffer;
 
-public class DefaultHttpCommunication implements HttpCommunication {
+public class HttpCommunicationImpl implements HttpCommunication {
 
 	private HeaderCollection headers;
 	private ByteBuffer body;
 	
-	public DefaultHttpCommunication() {
-		this.headers = new DefaultHeaderCollection();
+	public HttpCommunicationImpl() {
+		this.headers = new HeaderCollectionImpl();
 		this.body = ByteBuffer.allocate(20000);
 	}
 	

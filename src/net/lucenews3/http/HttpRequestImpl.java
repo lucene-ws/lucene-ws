@@ -1,6 +1,6 @@
 package net.lucenews3.http;
 
-public class DefaultHttpRequest extends DefaultHttpCommunication implements HttpRequest {
+public class HttpRequestImpl extends HttpCommunicationImpl implements HttpRequest {
 
 	private String method;
 	private String host;
@@ -9,9 +9,9 @@ public class DefaultHttpRequest extends DefaultHttpCommunication implements Http
 	private ParameterCollection parameters;
 	private String protocol;
 
-	public DefaultHttpRequest() {
+	public HttpRequestImpl() {
 		this.method = "GET";
-		this.parameters = new DefaultParameterCollection();
+		this.parameters = new ParameterCollectionImpl();
 		this.protocol = "HTTP/1.0";
 	}
 	

@@ -3,7 +3,7 @@ package net.lucenews3.http;
 import java.util.AbstractCollection;
 import java.util.Iterator;
 
-public class DefaultIndexCollection extends AbstractCollection<Index> implements IndexCollection {
+public class IndexCollectionImpl extends AbstractCollection<Index> implements IndexCollection {
 
 	@Override
 	public Iterator<Index> iterator() {

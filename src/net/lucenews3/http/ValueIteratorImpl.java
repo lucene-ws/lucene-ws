@@ -2,7 +2,7 @@ package net.lucenews3.http;
 
 import java.util.Iterator;
 
-public class DefaultValueIterator<K, V> implements Iterator<V> {
+public class ValueIteratorImpl<K, V> implements Iterator<V> {
 	
 	private KeyValueCollection<K, V> collection;
 	private Iterator<KeyValue<K, V>> iterator;
@@ -11,7 +11,7 @@ public class DefaultValueIterator<K, V> implements Iterator<V> {
 	private KeyValue<K, V> next;
 	private KeyValue<K, V> current;
 
-	public DefaultValueIterator(KeyValueCollection<K, V> collection, Object key) {
+	public ValueIteratorImpl(KeyValueCollection<K, V> collection, Object key) {
 		this.collection = collection;
 		this.iterator = this.collection.iterator();
 		this.key = key;

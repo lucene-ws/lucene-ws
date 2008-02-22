@@ -6,8 +6,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.lucenews3.http.DefaultHeader;
-import net.lucenews3.http.DefaultHeaderCollection;
+import net.lucenews3.http.HeaderImpl;
+import net.lucenews3.http.HeaderCollectionImpl;
 import net.lucenews3.http.Header;
 import net.lucenews3.http.KeyValue;
 import net.lucenews3.http.KeyValueMap;
@@ -15,16 +15,16 @@ import net.lucenews3.http.ValueCollection;
 
 public class DefaultHeaderCollectionTest {
 
-	private DefaultHeaderCollection headers;
+	private HeaderCollectionImpl headers;
 	
 	@Before
 	public void setup() {
-		headers = new DefaultHeaderCollection();
+		headers = new HeaderCollectionImpl();
 	}
 	
 	@Test
 	public void testSingleAdd() {
-		Header header = new DefaultHeader("foo", "bar");
+		Header header = new HeaderImpl("foo", "bar");
 		Assert.assertEquals("empty headers before add", 0, headers.size());
 		headers.add(header);
 		Assert.assertEquals("single header after add", 1, headers.size());
@@ -39,8 +39,8 @@ public class DefaultHeaderCollectionTest {
 	
 	@Test
 	public void testMultipleValueAdd() {
-		Header header1 = new DefaultHeader("foo", "bar");
-		Header header2 = new DefaultHeader("foo", "baz");
+		Header header1 = new HeaderImpl("foo", "bar");
+		Header header2 = new HeaderImpl("foo", "baz");
 		Assert.assertEquals("empty headers before add", 0, headers.size());
 		headers.add(header1);
 		headers.add(header2);

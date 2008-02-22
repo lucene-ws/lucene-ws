@@ -248,7 +248,7 @@ public class HttpServletRequestBridge implements HttpServletRequest {
 	@Override
 	public ServletInputStream getInputStream() throws IOException {
 		ByteBuffer body = request.getBody();
-		return new DefaultServletInputStream(new ByteBufferInputStream(body));
+		return new ServletInputStreamImpl(new ByteBufferInputStream(body));
 	}
 
 	@Override

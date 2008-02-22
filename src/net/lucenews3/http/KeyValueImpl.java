@@ -1,11 +1,15 @@
 package net.lucenews3.http;
 
-public class DefaultKeyValue<K, V> implements KeyValue<K, V> {
+public class KeyValueImpl<K, V> implements KeyValue<K, V> {
 
 	private K key;
 	private V value;
 	
-	public DefaultKeyValue(K key, V value) {
+	public KeyValueImpl() {
+		
+	}
+	
+	public KeyValueImpl(K key, V value) {
 		this.key = key;
 		this.value = value;
 	}
@@ -15,6 +19,10 @@ public class DefaultKeyValue<K, V> implements KeyValue<K, V> {
 		return key;
 	}
 	
+	public void setKey(K key) {
+		this.key = key;
+	}
+
 	@Override
 	public V getValue() {
 		return value;
