@@ -1,4 +1,4 @@
-package net.lucenews3.http;
+package net.lucenews3;
 
 public class KeyValueImpl<K, V> implements KeyValue<K, V> {
 

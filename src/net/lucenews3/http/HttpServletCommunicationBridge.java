@@ -2,6 +2,8 @@ package net.lucenews3.http;
 
 import java.util.Enumeration;
 
+import net.lucenews3.KeyValueMap;
+
 public abstract class HttpServletCommunicationBridge {
 
 	private HttpCommunication communication;

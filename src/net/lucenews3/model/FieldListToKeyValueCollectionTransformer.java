@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.apache.lucene.document.Field;
 
+import net.lucenews3.KeyValue;
+import net.lucenews3.KeyValueList;
 import net.lucenews3.Transformer;
-import net.lucenews3.http.KeyValue;
-import net.lucenews3.http.KeyValueList;
 
 public class FieldListToKeyValueCollectionTransformer implements Transformer<List<Field>, KeyValueList<String, String>> {
 

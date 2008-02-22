@@ -5,9 +5,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import net.lucenews3.ExceptionTranslator;
 import net.lucenews3.ExceptionTranslatorImpl;
+import net.lucenews3.KeyValue;
+import net.lucenews3.KeyValueList;
 import net.lucenews3.Transformer;
-import net.lucenews3.http.KeyValue;
-import net.lucenews3.http.KeyValueList;
 
 import org.w3c.dom.Element;
 

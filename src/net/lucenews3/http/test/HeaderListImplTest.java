@@ -3,11 +3,11 @@ package net.lucenews3.http.test;
 import java.util.Iterator;
 import java.util.List;
 
+import net.lucenews3.KeyValue;
+import net.lucenews3.KeyValueMap;
 import net.lucenews3.http.Header;
 import net.lucenews3.http.HeaderImpl;
 import net.lucenews3.http.HeaderListImpl;
-import net.lucenews3.http.KeyValue;
-import net.lucenews3.http.KeyValueMap;
 
 import org.junit.Assert;
 import org.junit.Before;

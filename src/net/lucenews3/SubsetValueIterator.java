@@ -1,8 +1,8 @@
-package net.lucenews3.http;
+package net.lucenews3;
 
 import java.util.Iterator;
 
-public class ValueIteratorImpl<K, V> implements Iterator<V> {
+public class SubsetValueIterator<K, V> implements Iterator<V> {
 	
 	private KeyValueList<K, V> collection;
 	private Iterator<KeyValue<K, V>> iterator;
@@ -11,7 +11,7 @@ public class ValueIteratorImpl<K, V> implements Iterator<V> {
 	private KeyValue<K, V> next;
 	private KeyValue<K, V> current;
 
-	public ValueIteratorImpl(KeyValueList<K, V> collection, Object key) {
+	public SubsetValueIterator(KeyValueList<K, V> collection, Object key) {
 		this.collection = collection;
 		this.iterator = this.collection.iterator();
 		this.key = key;

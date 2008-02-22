@@ -19,6 +19,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import net.lucenews3.KeyValueMap;
+
 /**
  * An implementation of <code>HttpServletRequest</code> which wraps method
  * calls to a <code>HttpRequest</code> object.

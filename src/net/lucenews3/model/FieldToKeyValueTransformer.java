@@ -2,9 +2,9 @@ package net.lucenews3.model;
 
 import org.apache.lucene.document.Field;
 
+import net.lucenews3.KeyValue;
+import net.lucenews3.KeyValueImpl;
 import net.lucenews3.Transformer;
-import net.lucenews3.http.KeyValueImpl;
-import net.lucenews3.http.KeyValue;
 
 public class FieldToKeyValueTransformer implements Transformer<Field, KeyValue<String, String>> {
 

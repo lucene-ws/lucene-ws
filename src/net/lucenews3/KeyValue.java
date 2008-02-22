@@ -1,4 +1,4 @@
-package net.lucenews3.http;
+package net.lucenews3;
 
 import java.util.Map;
 

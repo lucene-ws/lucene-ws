@@ -1,4 +1,4 @@
-package net.lucenews3.http;
+package net.lucenews3;
 
 import java.util.AbstractMap;
 import java.util.HashSet;
@@ -33,13 +33,15 @@ public class KeyValueMapImpl<K, V> extends AbstractMap<K, List<V>> implements Ke
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public ValueList<V> get(Object key) {
-		return new ValueListImpl<K, V>(collection, key);
+	public List<V> get(Object key) {
+		// TODO Verify correct key type
+		return new SubsetValueList<K, V>(collection, (K) key);
 	}
 	
 	@Override
-	public ValueList<V> remove(Object key) {
+	public List<V> remove(Object key) {
 		Iterator<KeyValue<K, V>> i = collection.iterator();
 		while (i.hasNext()) {
 			KeyValue<K, V> pair = i.next();
