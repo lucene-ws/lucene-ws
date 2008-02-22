@@ -26,7 +26,13 @@ public class BeanXmlView implements View, ViewResolver {
 	@Override
 	public void render(Map model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
+		if (model == null) {
+			throw new Exception("No model specified");
+		}
 		Object bean = model.get("bean");
+		if (bean == null) {
+			throw new Exception("Cannot display XML. No \"bean\" value in model.");
+		}
 		BeanWriter beanWriter = new BeanWriter(response.getWriter());
 		beanWriter.write(bean);
 	}
