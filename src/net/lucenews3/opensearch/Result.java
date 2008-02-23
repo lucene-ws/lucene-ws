@@ -3,6 +3,8 @@ package net.lucenews3.opensearch;
 import java.util.Calendar;
 import java.util.List;
 
+import net.lucenews3.atom.Content;
+
 public interface Result {
 
 	public String getTitle();

@@ -2,7 +2,7 @@ package net.lucenews3.atom;
 
 import java.util.List;
 
-import org.w3c.dom.Node;
+import org.dom4j.Node;
 
 public interface InlineXhtmlContent extends Content {
 

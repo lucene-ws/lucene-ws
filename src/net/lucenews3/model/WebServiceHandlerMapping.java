@@ -15,6 +15,7 @@ import net.lucenews3.controller.UpdateDocumentController;
 import net.lucenews3.controller.ViewDocumentController;
 import net.lucenews3.controller.ViewServiceController;
 import net.lucenews3.controller.ViewServicePropertiesController;
+import net.lucenews3.controller.ViewStaticResourceController;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -32,6 +33,7 @@ public class WebServiceHandlerMapping implements HandlerMapping {
 	private CreateDocumentController<?, ?> createDocumentController;
 	private UpdateDocumentController<?, ?> updateDocumentController;
 	private RemoveDocumentController<?, ?> removeDocumentController;
+	private ViewStaticResourceController viewStaticResourceController;
 	
 	public HandlerExecutionChain getHandler(HttpServletRequest request)
 			throws Exception {
@@ -56,6 +58,10 @@ public class WebServiceHandlerMapping implements HandlerMapping {
 			String token0 = tokens.remove();
 			if (token0.equals("service.properties")) {
 				return getServicePropertiesHandler(request);
+			} else if (token0.equals("static")) {
+				System.err.println("STATIC!");
+				request.setAttribute("resourcePath", tokens);
+				return new HandlerExecutionChain(viewStaticResourceController);
 			} else {
 				String indexName = token0;
 				request.setAttribute("indexName", indexName);
@@ -198,6 +204,15 @@ public class WebServiceHandlerMapping implements HandlerMapping {
 	public void setViewServicePropertiesController(
 			ViewServicePropertiesController<?, ?> viewServicePropertiesController) {
 		this.viewServicePropertiesController = viewServicePropertiesController;
+	}
+
+	public ViewStaticResourceController getViewStaticResourceController() {
+		return viewStaticResourceController;
+	}
+
+	public void setViewStaticResourceController(
+			ViewStaticResourceController viewStaticResourceController) {
+		this.viewStaticResourceController = viewStaticResourceController;
 	}
 
 }

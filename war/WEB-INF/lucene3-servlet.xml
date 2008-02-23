@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 	
 	<bean id="testIndexDirectory" class="net.lucenews3.model.FSDirectoryFactoryBean">
-		<property name="path" value="C:\apaynter\christmascarol" />
+		<property name="path" value="christmascarol" />
 	</bean>
 	
 	<bean id="testIndex" class="net.lucenews3.model.IndexImpl">
@@ -19,7 +19,7 @@
 				<entry value-ref="testIndex">
 					<key>
 						<bean class="net.lucenews3.model.IndexIdentityImpl">
-							<constructor-arg value="test" />
+							<constructor-arg value="christmasCarol" />
 						</bean>
 					</key>
 				</entry>
@@ -85,6 +85,7 @@
 	<bean id="viewServiceController"
 		class="net.lucenews3.controller.ViewServiceHttpController"
 		parent="controller">
+		<property name="indexesByIdentity" ref="indexRepository" />
 	</bean>
 
 	<!-- Service properties controllers -->
@@ -127,6 +128,9 @@
 		class="net.lucenews3.controller.RemoveDocumentHttpController"
 		parent="controller">
 	</bean>
+	
+	<bean id="viewStaticResourceController" class="net.lucenews3.controller.ViewStaticResourceController">
+	</bean>
 
 	<bean
 		class="net.lucenews3.model.WebServiceHandlerMapping">
@@ -134,12 +138,13 @@
 			ref="viewServiceController" />
 		<property name="searchIndexController"
 			ref="searchIndexController" />
+		<property name="viewStaticResourceController" ref="viewStaticResourceController" />
 	</bean>
 	
 	<bean class="net.lucenews3.model.HandlerExceptionResolverImpl">
 	</bean>
 
-	<bean class="net.lucenews3.model.BeanXmlView">
+	<bean class="net.lucenews3.model.Dom4jView">
 	</bean>
 
 </beans>

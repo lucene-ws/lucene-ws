@@ -8,8 +8,6 @@ import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.lucenews3.test.support.FileSystemUtility;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
@@ -26,12 +24,12 @@ public class GutenbergBookIndexer {
 	public static void main(String... arguments) throws Exception {
 		GutenbergBookIndexer indexer = new GutenbergBookIndexer();
 		Reader reader = new FileReader(new File("test/data/A Christmas Carol by Charles Dickens.txt"));
-		FileSystemUtility fileSystem = new FileSystemUtility();
 		File indexDirectory;
 		if (arguments.length > 0) {
 			indexDirectory = new File(arguments[0]);
 		} else {
-			indexDirectory = fileSystem.getTemporaryDirectory();
+			indexDirectory = new File("christmascarol");
+			indexDirectory.mkdirs();
 		}
 		IndexWriter writer = new IndexWriter(indexDirectory, new StandardAnalyzer(), true);
 		indexer.index(reader, writer);

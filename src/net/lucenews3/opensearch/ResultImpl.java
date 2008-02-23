@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.lucenews3.atom.Content;
+
 public class ResultImpl implements Result {
 
 	private String title;
@@ -17,6 +19,7 @@ public class ResultImpl implements Result {
 	private String summary;
 
 	public ResultImpl() {
+		this.links = new LinkListImpl();
 		people = new LinkedList<OpenSearchPerson>();
 	}
 
