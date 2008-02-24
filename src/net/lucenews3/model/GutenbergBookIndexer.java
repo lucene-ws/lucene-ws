@@ -8,13 +8,21 @@ import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.springframework.beans.factory.InitializingBean;
 
-public class GutenbergBookIndexer {
+public class GutenbergBookIndexer implements InitializingBean {
 
+	private Logger logger;
+	private File bookFile;
+	private Directory indexDirectory;
 	private int stave;
 	private int paragraph;
 	private StringBuffer buffer;
@@ -23,21 +31,41 @@ public class GutenbergBookIndexer {
 	
 	public static void main(String... arguments) throws Exception {
 		GutenbergBookIndexer indexer = new GutenbergBookIndexer();
-		Reader reader = new FileReader(new File("test/data/A Christmas Carol by Charles Dickens.txt"));
-		File indexDirectory;
 		if (arguments.length > 0) {
-			indexDirectory = new File(arguments[0]);
-		} else {
-			indexDirectory = new File("christmascarol");
-			indexDirectory.mkdirs();
+			indexer.indexDirectory = FSDirectory.getDirectory(new File(arguments[0]));
 		}
-		IndexWriter writer = new IndexWriter(indexDirectory, new StandardAnalyzer(), true);
-		indexer.index(reader, writer);
-		writer.close();
-		System.out.println("Indexed " + indexer.count + " documents");
+		int count = indexer.buildIndex();
+		System.out.println("Indexed " + count + " paragraphs");
 	}
 	
-	public void index(Reader reader, IndexWriter writer) throws IOException {
+	public GutenbergBookIndexer() throws IOException {
+		this.logger = Logger.getLogger(getClass());
+		this.bookFile = new File("test/data/A Christmas Carol by Charles Dickens.txt");
+		this.indexDirectory = FSDirectory.getDirectory(new File("christmascarol"));
+	}
+	
+	public int buildIndex() throws IOException {
+		Reader reader = new FileReader(bookFile);
+		IndexWriter writer = new IndexWriter(indexDirectory, new StandardAnalyzer(), true);
+		buildIndex(reader, writer);
+		writer.close();
+		return count;
+	}
+	
+	public void afterPropertiesSet() throws Exception {
+		if (IndexReader.indexExists(indexDirectory)) {
+			if (logger.isInfoEnabled()) {
+				logger.info("No index created at " + indexDirectory);
+			}
+		} else {
+			int count = buildIndex();
+			if (logger.isInfoEnabled()) {
+				logger.info("Indexed " + count + " paragraphs from " + bookFile + " at " + indexDirectory);
+			}
+		}
+	}
+	
+	public void buildIndex(Reader reader, IndexWriter writer) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(reader);
 		
 		boolean active = false;
@@ -104,6 +132,22 @@ public class GutenbergBookIndexer {
 			return 5;
 		}
 		throw new RuntimeException();
+	}
+
+	public File getBookFile() {
+		return bookFile;
+	}
+
+	public void setBookFile(File bookFile) {
+		this.bookFile = bookFile;
+	}
+
+	public Directory getIndexDirectory() {
+		return indexDirectory;
+	}
+
+	public void setIndexDirectory(Directory indexDirectory) {
+		this.indexDirectory = indexDirectory;
 	}
 	
 }

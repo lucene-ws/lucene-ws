@@ -7,6 +7,10 @@
 		<property name="path" value="christmascarol" />
 	</bean>
 	
+	<bean id="testIndexBuilder" class="net.lucenews3.model.GutenbergBookIndexer">
+		<property name="indexDirectory" ref="testIndexDirectory" />
+	</bean>
+	
 	<bean id="testIndex" class="net.lucenews3.model.IndexImpl">
 		<property name="directory" ref="testIndexDirectory" />
 		<property name="exceptionTranslator" ref="exceptionTranslator" />
