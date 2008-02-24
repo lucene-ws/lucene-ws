@@ -1,8 +1,9 @@
-package net.lucenews3.model;
+package net.lucenews3.queryParser;
 
 import java.util.Vector;
 
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.Token;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Query;
 
@@ -34,5 +35,7 @@ public interface QueryParserInternals {
 
 	public Query getFuzzyTerm(String field, String termStr, float minSimilarity)
 			throws ParseException;
+	
+	public Token getToken(int index);
 
 }

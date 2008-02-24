@@ -1,4 +1,4 @@
-package net.lucenews3.model;
+package net.lucenews3.queryParser;
 
 import java.util.Vector;
 

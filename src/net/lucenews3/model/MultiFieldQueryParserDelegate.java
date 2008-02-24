@@ -1,5 +1,8 @@
 package net.lucenews3.model;
 
+import net.lucenews3.queryParser.QueryParserDelegateAdaptor;
+import net.lucenews3.queryParser.QueryParserInternals;
+
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
 

@@ -1,0 +1,37 @@
+<html>
+	
+	<head>
+		<title></title>
+	</head>
+
+	<body>
+
+		<p>Implements a visitor pattern model for the Lucene query parser.</p>
+		
+		<p>Suppose there exists an application which accepts user query strings and parses
+			them using the Lucene query parser. Suppose the user searches for the string
+			"Lord of the Rings". Internally, the application parses this string using
+			"title" as the default field. Assuming a StandardAnalyzer is used, the Lucene
+			query parser will produce a query object whose textual representation is now
+			"title:lord title:rings".</p>
+		
+		<p>The initial purpose of this package was to develop a query parser which produces
+			queries that contain references to the original text that created them.</p>
+		
+		<p>It was thought that a subclass of QueryParser would be suitable. Subclasses would
+			be able to override the various get*Query methods (see QueryParser Javadoc) and
+			use <code>getToken(int)</code> to determine the parsing token which created
+			the current query.</p>
+		
+		<p>Although this practice worked well initially, it was seen that the ability to turn
+			the QueryParser into a pipe-and-filter mechanism would prove too
+			difficult. This eliminated the possibility of having filtered QueryParser objects.</p>
+		
+		<p>The <code>QueryParser</code> class invokes protected methods as it parses
+			text. These protected methods are of the general form
+			<code>get[type]Query(...)</code> where <code>[type]</code> represents
+			the various categories of category (e.g. - fuzzy, term, field, boolean). All
+			such methods return <code>Query</code> objects.</p>
+		
+	</body>
+</html>

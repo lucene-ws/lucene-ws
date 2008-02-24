@@ -1,9 +1,10 @@
-package net.lucenews3.model;
+package net.lucenews3.queryParser;
 
 import java.util.Vector;
 
 import net.lucenews3.ExceptionTranslator;
 import net.lucenews3.ExceptionTranslatorImpl;
+import net.lucenews3.model.QueryParser;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.CharStream;
@@ -90,7 +91,7 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	protected boolean isCalledFromDelegate(int depth) {
 		Thread thread = Thread.currentThread();
 		StackTraceElement[] elements = thread.getStackTrace();
-		for (int i = depth; i < elements.length; i++) {
+		for (int i = depth + 3; i < elements.length; i++) {
 			StackTraceElement element = elements[i];
 			
 			Class<?> c;
@@ -98,6 +99,10 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 				c = Class.forName(element.getClassName());
 			} catch (ClassNotFoundException e) {
 				throw exceptionTranslator.translate(e);
+			}
+			
+			if (QueryParser.class.isAssignableFrom(c)) {
+				return false;
 			}
 			
 			if (QueryParserDelegate.class.isAssignableFrom(c)) {

@@ -2,6 +2,9 @@ package net.lucenews3.model;
 
 import java.util.Vector;
 
+import net.lucenews3.queryParser.QueryParserDelegate;
+import net.lucenews3.queryParser.QueryParserInternals;
+
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Query;

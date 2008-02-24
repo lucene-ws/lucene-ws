@@ -137,8 +137,9 @@
 								<xsl:value-of select="title" />
 							</a>
 						</h2>
-						<xsl:value-of select="$relevancePercent" />
-						<div class="relevance" style="width: 100px; border: 1px solid Black;"><span style="width: ${relevancePercent}px; background-color: Red; display: block; height: 1em;"></span></div>
+						<!--
+						<div class="relevance" style="width: 100px; border: 1px solid Black;"><span style="width: ${relevancePercent}px; background-color: #008000; display: block; height: 5px;"></span></div>
+						-->
 						<xsl:value-of select="content/div" />
 						<div class="link"><xsl:value-of select="link/@href" /></div>
 					</div>
