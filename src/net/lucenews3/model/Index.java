@@ -1,5 +1,7 @@
 package net.lucenews3.model;
 
+import java.util.concurrent.locks.ReadWriteLock;
+
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Searcher;
@@ -31,5 +33,7 @@ public interface Index extends Closeable {
 	public IndexWriter getIndexWriter();
 	
 	public Searcher getSearcher();
+	
+	public ReadWriteLock getDataLock();
 	
 }

@@ -48,7 +48,7 @@
 
 	<bean id="httpIndexRangeParser" class="net.lucenews3.model.HttpIndexRangeParser">
 		<property name="defaultOrdinal" value="1" />
-		<property name="defaultSize" value="20" />
+		<property name="defaultSize" value="10" />
 		<property name="ordinalParameterName" value="page" />
 		<property name="sizeParameterName" value="itemsPerPage" />
 	</bean>

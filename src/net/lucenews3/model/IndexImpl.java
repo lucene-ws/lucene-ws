@@ -1,6 +1,8 @@
 package net.lucenews3.model;
 
 import java.io.IOException;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import net.lucenews3.ExceptionTranslator;
 
@@ -14,22 +16,26 @@ public class IndexImpl implements Index {
 
 	private Directory directory;
 	private IndexMetaData metaData;
+	private ReadWriteLock dataLock;
 	private ExceptionTranslator exceptionTranslator;
 
 	public IndexImpl() {
-		
+		this.dataLock = new ReentrantReadWriteLock();
 	}
 	
 	public IndexImpl(Directory directory) {
+		this();
 		this.directory = directory;
 	}
 
 	public IndexImpl(Directory directory, IndexMetaData metaData) {
+		this();
 		this.directory = directory;
 		this.metaData = metaData;
 	}
 
 	public IndexImpl(IndexMetaData metaData) {
+		this();
 		this.metaData = metaData;
 	}
 	
@@ -95,6 +101,11 @@ public class IndexImpl implements Index {
 
 	public IndexMetaData getMetaData() {
 		return metaData;
+	}
+
+	@Override
+	public ReadWriteLock getDataLock() {
+		return dataLock;
 	}
 
 }

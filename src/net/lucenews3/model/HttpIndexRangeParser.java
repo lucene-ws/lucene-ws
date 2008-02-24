@@ -33,7 +33,7 @@ public class HttpIndexRangeParser implements IndexRangeParser<HttpServletRequest
 		
 		int ordinal;
 		if (ordinalValue == null) {
-			ordinal = 1;
+			ordinal = defaultOrdinal;
 		} else {
 			ordinal = Integer.parseInt(ordinalValue);
 		}
@@ -42,7 +42,7 @@ public class HttpIndexRangeParser implements IndexRangeParser<HttpServletRequest
 		
 		int size;
 		if (sizeValue == null) {
-			size = 20;
+			size = defaultSize;
 		} else {
 			size = Integer.parseInt(sizeValue);
 		}

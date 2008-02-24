@@ -15,6 +15,7 @@ import net.lucenews3.model.ResultList;
 import net.lucenews3.model.ResultToOpenSearchResultTransformer;
 import net.lucenews3.model.SearchRequest;
 import net.lucenews3.model.SearchRequestParser;
+import net.lucenews3.model.TextSource;
 import net.lucenews3.opensearch.Response;
 import net.lucenews3.opensearch.ResponseImpl;
 import net.lucenews3.opensearch.dom4j.ResponseBuilder;
@@ -35,6 +36,10 @@ public class SearchIndexController<I, O> implements Controller<I, O> {
 		this.maps = new MapUtility();
 	}
 	
+	/**
+	 * Performs a search on the specified index. Transforms the given search results
+	 * into an OpenSearch response.
+	 */
 	@Override
 	public ModelAndView handleRequest(I input, O output) throws Exception {
 		final IndexIdentity indexIdentity = indexIdentityParser.parse(input);
@@ -69,9 +74,19 @@ public class SearchIndexController<I, O> implements Controller<I, O> {
 		openSearchQuery.setRole("request");
 		openSearchQuery.setCount(10);
 		openSearchQuery.setLanguage("en");
-		openSearchQuery.setSearchTerms(searchRequest.getQuery().toString());
+		org.apache.lucene.search.Query query = searchRequest.getQuery();
+		if (query instanceof TextSource) {
+			openSearchQuery.setSearchTerms(((TextSource) query).getText());
+		} else {
+			openSearchQuery.setSearchTerms(searchRequest.getQuery().toString());
+		}
 		openSearchQuery.setTotalResults(results.size());
 		openSearchQueries.add(openSearchQuery);
+		
+		net.lucenews3.opensearch.Query correction = new net.lucenews3.opensearch.QueryImpl();
+		correction.setRole("correction");
+		correction.setSearchTerms("puppy");
+		openSearchQueries.add(correction);
 		
 		net.lucenews3.opensearch.ResultList openSearchResults = openSearchResponse.getResults();
 		for (Result result : displayedResults) {
