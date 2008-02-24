@@ -8,7 +8,7 @@ import org.apache.lucene.search.Query;
  * regeneration of original, user-provided queries from Lucene's objects.
  *
  */
-public class TextAnnotatingQueryParserDelete extends QueryParserDelegateAdaptor {
+public class TextAnnotatingQueryParserDelegate extends QueryParserDelegateAdaptor {
 
 	@Override
 	public Query parse(QueryParserInternals parser, String queryText) throws ParseException {

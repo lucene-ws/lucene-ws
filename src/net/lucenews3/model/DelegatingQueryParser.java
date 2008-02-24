@@ -12,7 +12,12 @@ import org.apache.lucene.queryParser.QueryParserTokenManager;
 import org.apache.lucene.search.Query;
 
 /**
- * Delegates all calls to the given delegate object.
+ * Delegates all calls to the given delegate object. This class implements the
+ * QueryParserInternals interface, thereby exposing the protected internal methods
+ * of the original query parser. This exposing of methods allows the delegate objects
+ * to invoke the original query parser's method via this object. If no delegate object
+ * has been set for this delegating query parser, this object will behave identically
+ * to its parent.
  *
  */
 public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryParser
@@ -63,6 +68,14 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 
 	public void setDelegate(QueryParserDelegate delegate) {
 		this.delegate = delegate;
+	}
+
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
+	}
+
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
 	}
 
 	/**
