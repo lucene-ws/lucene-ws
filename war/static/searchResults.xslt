@@ -127,6 +127,7 @@
 				<xsl:when test="$totalResults &gt; 0">
 					<xsl:for-each select="feed/entry">
 					<xsl:variable name="relevance" select=".75" />
+					<xsl:variable name="relevancePercent" select="$relevance * 100" />
 					<div class="result">
 						<h2>
 							<a>
@@ -136,7 +137,8 @@
 								<xsl:value-of select="title" />
 							</a>
 						</h2>
-						<div class="relevance" style="width: 20%; border: 1px solid Black;"><span style="width: ${$relevance * 100}%; background-color: Red;">boo</span></div>
+						<xsl:value-of select="$relevancePercent" />
+						<div class="relevance" style="width: 100px; border: 1px solid Black;"><span style="width: ${relevancePercent}px; background-color: Red; display: block; height: 1em;"></span></div>
 						<xsl:value-of select="content/div" />
 						<div class="link"><xsl:value-of select="link/@href" /></div>
 					</div>
