@@ -3,65 +3,64 @@ package net.lucenews3.model;
 import java.util.Vector;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Query;
 
 public class QueryParserDelegateAdaptor implements QueryParserDelegate {
 
 	@Override
-	public Query getBooleanQuery(QueryParser parser,
+	public Query getBooleanQuery(QueryParserInternals parser,
 			Vector<BooleanClause> clauses) throws ParseException {
-		throw new UnsupportedOperationException();
+		return parser.getBooleanQuery(clauses);
 	}
 
 	@Override
-	public Query getBooleanQuery(QueryParser parser,
+	public Query getBooleanQuery(QueryParserInternals parser,
 			Vector<BooleanClause> clauses, boolean disableCoord)
 			throws ParseException {
-		throw new UnsupportedOperationException();
+		return parser.getBooleanQuery(clauses, disableCoord);
 	}
 
 	@Override
-	public Query getFieldQuery(QueryParser parser, String field,
+	public Query getFieldQuery(QueryParserInternals parser, String field,
 			String queryText) throws ParseException {
-		throw new UnsupportedOperationException();
+		return parser.getFieldQuery(field, queryText);
 	}
 
 	@Override
-	public Query getFieldQuery(QueryParser parser, String field,
+	public Query getFieldQuery(QueryParserInternals parser, String field,
 			String queryText, int slop) throws ParseException {
-		throw new UnsupportedOperationException();
+		return parser.getFieldQuery(field, queryText, slop);
 	}
 
 	@Override
-	public Query getFuzzyTerm(QueryParser parser, String field, String termStr,
+	public Query getFuzzyTerm(QueryParserInternals parser, String field, String termStr,
 			float minSimilarity) throws ParseException {
-		throw new UnsupportedOperationException();
+		return parser.getFuzzyTerm(field, termStr, minSimilarity);
 	}
 
 	@Override
-	public Query getPrefixQuery(QueryParser parser, String field, String termStr)
+	public Query getPrefixQuery(QueryParserInternals parser, String field, String termStr)
 			throws ParseException {
-		throw new UnsupportedOperationException();
+		return parser.getPrefixQuery(field, termStr);
 	}
 
 	@Override
-	public Query getRangeQuery(QueryParser parser, String field, String part1,
+	public Query getRangeQuery(QueryParserInternals parser, String field, String part1,
 			String part2, boolean inclusive) throws ParseException {
-		throw new UnsupportedOperationException();
+		return parser.getRangeQuery(field, part1, part2, inclusive);
 	}
 
 	@Override
-	public Query getWildcardQuery(QueryParser parser, String field,
+	public Query getWildcardQuery(QueryParserInternals parser, String field,
 			String termStr) throws ParseException {
-		throw new UnsupportedOperationException();
+		return parser.getWildcardQuery(field, termStr);
 	}
 
 	@Override
-	public Query parse(QueryParser parser, String queryText)
+	public Query parse(QueryParserInternals parser, String queryText)
 			throws ParseException {
-		throw new UnsupportedOperationException();
+		return parser.parse(queryText);
 	}
 
 }

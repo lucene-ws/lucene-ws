@@ -1,7 +1,6 @@
 package net.lucenews3.model;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 
 /**
@@ -12,7 +11,7 @@ import org.apache.lucene.search.Query;
 public class TextAnnotatingQueryParserDelete extends QueryParserDelegateAdaptor {
 
 	@Override
-	public Query parse(QueryParser parser, String queryText) throws ParseException {
+	public Query parse(QueryParserInternals parser, String queryText) throws ParseException {
 		return annotate(parser.parse(queryText), queryText);
 	}
 	

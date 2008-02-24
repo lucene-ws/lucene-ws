@@ -15,7 +15,8 @@ import org.apache.lucene.search.Query;
  * Delegates all calls to the given delegate object.
  *
  */
-public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryParser implements QueryParser<String> {
+public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryParser
+		implements QueryParser<String>, QueryParserInternals {
 
 	private QueryParserDelegate delegate;
 	private ExceptionTranslator exceptionTranslator;
@@ -100,11 +101,7 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 			if (isCalledFromDelegate()) {
 				result = super.parse(queryText);
 			} else {
-				try {
-					result = delegate.parse(this, queryText);
-				} catch (UnsupportedOperationException e) {
-					result = super.parse(queryText);
-				}
+				result = delegate.parse(this, queryText);
 			}
 		} catch (ParseException e) {
 			throw exceptionTranslator.translate(e);
@@ -117,14 +114,10 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	public Query getBooleanQuery(Vector clauses)
 			throws ParseException {
 		Query result;
-		if (isCalledFromDelegate()) {
+		if (delegate == null || isCalledFromDelegate()) {
 			result = super.getBooleanQuery(clauses);
 		} else {
-			try {
-				result = delegate.getBooleanQuery(this, clauses);
-			} catch (UnsupportedOperationException e) {
-				result = super.getBooleanQuery(clauses);
-			}
+			result = delegate.getBooleanQuery(this, clauses);
 		}
 		return result;
 	}
@@ -134,14 +127,10 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	public Query getBooleanQuery(Vector clauses, boolean disableCoord)
 			throws ParseException {
 		Query result;
-		if (isCalledFromDelegate()) {
+		if (delegate == null || isCalledFromDelegate()) {
 			result = super.getBooleanQuery(clauses, disableCoord);
 		} else {
-			try {
-				result = delegate.getBooleanQuery(this, clauses, disableCoord);
-			} catch (UnsupportedOperationException e) {
-				result = super.getBooleanQuery(clauses, disableCoord);
-			}
+			result = delegate.getBooleanQuery(this, clauses, disableCoord);
 		}
 		return result;
 	}
@@ -150,14 +139,10 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	public Query getFieldQuery(String field, String queryText)
 			throws ParseException {
 		Query result;
-		if (isCalledFromDelegate()) {
+		if (delegate == null || isCalledFromDelegate()) {
 			result = super.getFieldQuery(field, queryText);
 		} else {
-			try {
-				result = delegate.getFieldQuery(this, field, queryText);
-			} catch (UnsupportedOperationException e) {
-				result = super.getFieldQuery(field, queryText);
-			}
+			result = delegate.getFieldQuery(this, field, queryText);
 		}
 		return result;
 	}
@@ -166,14 +151,10 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	public Query getFieldQuery(String field, String queryText, int slop)
 			throws ParseException {
 		Query result;
-		if (isCalledFromDelegate()) {
+		if (delegate == null || isCalledFromDelegate()) {
 			result = super.getFieldQuery(field, queryText, slop);
 		} else {
-			try {
-				result = delegate.getFieldQuery(this, field, queryText, slop);
-			} catch (UnsupportedOperationException e) {
-				result = super.getFieldQuery(field, queryText, slop);
-			}
+			result = delegate.getFieldQuery(this, field, queryText, slop);
 		}
 		return result;
 	}
@@ -181,14 +162,10 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	public Query getFuzzyTerm(String field, String termStr, float minSimilarity)
 			throws ParseException {
 		Query result;
-		if (isCalledFromDelegate()) {
+		if (delegate == null || isCalledFromDelegate()) {
 			result = super.getFuzzyQuery(field, termStr, minSimilarity);
 		} else {
-			try {
-				result = delegate.getFuzzyTerm(this, field, termStr, minSimilarity);
-			} catch (UnsupportedOperationException e) {
-				result = super.getFuzzyQuery(field, termStr, minSimilarity);
-			}
+			result = delegate.getFuzzyTerm(this, field, termStr, minSimilarity);
 		}
 		return result;
 	}
@@ -196,14 +173,10 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	public Query getPrefixQuery(String field, String termStr)
 			throws ParseException {
 		Query result;
-		if (isCalledFromDelegate()) {
+		if (delegate == null || isCalledFromDelegate()) {
 			result = super.getPrefixQuery(field, termStr);
 		} else {
-			try {
-				result = delegate.getPrefixQuery(this, field, termStr);
-			} catch (UnsupportedOperationException e) {
-				result = super.getPrefixQuery(field, termStr);
-			}
+			result = delegate.getPrefixQuery(this, field, termStr);
 		}
 		return result;
 	}
@@ -212,14 +185,10 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	public Query getRangeQuery(String field, String part1, String part2, boolean inclusive)
 			throws ParseException {
 		Query result;
-		if (isCalledFromDelegate()) {
+		if (delegate == null || isCalledFromDelegate()) {
 			result = super.getRangeQuery(field, part1, part2, inclusive);
 		} else {
-			try {
-				result = delegate.getRangeQuery(this, field, part1, part2, inclusive);
-			} catch (UnsupportedOperationException e) {
-				result = super.getRangeQuery(field, part1, part2, inclusive);
-			}
+			result = delegate.getRangeQuery(this, field, part1, part2, inclusive);
 		}
 		return result;
 	}
@@ -228,14 +197,10 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	public Query getWildcardQuery(String field, String termStr)
 			throws ParseException {
 		Query result;
-		if (isCalledFromDelegate()) {
+		if (delegate == null || isCalledFromDelegate()) {
 			result = super.getWildcardQuery(field, termStr);
 		} else {
-			try {
-				result = delegate.getWildcardQuery(this, field, termStr);
-			} catch (UnsupportedOperationException e) {
-				result = super.getWildcardQuery(field, termStr);
-			}
+			result = delegate.getWildcardQuery(this, field, termStr);
 		}
 		return result;
 	}
