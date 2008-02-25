@@ -12,6 +12,7 @@ public class FieldListToXoxoTransformer extends AbstractBuilder implements Trans
 	@Override
 	public Element transform(FieldList fields) {
 		final Element element = DocumentHelper.createElement("dl");
+		element.addAttribute("class", "xoxo");
 		transform(fields, element);
 		return element;
 	}
