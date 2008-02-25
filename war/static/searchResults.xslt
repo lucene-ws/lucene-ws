@@ -7,7 +7,7 @@
 	<xsl:template match="/">
 		<html>
 			<head>
-				<title><xsl:value-of select="feed/title" /></title>
+				<title><xsl:value-of select="atom:feed/atom:title" /></title>
 				<link rel="icon" href="http://www.lucene-ws.net/images/magnifying_glass.png" />
 				<style type="text/css">
 					body {
@@ -78,11 +78,11 @@
 			<!-- <h1><xsl:value-of select="feed/title" /></h1> -->
 			
 			<xsl:variable name="startIndex">
-				<xsl:value-of select="feed/opensearch:startIndex" />
+				<xsl:value-of select="atom:feed/opensearch:startIndex" />
 			</xsl:variable>
 			
 			<xsl:variable name="resultCount">
-				<xsl:value-of select="count(feed/entry)" />
+				<xsl:value-of select="count(atom:feed/atom:entry)" />
 			</xsl:variable>
 			
 			<xsl:variable name="endIndex">
@@ -90,17 +90,17 @@
 			</xsl:variable>
 			
 			<xsl:variable name="totalResults">
-				<xsl:value-of select="feed/opensearch:totalResults" />
+				<xsl:value-of select="atom:feed/opensearch:totalResults" />
 			</xsl:variable>
 			
 			<xsl:variable name="searchTerms">
-				<xsl:value-of select="feed/Query[@role='request']/@searchTerms" />
+				<xsl:value-of select="atom:feed/Query[@role='request']/@searchTerms" />
 			</xsl:variable>
 			
 			<div id="header">
 				<img id="logo">
 					<xsl:attribute name="src">
-						<xsl:value-of select="feed/logo" />
+						<xsl:value-of select="atom:feed/atom:logo" />
 					</xsl:attribute>
 				</img>
 				
@@ -129,14 +129,14 @@
 			
 			<xsl:choose>
 				<xsl:when test="$totalResults &gt; 0">
-					<xsl:for-each select="feed/entry">
+					<xsl:for-each select="atom:feed/atom:entry">
 					<xsl:variable name="relevance" select=".75" />
 					<xsl:variable name="relevancePercent" select="$relevance * 100" />
 					<div class="result">
 						<h2>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:value-of select="link/@href" />
+									<xsl:value-of select="atom:link/@href" />
 								</xsl:attribute>
 								<xsl:value-of select="title" />
 							</a>
@@ -144,8 +144,8 @@
 						<!--
 						<div class="relevance" style="width: 100px; border: 1px solid Black;"><span style="width: ${relevancePercent}px; background-color: #008000; display: block; height: 5px;"></span></div>
 						-->
-						<xsl:value-of select="content" />
-						<div class="link"><xsl:value-of select="link/@href" /></div>
+						<xsl:value-of select="atom:content" />
+						<div class="link"><xsl:value-of select="atom:link/@href" /></div>
 					</div>
 					</xsl:for-each>
 					
@@ -153,7 +153,7 @@
 						<span>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:value-of select="feed/link[@rel='prev']/@href" />
+									<xsl:value-of select="atom:feed/atom:link[@rel='prev']/@href" />
 								</xsl:attribute>
 								Previous
 							</a>
@@ -161,7 +161,7 @@
 						<span>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:value-of select="feed/link[@rel='next']/@href" />
+									<xsl:value-of select="atom:feed/atom:link[@rel='next']/@href" />
 								</xsl:attribute>
 								Next
 							</a>

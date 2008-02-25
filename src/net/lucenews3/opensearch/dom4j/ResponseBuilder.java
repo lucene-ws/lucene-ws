@@ -15,6 +15,7 @@ import net.lucenews3.opensearch.Result;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
+import org.dom4j.QName;
 
 public class ResponseBuilder extends AbstractBuilder {
 	
@@ -31,9 +32,8 @@ public class ResponseBuilder extends AbstractBuilder {
 	}
 	
 	public Element build(Response response) {
-		final Element element = DocumentHelper.createElement("feed");
+		final Element element = DocumentHelper.createElement(QName.get("feed", atomNamespace));
 		element.add(opensearchNamespace);
-		element.add(atomNamespace);
 		build(response, element);
 		return element;
 	}

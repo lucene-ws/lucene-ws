@@ -22,6 +22,22 @@ public abstract class AbstractBuilder {
 		element.add(child);
 		
 	}
+
+	public void addProperty(Element element, QName qualifiedName, Object value) {
+		addProperty(element, qualifiedName, value, true);
+	}
+	
+	public void addProperty(Element element, QName qualifiedName, Object value, boolean isRequired) {
+		final Element child = DocumentHelper.createElement(qualifiedName);
+		if (value == null) {
+			if (isRequired) {
+				child.add(DocumentHelper.createText(""));
+			}
+		} else {
+			child.add(DocumentHelper.createText(String.valueOf(value)));
+		}
+		element.add(child);
+	}
 	
 	public void addPropertyNS(Element element, String uri, String qualifiedName, Object value) {
 		addPropertyNS(element, uri, qualifiedName, value, true);
