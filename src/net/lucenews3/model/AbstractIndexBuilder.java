@@ -69,11 +69,13 @@ public abstract class AbstractIndexBuilder implements Runnable, InitializingBean
 	}
 	
 	public void run() {
-		try {
-			buildIndex();
-		} catch (Exception e) {
-			result = e;
-			notifyAll();
+		synchronized (this) {
+			try {
+				buildIndex();
+			} catch (Exception e) {
+				result = e;
+				notifyAll();
+			}
 		}
 	}
 	
