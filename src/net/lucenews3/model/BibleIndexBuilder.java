@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import net.lucenews3.test.support.LuceneUtility;
 import net.lucenews3.test.support.MapUtility;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -23,11 +24,13 @@ public class BibleIndexBuilder extends AbstractIndexBuilder {
 	private MapUtility maps;
 	private int documentCount;
 	private int skip;
+	private Logger logger;
 	
 	public BibleIndexBuilder() {
 		this.sourceFile = new File(new File(new File("test"), "data"), "kjv12.txt");
 		this.lucene = new LuceneUtility();
 		this.maps = new MapUtility();
+		this.logger = Logger.getLogger(getClass());
 	}
 	
 	public int buildIndex(IndexWriter writer) throws Exception {
@@ -71,7 +74,7 @@ public class BibleIndexBuilder extends AbstractIndexBuilder {
 			if (bookMatcher.matches()) {
 				book = Integer.valueOf(bookMatcher.group(1));
 				bookName = bookMatcher.group(2);
-				System.out.println("Book: " + book + ", name: " + bookName);
+				logger.info("Book: " + book + ", name: " + bookName);
 			} else if (book != null) {
 				if (chapter != null && verse != null && line.trim().length() == 0) {
 					add(writer, book, bookName, chapter, verse, text);
