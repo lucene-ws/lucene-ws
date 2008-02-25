@@ -14,21 +14,26 @@ import net.lucenews3.opensearch.Result;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
 
 public class ResponseBuilder extends AbstractBuilder {
 	
 	private FeedBuilder feedBuilder;
 	private QueryBuilder queryBuilder;
+	private Namespace opensearchNamespace;
+	private Namespace atomNamespace;
 	
 	public ResponseBuilder() {
 		this.feedBuilder = new FeedBuilder();
 		this.queryBuilder = new QueryBuilder();
+		this.opensearchNamespace = Namespace.get("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
+		this.atomNamespace = Namespace.get("atom", "http://www.w3.org/2005/Atom");
 	}
 	
 	public Element build(Response response) {
 		final Element element = DocumentHelper.createElement("feed");
-		element.addAttribute("xmlns:opensearch", "http://a9.com/-/spec/opensearch/1.1/");
-		element.addAttribute("xmlns", "http://www.w3.org/2005/Atom");
+		element.add(opensearchNamespace);
+		element.add(atomNamespace);
 		build(response, element);
 		return element;
 	}
@@ -55,6 +60,22 @@ public class ResponseBuilder extends AbstractBuilder {
 		}
 		
 		feedBuilder.build(feed, element);
+	}
+
+	public Namespace getOpensearchNamespace() {
+		return opensearchNamespace;
+	}
+
+	public void setOpensearchNamespace(Namespace opensearchNamespace) {
+		this.opensearchNamespace = opensearchNamespace;
+	}
+
+	public Namespace getAtomNamespace() {
+		return atomNamespace;
+	}
+
+	public void setAtomNamespace(Namespace atomNamespace) {
+		this.atomNamespace = atomNamespace;
 	}
 	
 }

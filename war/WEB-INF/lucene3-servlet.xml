@@ -3,6 +3,16 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 	
+	<bean id="atomNamespace" class="org.dom4j.Namespace">
+		<constructor-arg index="0" value="atom" />
+		<constructor-arg index="1" value="http://www.w3.org/2005/Atom" />
+	</bean>
+	
+	<bean id="opensearchNamespace" class="org.dom4j.Namespace">
+		<constructor-arg index="0" value="opensearch" />
+		<constructor-arg index="1" value="http://a9.com/-/spec/opensearch/1.1/" />
+	</bean>
+	
 	<bean id="christmasCarolIndexDirectory" class="net.lucenews3.model.FSDirectoryFactoryBean">
 		<property name="path" value="indexes/christmascarol" />
 	</bean>
