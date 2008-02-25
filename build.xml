@@ -131,6 +131,9 @@
 	<target name="run" depends="war">
 		<jetty tempDirectory="jetty-temp">
 			<webApp name="lucenews3" warfile="${war.file}" contextpath="/lucene3" />
+			<connectors>
+				<selectChannelConnector port="${jetty.port}" />
+			</connectors>
 		</jetty>
 	</target>
 
@@ -180,5 +183,9 @@
 	
 	<taskdef classpathref="jetty.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader">
 	</taskdef>
+	
+	<typedef name="selectChannelConnector" classname="org.mortbay.jetty.nio.SelectChannelConnector"
+                           classpathref="jetty.plugin.classpath" loaderref="jetty.loader" />
+
 
 </project>
