@@ -49,7 +49,7 @@ public class SubsetValueIterator<K, V> implements Iterator<V> {
 
 	@Override
 	public void remove() {
-		collection.remove(current);
+		iterator.remove();
 	}
 
 }

@@ -16,11 +16,11 @@ public class ResultToOpenSearchResultTransformer implements Transformer<Result, 
 		final Document document = result.getDocument();
 		final FieldList fields = document.getFields();
 		
-		String stave = fields.byName("stave").first().stringValue();
-		String paragraph = fields.byName("paragraph").first().stringValue();
+		//String stave = fields.byName("stave").first().stringValue();
+		//String paragraph = fields.byName("paragraph").first().stringValue();
 		
 		openSearchResult.setRelevance(new Double(result.getScore()));
-		openSearchResult.setTitle("Stave " + stave + ", paragraph " + paragraph);
+		openSearchResult.setTitle(fields.first().stringValue());
 		final net.lucenews3.atom.InlineXhtmlContent content = new net.lucenews3.atom.InlineXhtmlContentImpl();
 		content.getContentNodes().add(new FieldListToXoxoTransformer().transform(fields));
 		openSearchResult.setContent(content);

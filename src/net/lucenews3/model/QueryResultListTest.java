@@ -24,11 +24,11 @@ public class QueryResultListTest {
 		
 		Analyzer analyzer = new StandardAnalyzer();
 		IndexWriter writer = new IndexWriter(temp, analyzer, true);
-		BibleIndexer indexer = new BibleIndexer();
+		BibleIndexBuilder indexBuilder = new BibleIndexBuilder();
 		Reader reader = new FileReader(new File("test/data/kjv12.txt"));
 		StopWatch watch = new StopWatch();
 		watch.start();
-		int count = indexer.index(reader, writer);
+		int count = indexBuilder.buildIndex(reader, writer);
 		watch.stop();
 		writer.close();
 		

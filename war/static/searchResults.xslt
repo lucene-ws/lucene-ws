@@ -42,6 +42,10 @@
 						min-height: 1em;
 					}
 					
+					#navigation {
+						text-align: center;
+					}
+					
 					.suggestion {
 						color: #cc0000;
 						margin-bottom: 1em;
@@ -113,7 +117,7 @@
 			<!-- <div>Displaying results <xsl:value-of select="feed/opensearch:startIndex" /> to ? of <xsl:value-of select="feed/opensearch:totalResults" />.</div> -->
 			<div id="summary">
 				<xsl:if test="$resultCount &gt; 0">
-					<span>Results <strong><xsl:value-of select="$startIndex" /> - <xsl:value-of select="$endIndex" /></strong> of <strong><xsl:value-of select="$totalResults" /></strong> for <strong><xsl:value-of select="feed/Query[@role='request']/@searchTerms" /></strong>.</span>
+					<span>Results <strong><xsl:value-of select="format-number($startIndex, '###,###')" /> - <xsl:value-of select="format-number($endIndex, '###,###')" /></strong> of <strong><xsl:value-of select="format-number($totalResults, '###,###')" /></strong> for <strong><xsl:value-of select="feed/Query[@role='request']/@searchTerms" /></strong>.</span>
 				</xsl:if>
 			</div>
 			
@@ -140,17 +144,29 @@
 						<!--
 						<div class="relevance" style="width: 100px; border: 1px solid Black;"><span style="width: ${relevancePercent}px; background-color: #008000; display: block; height: 5px;"></span></div>
 						-->
-						<xsl:value-of select="content/div" />
+						<xsl:value-of select="content" />
 						<div class="link"><xsl:value-of select="link/@href" /></div>
 					</div>
 					</xsl:for-each>
-			
-					<a>
-						<xsl:attribute name="href">
-							<xsl:value-of select="feed/link[@rel=next]/@href" />
-						</xsl:attribute>
-						Next page
-					</a>
+					
+					<div id="navigation">
+						<span>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:value-of select="feed/link[@rel='prev']/@href" />
+								</xsl:attribute>
+								Previous
+							</a>
+						</span>
+						<span>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:value-of select="feed/link[@rel='next']/@href" />
+								</xsl:attribute>
+								Next
+							</a>
+						</span>
+					</div>
 				</xsl:when>
 				<xsl:otherwise>
 					<div>Your search - <strong><xsl:value-of select="$searchTerms" /></strong> - did not match any documents.</div>

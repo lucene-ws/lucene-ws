@@ -3,27 +3,86 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 	
-	<bean id="testIndexDirectory" class="net.lucenews3.model.FSDirectoryFactoryBean">
-		<property name="path" value="christmascarol" />
+	<bean id="christmasCarolIndexDirectory" class="net.lucenews3.model.FSDirectoryFactoryBean">
+		<property name="path" value="indexes/christmascarol" />
 	</bean>
 	
-	<bean id="testIndexBuilder" class="net.lucenews3.model.GutenbergBookIndexer">
-		<property name="indexDirectory" ref="testIndexDirectory" />
+	<bean id="christmasCarolIndexBuilder" class="net.lucenews3.model.GutenbergIndexBuilder">
+		<property name="sourceFile" value="test/data/A Christmas Carol by Charles Dickens.txt" />
+		<property name="directory" ref="christmasCarolIndexDirectory" />
 	</bean>
 	
-	<bean id="testIndex" class="net.lucenews3.model.IndexImpl">
-		<property name="directory" ref="testIndexDirectory" />
+	<bean id="christmasCarolIndex" class="net.lucenews3.model.IndexImpl">
+		<property name="directory" ref="christmasCarolIndexDirectory" />
 		<property name="exceptionTranslator" ref="exceptionTranslator" />
+		<property name="metaData">
+			<bean class="net.lucenews3.model.IndexMetaDataImpl">
+				<property name="name" value="&quot;A Christmas Carol&quot; by Charles Dickens" />
+				<property name="primaryField" value="id" />
+				<property name="defaultFields">
+					<list>
+						<value>text</value>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="kingJamesBibleIndexDirectory" class="net.lucenews3.model.FSDirectoryFactoryBean">
+		<property name="path" value="indexes/kingjames" />
+	</bean>
+	
+	<bean id="kingJamesBibleIndexBuilder" class="net.lucenews3.model.BibleIndexBuilder">
+		<property name="sourceFile" value="test/data/kjv12.txt" />
+		<property name="directory" ref="kingJamesBibleIndexDirectory" />
+	</bean>
+	
+	<bean id="kingJamesBibleIndex" class="net.lucenews3.model.IndexImpl">
+		<property name="directory" ref="kingJamesBibleIndexDirectory" />
+		<property name="metaData">
+			<bean class="net.lucenews3.model.IndexMetaDataImpl">
+				<property name="name" value="The King James Bible" />
+				<property name="primaryField" value="id" />
+				<property name="defaultFields">
+					<list>
+						<value>text</value>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="synonymIndexDirectory" class="net.lucenews3.model.FSDirectoryFactoryBean">
+		<property name="path" value="indexes/synonyms" />
+	</bean>
+	
+	<bean id="synonymIndexBuilder" class="net.lucenews3.model.WordnetSynonymIndexBuilder">
+		<property name="directoryPath" value="indexes/synonyms" />
+	</bean>
+	
+	<bean id="spellChecker" class="org.apache.lucene.search.spell.SpellChecker">
+		<constructor-arg ref="synonymIndexDirectory" />
+	</bean>
+	
+	<bean id="querySpellChecker" class="net.lucenews3.model.QuerySpellChecker">
+		<property name="spellChecker" ref="spellChecker" />
 	</bean>
 
 	<bean id="indexRepository"
 		class="net.lucenews3.model.IndexRepositoryImpl">
 		<constructor-arg>
 			<map>
-				<entry value-ref="testIndex">
+				<entry value-ref="christmasCarolIndex">
 					<key>
 						<bean class="net.lucenews3.model.IndexIdentityImpl">
 							<constructor-arg value="christmasCarol" />
+						</bean>
+					</key>
+				</entry>
+				<entry value-ref="kingJamesBibleIndex">
+					<key>
+						<bean class="net.lucenews3.model.IndexIdentityImpl">
+							<constructor-arg value="kingJamesBible" />
 						</bean>
 					</key>
 				</entry>
@@ -39,15 +98,15 @@
 		class="net.lucenews3.model.HttpIndexIdentityParser">
 	</bean>
 	
-	<bean id="stringQueryParser" class="net.lucenews3.model.NativeQueryParser">
-		<property name="queryParser">
-			<bean class="org.apache.lucene.queryParser.QueryParser">
-				<constructor-arg index="0" value="text" />
-				<constructor-arg index="1">
-					<bean class="org.apache.lucene.analysis.standard.StandardAnalyzer" />
-				</constructor-arg>
-			</bean>
-		</property>
+	<bean id="stringQueryAnalyzer" class="org.apache.lucene.analysis.standard.StandardAnalyzer">
+	</bean>
+	
+	<bean id="stringQueryParser" class="net.lucenews3.queryParser.DelegatingQueryParser">
+		<constructor-arg index="0" value="text" />
+		<constructor-arg index="1" ref="stringQueryAnalyzer" />
+		<constructor-arg index="2">
+			<bean class="net.lucenews3.queryParser.TextAnnotatingQueryParserDelegate" />
+		</constructor-arg>
 	</bean>
 
 	<bean id="httpIndexRangeParser" class="net.lucenews3.model.HttpIndexRangeParser">
@@ -76,6 +135,12 @@
 		<property name="filterParser" ref="httpFilterParser" />
 		<property name="sortParser" ref="httpSortParser" />
 	</bean>
+	
+	<bean id="httpUrlParser" class="net.lucenews3.http.HttpRequestUrlParser">
+	</bean>
+	
+	<bean id="httpBaseUrlParser" class="net.lucenews3.http.HttpRequestBaseUrlParser">
+	</bean>
 
 	<bean id="controller" abstract="true"></bean>
 
@@ -90,6 +155,7 @@
 		class="net.lucenews3.controller.ViewServiceHttpController"
 		parent="controller">
 		<property name="indexesByIdentity" ref="indexRepository" />
+		<property name="baseUrlParser" ref="httpBaseUrlParser" />
 	</bean>
 
 	<!-- Service properties controllers -->
@@ -110,6 +176,9 @@
 		<property name="searchRequestParser"
 			ref="httpSearchRequestParser" />
 		<property name="indexRangeParser" ref="httpIndexRangeParser" />
+		<property name="spellChecker" ref="querySpellChecker" />
+		<property name="urlParser" ref="httpUrlParser" />
+		<property name="baseUrlParser" ref="httpBaseUrlParser" />
 	</bean>
 
 	<bean id="removeIndexController"

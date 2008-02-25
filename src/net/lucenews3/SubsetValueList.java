@@ -48,5 +48,14 @@ public class SubsetValueList<K, V> extends AbstractList<V> {
 		}
 		return value;
 	}
+	
+	@Override
+	public void clear() {
+		Iterator<V> iterator = iterator();
+		while (iterator.hasNext()) {
+			iterator.next();
+			iterator.remove();
+		}
+	}
 
 }

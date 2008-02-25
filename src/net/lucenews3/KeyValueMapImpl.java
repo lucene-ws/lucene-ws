@@ -58,4 +58,17 @@ public class KeyValueMapImpl<K, V> extends AbstractMap<K, List<V>> implements Ke
 		return null;
 	}
 
+	@Override
+	public void add(K key, V value) {
+		List<V> values = get(key);
+		values.add(value);
+	}
+
+	@Override
+	public void put(K key, V value) {
+		List<V> values = get(key);
+		values.clear();
+		values.add(value);
+	}
+
 }
