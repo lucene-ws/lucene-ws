@@ -34,7 +34,7 @@ public abstract class AbstractIndexBuilder implements Runnable, InitializingBean
 		this.autoBuild = true;
 		this.analyzer = new StandardAnalyzer();
 		this.autoCreate = true;
-		this.asynchronous = false;
+		this.asynchronous = true;
 	}
 	
 	public boolean hasResult() {
