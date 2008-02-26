@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.queryParser.Token;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -86,7 +87,7 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 		final org.apache.lucene.search.Query luceneQuery = searchRequest.getQuery();
 		
 		String searchTerms;
-		if (luceneQuery == null) {
+		if (luceneQuery == null || luceneQuery instanceof MatchAllDocsQuery) {
 			searchTerms = "";
 		} else {
 			if (luceneQuery instanceof TokenSource) {

@@ -119,7 +119,14 @@
 			<!-- <div>Displaying results <xsl:value-of select="feed/opensearch:startIndex" /> to ? of <xsl:value-of select="feed/opensearch:totalResults" />.</div> -->
 			<div id="summary">
 				<xsl:if test="$resultCount &gt; 0">
-					<span>Results <strong><xsl:value-of select="format-number($startIndex, '###,###')" /> - <xsl:value-of select="format-number($endIndex, '###,###')" /></strong> of <strong><xsl:value-of select="format-number($totalResults, '###,###')" /></strong> for <strong><xsl:value-of select="$searchTerms" /></strong>.</span>
+					<span>Results <strong><xsl:value-of select="format-number($startIndex, '###,###')" /> - <xsl:value-of select="format-number($endIndex, '###,###')" /></strong>
+						 of <strong><xsl:value-of select="format-number($totalResults, '###,###')" /></strong>
+						<xsl:choose>
+							<xsl:when test="string-length($searchTerms) > 0">
+								 for <strong><xsl:value-of select="$searchTerms" /></strong>.
+							</xsl:when>
+						</xsl:choose>
+					</span>
 				</xsl:if>
 			</div>
 			
