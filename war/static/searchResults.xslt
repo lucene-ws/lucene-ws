@@ -2,10 +2,12 @@
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:atom="http://www.w3.org/2005/Atom"
-	xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+	xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"
+	xmlns:relevance="http://a9.com/-/opensearch/extensions/relevance/1.0/"
+	xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
 	<xsl:template match="/">
-		<html>
+		<html xmlns="http://www.w3.org/1999/xhtml">
 			<head>
 				<title><xsl:value-of select="atom:feed/atom:title" /></title>
 				<link rel="icon" href="http://www.lucene-ws.net/images/magnifying_glass.png" />
@@ -130,21 +132,22 @@
 			<xsl:choose>
 				<xsl:when test="$totalResults &gt; 0">
 					<xsl:for-each select="atom:feed/atom:entry">
-					<xsl:variable name="relevance" select=".75" />
-					<xsl:variable name="relevancePercent" select="$relevance * 100" />
+					<xsl:variable name="score" select="relevance:score" />
+					<xsl:variable name="scorePercentage" select="$score * 100" />
 					<div class="result">
 						<h2>
 							<a>
 								<xsl:attribute name="href">
 									<xsl:value-of select="atom:link/@href" />
 								</xsl:attribute>
-								<xsl:value-of select="title" />
+								<xsl:value-of select="atom:title" />
 							</a>
 						</h2>
 						<!--
 						<div class="relevance" style="width: 100px; border: 1px solid Black;"><span style="width: ${relevancePercent}px; background-color: #008000; display: block; height: 5px;"></span></div>
 						-->
-						<xsl:value-of select="atom:content" />
+						<xsl:value-of select="$scorePercentage" />
+						<xsl:copy-of select="atom:content/xhtml:div" />
 						<div class="link"><xsl:value-of select="atom:link/@href" /></div>
 					</div>
 					</xsl:for-each>

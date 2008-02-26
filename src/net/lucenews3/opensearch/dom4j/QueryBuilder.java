@@ -5,11 +5,19 @@ import net.lucenews3.opensearch.Query;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.QName;
 
 public class QueryBuilder extends AbstractBuilder {
 
+	private Namespace openSearchNamespace;
+
+	public QueryBuilder() {
+		this.openSearchNamespace = Namespace.get("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
+	}
+	
 	public Element build(Query query) {
-		final Element element = DocumentHelper.createElement("Query");
+		final Element element = DocumentHelper.createElement(QName.get("Query", openSearchNamespace));
 		build(query, element);
 		return element;
 	}

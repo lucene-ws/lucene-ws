@@ -9,7 +9,7 @@
 
 	<property name="war.dir"    value="${basedir}/war" />
 	<property name="src.dir"    value="${basedir}/src" />
-	<property name="build.dir"  value="${basedir}/build" />
+	<property name="build.dir"  value="${basedir}/bin" />
 	<property name="lib.dir"    value="${basedir}/lib" />
 	<property name="weblib.dir" value="${war.dir}/WEB-INF/lib" />
 	<property name="dist.dir"   value="dist" />

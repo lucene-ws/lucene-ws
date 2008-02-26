@@ -138,7 +138,7 @@
 	<bean id="httpSortParser"
 		class="net.lucenews3.model.HttpSortParser">
 	</bean>
-
+	
 	<bean id="httpSearchRequestParser"
 		class="net.lucenews3.model.HttpSearchRequestParser">
 		<property name="queryParser" ref="httpQueryParser" />
@@ -150,6 +150,12 @@
 	</bean>
 	
 	<bean id="httpBaseUrlParser" class="net.lucenews3.http.HttpRequestBaseUrlParser">
+	</bean>
+
+	<bean id="openSearchContextTransformer"
+		class="net.lucenews3.opensearch.transform.OpenSearchContextTransformer">
+		<property name="atomNamespace" ref="atomNamespace" />
+		<property name="openSearchNamespace" ref="opensearchNamespace" />
 	</bean>
 
 	<bean id="controller" abstract="true"></bean>
@@ -189,6 +195,7 @@
 		<property name="spellChecker" ref="querySpellChecker" />
 		<property name="urlParser" ref="httpUrlParser" />
 		<property name="baseUrlParser" ref="httpBaseUrlParser" />
+		<property name="searchContextTransformer" ref="openSearchContextTransformer" />
 	</bean>
 
 	<bean id="removeIndexController"
