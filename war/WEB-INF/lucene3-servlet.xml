@@ -112,10 +112,10 @@
 	</bean>
 	
 	<bean id="stringQueryParser" class="net.lucenews3.queryParser.DelegatingQueryParser">
-		<constructor-arg index="0" value="text" />
-		<constructor-arg index="1" ref="stringQueryAnalyzer" />
-		<constructor-arg index="2">
-			<bean class="net.lucenews3.queryParser.TextAnnotatingQueryParserDelegate" />
+		<constructor-arg type="java.lang.String" value="text" />
+		<constructor-arg type="org.apache.lucene.analysis.Analyzer" ref="stringQueryAnalyzer" />
+		<constructor-arg type="net.lucenews3.queryParser.QueryParserDelegate">
+			<bean class="net.lucenews3.model.TokenSourceQueryParserDelegate" />
 		</constructor-arg>
 	</bean>
 

@@ -21,6 +21,8 @@ import net.lucenews3.model.Page;
 import net.lucenews3.model.Result;
 import net.lucenews3.model.ResultList;
 import net.lucenews3.model.SearchContext;
+import net.lucenews3.model.SearchRequest;
+import net.lucenews3.model.TokenSource;
 import net.lucenews3.opensearch.Query;
 import net.lucenews3.opensearch.QueryImpl;
 import net.lucenews3.opensearch.dom4j.QueryBuilder;
@@ -54,6 +56,7 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 	
 	@Override
 	public void transform(final SearchContext context, final Document document) {
+		final SearchRequest searchRequest = context.getSearchRequest();
 		final ResultList results = context.getResults();
 		final IndexRange indexRange = context.getIndexRange();
 		
@@ -79,9 +82,22 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 		addProperty(feed, QName.get("itemsPerPage", openSearchNamespace), (indexRange.toIndex() - indexRange.fromIndex()), false);
 		
 		// Query
+		final org.apache.lucene.search.Query luceneQuery = searchRequest.getQuery();
+		String searchTerms;
+		if (luceneQuery == null) {
+			searchTerms = "";
+		} else {
+			if (luceneQuery instanceof TokenSource) {
+				TokenSource tokenSource = (TokenSource) luceneQuery;
+				searchTerms = tokenSource.getToken().image;
+			} else {
+				searchTerms = luceneQuery.toString();
+			}
+		}
+		
 		final Query query = new QueryImpl();
 		query.setRole("request");
-		query.setSearchTerms("");
+		query.setSearchTerms(searchTerms);
 		feed.add(queryBuilder.build(query));
 		
 		// Links
