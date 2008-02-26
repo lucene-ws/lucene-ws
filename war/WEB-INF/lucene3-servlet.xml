@@ -115,7 +115,7 @@
 		<constructor-arg type="java.lang.String" value="text" />
 		<constructor-arg type="org.apache.lucene.analysis.Analyzer" ref="stringQueryAnalyzer" />
 		<constructor-arg type="net.lucenews3.queryParser.QueryParserDelegate">
-			<bean class="net.lucenews3.model.TokenSourceQueryParserDelegate" />
+			<bean class="net.lucenews3.queryParser.TokenAnnotatingQueryParserDelegate" />
 		</constructor-arg>
 	</bean>
 

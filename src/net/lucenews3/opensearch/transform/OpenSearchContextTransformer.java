@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.queryParser.Token;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -83,13 +84,15 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 		
 		// Query
 		final org.apache.lucene.search.Query luceneQuery = searchRequest.getQuery();
+		
 		String searchTerms;
 		if (luceneQuery == null) {
 			searchTerms = "";
 		} else {
 			if (luceneQuery instanceof TokenSource) {
-				TokenSource tokenSource = (TokenSource) luceneQuery;
-				searchTerms = tokenSource.getToken().image;
+				final TokenSource tokenSource = (TokenSource) luceneQuery;
+				final Token token = tokenSource.getToken();
+				searchTerms = token.image;
 			} else {
 				searchTerms = luceneQuery.toString();
 			}

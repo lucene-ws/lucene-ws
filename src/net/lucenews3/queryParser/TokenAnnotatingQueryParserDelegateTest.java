@@ -8,7 +8,7 @@ import org.apache.lucene.search.Query;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TextAnnotatingQueryParserDelegateTest {
+public class TokenAnnotatingQueryParserDelegateTest {
 
 	private DelegatingQueryParser parser;
 	private QueryParserDelegate delegate;
@@ -16,7 +16,7 @@ public class TextAnnotatingQueryParserDelegateTest {
 	@Before
 	public void setup() {
 		this.parser = new DelegatingQueryParser("default", new StandardAnalyzer());
-		TextAnnotatingQueryParserDelegate textDelegate = new TextAnnotatingQueryParserDelegate();
+		TokenAnnotatingQueryParserDelegate textDelegate = new TokenAnnotatingQueryParserDelegate();
 		LoggingQueryParserDelegate loggingDelegate = new LoggingQueryParserDelegate();
 		this.delegate = textDelegate;
 		textDelegate.target = loggingDelegate;

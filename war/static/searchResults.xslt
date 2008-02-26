@@ -96,7 +96,7 @@
 			</xsl:variable>
 			
 			<xsl:variable name="searchTerms">
-				<xsl:value-of select="atom:feed/Query[@role='request']/@searchTerms" />
+				<xsl:value-of select="atom:feed/opensearch:Query[@role='request']/@searchTerms" />
 			</xsl:variable>
 			
 			<div id="header">
@@ -119,7 +119,7 @@
 			<!-- <div>Displaying results <xsl:value-of select="feed/opensearch:startIndex" /> to ? of <xsl:value-of select="feed/opensearch:totalResults" />.</div> -->
 			<div id="summary">
 				<xsl:if test="$resultCount &gt; 0">
-					<span>Results <strong><xsl:value-of select="format-number($startIndex, '###,###')" /> - <xsl:value-of select="format-number($endIndex, '###,###')" /></strong> of <strong><xsl:value-of select="format-number($totalResults, '###,###')" /></strong> for <strong><xsl:value-of select="feed/Query[@role='request']/@searchTerms" /></strong>.</span>
+					<span>Results <strong><xsl:value-of select="format-number($startIndex, '###,###')" /> - <xsl:value-of select="format-number($endIndex, '###,###')" /></strong> of <strong><xsl:value-of select="format-number($totalResults, '###,###')" /></strong> for <strong><xsl:value-of select="$searchTerms" /></strong>.</span>
 				</xsl:if>
 			</div>
 			
