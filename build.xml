@@ -253,5 +253,4 @@
 	
 	<typedef name="selectChannelConnector" classname="org.mortbay.jetty.nio.SelectChannelConnector" classpathref="jetty.plugin.classpath" loaderref="jetty.loader" />
 
-
 </project>
