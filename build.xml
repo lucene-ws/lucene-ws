@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="Lucene Web Service 3" basedir="." default="run">
+<project name="Lucene Web Service 3" basedir="." default="dist">
 
 	<property file="${basedir}/build.properties" />
 
