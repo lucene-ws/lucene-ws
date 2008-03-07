@@ -185,7 +185,7 @@
 			<ruleset>rulesets/coupling.xml</ruleset>
 			<ruleset>rulesets/codesize.xml</ruleset>
 			<ruleset>rulesets/imports.xml</ruleset>
-			<ruleset>rulesets/naming.xml</ruleset>
+			<!--<ruleset>rulesets/naming.xml</ruleset>-->
 			<formatter type="xml" toFile="${default.target.dir}/pmd_report.xml" />
 			<fileset dir="${source.dir}">
 				<include name="**/*.java" />
