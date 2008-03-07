@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <project name="Lucene Web Service 3" basedir="." default="dist">
-
+	
 	<property file="${basedir}/build.properties" />
 
 	<property name="application.name" value="lucene3" />
