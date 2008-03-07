@@ -10,11 +10,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
 public class ViewStaticResourceController implements HttpController {
 
+	private Logger logger;
 	private File staticRootDirectory;
 	
 	public ViewStaticResourceController() {
@@ -23,6 +25,7 @@ public class ViewStaticResourceController implements HttpController {
 	
 	public ViewStaticResourceController(File staticRootDirectory) {
 		this.staticRootDirectory = staticRootDirectory;
+		this.logger = Logger.getLogger(getClass());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -31,7 +34,9 @@ public class ViewStaticResourceController implements HttpController {
 			HttpServletResponse response) throws Exception {
 		Deque<String> path = (Deque<String>) request.getAttribute("resourcePath");
 		
-		System.err.println("Path: " + path);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Static resource path: " + path);
+		}
 		
 		if (path.isEmpty()) {
 			throw new Exception("No static path");
@@ -42,7 +47,9 @@ public class ViewStaticResourceController implements HttpController {
 			file = new File(file, p);
 		}
 		
-		System.err.println("File: " + file + " (" + file.getAbsolutePath() + ")");
+		if (logger.isDebugEnabled()) {
+			logger.debug("Static resource file: " + file + " (" + file.getAbsolutePath() + ")");
+		}
 		
 		final File resourceFile = file;
 		

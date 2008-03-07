@@ -1,7 +1,6 @@
 package net.lucenews3.model;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,14 +15,18 @@ import net.lucenews3.controller.ViewDocumentController;
 import net.lucenews3.controller.ViewServiceController;
 import net.lucenews3.controller.ViewServicePropertiesController;
 import net.lucenews3.controller.ViewStaticResourceController;
+import net.lucenews3.http.Url;
+import net.lucenews3.http.UrlParser;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 
 public class WebServiceHandlerMapping implements HandlerMapping {
 
+	private Logger logger;
+	private UrlParser<HttpServletRequest> urlParser;
+	private UrlParser<HttpServletRequest> baseUrlParser;
 	private ViewServiceController<?, ?> viewServiceController;
 	private ViewServicePropertiesController<?, ?> viewServicePropertiesController;
 	private CreateIndexController<?, ?> createIndexController;
@@ -35,22 +38,26 @@ public class WebServiceHandlerMapping implements HandlerMapping {
 	private RemoveDocumentController<?, ?> removeDocumentController;
 	private ViewStaticResourceController viewStaticResourceController;
 	
+	public WebServiceHandlerMapping() {
+		this.logger = Logger.getLogger(getClass());
+	}
+	
 	public HandlerExecutionChain getHandler(HttpServletRequest request)
 			throws Exception {
-		Deque<String> tokens = new ArrayDeque<String>();
+		final Url url = urlParser.parse(request);
+		final Url baseUrl = baseUrlParser.parse(request);
 		
-		Logger logger = Logger.getLogger(this.getClass());
-		logger.setLevel(Level.ALL);
+		final Deque<String> tokens = new ArrayDeque<String>();
+		tokens.addAll(url.getPath());
 		
-		String path = request.getRequestURI();
-		System.err.println("context path: " + path);
-		if (path != null && !path.equals("/") && !path.equals("")) {
-			tokens.addAll(Arrays.asList(path.split("/")));
-			tokens.removeFirst();
+		int basePathSize = baseUrl.getPath().size();
+		for (int i = 0; i < basePathSize; i++) {
 			tokens.removeFirst();
 		}
 		
-		System.err.println("Path tokens: " + tokens);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Handler tokens: " + tokens);
+		}
 		
 		if (tokens.isEmpty()) {
 			return getServiceHandler(request);
@@ -59,7 +66,6 @@ public class WebServiceHandlerMapping implements HandlerMapping {
 			if (token0.equals("service.properties")) {
 				return getServicePropertiesHandler(request);
 			} else if (token0.equals("static")) {
-				System.err.println("STATIC!");
 				request.setAttribute("resourcePath", tokens);
 				return new HandlerExecutionChain(viewStaticResourceController);
 			} else {
@@ -127,6 +133,22 @@ public class WebServiceHandlerMapping implements HandlerMapping {
 			return new HandlerExecutionChain(viewServicePropertiesController);
 		}
 		return null;
+	}
+
+	public UrlParser<HttpServletRequest> getUrlParser() {
+		return urlParser;
+	}
+
+	public void setUrlParser(UrlParser<HttpServletRequest> urlParser) {
+		this.urlParser = urlParser;
+	}
+
+	public UrlParser<HttpServletRequest> getBaseUrlParser() {
+		return baseUrlParser;
+	}
+
+	public void setBaseUrlParser(UrlParser<HttpServletRequest> baseUrlParser) {
+		this.baseUrlParser = baseUrlParser;
 	}
 
 	public CreateDocumentController<?, ?> getCreateDocumentController() {

@@ -90,8 +90,7 @@ public class IndexImpl implements Index {
 	}
 
 	public TermList getTerms() {
-		// TODO Auto-generated method stub
-		return null;
+		return new IndexReaderTermList(getIndexReader());
 	}
 
 	public void close() {

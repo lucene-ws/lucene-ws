@@ -26,6 +26,8 @@
 	<property name="debug.target.dir" value="${basedir}/debug" />
 	<property name="default.target.dir" value="${basedir}/test-reports" />
 
+	<property name="emma.coverage.file" value="${basedir}/test-reports/coverage.emma" />
+	
 	<property name="test.report.dir" value="${basedir}/test-reports" />
 	
 	<property name="test.pattern" value="**/*Test*.java" />
@@ -159,6 +161,9 @@
 				<pathelement path="${test.classes.dir}" />
 				<pathelement path="${build.dir}" />
 			</classpath>
+			<!-- ${emma.coverage.file} -->
+			<jvmarg value="-Demma.coverage.out.file=coverage.emma" />
+			<jvmarg value="-Demma.coverage.out.merge=true" />
 			<batchtest todir="${test.report.dir}">
 				<fileset dir="${test.source.dir}">
 					<include name="${test.pattern}" />
@@ -196,7 +201,6 @@
 			<class location="${weblib.dir}/${application.name}.jar" />
 		</findbugs>
 	</target>
-
 
 	<!-- Register external task definitions -->
 

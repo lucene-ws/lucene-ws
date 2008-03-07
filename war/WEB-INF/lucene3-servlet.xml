@@ -108,6 +108,10 @@
 		class="net.lucenews3.model.HttpIndexIdentityParser">
 	</bean>
 	
+	<bean id="httpDocumentIdentityParser" class="net.lucenews3.model.HttpDocumentIdentityParser">
+		
+	</bean>
+	
 	<bean id="stringQueryAnalyzer" class="org.apache.lucene.analysis.standard.StandardAnalyzer">
 	</bean>
 	
@@ -214,8 +218,10 @@
 		parent="controller">
 		<property name="indexIdentityParser" ref="httpIndexIdentityParser" />
 		<property name="indexesByIdentity" ref="indexRepository" />
+		<property name="documentIdentityParser" ref="httpDocumentIdentityParser" />
+		<property name="atomNamespace" ref="atomNamespace" />
 	</bean>
-
+	
 	<bean id="removeDocumentController"
 		class="net.lucenews3.controller.RemoveDocumentHttpController"
 		parent="controller">
@@ -226,12 +232,13 @@
 
 	<bean
 		class="net.lucenews3.model.WebServiceHandlerMapping">
+		<property name="urlParser" ref="httpUrlParser" />
+		<property name="baseUrlParser" ref="httpBaseUrlParser" />
 		<property name="viewServiceController"
 			ref="viewServiceController" />
 		<property name="searchIndexController"
 			ref="searchIndexController" />
-		<property name="viewDocumentController"
-			ref="viewDocumentController" />
+		<property name="viewDocumentController" ref="viewDocumentController" />
 		<property name="viewStaticResourceController" ref="viewStaticResourceController" />
 	</bean>
 	

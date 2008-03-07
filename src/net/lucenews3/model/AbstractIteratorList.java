@@ -11,6 +11,9 @@ import java.util.Set;
 public abstract class AbstractIteratorList<E> implements List<E> {
 
 	@Override
+	public abstract Iterator<E> iterator();
+	
+	@Override
 	public boolean add(E e) {
 		throw new UnsupportedOperationException();
 	}
