@@ -29,7 +29,6 @@
 	<property name="emma.coverage.file" value="${basedir}/test-reports/coverage.emma" />
 	
 	<property name="test.report.dir" value="${basedir}/test-reports" />
-	
 	<property name="test.pattern" value="**/*Test*.java" />
 	
 	<path id="lib.class.path">
