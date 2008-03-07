@@ -5,16 +5,17 @@ import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Map.Entry;
 
 import net.lucenews3.http.HttpConversation;
 import net.lucenews3.http.HttpRequest;
 
 public class ClientUtility {
 	
-	public final Object INDEX_NAME_KEY = new Object();
-	public final Object FIELD_NAME_KEY = new Object();
-	public final Object FIELD_CLASS_KEY = new Object();
-	public final Object FIELD_VALUE_KEY = new Object();
+	public static final Object INDEX_NAME_KEY = new Object();
+	public static final Object FIELD_NAME_KEY = new Object();
+	public static final Object FIELD_CLASS_KEY = new Object();
+	public static final Object FIELD_VALUE_KEY = new Object();
 	
 	@SuppressWarnings("unused")
 	private HttpServletContainer container;
@@ -34,7 +35,16 @@ public class ClientUtility {
 	}
 	
 	public String getRandomIndexName() {
-		return "index-" + Math.abs(random.nextInt());
+		String result;
+		
+		int integer = random.nextInt();
+		if (integer < 0) {
+			result = "index" + integer;
+		} else {
+			result = "index-" + integer;
+		}
+		
+		return result;
 	}
 	
 	public HttpConversation createIndex(final String indexName) {
@@ -58,7 +68,7 @@ public class ClientUtility {
 	
 	public HttpRequest buildIndexCreationRequest(final Map<?, ?>... indexes) {
 		final int count = indexes.length;
-		final StringBuffer body = new StringBuffer();
+		final StringBuffer body = new StringBuffer(55);
 		body.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		if (count != 1) {
 			body.append("<feed>");
@@ -84,7 +94,7 @@ public class ClientUtility {
 	}
 	
 	public String buildIndexCreationEntry(final String indexName, final Map<?, ?> indexProperties) {
-		final StringBuffer body = new StringBuffer();
+		final StringBuffer body = new StringBuffer(42);
 		body.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		try {
 			buildIndexCreationEntry(indexName, indexProperties, body);
@@ -100,8 +110,9 @@ public class ClientUtility {
 		body.append("<content type=\"xhtml\">");
 		body.append("<div xmlns=\"http://www.w3.org/1999/xhtml\">");
 		body.append("<dl class=\"xoxo\">");
-		for (final Object key : indexProperties.keySet()) {
-			final Object value = indexProperties.get(key);
+		for (final Entry<?, ?> entry : indexProperties.entrySet()) {
+			final Object key = entry.getKey();
+			final Object value = entry.getValue();
 			body.append("<dt>" + http.escape(key) + "</dt>");
 			body.append("<dd>" + http.escape(value) + "</dd>");
 		}
@@ -120,7 +131,7 @@ public class ClientUtility {
 	}
 	
 	public HttpRequest buildDocumentCreationRequest(final String indexName, final Map<?, ?>... documents) {
-		final StringBuffer body = new StringBuffer();
+		final StringBuffer body = new StringBuffer(205);
 		body.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		
 		final int count = documents.length;
@@ -136,8 +147,9 @@ public class ClientUtility {
 			body.append("<content type=\"xhtml\">");
 			body.append("<div xmlns=\"http://www.w3.org/1999/xhtml\">");
 			body.append("<dl class=\"xoxo\">");
-			for (final Object key : document.keySet()) {
-				final Object value = document.get(key);
+			for (final Entry<?, ?> entry : document.entrySet()) {
+				final Object key = entry.getKey();
+				final Object value = entry.getValue();
 				if (value.getClass().isArray()) {
 					final int length = Array.getLength(value);
 					for (int i = 0; i < length; i++) {
@@ -168,10 +180,10 @@ public class ClientUtility {
 			body.append(" class=\"" + fieldClass + "\"");
 		}
 		body.append(">");
-		body.append(fieldName.toString());
+		body.append(fieldName);
 		body.append("</dt>");
 		body.append("<dd>");
-		body.append(fieldValue.toString());
+		body.append(fieldValue);
 		body.append("</dd>");
 	}
 	
@@ -185,6 +197,38 @@ public class ClientUtility {
 	
 	public HttpConversation deleteIndex(final String indexName) {
 		return http.send(buildIndexDeletionRequest(indexName));
+	}
+
+	public HttpServletContainer getContainer() {
+		return container;
+	}
+
+	public void setContainer(HttpServletContainer container) {
+		this.container = container;
+	}
+
+	public HttpUtility getHttpUtility() {
+		return http;
+	}
+
+	public void setHttpUtility(HttpUtility http) {
+		this.http = http;
+	}
+
+	public MapUtility getMapUtility() {
+		return map;
+	}
+
+	public void setMapUtility(MapUtility map) {
+		this.map = map;
+	}
+
+	public Random getRandom() {
+		return random;
+	}
+
+	public void setRandom(Random random) {
+		this.random = random;
 	}
 	
 }

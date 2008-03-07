@@ -9,16 +9,16 @@ import org.apache.lucene.search.SortField;
 
 public class SortFieldParserImpl implements SortFieldParser<String> {
 
-	private LocaleParser<String> localeParser;
-	private SortComparatorSourceParser<String> sortComparatorSourceParser;
-	private Pattern pattern;
-	private int scoreGroup;
-	private int docGroup;
-	private int customFieldGroup;
-	private int customFactoryGroup;
-	private int fieldNameGroup;
-	private int localeGroup;
-	private int reverseGroup;
+	private transient LocaleParser<String> localeParser;
+	private transient SortComparatorSourceParser<String> sortComparatorSourceParser;
+	private transient final Pattern pattern;
+	private transient final int scoreGroup;
+	private transient final int docGroup;
+	private transient final int customFieldGroup;
+	private transient final int customFactoryGroup;
+	private transient final int fieldNameGroup;
+	private transient final int localeGroup;
+	private transient final int reverseGroup;
 	
 	public SortFieldParserImpl() {
 		this.pattern = Pattern.compile("((<score>)|(<doc>)|(<custom:\"(\\w+)\":\\s*(\\w+)>)|(\"(\\w+)\"))(\\((\\w+)\\))?(!)?");

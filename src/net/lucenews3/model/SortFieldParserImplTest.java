@@ -8,9 +8,9 @@ import org.junit.Test;
 
 public class SortFieldParserImplTest {
 
-	private SortEqualityComparator sortComparator;
-	private SortFieldEqualityComparator sortFieldComparator;
-	private SortFieldParserImpl parser;
+	private transient SortEqualityComparator sortComparator;
+	private transient SortFieldEqualityComparator sortFieldComparator;
+	private transient SortFieldParserImpl parser;
 	
 	public boolean isEqual(Sort sort1, Sort sort2) {
 		return sortComparator.isEqual(sort1, sort2);
