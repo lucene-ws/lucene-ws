@@ -14,7 +14,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.lucenews.LuceneWebService;
 import net.lucenews3.http.ByteBufferInputStream;
 import net.lucenews3.http.HttpCommunication;
 import net.lucenews3.test.support.ClientUtility;
@@ -61,7 +60,7 @@ public class ClientTest {
 	protected Logger logger;
 	
 	public ClientTest() {
-		this(LuceneWebService.class);
+		//this(LuceneWebService.class);
 	}
 	
 	public ClientTest(Class<? extends HttpServlet> servletClass) {

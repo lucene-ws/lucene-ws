@@ -2,7 +2,7 @@ package net.lucenews3.opensearch;
 
 import java.util.Calendar;
 
-import net.lucenews.atom.Link;
+import net.lucenews3.atom.Link;
 
 public interface Response {
 

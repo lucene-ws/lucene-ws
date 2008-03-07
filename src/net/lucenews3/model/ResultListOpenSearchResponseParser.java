@@ -1,6 +1,7 @@
 package net.lucenews3.model;
 
-import net.lucenews.atom.Link;
+import net.lucenews3.atom.Link;
+import net.lucenews3.atom.LinkImpl;
 import net.lucenews3.opensearch.Query;
 import net.lucenews3.opensearch.QueryImpl;
 import net.lucenews3.opensearch.Response;
@@ -16,7 +17,7 @@ public class ResultListOpenSearchResponseParser implements OpenSearchResponsePar
 		response.getQueries().add(query);
 
 		// link to OpenSearch Description
-		Link descriptionLink = new Link();
+		Link descriptionLink = new LinkImpl();
 		descriptionLink.setHref("http://description");
 		descriptionLink.setRel("search");
 		descriptionLink.setType("application/opensearchdescription+xml");
