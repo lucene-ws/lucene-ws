@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Test;
+
 public class PermutationIteratorTest {
 
 	@SuppressWarnings("unchecked")
@@ -28,6 +30,11 @@ public class PermutationIteratorTest {
 		//	List<String> permutation = i.next();
 		//	System.out.println(permutation);
 		//}
+	}
+	
+	@Test
+	public void testEventually() {
+		// TODO Test PermutationIterator
 	}
 	
 }

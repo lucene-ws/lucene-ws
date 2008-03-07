@@ -212,6 +212,8 @@
 	<bean id="viewDocumentController"
 		class="net.lucenews3.controller.ViewDocumentHttpController"
 		parent="controller">
+		<property name="indexIdentityParser" ref="httpIndexIdentityParser" />
+		<property name="indexesByIdentity" ref="indexRepository" />
 	</bean>
 
 	<bean id="removeDocumentController"
@@ -228,6 +230,8 @@
 			ref="viewServiceController" />
 		<property name="searchIndexController"
 			ref="searchIndexController" />
+		<property name="viewDocumentController"
+			ref="viewDocumentController" />
 		<property name="viewStaticResourceController" ref="viewStaticResourceController" />
 	</bean>
 	

@@ -13,6 +13,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.junit.Test;
 import org.springframework.util.StopWatch;
 
 public class QueryResultListTest {
@@ -60,6 +61,11 @@ public class QueryResultListTest {
 			System.out.println("Document ID: " + result.getDocumentId() + ", book: " + book + ", chapter: " + chapter + ", verse: " + verse);
 			index++;
 		}
+	}
+	
+	@Test
+	public void testEventually() {
+		// TODO Test QueryResultList
 	}
 	
 }

@@ -7,26 +7,37 @@
 	<property name="application.name" value="lucene3" />
 	<property name="application.path" value="/${application.name}" />
 
-	<property name="war.dir"    value="${basedir}/war" />
-	<property name="src.dir"    value="${basedir}/src" />
-	<property name="build.dir"  value="${basedir}/bin" />
-	<property name="lib.dir"    value="${basedir}/lib" />
+	<property name="war.dir" value="${basedir}/war" />
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="source.dir" value="${basedir}/src" />
+	<property name="test.source.dir" value="${basedir}/src" />
+	<property name="build.dir" value="${basedir}/bin" />
+	<property name="lib.dir" value="${basedir}/lib" />
 	<property name="weblib.dir" value="${war.dir}/WEB-INF/lib" />
-	<property name="dist.dir"   value="dist" />
+	<property name="dist.dir" value="dist" />
 	<property name="include.dependencies" value="false" />
 
 	<property name="war.file" value="${dist.dir}/${application.name}.war" />
 
-	<property name="compile.debug"       value="true"/>
-	<property name="compile.deprecation" value="false"/>
-	<property name="compile.optimize"    value="true"/>
+	<property name="compile.debug" value="true" />
+	<property name="compile.deprecation" value="false" />
+	<property name="compile.optimize" value="true" />
+	
+	<property name="debug.target.dir" value="${basedir}/debug" />
+	<property name="default.target.dir" value="${basedir}/test-reports" />
 
+	<property name="test.report.dir" value="${basedir}/test-reports" />
+	
+	<property name="test.pattern" value="**/*Test*.java" />
+	
 	<path id="lib.class.path">
 		<fileset dir="${lib.dir}">
 			<include name="*.jar" />
 		</fileset>
 	</path>
 
+	<target name="init">
+	</target>
 
 	<target name="clean" description="Clean output dirs (build, weblib, dist)">
 
@@ -127,7 +138,7 @@
 	<target name="stop" description="Stop application on Apache Tomcat">
 		<start url="${tomcat.manager.url}" username="${tomcat.manager.user}" password="${tomcat.manager.password}" path="${application.path}" />
 	</target>
-	
+
 	<target name="run" depends="war">
 		<jetty tempDirectory="jetty-temp">
 			<webApp name="lucenews3" warfile="${war.file}" contextpath="/lucene3" />
@@ -137,6 +148,54 @@
 		</jetty>
 	</target>
 
+	<!-- build.classpath -->
+	<target name="test" depends="compile" description="Runs JUnit tests">
+		<mkdir dir="${test.report.dir}" />
+		<junit dir="${basedir}" printSummary="on" fork="true" haltonfailure="false">
+			<sysproperty key="basedir" value="${basedir}" />
+			<formatter type="xml" />
+			<classpath>
+				<path refid="lib.class.path" />
+				<pathelement path="${test.classes.dir}" />
+				<pathelement path="${build.dir}" />
+			</classpath>
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.source.dir}">
+					<include name="${test.pattern}" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+
+	<target name="pmd" depends="init" description="Runs PMD checks against code">
+		<mkdir dir="${default.target.dir}" />
+		<pmd>
+			<ruleset>rulesets/basic.xml</ruleset>
+			<ruleset>rulesets/braces.xml</ruleset>
+			<ruleset>rulesets/javabeans.xml</ruleset>
+			<ruleset>rulesets/unusedcode.xml</ruleset>
+			<ruleset>rulesets/strings.xml</ruleset>
+			<ruleset>rulesets/design.xml</ruleset>
+			<ruleset>rulesets/coupling.xml</ruleset>
+			<ruleset>rulesets/codesize.xml</ruleset>
+			<ruleset>rulesets/imports.xml</ruleset>
+			<ruleset>rulesets/naming.xml</ruleset>
+			<formatter type="xml" toFile="${default.target.dir}/pmd_report.xml" />
+			<fileset dir="${source.dir}">
+				<include name="**/*.java" />
+			</fileset>
+		</pmd>
+	</target>
+	
+	<!-- TODO depends upon "jar" -->
+	<target name="findbugs" depends="compile">
+		<mkdir dir="${debug.target.dir}" />
+		<findbugs classpathref="lib.class.path" pluginlist="${lib.dir}/coreplugin.jar" output="xml" outputFile="${debug.target.dir}/findbugs.xml">
+			<sourcePath path="${source.dir}" />
+			<class location="${weblib.dir}/${application.name}.jar" />
+		</findbugs>
+	</target>
 
 
 	<!-- Register external task definitions -->
@@ -176,16 +235,19 @@
 			<pathelement location="lib/AntelopeTasks_3.4.2.jar" />
 		</classpath>
 	</taskdef>
-	
+
 	<path id="jetty.plugin.classpath">
 		<fileset dir="lib" includes="*.jar" />
 	</path>
-	
+
 	<taskdef classpathref="jetty.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader">
 	</taskdef>
+
+	<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="lib.class.path" />
 	
-	<typedef name="selectChannelConnector" classname="org.mortbay.jetty.nio.SelectChannelConnector"
-                           classpathref="jetty.plugin.classpath" loaderref="jetty.loader" />
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="lib.class.path" />
+	
+	<typedef name="selectChannelConnector" classname="org.mortbay.jetty.nio.SelectChannelConnector" classpathref="jetty.plugin.classpath" loaderref="jetty.loader" />
 
 
 </project>

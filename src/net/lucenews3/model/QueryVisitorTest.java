@@ -3,6 +3,7 @@ package net.lucenews3.model;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
+import org.junit.Test;
 
 public class QueryVisitorTest extends DefaultQueryVisitor {
 
@@ -15,6 +16,11 @@ public class QueryVisitorTest extends DefaultQueryVisitor {
 		Query query = parser.parse(text);
 		
 		visitor.visit(query);
+	}
+	
+	@Test
+	public void testEventually() {
+		// TODO Test QueryVisitor
 	}
 	
 }
