@@ -173,7 +173,7 @@ public class OpenSearchText {
                     Transformer transformer = TransformerFactory.newInstance().newTransformer();
                     for (int i = 0; i < content_nodes.length; i++) {
                         transformer.transform( new DOMSource(content_nodes[i]), new DOMResult(element) );
-                    }
+                    }transformer=null;
                 }
                 catch (TransformerConfigurationException tce) {
                     throw new OpenSearchException(tce.getMessage());
@@ -219,7 +219,7 @@ public class OpenSearchText {
             
             return element;
         }
-        
+        document=null;
         
         throw new OpenSearchException("Unknown format");
     }

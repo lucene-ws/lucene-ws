@@ -7,11 +7,11 @@ public class IndexNotFoundException extends IndicesNotFoundException {
         super( new String[]{ indexName } );
         this.indexName = indexName;
     }
-    
+    @Override
     public int size () {
         return 1;
     }
-    
+    @Override
     public String[] getIndexNames () {
         return new String[]{ getIndexName() };
     }
@@ -19,7 +19,7 @@ public class IndexNotFoundException extends IndicesNotFoundException {
     public String getIndexName () {
         return indexName;
     }
-    
+    @Override
     public String getMessage () {
         return "Index '" + getIndexName() + "' was not found";
     }

@@ -1,7 +1,6 @@
 package net.lucenews;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -24,19 +23,19 @@ public class LuceneResponse extends HttpServletResponseWrapper {
         return new LuceneResponse( response );
     }
     
-    
+    @Override
     @Deprecated
     public String encodeRedirectUrl (String url) {
         return encodeRedirectURL( url );
     }
     
-    
+    @Override
     @Deprecated
     public String encodeUrl (String url) {
         return encodeURL( url );
     }
     
-    
+    @Override
     @Deprecated
     public void setStatus (int sc, String sm) {
         setStatus( sc );
@@ -80,7 +79,7 @@ public class LuceneResponse extends HttpServletResponseWrapper {
     }*/
     
     
-    
+    @Override
     public void setStatus (int status) {
         this.status = status;
         super.setStatus( status );

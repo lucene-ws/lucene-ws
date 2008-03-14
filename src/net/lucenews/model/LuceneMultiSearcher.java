@@ -1,5 +1,4 @@
 package net.lucenews.model;
-
 import java.io.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.search.*;
@@ -37,22 +36,22 @@ public class LuceneMultiSearcher extends MultiSearcher
         
         return document;
     }
-    
+    @Override
     @Deprecated
     public Explanation explain (Query query, int doc) throws IOException {
         return super.explain( query, doc );
     }
-    
+    @Override
     @Deprecated
     public void search (Query query, Filter filter, HitCollector results) throws IOException {
         super.search( query, filter, results );
     }
-    
+    @Override
     @Deprecated
     public TopDocs search (Query query, Filter filter, int n) throws IOException {
         return super.search( query, filter, n );
     }
-    
+    @Override
     @Deprecated
     public TopFieldDocs search (Query query, Filter filter, int n, Sort sort) throws IOException {
         return super.search( query, filter, n, sort );
