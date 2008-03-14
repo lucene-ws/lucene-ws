@@ -6,7 +6,6 @@ import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import net.lucenews.*;
 import net.lucenews.atom.*;
-import net.lucenews.controller.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.view.*;
@@ -35,7 +34,6 @@ public class ServicePropertiesController extends Controller {
             TransformerException, IOException
     {
         LuceneWebService   service      = c.getService();
-        LuceneIndexManager manager      = service.getIndexManager();
         LuceneRequest      request      = c.getRequest();
         LuceneResponse     response     = c.getResponse();
         Calendar           lastModified = service.getPropertiesLastModified();
@@ -53,7 +51,7 @@ public class ServicePropertiesController extends Controller {
         
         
         if (!request.shouldHandle( lastModified, httpDate )) {
-            response.setStatus( response.SC_NOT_MODIFIED );
+            response.setStatus( LuceneResponse.SC_NOT_MODIFIED );
             return;
         }
         
@@ -64,7 +62,7 @@ public class ServicePropertiesController extends Controller {
         
         entry.setTitle( service.getTitle() );
         entry.setUpdated( service.getPropertiesLastModified() );
-        entry.setID( service.getServicePropertiesURI( request ).toString() );
+        entry.setID( LuceneWebService.getServicePropertiesURI( request ).toString() );
         entry.setContent( XOXOController.asContent( c, service.getProperties() ) );
         entry.addAuthor( new Author( service.getTitle() ) );
         
@@ -94,7 +92,6 @@ public class ServicePropertiesController extends Controller {
             TransformerException, IOException, AtomParseException
     {
         LuceneWebService   service  = c.getService();
-        LuceneIndexManager manager  = service.getIndexManager();
         LuceneRequest      request  = c.getRequest();
         LuceneResponse     response = c.getResponse();
         
@@ -125,11 +122,9 @@ public class ServicePropertiesController extends Controller {
         Entry entry = entries[ 0 ];
         
         Properties properties = XOXOController.asProperties( c, entry );
-        
         service.setProperties( properties );
-        
-        response.addHeader( "Location", service.getServicePropertiesURI( request ).toString() );
-        
+        service.storeProperties();
+        response.addHeader( "Location", LuceneWebService.getServicePropertiesURI( request ).toString() );
         XMLController.acknowledge( c );
     }
     
@@ -156,7 +151,6 @@ public class ServicePropertiesController extends Controller {
             TransformerException, IOException, AtomParseException
     {
         LuceneWebService   service  = c.getService();
-        LuceneIndexManager manager  = service.getIndexManager();
         LuceneRequest      request  = c.getRequest();
         LuceneResponse     response = c.getResponse();
         
@@ -190,8 +184,8 @@ public class ServicePropertiesController extends Controller {
         
         service.addProperties( properties );
         
-        response.addHeader( "Location", service.getServicePropertiesURI( request ).toString() );
-        
+        response.addHeader( "Location", LuceneWebService.getServicePropertiesURI( request ).toString() );
+        service.storeProperties();
         XMLController.acknowledge( c );
     }
     
