@@ -118,13 +118,14 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 	public E previous() {
 		E result;
 		
-		if (!hasPrevious()) {
+		if (hasPrevious()) {
+			Link previousLink = currentLink.previous;
+			result = previousLink.value;
+			currentLink = previousLink;
+		} else {
 			throw new NoSuchElementException();
 		}
 		
-		Link previousLink = currentLink.previous;
-		result = previousLink.value;
-		currentLink = previousLink;
 		
 		return result;
 	}
@@ -133,12 +134,11 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 	public int previousIndex() {
 		int result;
 		
-		if (!hasPrevious()) {
+		if (hasPrevious()) {
+			result = currentLink.previous.index;
+		} else {
 			throw new RuntimeException();
 		}
-		
-		Link previousLink = currentLink.previous;
-		result = previousLink.index;
 		
 		return result;
 	}

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import net.lucenews3.http.HttpRequest;
 import net.lucenews3.http.HttpResponse;
+import net.lucenews3.test.support.ClientUtility;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.lucene.index.IndexReader;
@@ -21,7 +22,7 @@ public class ServicePostTest extends ClientTest {
 	private final Object NAME_KEY;
 	
 	public ServicePostTest() {
-		this.NAME_KEY = client.INDEX_NAME_KEY;
+		this.NAME_KEY = ClientUtility.INDEX_NAME_KEY;
 	}
 	
 	/**

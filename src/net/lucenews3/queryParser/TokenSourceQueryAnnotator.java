@@ -164,26 +164,28 @@ public class TokenSourceQueryAnnotator {
 			// Attempt to locate the default constructor, if any
 			queryClass.getConstructor();
 			
-			MethodVisitor cons = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] { queryType, tokenType }), null, null);
-			cons.visitCode();
-			cons.visitVarInsn(Opcodes.ALOAD, 0);
+			// Declare constructor: public <init>(Query target, Token token)
+			MethodVisitor constructor = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] { queryType, tokenType }), null, null);
+			
+			constructor.visitCode();
+			constructor.visitVarInsn(Opcodes.ALOAD, 0);
 			
 			// Super class constructor
-			cons.visitInsn(Opcodes.DUP);
-			cons.visitMethodInsn(Opcodes.INVOKESPECIAL, queryType.getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] { }));
+			constructor.visitInsn(Opcodes.DUP);
+			constructor.visitMethodInsn(Opcodes.INVOKESPECIAL, queryType.getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] { }));
 			
 			// Store target
-			cons.visitInsn(Opcodes.DUP);
-			cons.visitVarInsn(Opcodes.ALOAD, 1);
-			cons.visitFieldInsn(Opcodes.PUTFIELD, subclassType.getInternalName(), "target", queryType.getDescriptor());
+			constructor.visitInsn(Opcodes.DUP);
+			constructor.visitVarInsn(Opcodes.ALOAD, 1);
+			constructor.visitFieldInsn(Opcodes.PUTFIELD, subclassType.getInternalName(), "target", queryType.getDescriptor());
 			
 			// Store query
-			cons.visitVarInsn(Opcodes.ALOAD, 2);
-			cons.visitFieldInsn(Opcodes.PUTFIELD, subclassType.getInternalName(), "token", tokenType.getDescriptor());
+			constructor.visitVarInsn(Opcodes.ALOAD, 2);
+			constructor.visitFieldInsn(Opcodes.PUTFIELD, subclassType.getInternalName(), "token", tokenType.getDescriptor());
 			
-			cons.visitInsn(Opcodes.RETURN);
-			cons.visitMaxs(3, 3);
-			cons.visitEnd();
+			constructor.visitInsn(Opcodes.RETURN);
+			constructor.visitMaxs(3, 3);
+			constructor.visitEnd();
 			
 		} catch (SecurityException e) {
 			throw exceptionTranslator.translate(e);
@@ -253,22 +255,6 @@ public class TokenSourceQueryAnnotator {
 		// Generate getter/setter methods for token
 		visitFieldAccessor(cw, subclassInternalName, "token", Type.getDescriptor(tokenClass));
 		visitFieldMutator(cw, subclassInternalName, "token", Type.getDescriptor(tokenClass));
-		
-		/**
-		String methodSig = Type.getMethodDescriptor(Type.getType(String.class), new Type[] { Type.getType(String.class) });
-		MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "toString", methodSig, null, null);
-		mv.visitCode();
-		mv.visitVarInsn(Opcodes.ALOAD, 0);
-		mv.visitVarInsn(Opcodes.ALOAD, 0);
-		mv.visitFieldInsn(Opcodes.GETFIELD, subclassInternalName, "target", Type.getDescriptor(queryClass));
-		mv.visitVarInsn(Opcodes.ALOAD, 1);
-		//mv.visitVarInsn(Opcodes.ALOAD, 0);
-		mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(Query.class), "toString", methodSig);
-		//mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(queryClass), "toString", Type.getMethodDescriptor(Type.getType(String.class), new Type[]{}));
-		mv.visitInsn(Opcodes.ARETURN);
-		mv.visitMaxs(3, 2);
-		mv.visitEnd();
-		*/
 		
 		for (Method method : queryClass.getMethods()) {
 			visitForwardedMethod(cw, method, subclassInternalName, queryClass);

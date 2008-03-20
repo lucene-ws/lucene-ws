@@ -1,5 +1,7 @@
 package net.lucenews3;
 
+import java.util.Properties;
+
 import net.lucenews3.model.Index;
 
 /**
@@ -9,5 +11,9 @@ import net.lucenews3.model.Index;
 public interface Service {
 	
 	public Index getIndex(String key);
+	
+	public Properties getProperties();
+	
+	public void setProperties(Properties properties);
 	
 }

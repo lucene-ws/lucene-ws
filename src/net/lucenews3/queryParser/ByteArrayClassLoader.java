@@ -1,4 +1,5 @@
 package net.lucenews3.queryParser;
+
 public class ByteArrayClassLoader extends ClassLoader {
 	
 	public ByteArrayClassLoader() {

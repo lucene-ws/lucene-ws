@@ -25,7 +25,7 @@ public class TokenAnnotatingQueryParserDelegate extends QueryParserDelegateAdapt
 		Token token = parser.getToken(0);
 		if (token == null) {
 			token = buildToken(queryText);
-		} else if (token.image == null || token.image.trim().length() == 0) {
+		} else if (token.image == null || token.image.trim().equals("")) {
 			buildToken(queryText, token);
 		}
 		return annotate(super.parse(parser, queryText), token);
