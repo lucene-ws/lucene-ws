@@ -1,42 +1,80 @@
 package net.lucenews3.model;
 
 import java.io.File;
-import java.util.concurrent.BlockingQueue;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+ * Responsible for discovering indexes within the file system.
+ *
+ */
 public class IndexDiscoverer implements Runnable, InitializingBean {
 	
-	private BlockingQueue<Runnable> queue;
+	private Map<IndexIdentity, Index> indexesByIdentity;
+	private Set<File> visitedDirectories;
+	private Logger logger;
+	
+	public IndexDiscoverer() {
+		this.visitedDirectories = new HashSet<File>();
+		this.logger = Logger.getLogger(getClass());
+	}
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		final File directory = new File(".");
 		
+		if (logger.isInfoEnabled()) {
+			try {
+				logger.info("Beginning search for indexes in " + directory.getCanonicalPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		search(directory);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-		
+		new Thread(this).start();
 	}
 	
 	public void search(File directory) {
-		if (isIndex(directory)) {
-			Runnable registrar = getIndexRegistrar(directory);
+		if (directory == null) {
+			// Don't bother with this directory
+		} else if (visitedDirectories.contains(directory)) {
+			// Don't bother with this directory
+		} else if (directory.isDirectory()) {
+			visitedDirectories.add(directory);
 			
-			boolean isAdded = false;
-			while (!isAdded) {
+			if (isIndex(directory)) {
 				try {
-					queue.put(registrar);
-					isAdded = true;
-				} catch (InterruptedException e) {
-					isAdded = false;
+					final IndexIdentity indexIdentity = buildIndexIdentity(directory);
+					final Index index = buildIndex(directory);
+					indexesByIdentity.put(indexIdentity, index);
+				} catch (IOException e) {
+					// TODO
+					e.printStackTrace();
 				}
+			} else {
+				// Search children first
+				final File[] childFiles = directory.listFiles();
+				for (File childFile : childFiles) {
+					search(childFile);
+				}
+				
+				// Search parent afterward
+				final File parentFile = directory.getParentFile();
+				search(parentFile);
 			}
-			
-			
 		}
 	}
 
@@ -44,8 +82,27 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 		return IndexReader.indexExists(directory);
 	}
 	
-	public Runnable getIndexRegistrar(File directory) {
-		return null;
+	public IndexIdentity buildIndexIdentity(File directory) {
+		return new IndexIdentityImpl(directory.getName());
+	}
+	
+	public Index buildIndex(File directory) throws IOException {
+		IndexImpl index = new IndexImpl();
+		index.setDirectory(FSDirectory.getDirectory(directory));
+		
+		IndexMetaDataImpl metaData = new IndexMetaDataImpl();
+		metaData.setName(directory.getCanonicalPath());
+		index.setMetaData(metaData);
+		
+		return index;
+	}
+
+	public Map<IndexIdentity, Index> getIndexesByIdentity() {
+		return indexesByIdentity;
+	}
+
+	public void setIndexesByIdentity(Map<IndexIdentity, Index> indexesByIdentity) {
+		this.indexesByIdentity = indexesByIdentity;
 	}
 	
 }

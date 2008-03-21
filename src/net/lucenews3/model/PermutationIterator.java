@@ -28,74 +28,107 @@ import java.util.NoSuchElementException;
  */
 public class PermutationIterator<T> implements Iterator<List<T>> {
 
-	private Object[][] valuesByIndex;
-	private int[] positionsByIndex;
-	private int highIndex;
-	private List<T> next;
+	private Iterable<T>[] iterables;
+	private Iterator<T>[] iterators;
+	private List<T> currentPermutation;
+	private Boolean hasNext;
+	
+	@SuppressWarnings("unchecked")
+	public static void main(String... arguments) throws Exception {
+		List<String> a = new ArrayList<String>();
+		a.add("Adam");
+		a.add("Karen");
+		
+		List<String> b = new ArrayList<String>();
+		b.add("Paynter");
+		b.add("Buhler");
+		
+		PermutationIterator<String> i = new PermutationIterator<String>(a, b);
+		
+		while (i.hasNext()) {
+			System.out.println(i.next());
+		}
+	}
 	
 	@SuppressWarnings("unchecked")
 	public PermutationIterator(Iterable<T>... iterables) {
-		this.valuesByIndex = new Object[iterables.length][];
-		this.positionsByIndex = new int[iterables.length];
-		this.highIndex = iterables.length - 1;
-		this.next = new ArrayList<T>(iterables.length);
-		for (int i = 0; i < iterables.length; i++) {
-			List<T> values = new ArrayList<T>();
-			Iterator<T> iterator = iterables[i].iterator();
-			while (iterator.hasNext()) {
-				values.add(iterator.next());
+		this.iterables = iterables;
+		
+		// Prime the iterators
+		this.hasNext = null;
+		this.iterators = new Iterator[this.iterables.length];
+		for (int i = 0; i < this.iterables.length; i++) {
+			final Iterator<T> iterator = this.iterables[i].iterator();
+			this.iterators[i] = iterator;
+			if (iterator.hasNext()) {
+				// Good!
+			} else {
+				this.hasNext = false;
+				break;
 			}
-			this.valuesByIndex[i] = values.toArray(new Object[]{});
-			this.positionsByIndex[i] = 0;
-			this.next.add((T) this.valuesByIndex[i][0]);
 		}
-		this.positionsByIndex[0] = -1;
+		
+		this.currentPermutation = new ArrayList<T>(this.iterables.length);
 	}
-	
-	@SuppressWarnings("unchecked")
-	public PermutationIterator(List<Iterable<T>> iterables) {
-		this(iterables.toArray(new Iterable[]{}));
-	}
-	
+
+	@Override
 	public boolean hasNext() {
-		System.err.println("Is " + positionsByIndex[highIndex] + " less than " + valuesByIndex[highIndex].length);
-		return positionsByIndex[highIndex] < valuesByIndex[highIndex].length;
+		if (hasNext == null) {
+			hasNext = moveNext();
+		}
+		
+		return hasNext;
 	}
-	
+
+	@Override
 	public List<T> next() {
-		if (!hasNext()) {
+		List<T> result;
+		
+		if (hasNext()) {
+			result = currentPermutation;
+			hasNext = null;
+		} else {
 			throw new NoSuchElementException();
 		}
-		List<T> result = new ArrayList<T>();
-		result.addAll(next);
-		moveNext();
+		
 		return result;
 	}
 	
-	protected void moveNext() {
-		moveNext(0);
+	/**
+	 * Attempts to move the iterator on to the next permutation.
+	 * 
+	 * @return true on success, false otherwise
+	 */
+	public boolean moveNext() {
+		return moveNext(0);
 	}
 	
-	@SuppressWarnings("unchecked")
-	protected void moveNext(int index) {
-		try {
-			System.err.println("Moving ahead index " + index);
+	public boolean moveNext(int index) {
+		boolean result;
+		
+		if (index == iterables.length) {
+			result = false;
+		} else if (currentPermutation.size() == index) {
+			currentPermutation.add(iterators[index].next());
+			moveNext(index + 1);
+			result = true;
+		} else {
+			final Iterator<T> iterator = iterators[index];
 			
-			positionsByIndex[index]++;
-			
-			if (positionsByIndex[index] < valuesByIndex[index].length) {
-				// Good
+			if (iterator.hasNext()) {
+				currentPermutation.set(index, iterator.next());
+				result = true;
 			} else {
-				moveNext(index + 1);
-				positionsByIndex[index] = 0;
+				// Wrap around with a new iterator
+				iterators[index] = iterables[index].iterator();
+				currentPermutation.set(index, iterators[index].next());
+				
+				// Move the next position's iterator ahead
+				result = moveNext(index + 1);
 			}
-			
-			next.set(index, (T) valuesByIndex[index][positionsByIndex[index]]);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			// Uppermost index has increased, we are done
-			System.err.println("Error, high position at " + positionsByIndex[highIndex]);
-			e.printStackTrace();
 		}
+		
+		return result;
 	}
 
 	@Override

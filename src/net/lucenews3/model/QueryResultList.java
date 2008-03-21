@@ -6,6 +6,7 @@ import java.util.List;
 import net.lucenews3.ExceptionTranslator;
 import net.lucenews3.ExceptionTranslatorImpl;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Filter;
@@ -26,6 +27,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 	private SortMerger sortMerger;
 	private Hits hits;
 	private boolean initialized;
+	private Logger logger;
 	
 	public QueryResultList(QueryResultList prototype) {
 		this.exceptionTranslator = prototype.exceptionTranslator;
@@ -37,6 +39,7 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		this.sortMerger = prototype.sortMerger;
 		this.hits = prototype.hits;
 		this.initialized = prototype.initialized;
+		this.logger = Logger.getLogger(getClass());
 	}
 	
 	public QueryResultList() {
@@ -46,27 +49,32 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 		this.sortMerger = new SortMergerImpl();
 		this.initialized = false;
 		this.searchRequest = new SearchRequestImpl();
+		this.logger = Logger.getLogger(getClass());
 	}
 	
 	public QueryResultList(Searcher searcher) {
 		this(searcher, new MatchAllDocsQuery());
+		this.logger = Logger.getLogger(getClass());
 	}
 	
 	public QueryResultList(Searcher searcher, Query query) {
 		this();
 		this.searcher = searcher;
 		this.searchRequest.setQuery(query);
+		this.logger = Logger.getLogger(getClass());
 	}
 	
 	public QueryResultList(Searcher searcher, QueryParser queryParser) {
 		this();
 		this.searcher = searcher;
 		this.queryParser = queryParser;
+		this.logger = Logger.getLogger(getClass());
 	}
 	
 	public QueryResultList(Searcher searcher, SearchRequest searchRequest) {
 		this();
 		this.searcher = searcher;
+		this.logger = Logger.getLogger(getClass());
 	}
 	
 	public ExceptionTranslator getExceptionTranslator() {
@@ -143,10 +151,20 @@ public class QueryResultList extends AbstractList<Result> implements ResultList 
 
 	public void initialize() {
 		if (!initialized) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Initializing");
+			}
+			
 			if (searchRequest == null) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Initializing with a MatchAllDocsQuery query");
+				}
 				searchRequest = new SearchRequestImpl(new MatchAllDocsQuery());
 			}
 			if (searchRequest.getQuery() == null) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Initializing with a MatchAllDocsQuery query");
+				}
 				searchRequest.setQuery(new MatchAllDocsQuery());
 			}
 			hits = searchRequest.search(searcher);

@@ -147,11 +147,15 @@ public abstract class AbstractIndexBuilder implements Runnable, InitializingBean
 	public void afterPropertiesSet() throws Exception {
 		if (autoBuild) {
 			if (directory != null && IndexReader.indexExists(directory)) {
-				return;
+				if (logger.isInfoEnabled()) {
+					logger.info("Not building index in \"" + directory + "\", an index already exists");
+				}
 			}
 			
 			if (directoryPath != null && IndexReader.indexExists(directoryPath)) {
-				return;
+				if (logger.isInfoEnabled()) {
+					logger.info("Not building index in \"" + directoryPath + "\", an index already exists");
+				}
 			}
 			
 			if (logger.isInfoEnabled()) {

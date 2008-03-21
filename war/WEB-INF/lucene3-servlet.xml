@@ -3,6 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 	
+	<bean id="log4jConfigurer" class="net.lucenews3.model.Log4JConfigurer">
+	</bean>
+	
 	<bean id="atomNamespace" class="org.dom4j.Namespace">
 		<constructor-arg index="0" value="atom" />
 		<constructor-arg index="1" value="http://www.w3.org/2005/Atom" />
@@ -77,6 +80,14 @@
 	<bean id="querySpellChecker" class="net.lucenews3.model.QuerySpellChecker">
 		<property name="spellChecker" ref="spellChecker" />
 	</bean>
+	
+	<bean id="methodInvoker" class="net.lucenews3.model.MethodInvokerImpl">
+	</bean>
+	
+	<bean id="cloner" class="net.lucenews3.model.ClonerImpl">
+		<property name="methodInvoker" ref="methodInvoker" />
+		<property name="exceptionTranslator" ref="exceptionTranslator" />
+	</bean>
 
 	<bean id="indexRepository"
 		class="net.lucenews3.model.IndexRepositoryImpl">
@@ -99,9 +110,18 @@
 			</map>
 		</constructor-arg>
 	</bean>
+	
+	<bean id="indexDiscoverer" class="net.lucenews3.model.IndexDiscoverer">
+		<property name="indexesByIdentity" ref="indexRepository" />
+	</bean>
 
 	<bean id="exceptionTranslator"
 		class="net.lucenews3.ExceptionTranslatorImpl">
+		<property name="customMappings">
+			<map key-type="java.lang.Class" value-type="java.lang.Class">
+				<entry key="java.lang.NoSuchMethodException" value="net.lucenews3.model.NoSuchMethodRuntimeException" />
+			</map>
+		</property>
 	</bean>
 
 	<bean id="httpIndexIdentityParser"

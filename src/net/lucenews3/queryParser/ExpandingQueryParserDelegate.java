@@ -8,7 +8,7 @@ package net.lucenews3.queryParser;
 public class ExpandingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	
 	public ExpandingQueryParserDelegate() {
-		// TODO Actuall implement this
+		// TODO Actually implement this
 	}
 	
 }
