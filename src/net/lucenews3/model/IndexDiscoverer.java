@@ -54,14 +54,13 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 	}
 	
 	public void search(File directory) throws IOException {
-		visitedDirectories.add(directory.getCanonicalFile());
-		
+		//System.err.println(directory);
 		if (directory == null) {
 			// Don't bother with this directory
 		} else if (visitedDirectories.contains(directory.getCanonicalFile())) {
 			// Don't bother with this directory
 		} else if (directory.isDirectory()) {
-			//visitedDirectories.add(directory.getCanonicalFile());
+			visitedDirectories.add(directory.getCanonicalFile());
 			
 			if (isIndex(directory) && isDiscoverable(directory)) {
 				try {
@@ -70,7 +69,7 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 					indexesByIdentity.put(indexIdentity, index);
 				} catch (IOException e) {
 					// TODO
-					e.printStackTrace();
+					throw e;
 				}
 			} else {
 				// Search children first
@@ -90,19 +89,20 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 		return IndexReader.indexExists(directory);
 	}
 	
-	public boolean isDiscoverable(File directory) {
+	public boolean isDiscoverable(File directory) throws IOException {
 		return !isDiscovered(directory);
+		//return true;
 	}
 	
-	public boolean isDiscovered(File directory) {
+	public boolean isDiscovered(File directory) throws IOException {
 		for (Index index : indexesByIdentity.values()) {
 			if (index instanceof IndexImpl) {
 				IndexImpl indexImpl = (IndexImpl) index;
 				Directory luceneDirectory = indexImpl.getDirectory();
 				if (luceneDirectory instanceof FSDirectory) {
 					FSDirectory luceneFSDirectory = (FSDirectory) luceneDirectory;
-					if (true) throw new RuntimeException(luceneFSDirectory.getFile().toString());
-					if (visitedDirectories.contains(luceneFSDirectory.getFile())) {
+					//if (true) throw new RuntimeException(luceneFSDirectory.getFile().toString());
+					if (visitedDirectories.contains(luceneFSDirectory.getFile().getCanonicalFile())) {
 						return true;
 					}
 				}
