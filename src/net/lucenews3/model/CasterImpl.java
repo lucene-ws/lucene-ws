@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import net.lucenews3.ExceptionTranslator;
+import net.lucenews3.ExceptionTranslatorImpl;
 
 public class CasterImpl implements Caster {
 
@@ -22,6 +23,7 @@ public class CasterImpl implements Caster {
 	
 	public CasterImpl() {
 		this.logger = Logger.getLogger(getClass());
+		this.exceptionTranslator = new ExceptionTranslatorImpl();
 		
 		synchronized (wrapperClasses) {
 			if (wrapperClasses.isEmpty()) {
@@ -117,17 +119,26 @@ public class CasterImpl implements Caster {
 		return new MapEntryImpl<K, V>(key, value);
 	}
 	
+	public <I, O> boolean hasCastMethod(Class<I> inputType, Class<O> outputType) {
+		return getCastMethod(inputType, outputType) != null;
+	}
+	
+	public <I, O> Method getCastMethod(Class<I> inputType, Class<O> outputType) {
+		Method result;
+		
+		final Map.Entry<Class<?>, Class<?>> entry = toClassEntry(inputType, outputType);
+		if (castMethods.containsKey(entry)) {
+			result = castMethods.get(entry);
+		} else {
+			result = null;
+		}
+		
+		return result;
+	}
+	
 	@Override
 	public <I, O> boolean isCastable(Class<I> inputType, Class<O> outputType) {
-		I input;
-		try {
-			input = inputType.newInstance();
-		} catch (InstantiationException e) {
-			throw exceptionTranslator.translate(e);
-		} catch (IllegalAccessException e) {
-			throw exceptionTranslator.translate(e);
-		}
-		return isCastable(input, outputType);
+		return outputType.isAssignableFrom(inputType) || hasCastMethod(inputType, outputType);
 	}
 	
 	@Override

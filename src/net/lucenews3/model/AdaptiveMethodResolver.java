@@ -13,36 +13,6 @@ public class AdaptiveMethodResolver implements MethodResolver {
 
 	private Caster caster;
 	
-	public static void main(String... arguments) throws Exception {
-		if (arguments.length > 0) {
-			return;
-		}
-		
-		for (Method method : AdaptiveMethodResolver.class.getDeclaredMethods()) {
-			Class<?>[] types = method.getParameterTypes();
-			System.out.println(method);
-			for (int i = 0; i < types.length; i++) {
-				System.out.println(" " + i + ": " + types[i]);
-			}
-			System.out.println();
-		}
-		
-		AdaptiveMethodResolver r = new AdaptiveMethodResolver();
-		//Method method = r.resolveMethod(AdaptiveMethodResolver.class, "foo", int.class, String.class, char.class, char.class);
-		MethodInvokerImpl i = new MethodInvokerImpl();
-		//i.setMethodResolver(new AdaptiveMethodResolver());
-		i.invoke(AdaptiveMethodResolver.class, "foo", 56, "disgusting", 'A', 'R');
-	}
-	
-	public static void foo(int count, String smell, char... chs) {
-		System.out.println("count: " + count);
-		System.out.println("small: " + smell);
-		System.out.println("chs:");
-		for (int i = 0; i < chs.length; i++) {
-			System.out.println(" " + i + ": " + chs[i]);
-		}
-	}
-	
 	public AdaptiveMethodResolver() {
 		this.caster = new CasterImpl();
 	}
@@ -60,42 +30,48 @@ public class AdaptiveMethodResolver implements MethodResolver {
 			}
 		}
 		
-		if (candidates.isEmpty()) {
-			final StringBuffer message = new StringBuffer();
-			message.append(clazz.getCanonicalName());
-			message.append(".");
-			message.append(methodName);
-			message.append(" (");
-			for (int i = 0; i < parameterTypes.length; i++) {
-				Class<?> parameterType = parameterTypes[i];
-				if (i > 0) {
-					message.append(", ");
-				}
-				
-				if (parameterType == null) {
-					message.append("<nulltype>");
-				} else {
-					message.append(parameterType.getCanonicalName());
-				}
-			}
-			message.append(")");
-			throw new NoSuchMethodException(message.toString());
-		} else if (candidates.size() == 1) {
-			Method method = candidates.iterator().next();
-			return method;
-		} else {
+		switch (candidates.size()) {
+		case 0:
+			throw buildNoSuchMethodException(clazz, methodName, parameterTypes);
+		case 1:
+			return candidates.iterator().next();
+		default:
 			throw new RuntimeException("Ambiguous method definitions");
 		}
 	}
 	
+	public NoSuchMethodException buildNoSuchMethodException(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+		final StringBuffer message = new StringBuffer();
+		message.append(clazz.getCanonicalName());
+		message.append(".");
+		message.append(methodName);
+		message.append(" (");
+		for (int i = 0; i < parameterTypes.length; i++) {
+			Class<?> parameterType = parameterTypes[i];
+			if (i > 0) {
+				message.append(", ");
+			}
+			
+			if (parameterType == null) {
+				message.append("<nulltype>");
+			} else {
+				message.append(parameterType.getCanonicalName());
+			}
+		}
+		message.append(")");
+		return new NoSuchMethodException(message.toString());
+	}
+	
 	public boolean isCompatible(Method target, String sourceName, Class<?>... sourceParameterTypes) {
-		if (!sourceName.equals(target.getName())) {
-			return false;
+		final boolean result;
+		
+		if (sourceName.equals(target.getName())) {
+			result = isCompatible(target.getParameterTypes(), sourceParameterTypes, target.isVarArgs());
+		} else {
+			result = false;
 		}
 		
-		Class<?>[] targetParameterTypes = target.getParameterTypes();
-		
-		return isCompatible(targetParameterTypes, sourceParameterTypes, target.isVarArgs());
+		return result;
 	}
 	
 	public boolean isCompatible(Class<?>[] targetTypes, Class<?>[] sourceTypes) {

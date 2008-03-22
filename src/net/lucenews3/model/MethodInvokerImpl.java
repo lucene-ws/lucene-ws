@@ -15,7 +15,7 @@ public class MethodInvokerImpl implements MethodInvoker {
 	private ExceptionTranslator exceptionTranslator;
 	
 	public MethodInvokerImpl() {
-		this(new NativeMethodResolver());
+		this(new AdaptiveMethodResolver());
 	}
 	
 	public MethodInvokerImpl(MethodResolver methodResolver) {
