@@ -20,6 +20,7 @@ import net.lucenews3.http.Url;
 import net.lucenews3.model.IndexIdentity;
 import net.lucenews3.model.IndexRange;
 import net.lucenews3.model.Page;
+import net.lucenews3.model.QuerySpellChecker;
 import net.lucenews3.model.Result;
 import net.lucenews3.model.ResultList;
 import net.lucenews3.model.SearchContext;
@@ -37,6 +38,7 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 	private Namespace xhtmlNamespace;
 	private LinkBuilder linkBuilder;
 	private QueryBuilder queryBuilder;
+	private QuerySpellChecker querySpellChecker;
 	private OpenSearchResultTransformer resultTransformer;
 	
 	public OpenSearchContextTransformer() {
@@ -104,6 +106,14 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 		query.setRole("request");
 		query.setSearchTerms(searchTerms);
 		feed.add(queryBuilder.build(query));
+		
+		List<org.apache.lucene.search.Query> suggestions = querySpellChecker.suggest(searchRequest.getQuery());
+		for (org.apache.lucene.search.Query suggestion : suggestions) {
+			final Query suggestionQuery = new QueryImpl();
+			suggestionQuery.setRole("suggestion");
+			suggestionQuery.setSearchTerms(suggestion.toString());
+			feed.add(queryBuilder.build(suggestionQuery));
+		}
 		
 		// Links
 		addLinks(context, feed);
@@ -296,6 +306,14 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 
 	public void setOpenSearchNamespace(Namespace openSearchNamespace) {
 		this.openSearchNamespace = openSearchNamespace;
+	}
+
+	public QuerySpellChecker getQuerySpellChecker() {
+		return querySpellChecker;
+	}
+
+	public void setQuerySpellChecker(QuerySpellChecker querySpellChecker) {
+		this.querySpellChecker = querySpellChecker;
 	}
 
 }

@@ -90,6 +90,8 @@
 	
 	<bean id="querySpellChecker" class="net.lucenews3.model.QuerySpellChecker">
 		<property name="spellChecker" ref="spellChecker" />
+		<property name="exceptionTranslator" ref="exceptionTranslator" />
+		<property name="cloner" ref="cloner" />
 	</bean>
 	
 	<bean id="methodInvoker" class="net.lucenews3.model.MethodInvokerImpl">
@@ -182,6 +184,7 @@
 		class="net.lucenews3.opensearch.transform.OpenSearchContextTransformer">
 		<property name="atomNamespace" ref="atomNamespace" />
 		<property name="openSearchNamespace" ref="opensearchNamespace" />
+		<property name="querySpellChecker" ref="querySpellChecker" />
 	</bean>
 
 	<bean id="controller" abstract="true"></bean>

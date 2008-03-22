@@ -22,6 +22,11 @@ public class QuerySpellChecker {
 
 	private SpellChecker spellChecker;
 	private ExceptionTranslator exceptionTranslator;
+	private Cloner cloner;
+	
+	public QuerySpellChecker() {
+		this.cloner = new ClonerImpl();
+	}
 	
 	public SpellChecker getSpellChecker() {
 		return spellChecker;
@@ -29,6 +34,28 @@ public class QuerySpellChecker {
 
 	public void setSpellChecker(SpellChecker spellChecker) {
 		this.spellChecker = spellChecker;
+	}
+	
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
+	}
+
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
+	}
+
+	public Cloner getCloner() {
+		return cloner;
+	}
+
+	public void setCloner(Cloner cloner) {
+		this.cloner = cloner;
+	}
+
+	public List<Query> suggest(Query query) {
+		List<Query> results = new ArrayList<Query>();
+		results.addAll(suggestSimilar(query));
+		return results;
 	}
 	
 	public List<Query> suggestSimilar(Query query) {
@@ -88,6 +115,7 @@ public class QuerySpellChecker {
 		String word = term.text();
 		
 		String[] similarWords;
+		//if (true) throw new RuntimeException("Words similar to \"" + word + "\"");
 		try {
 			similarWords = spellChecker.suggestSimilar(word, 5);
 		} catch (IOException e) {
