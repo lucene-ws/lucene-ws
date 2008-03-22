@@ -84,6 +84,14 @@
 		<property name="asynchronous" value="false" />
 	</bean>
 	
+	<bean id="synonymSearcher" class="org.apache.lucene.search.IndexSearcher">
+		<constructor-arg type="org.apache.lucene.store.Directory" ref="synonymIndexDirectory" />
+	</bean>
+	
+	<bean id="synonymSource" class="net.lucenews3.model.SynonymIndexSource">
+		<property name="searcher" ref="synonymSearcher" />
+	</bean>
+	
 	<bean id="spellChecker" class="org.apache.lucene.search.spell.SpellChecker">
 		<constructor-arg ref="synonymIndexDirectory" />
 	</bean>
@@ -94,7 +102,12 @@
 		<property name="cloner" ref="cloner" />
 	</bean>
 	
+	<bean id="querySynonymExpander" class="net.lucenews3.model.QuerySynonymExpander">
+		<property name="synonymSource" ref="synonymSource" />
+	</bean>
+	
 	<bean id="methodInvoker" class="net.lucenews3.model.MethodInvokerImpl">
+		<property name="exceptionTranslator" ref="exceptionTranslator" />
 	</bean>
 	
 	<bean id="cloner" class="net.lucenews3.model.ClonerImpl">
@@ -185,6 +198,7 @@
 		<property name="atomNamespace" ref="atomNamespace" />
 		<property name="openSearchNamespace" ref="opensearchNamespace" />
 		<property name="querySpellChecker" ref="querySpellChecker" />
+		<property name="querySynonymExpander" ref="querySynonymExpander" />
 	</bean>
 
 	<bean id="controller" abstract="true"></bean>

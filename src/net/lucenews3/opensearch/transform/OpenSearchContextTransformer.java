@@ -1,5 +1,6 @@
 package net.lucenews3.opensearch.transform;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import net.lucenews3.model.IndexIdentity;
 import net.lucenews3.model.IndexRange;
 import net.lucenews3.model.Page;
 import net.lucenews3.model.QuerySpellChecker;
+import net.lucenews3.model.QuerySynonymExpander;
 import net.lucenews3.model.Result;
 import net.lucenews3.model.ResultList;
 import net.lucenews3.model.SearchContext;
@@ -39,6 +41,7 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 	private LinkBuilder linkBuilder;
 	private QueryBuilder queryBuilder;
 	private QuerySpellChecker querySpellChecker;
+	private QuerySynonymExpander querySynonymExpander;
 	private OpenSearchResultTransformer resultTransformer;
 	
 	public OpenSearchContextTransformer() {
@@ -107,7 +110,8 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 		query.setSearchTerms(searchTerms);
 		feed.add(queryBuilder.build(query));
 		
-		List<org.apache.lucene.search.Query> suggestions = querySpellChecker.suggest(searchRequest.getQuery());
+		//List<org.apache.lucene.search.Query> suggestions = querySpellChecker.suggest(searchRequest.getQuery());
+		Collection<org.apache.lucene.search.Query> suggestions = querySynonymExpander.getSynonyms(searchRequest.getQuery());
 		for (org.apache.lucene.search.Query suggestion : suggestions) {
 			final Query suggestionQuery = new QueryImpl();
 			suggestionQuery.setRole("suggestion");
@@ -314,6 +318,14 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 
 	public void setQuerySpellChecker(QuerySpellChecker querySpellChecker) {
 		this.querySpellChecker = querySpellChecker;
+	}
+
+	public QuerySynonymExpander getQuerySynonymExpander() {
+		return querySynonymExpander;
+	}
+
+	public void setQuerySynonymExpander(QuerySynonymExpander querySynonymExpander) {
+		this.querySynonymExpander = querySynonymExpander;
 	}
 
 }

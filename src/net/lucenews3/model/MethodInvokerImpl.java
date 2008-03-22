@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import net.lucenews3.ExceptionTranslator;
+import net.lucenews3.ExceptionTranslatorImpl;
 
 public class MethodInvokerImpl implements MethodInvoker {
 
@@ -16,6 +17,7 @@ public class MethodInvokerImpl implements MethodInvoker {
 	
 	public MethodInvokerImpl(MethodResolver methodResolver) {
 		this.methodResolver = methodResolver;
+		this.exceptionTranslator = new ExceptionTranslatorImpl();
 	}
 	
 	public MethodResolver getMethodResolver() {
@@ -52,6 +54,14 @@ public class MethodInvokerImpl implements MethodInvoker {
 		}
 		
 		return result;
+	}
+
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
+	}
+
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
 	}
 
 }

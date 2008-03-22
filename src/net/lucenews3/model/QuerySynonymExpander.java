@@ -1,28 +1,49 @@
 package net.lucenews3.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.wordnet.SynExpand;
-import org.apache.lucene.wordnet.Syns2Index;
 
 public class QuerySynonymExpander {
 
 	private MethodInvoker methodInvoker;
 	private Cloner cloner;
-	private Searcher searcher;
-	private Analyzer analyzer;
-	private float boost;
-	private String wordFieldName;
-	private String synonymFieldName;
+	private SynonymSource synonymSource;
 	
 	public QuerySynonymExpander() {
-		this.wordFieldName = Syns2Index.F_WORD;
-		this.synonymFieldName = Syns2Index.F_WORD;
+		this.methodInvoker = new MethodInvokerImpl();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Collection<Query> getSynonyms(Query query) {
+		return (Collection<Query>) methodInvoker.invoke(this, "getQuerySynonyms", query);
+	}
+	
+	public Collection<Query> getQuerySynonyms(Query query) {
+		return new ArrayList<Query>();
+	}
+	
+	public Collection<Query> getQuerySynonyms(TermQuery query) {
+		Collection<Query> results;
+		
+		final Term term = query.getTerm();
+		final String word = term.text();
+		final Collection<String> synonyms = synonymSource.getSynonyms(word);
+		results = new ArrayList<Query>(synonyms.size());
+		
+		for (String synonym : synonyms) {
+			final Term synonymTerm = new Term(term.field(), synonym);
+			final TermQuery synonymQuery = new TermQuery(synonymTerm);
+			results.add(synonymQuery);
+		}
+		
+		return results;
 	}
 	
 	public Query expand(Query query) {
@@ -32,9 +53,19 @@ public class QuerySynonymExpander {
 	public Query expandQuery(TermQuery query) throws IOException {
 		final Term term = query.getTerm();
 		
+		String word = term.text();
+		Collection<String> synonyms = synonymSource.getSynonyms(word);
 		
+		BooleanQuery expanded = new BooleanQuery();
+		expanded.add(query, BooleanClause.Occur.SHOULD);
 		
-		return null;
+		for (String synonym : synonyms) {
+			final Term synonymTerm = new Term(term.field(), synonym);
+			final TermQuery synonymQuery = new TermQuery(synonymTerm);
+			expanded.add(synonymQuery, BooleanClause.Occur.SHOULD);
+		}
+		
+		return expanded;
 	}
 
 	public MethodInvoker getMethodInvoker() {
@@ -53,44 +84,12 @@ public class QuerySynonymExpander {
 		this.cloner = cloner;
 	}
 
-	public Searcher getSearcher() {
-		return searcher;
+	public SynonymSource getSynonymSource() {
+		return synonymSource;
 	}
 
-	public void setSearcher(Searcher searcher) {
-		this.searcher = searcher;
-	}
-
-	public Analyzer getAnalyzer() {
-		return analyzer;
-	}
-
-	public void setAnalyzer(Analyzer analyzer) {
-		this.analyzer = analyzer;
-	}
-
-	public float getBoost() {
-		return boost;
-	}
-
-	public void setBoost(float boost) {
-		this.boost = boost;
-	}
-
-	public String getWordFieldName() {
-		return wordFieldName;
-	}
-
-	public void setWordFieldName(String wordFieldName) {
-		this.wordFieldName = wordFieldName;
-	}
-
-	public String getSynonymFieldName() {
-		return synonymFieldName;
-	}
-
-	public void setSynonymFieldName(String synonymFieldName) {
-		this.synonymFieldName = synonymFieldName;
+	public void setSynonymSource(SynonymSource synonymSource) {
+		this.synonymSource = synonymSource;
 	}
 	
 }
