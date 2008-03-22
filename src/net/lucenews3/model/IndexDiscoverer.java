@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -39,7 +40,12 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 			}
 		}
 		
-		search(directory);
+		try {
+			search(directory);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -47,15 +53,17 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 		new Thread(this).start();
 	}
 	
-	public void search(File directory) {
+	public void search(File directory) throws IOException {
+		visitedDirectories.add(directory.getCanonicalFile());
+		
 		if (directory == null) {
 			// Don't bother with this directory
-		} else if (visitedDirectories.contains(directory)) {
+		} else if (visitedDirectories.contains(directory.getCanonicalFile())) {
 			// Don't bother with this directory
 		} else if (directory.isDirectory()) {
-			visitedDirectories.add(directory);
+			//visitedDirectories.add(directory.getCanonicalFile());
 			
-			if (isIndex(directory)) {
+			if (isIndex(directory) && isDiscoverable(directory)) {
 				try {
 					final IndexIdentity indexIdentity = buildIndexIdentity(directory);
 					final Index index = buildIndex(directory);
@@ -80,6 +88,27 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 
 	public boolean isIndex(File directory) {
 		return IndexReader.indexExists(directory);
+	}
+	
+	public boolean isDiscoverable(File directory) {
+		return !isDiscovered(directory);
+	}
+	
+	public boolean isDiscovered(File directory) {
+		for (Index index : indexesByIdentity.values()) {
+			if (index instanceof IndexImpl) {
+				IndexImpl indexImpl = (IndexImpl) index;
+				Directory luceneDirectory = indexImpl.getDirectory();
+				if (luceneDirectory instanceof FSDirectory) {
+					FSDirectory luceneFSDirectory = (FSDirectory) luceneDirectory;
+					if (true) throw new RuntimeException(luceneFSDirectory.getFile().toString());
+					if (visitedDirectories.contains(luceneFSDirectory.getFile())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
 	public IndexIdentity buildIndexIdentity(File directory) {

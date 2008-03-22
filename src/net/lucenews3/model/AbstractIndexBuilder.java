@@ -88,6 +88,7 @@ public abstract class AbstractIndexBuilder implements Runnable, InitializingBean
 	
 	public int buildIndex() throws Exception {
 		int result;
+		
 		final IndexWriter writer = new IndexWriter(directory, analyzer, autoCreate);
 		result = buildIndex(writer);
 		writer.close();
@@ -147,19 +148,21 @@ public abstract class AbstractIndexBuilder implements Runnable, InitializingBean
 	public void afterPropertiesSet() throws Exception {
 		if (autoBuild) {
 			if (directory != null && IndexReader.indexExists(directory)) {
-				if (logger.isInfoEnabled()) {
-					logger.info("Not building index in \"" + directory + "\", an index already exists");
+				if (logger.isDebugEnabled()) {
+					logger.debug("Not building index in \"" + directory + "\", an index already exists");
 				}
+				return;
 			}
 			
 			if (directoryPath != null && IndexReader.indexExists(directoryPath)) {
-				if (logger.isInfoEnabled()) {
-					logger.info("Not building index in \"" + directoryPath + "\", an index already exists");
+				if (logger.isDebugEnabled()) {
+					logger.debug("Not building index in \"" + directoryPath + "\", an index already exists");
 				}
+				return;
 			}
 			
-			if (logger.isInfoEnabled()) {
-				logger.info("Auto-building index (asynchronous? " + asynchronous + ")");
+			if (logger.isDebugEnabled()) {
+				logger.debug("Auto-building index (directory: \"" + directory + "\", directory path: \"" + directoryPath + "\", asynchronous? " + asynchronous + ")");
 			}
 			
 			if (asynchronous) {

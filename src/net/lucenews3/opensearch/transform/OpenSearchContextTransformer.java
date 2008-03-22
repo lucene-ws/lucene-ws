@@ -81,6 +81,7 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 		addProperty(feed, QName.get("startIndex", openSearchNamespace), indexRange.fromIndex() + 1, false);
 		
 		// Items per page
+		// TODO Items per page needs a better definition
 		addProperty(feed, QName.get("itemsPerPage", openSearchNamespace), (indexRange.toIndex() - indexRange.fromIndex()), false);
 		
 		// Query
@@ -269,6 +270,9 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 	public void addStylesheet(final Document document, final Url baseUrl) {
 		final Url stylesheetUrl = baseUrl.clone();
 		stylesheetUrl.getPath().add("static");
+		
+		// TODO Standardize style sheet
+		//stylesheetUrl.getPath().add("opensearch_to_html.xsl");
 		stylesheetUrl.getPath().add("searchResults.xslt");
 		
 		final Map<String, String> data = new LinkedHashMap<String, String>();

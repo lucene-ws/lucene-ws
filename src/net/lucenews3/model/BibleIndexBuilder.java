@@ -74,7 +74,9 @@ public class BibleIndexBuilder extends AbstractIndexBuilder {
 			if (bookMatcher.matches()) {
 				book = Integer.valueOf(bookMatcher.group(1));
 				bookName = bookMatcher.group(2);
-				logger.info("Book: " + book + ", name: " + bookName);
+				if (logger.isTraceEnabled()) {
+					logger.info("Book: " + book + ", name: " + bookName);
+				}
 			} else if (book != null) {
 				if (chapter != null && verse != null && line.trim().length() == 0) {
 					add(writer, book, bookName, chapter, verse, text);

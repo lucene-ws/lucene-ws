@@ -15,6 +15,15 @@
 		<constructor-arg index="0" value="opensearch" />
 		<constructor-arg index="1" value="http://a9.com/-/spec/opensearch/1.1/" />
 	</bean>
+
+	<bean id="exceptionTranslator"
+		class="net.lucenews3.ExceptionTranslatorImpl">
+		<property name="customMappings">
+			<map key-type="java.lang.Class" value-type="java.lang.Class">
+				<entry key="java.lang.NoSuchMethodException" value="net.lucenews3.model.NoSuchMethodRuntimeException" />
+			</map>
+		</property>
+	</bean>
 	
 	<bean id="christmasCarolIndexDirectory" class="net.lucenews3.model.FSDirectoryFactoryBean">
 		<property name="path" value="indexes/christmascarol" />
@@ -71,6 +80,8 @@
 	
 	<bean id="synonymIndexBuilder" class="net.lucenews3.model.WordnetSynonymIndexBuilder">
 		<property name="directoryPath" value="indexes/synonyms" />
+		<property name="autoBuild" value="true" />
+		<property name="asynchronous" value="false" />
 	</bean>
 	
 	<bean id="spellChecker" class="org.apache.lucene.search.spell.SpellChecker">
@@ -113,15 +124,6 @@
 	
 	<bean id="indexDiscoverer" class="net.lucenews3.model.IndexDiscoverer">
 		<property name="indexesByIdentity" ref="indexRepository" />
-	</bean>
-
-	<bean id="exceptionTranslator"
-		class="net.lucenews3.ExceptionTranslatorImpl">
-		<property name="customMappings">
-			<map key-type="java.lang.Class" value-type="java.lang.Class">
-				<entry key="java.lang.NoSuchMethodException" value="net.lucenews3.model.NoSuchMethodRuntimeException" />
-			</map>
-		</property>
 	</bean>
 
 	<bean id="httpIndexIdentityParser"
@@ -266,6 +268,7 @@
 	</bean>
 
 	<bean class="net.lucenews3.model.Dom4jView">
+		<property name="transformLocation" value="CLIENT" />
 	</bean>
-
+	
 </beans>

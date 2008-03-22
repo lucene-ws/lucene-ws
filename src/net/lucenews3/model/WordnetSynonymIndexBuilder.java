@@ -13,7 +13,10 @@ public class WordnetSynonymIndexBuilder extends AbstractIndexBuilder {
 	private ExceptionTranslator exceptionTranslator;
 	
 	public static void main(String... arguments) throws Throwable {
-		Syns2Index.main(new String[]{ "data/wordnet-prolog/wn_s.pl", "indexes/synonyms" });
+		//Syns2Index.main(new String[]{ "data/wordnet-prolog/wn_s.pl", "indexes/synonyms" });
+		WordnetSynonymIndexBuilder b = new WordnetSynonymIndexBuilder();
+		b.setDirectoryPath(new File("indexes/synonyms"));
+		b.buildIndex();
 	}
 	
 	public WordnetSynonymIndexBuilder() {
@@ -34,6 +37,11 @@ public class WordnetSynonymIndexBuilder extends AbstractIndexBuilder {
 		String[] arguments = new String[2];
 		arguments[0] = new File(new File(new File("data"), "wordnet-prolog"), "wn_s.pl").toString();
 		arguments[1] = getDirectoryPath().toString();
+		
+		System.err.println("Exists? " + new File(arguments[1]).isDirectory());
+		
+		boolean result = new File(arguments[1]).delete(); // Directory cannot exist for Syns2Index
+		System.err.println("Delete? " + result);
 		
 		try {
 			Syns2Index.main(arguments);

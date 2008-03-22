@@ -106,7 +106,14 @@
 					</xsl:attribute>
 				</img>
 				
+				<xsl:variable name="formaction">
+					<xsl:value-of select="atom:feed/atom:link[@rel='first']/@href" />
+				</xsl:variable>
+				
 				<form method="get" id="form">
+						<xsl:attribute name="action">
+							<xsl:value-of select="$formaction" />
+						</xsl:attribute>
 					<input type="text" name="query" class="text">
 						<xsl:attribute name="value">
 							<xsl:value-of select="$searchTerms" />
