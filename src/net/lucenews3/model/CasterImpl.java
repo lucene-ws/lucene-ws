@@ -213,6 +213,14 @@ public class CasterImpl implements Caster {
 		return null;
 	}
 	
+	public ExceptionTranslator getExceptionTranslator() {
+		return exceptionTranslator;
+	}
+
+	public void setExceptionTranslator(ExceptionTranslator exceptionTranslator) {
+		this.exceptionTranslator = exceptionTranslator;
+	}
+
 	@CastMethod
 	public Boolean castBoolean(boolean b) {
 		return Boolean.valueOf(b);

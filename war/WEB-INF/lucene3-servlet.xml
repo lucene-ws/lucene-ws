@@ -106,7 +106,12 @@
 		<property name="synonymSource" ref="synonymSource" />
 	</bean>
 	
+	<bean id="caster" class="net.lucenews3.model.CasterImpl">
+		<property name="exceptionTranslator" ref="exceptionTranslator" />
+	</bean>
+	
 	<bean id="methodResolver" class="net.lucenews3.model.AdaptiveMethodResolver">
+		<property name="caster" ref="caster" />
 	</bean>
 	
 	<bean id="methodInvoker" class="net.lucenews3.model.MethodInvokerImpl">

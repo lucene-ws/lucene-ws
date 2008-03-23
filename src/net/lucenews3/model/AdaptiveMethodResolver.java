@@ -2,6 +2,8 @@ package net.lucenews3.model;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -36,8 +38,20 @@ public class AdaptiveMethodResolver implements MethodResolver {
 		case 1:
 			return candidates.iterator().next();
 		default:
-			throw new RuntimeException("Ambiguous method definitions");
+			// Ambiguous candidates! Now we must choose the one closest to the desired method. :(
+			// Great, more work for us...
+			Comparator<Method> comparator = new MethodDistanceComparator();
+			Collections.sort(candidates, comparator);
+			Collections.reverse(candidates);
+			
+			Method result = candidates.iterator().next();
+			System.err.println("Selected " + result);
+			return result;
 		}
+	}
+	
+	public Comparable<?> getMethodDistance(Method target, String methodName, Class<?>[] parameterTypes) {
+		return null;
 	}
 	
 	public NoSuchMethodException buildNoSuchMethodException(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
