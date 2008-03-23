@@ -38,10 +38,8 @@ public class WordnetSynonymIndexBuilder extends AbstractIndexBuilder {
 		arguments[0] = new File(new File(new File("data"), "wordnet-prolog"), "wn_s.pl").toString();
 		arguments[1] = getDirectoryPath().toString();
 		
-		System.err.println("Exists? " + new File(arguments[1]).isDirectory());
-		
-		boolean result = new File(arguments[1]).delete(); // Directory cannot exist for Syns2Index
-		System.err.println("Delete? " + result);
+		// Directory cannot exist for Syns2Index
+		new File(arguments[1]).delete();
 		
 		try {
 			Syns2Index.main(arguments);
