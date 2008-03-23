@@ -114,7 +114,7 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 		Collection<org.apache.lucene.search.Query> suggestions = querySynonymExpander.getSynonyms(searchRequest.getQuery());
 		for (org.apache.lucene.search.Query suggestion : suggestions) {
 			final Query suggestionQuery = new QueryImpl();
-			suggestionQuery.setRole("suggestion");
+			suggestionQuery.setRole("correction");
 			suggestionQuery.setSearchTerms(suggestion.toString());
 			feed.add(queryBuilder.build(suggestionQuery));
 		}

@@ -137,7 +137,7 @@
 				</xsl:if>
 			</div>
 			
-			<xsl:for-each select="feed/Query[@role='correction']">
+			<xsl:for-each select="atom:feed/opensearch:Query[@role='correction']">
 				<div class="suggestion">
 					Did you mean: <a><xsl:attribute name="href"><xsl:value-of select="@searchTerms" /></xsl:attribute><xsl:value-of select="@searchTerms" /></a>
 				</div>
