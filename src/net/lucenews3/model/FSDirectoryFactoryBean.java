@@ -42,8 +42,8 @@ public class FSDirectoryFactoryBean implements FactoryBean, InitializingBean {
 	}
 
 	@Override
-	public Object getObject() throws Exception {
-		Object result = null;
+	public FSDirectory getObject() throws Exception {
+		final FSDirectory result;
 		
 		if (file != null) {
 			if (lockFactory == null) {
@@ -57,13 +57,15 @@ public class FSDirectoryFactoryBean implements FactoryBean, InitializingBean {
 			} else {
 				result = FSDirectory.getDirectory(path, lockFactory);
 			}
+		} else {
+			throw new Exception("Cannot construct an FSDirectory without a file or path");
 		}
 		
 		return result;
 	}
 
 	@Override
-	public Class<?> getObjectType() {
+	public Class<FSDirectory> getObjectType() {
 		return FSDirectory.class;
 	}
 

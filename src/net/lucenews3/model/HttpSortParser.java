@@ -38,7 +38,7 @@ public class HttpSortParser implements SortParser<HttpServletRequest> {
 
 	@Override
 	public Sort parse(HttpServletRequest request) {
-		Sort result;
+		final Sort result;
 		
 		final String string = request.getParameter(parameterName);
 		if (string == null) {

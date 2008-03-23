@@ -37,8 +37,8 @@ public class RAMDirectoryFactoryBean implements FactoryBean {
 	}
 
 	@Override
-	public Object getObject() throws Exception {
-		Object result = null;
+	public RAMDirectory getObject() throws Exception {
+		final RAMDirectory result;
 		
 		if (directory != null) {
 			result = new RAMDirectory(directory);
@@ -54,7 +54,7 @@ public class RAMDirectoryFactoryBean implements FactoryBean {
 	}
 
 	@Override
-	public Class<?> getObjectType() {
+	public Class<RAMDirectory> getObjectType() {
 		return RAMDirectory.class;
 	}
 

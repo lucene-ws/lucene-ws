@@ -54,7 +54,6 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 	}
 	
 	public void search(File directory) throws IOException {
-		//System.err.println(directory);
 		if (directory == null) {
 			// Don't bother with this directory
 		} else if (visitedDirectories.contains(directory.getCanonicalFile())) {

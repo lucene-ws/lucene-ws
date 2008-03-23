@@ -13,7 +13,7 @@ public class SortMergerImpl implements SortMerger {
 
 	@Override
 	public Sort merge(Sort base, Sort delta) {
-		Sort result;
+		final Sort result;
 		
 		if (delta == null) {
 			result = null;
@@ -55,7 +55,7 @@ public class SortMergerImpl implements SortMerger {
 	 * @return
 	 */
 	protected Object getKey(SortField field) {
-		Object result;
+		final Object result;
 		
 		switch (field.getType()) {
 		case SortField.SCORE:

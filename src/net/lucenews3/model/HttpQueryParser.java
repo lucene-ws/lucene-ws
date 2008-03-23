@@ -37,9 +37,9 @@ public class HttpQueryParser implements QueryParser<HttpServletRequest> {
 
 	@Override
 	public Query parse(HttpServletRequest request) {
-		Query result;
+		final Query result;
 		
-		String string = request.getParameter(parameterName);
+		final String string = request.getParameter(parameterName);
 		if (string == null) {
 			result = null;
 		} else {

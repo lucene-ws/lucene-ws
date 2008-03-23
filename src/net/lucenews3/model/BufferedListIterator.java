@@ -68,34 +68,36 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 
 	@Override
 	public E next() {
-		E result;
+		final E result;
 		
-		if (!hasNext()) {
-			throw new NoSuchElementException();
-		}
-		
-		if (currentLink == null) {
-			E nextValue = iterator.next();
-			currentLink = new Link(0, nextValue);
-			result = nextValue;
-		} else if (currentLink.next == null) {
-			// The "next" value has not yet been read
-			int nextIndex = currentLink.index + 1;
-			E nextValue = iterator.next();
-			Link nextLink = new Link(nextIndex, nextValue);
+		if (hasNext()) {
 			
-			currentLink.next = nextLink;
-			nextLink.previous = currentLink;
+			if (currentLink == null) {
+				final E nextValue = iterator.next();
+				currentLink = new Link(0, nextValue);
+				result = nextValue;
+			} else if (currentLink.next == null) {
+				// The "next" value has not yet been read
+				final int nextIndex = currentLink.index + 1;
+				final E nextValue = iterator.next();
+				final Link nextLink = new Link(nextIndex, nextValue);
+				
+				currentLink.next = nextLink;
+				nextLink.previous = currentLink;
+				
+				result = nextValue;
+				
+				// Move the current link ahead
+				currentLink = nextLink;
+			} else {
+				// The "next" value has already been read
+				final Link nextLink = currentLink.next;
+				result = nextLink.value;
+				currentLink = nextLink;
+			}
 			
-			result = nextValue;
-			
-			// Move the current link ahead
-			currentLink = nextLink;
 		} else {
-			// The "next" value has already been read
-			Link nextLink = currentLink.next;
-			result = nextLink.value;
-			currentLink = nextLink;
+			throw new NoSuchElementException();
 		}
 		
 		return result;
@@ -116,10 +118,10 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 
 	@Override
 	public E previous() {
-		E result;
+		final E result;
 		
 		if (hasPrevious()) {
-			Link previousLink = currentLink.previous;
+			final Link previousLink = currentLink.previous;
 			result = previousLink.value;
 			currentLink = previousLink;
 		} else {
@@ -132,12 +134,12 @@ public class BufferedListIterator<E> implements ListIterator<E> {
 
 	@Override
 	public int previousIndex() {
-		int result;
+		final int result;
 		
 		if (hasPrevious()) {
 			result = currentLink.previous.index;
 		} else {
-			throw new RuntimeException();
+			result = -1;
 		}
 		
 		return result;

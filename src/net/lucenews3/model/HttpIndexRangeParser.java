@@ -29,18 +29,18 @@ public class HttpIndexRangeParser implements IndexRangeParser<HttpServletRequest
 	
 	@Override
 	public IndexRange parse(HttpServletRequest request) {
-		String ordinalValue = request.getParameter(ordinalParameterName);
+		final String ordinalValue = request.getParameter(ordinalParameterName);
 		
-		int ordinal;
+		final int ordinal;
 		if (ordinalValue == null) {
 			ordinal = defaultOrdinal;
 		} else {
 			ordinal = Integer.parseInt(ordinalValue);
 		}
 		
-		String sizeValue = request.getParameter(sizeParameterName);
+		final String sizeValue = request.getParameter(sizeParameterName);
 		
-		int size;
+		final int size;
 		if (sizeValue == null) {
 			size = defaultSize;
 		} else {

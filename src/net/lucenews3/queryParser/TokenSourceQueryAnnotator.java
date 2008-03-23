@@ -78,7 +78,7 @@ public class TokenSourceQueryAnnotator {
 	 * @return
 	 */
 	public Query annotate(final Query query, final Token token) {
-		Query result;
+		final Query result;
 		
 		if (query instanceof TokenSource) {
 			final TokenSource tokenSource = (TokenSource) query;
@@ -88,7 +88,7 @@ public class TokenSourceQueryAnnotator {
 			final Class<? extends Query> queryClass = query.getClass();
 			final Class<? extends Token> tokenClass = token.getClass();
 			
-			Method instantiator;
+			final Method instantiator;
 			if (instantiatorsByClass.containsKey(queryClass)) {
 				instantiator = instantiatorsByClass.get(queryClass);
 			} else {

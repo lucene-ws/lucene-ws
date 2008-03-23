@@ -8,7 +8,7 @@ public class QueryMergerImpl implements QueryMerger {
 
 	@Override
 	public Query merge(Query base, Query delta) {
-		Query result;
+		final Query result;
 		
 		if (delta == null) {
 			result = null;
