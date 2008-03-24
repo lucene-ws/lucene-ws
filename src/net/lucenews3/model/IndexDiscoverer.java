@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.InitializingBean;
@@ -99,9 +101,8 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 				IndexImpl indexImpl = (IndexImpl) index;
 				Directory luceneDirectory = indexImpl.getDirectory();
 				if (luceneDirectory instanceof FSDirectory) {
-					FSDirectory luceneFSDirectory = (FSDirectory) luceneDirectory;
-					//if (true) throw new RuntimeException(luceneFSDirectory.getFile().toString());
-					if (visitedDirectories.contains(luceneFSDirectory.getFile().getCanonicalFile())) {
+					final FSDirectory luceneFSDirectory = (FSDirectory) luceneDirectory;
+					if (directory.getCanonicalFile().equals(luceneFSDirectory.getFile().getCanonicalFile())) {
 						return true;
 					}
 				}
@@ -115,14 +116,66 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 	}
 	
 	public Index buildIndex(File directory) throws IOException {
-		IndexImpl index = new IndexImpl();
-		index.setDirectory(FSDirectory.getDirectory(directory));
+		final IndexImpl index = new IndexImpl();
 		
-		IndexMetaDataImpl metaData = new IndexMetaDataImpl();
-		metaData.setName(directory.getCanonicalPath());
-		index.setMetaData(metaData);
+		index.setDirectory(FSDirectory.getDirectory(directory));
+		index.setMetaData(buildIndexMetaData(directory));
 		
 		return index;
+	}
+	
+	public IndexMetaData buildIndexMetaData(File directory) throws IOException {
+		final IndexMetaDataImpl metaData = new IndexMetaDataImpl();
+		metaData.setName(directory.getCanonicalPath());
+		
+		final IndexReader reader = IndexReader.open(directory);
+		try {
+			final int documentCount = reader.numDocs();
+			System.err.println(directory + ": document count = " + documentCount);
+			final TermEnum terms = reader.terms();
+			String primaryFieldName = null;
+			String currentFieldName = null;
+			int currentFieldCount = 0;
+			while (terms.next()) {
+				final Term term = terms.term();
+				final String fieldName = term.field();
+				
+				if (currentFieldName == null) {
+					currentFieldName = fieldName;
+					currentFieldCount = 1;
+				} else {
+					currentFieldCount++;
+					if (currentFieldName.equals(fieldName)) {
+						// Nothing to see here
+					} else {
+						System.err.println(directory + ": field \"" + currentFieldName + "\" appears in " + currentFieldCount);
+						// Switching over to the next field
+						if (primaryFieldName == null && currentFieldCount == documentCount) {
+							primaryFieldName = currentFieldName;
+						}
+						currentFieldName = fieldName;
+						currentFieldCount = 1;
+					}
+				}
+			}
+
+			System.err.println(directory + ": field \"" + currentFieldName + "\" appears in " + currentFieldCount);
+			
+			if (primaryFieldName == null && currentFieldCount == documentCount) {
+				primaryFieldName = currentFieldName;
+			}
+			
+			if (primaryFieldName == null) {
+				// Well, we tried
+				metaData.setPrimaryField(primaryFieldName);
+			} else {
+				metaData.setPrimaryField(primaryFieldName);
+			}
+		} finally {
+			reader.close();
+		}
+		
+		return metaData;
 	}
 
 	public Map<IndexIdentity, Index> getIndexesByIdentity() {

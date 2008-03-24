@@ -48,6 +48,12 @@
 						text-align: center;
 					}
 					
+					#related-items {
+						float: right;
+						border-left: 1px solid #c9d7f1;
+						padding-left: 1em;
+					}
+					
 					.suggestion {
 						color: #cc0000;
 						margin-bottom: 1em;
@@ -135,6 +141,14 @@
 						</xsl:choose>
 					</span>
 				</xsl:if>
+			</div>
+			
+			<div id="related-items">
+				<xsl:for-each select="atom:feed/opensearch:Query[@role='related']">
+					<div class="related-item">
+						<a><xsl:attribute name="href"><xsl:value-of select="@searchTerms" /></xsl:attribute><xsl:value-of select="@searchTerms" /></a>
+					</div>
+				</xsl:for-each>
 			</div>
 			
 			<xsl:for-each select="atom:feed/opensearch:Query[@role='correction']">

@@ -92,8 +92,21 @@
 		<property name="searcher" ref="synonymSearcher" />
 	</bean>
 	
+	<bean id="spellCheckIndexDirectory" class="net.lucenews3.model.FSDirectoryFactoryBean">
+		<property name="path" value="indexes/spellcheck" />
+	</bean>
+	
 	<bean id="spellChecker" class="org.apache.lucene.search.spell.SpellChecker">
-		<constructor-arg ref="synonymIndexDirectory" />
+		<constructor-arg ref="spellCheckIndexDirectory" />
+	</bean>
+	
+	<bean id="dictionary" class="org.apache.lucene.search.spell.PlainTextDictionary">
+		<constructor-arg type="java.io.File" value="data/american-english" />
+	</bean>
+	
+	<bean id="spellCheckIndexBuilder" class="net.lucenews3.model.SpellCheckIndexBuilder">
+		<property name="spellChecker" ref="spellChecker" />
+		<property name="dictionary" ref="dictionary" />
 	</bean>
 	
 	<bean id="querySpellChecker" class="net.lucenews3.model.QuerySpellChecker">
@@ -104,6 +117,10 @@
 	
 	<bean id="querySynonymExpander" class="net.lucenews3.model.QuerySynonymExpander">
 		<property name="synonymSource" ref="synonymSource" />
+	</bean>
+	
+	<bean id="querySpellCheckExpander" class="net.lucenews3.model.QuerySpellCheckExpander">
+		<property name="spellChecker" ref="spellChecker" />
 	</bean>
 	
 	<bean id="caster" class="net.lucenews3.model.CasterImpl">
@@ -208,6 +225,7 @@
 		<property name="openSearchNamespace" ref="opensearchNamespace" />
 		<property name="querySpellChecker" ref="querySpellChecker" />
 		<property name="querySynonymExpander" ref="querySynonymExpander" />
+		<property name="querySpellCheckExpander" ref="querySpellCheckExpander" />
 	</bean>
 
 	<bean id="controller" abstract="true"></bean>

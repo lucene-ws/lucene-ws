@@ -21,6 +21,7 @@ import net.lucenews3.http.Url;
 import net.lucenews3.model.IndexIdentity;
 import net.lucenews3.model.IndexRange;
 import net.lucenews3.model.Page;
+import net.lucenews3.model.QuerySpellCheckExpander;
 import net.lucenews3.model.QuerySpellChecker;
 import net.lucenews3.model.QuerySynonymExpander;
 import net.lucenews3.model.Result;
@@ -42,6 +43,7 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 	private QueryBuilder queryBuilder;
 	private QuerySpellChecker querySpellChecker;
 	private QuerySynonymExpander querySynonymExpander;
+	private QuerySpellCheckExpander querySpellCheckExpander;
 	private OpenSearchResultTransformer resultTransformer;
 	
 	public OpenSearchContextTransformer() {
@@ -111,7 +113,15 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 		feed.add(queryBuilder.build(query));
 		
 		//List<org.apache.lucene.search.Query> suggestions = querySpellChecker.suggest(searchRequest.getQuery());
-		Collection<org.apache.lucene.search.Query> suggestions = querySynonymExpander.getSynonyms(searchRequest.getQuery());
+		Collection<org.apache.lucene.search.Query> synonyms = querySynonymExpander.getSynonyms(searchRequest.getQuery());
+		for (org.apache.lucene.search.Query suggestion : synonyms) {
+			final Query suggestionQuery = new QueryImpl();
+			suggestionQuery.setRole("related");
+			suggestionQuery.setSearchTerms(suggestion.toString());
+			feed.add(queryBuilder.build(suggestionQuery));
+		}
+		
+		Collection<org.apache.lucene.search.Query> suggestions = querySpellCheckExpander.getSuggestions(searchRequest.getQuery());
 		for (org.apache.lucene.search.Query suggestion : suggestions) {
 			final Query suggestionQuery = new QueryImpl();
 			suggestionQuery.setRole("correction");
@@ -326,6 +336,15 @@ public class OpenSearchContextTransformer implements Transformer<SearchContext, 
 
 	public void setQuerySynonymExpander(QuerySynonymExpander querySynonymExpander) {
 		this.querySynonymExpander = querySynonymExpander;
+	}
+
+	public QuerySpellCheckExpander getQuerySpellCheckExpander() {
+		return querySpellCheckExpander;
+	}
+
+	public void setQuerySpellCheckExpander(
+			QuerySpellCheckExpander querySpellCheckExpander) {
+		this.querySpellCheckExpander = querySpellCheckExpander;
 	}
 
 }
