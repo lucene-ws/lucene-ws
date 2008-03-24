@@ -2,7 +2,9 @@ package net.lucenews3.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -133,6 +135,7 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 			final int documentCount = reader.numDocs();
 			System.err.println(directory + ": document count = " + documentCount);
 			final TermEnum terms = reader.terms();
+			final List<String> fieldNames = new ArrayList<String>();
 			String primaryFieldName = null;
 			String currentFieldName = null;
 			int currentFieldCount = 0;
@@ -143,6 +146,7 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 				if (currentFieldName == null) {
 					currentFieldName = fieldName;
 					currentFieldCount = 1;
+					fieldNames.add(currentFieldName);
 				} else {
 					currentFieldCount++;
 					if (currentFieldName.equals(fieldName)) {
@@ -155,6 +159,7 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 						}
 						currentFieldName = fieldName;
 						currentFieldCount = 1;
+						fieldNames.add(currentFieldName);
 					}
 				}
 			}
@@ -171,6 +176,7 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 			} else {
 				metaData.setPrimaryField(primaryFieldName);
 			}
+			metaData.setDefaultFields(fieldNames);
 		} finally {
 			reader.close();
 		}
