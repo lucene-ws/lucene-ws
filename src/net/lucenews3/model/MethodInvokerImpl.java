@@ -40,6 +40,12 @@ public class MethodInvokerImpl implements MethodInvoker {
 		return parameterTypes;
 	}
 
+	/**
+	 * Retrieves the type of the given parameter.
+	 * 
+	 * @param argument
+	 * @return the result of {@link Object#getClass()} if non-null, null otherwise
+	 */
 	public Class<?> getParameterType(Object argument) {
 		final Class<?> result;
 		
@@ -137,10 +143,10 @@ public class MethodInvokerImpl implements MethodInvoker {
 		final Object[] results;
 		
 		if (method.isVarArgs()) {
-			Class<?>[] types = method.getParameterTypes();
-			Class<?>[] standardTypes = new Class<?>[types.length - 1];
-			Class<?>   variableType = types[types.length - 1];
-			int        variableArgumentCount = arguments.length - standardTypes.length;
+			final Class<?>[] types = method.getParameterTypes();
+			final Class<?>[] standardTypes = new Class<?>[types.length - 1];
+			final Class<?>   variableType = types[types.length - 1];
+			final int        variableArgumentCount = arguments.length - standardTypes.length;
 			
 			results = new Object[types.length];
 			
@@ -151,24 +157,24 @@ public class MethodInvokerImpl implements MethodInvoker {
 				
 				// Construct an array to contain the variable arguments
 				
-				Class<?> variableComponentType = variableType.getComponentType();
+				final Class<?> variableComponentType = variableType.getComponentType();
 				
 				if (variableArgumentCount == 1) {
 					// We must tip-toe around this issue very carefully (ambiguous)
 					// If it happens to be an array of the same type as the var-arg
 					// array, we will simple use it. :)
-					Object variableArgument = arguments[arguments.length - 1];
+					final Object variableArgument = arguments[arguments.length - 1];
 					if (variableArgument == null) {
 						results[results.length - 1] = null;
 					} else if (variableType.isAssignableFrom(variableArgument.getClass())) {
 						results[results.length - 1] = variableArgument;
 					} else {
-						Object variableArgumentArray = Array.newInstance(variableComponentType, 1);
+						final Object variableArgumentArray = Array.newInstance(variableComponentType, 1);
 						Array.set(variableArgumentArray, 0, variableArgument);
 						results[results.length - 1] = variableArgumentArray;
 					}
 				} else {
-					Object variableArgumentArray = Array.newInstance(variableComponentType, variableArgumentCount);
+					final Object variableArgumentArray = Array.newInstance(variableComponentType, variableArgumentCount);
 					for (int i = 0; i < variableArgumentCount; i++) {
 						Array.set(variableArgumentArray, i, Array.get(arguments, standardTypes.length + i));
 					}
