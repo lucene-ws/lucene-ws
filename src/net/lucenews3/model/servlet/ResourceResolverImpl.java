@@ -6,19 +6,19 @@ import java.util.Map.Entry;
 
 public class ResourceResolverImpl<R> implements ResourceResolver {
 
-	private Map<PathClass, Object> resourcesByPathClass;
+	private Map<PathClass, R> resourcesByPathClass;
 	
 	/**
 	 * Determines which resources are valid by path.
 	 * 
 	 * @return
 	 */
-	public Map<Path, Object> getResourcesByPath(Iterable<String> tokens) {
-		final Map<Path, Object> resourcesByPath = new HashMap<Path, Object>();
+	public Map<Path, R> getResourcesByPath(Iterable<String> tokens) {
+		final Map<Path, R> resourcesByPath = new HashMap<Path, R>();
 		
-		for (Entry<PathClass, Object> entry : resourcesByPathClass.entrySet()) {
+		for (Entry<PathClass, R> entry : resourcesByPathClass.entrySet()) {
 			final PathClass pathClass = entry.getKey();
-			final Object resource = entry.getValue();
+			final R resource = entry.getValue();
 			
 			final Path path;
 			
@@ -35,17 +35,17 @@ public class ResourceResolverImpl<R> implements ResourceResolver {
 	}
 	
 	@Override
-	public PathEntry<R> resolveResource(Iterable<String> tokens) throws PathResolutionException {
-		final PathEntry<R> result;
+	public QualifiedResource<R> resolveResource(Iterable<String> tokens) throws PathResolutionException {
+		final QualifiedResource<R> result;
 		
-		final Map<Path, Object> resourcesByPath = getResourcesByPath(tokens);
+		final Map<Path, R> resourcesByPath = getResourcesByPath(tokens);
 		
 		switch (resourcesByPath.size()) {
 		case 0:
 			throw new PathResolutionException("No valid path classes for the tokens");
 		case 1:
-			result = null;
-			// TODO
+			Entry<Path, R> entry = resourcesByPath.entrySet().iterator().next();
+			result = new QualifiedResourceImpl<R>(entry.getKey(), entry.getValue());
 			break;
 		default:
 			throw new PathResolutionException("Multiple valid path classes for the tokens");
