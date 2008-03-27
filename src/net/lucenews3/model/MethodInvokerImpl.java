@@ -144,18 +144,17 @@ public class MethodInvokerImpl implements MethodInvoker {
 		
 		if (method.isVarArgs()) {
 			final Class<?>[] types = method.getParameterTypes();
-			final Class<?>[] standardTypes = new Class<?>[types.length - 1];
 			final Class<?>   variableType = types[types.length - 1];
-			final int        variableArgumentCount = arguments.length - standardTypes.length;
+			final int standardArgumentCount = types.length - 1;
+			final int variableArgumentCount = arguments.length - types.length + 1;
+			final int variableArgumentOffset = standardArgumentCount;
 			
 			results = new Object[types.length];
 			
 			if (variableType.isArray()) {
 				
 				// Copy the standard arguments directly into the results
-				System.arraycopy(arguments, 0, results, 0, standardTypes.length);
-				
-				// Construct an array to contain the variable arguments
+				System.arraycopy(arguments, 0, results, 0, standardArgumentCount);
 				
 				final Class<?> variableComponentType = variableType.getComponentType();
 				
@@ -175,9 +174,15 @@ public class MethodInvokerImpl implements MethodInvoker {
 					}
 				} else {
 					final Object variableArgumentArray = Array.newInstance(variableComponentType, variableArgumentCount);
-					for (int i = 0; i < variableArgumentCount; i++) {
-						Array.set(variableArgumentArray, i, Array.get(arguments, standardTypes.length + i));
+					
+					if (variableArgumentArray.equals(results.getClass())) {
+						System.arraycopy(arguments, variableArgumentOffset, variableArgumentArray, 0, variableArgumentCount);
+					} else {
+						for (int i = 0; i < variableArgumentCount; i++) {
+							Array.set(variableArgumentArray, i, Array.get(arguments, variableArgumentOffset + i));
+						}
 					}
+					
 					results[results.length - 1] = variableArgumentArray;
 				}
 				
