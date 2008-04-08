@@ -1,4 +1,5 @@
 package net.lucenews.model;
+
 /**
 *
 * Basically a clone of the Document class found within the 
@@ -7,11 +8,13 @@ package net.lucenews.model;
 * of any inheritance.
 *
 */
+
 import java.io.*;
 import net.lucenews.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.opensearch.*;
+
 import org.apache.lucene.index.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -209,7 +212,7 @@ public class LuceneDocument {
     }
     
     
-    @Override
+    
     public String toString () {
         return document.toString();
     }

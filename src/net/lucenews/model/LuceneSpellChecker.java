@@ -1,4 +1,5 @@
 package net.lucenews.model;
+
 import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;

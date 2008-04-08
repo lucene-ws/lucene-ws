@@ -19,6 +19,7 @@ import org.apache.lucene.queryParser.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.wordnet.*;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import javax.xml.transform.*;
 
 
@@ -45,12 +46,12 @@ public class SearchController extends Controller {
             IOException, InsufficientDataException, org.apache.lucene.queryParser.ParseException, OpenSearchException
     {
         Logger.getLogger(SearchController.class).trace("doGet(LuceneContext)");
+        
         LuceneWebService   service  = c.getService();
         LuceneIndexManager manager  = service.getIndexManager();
-        service=null;
         LuceneRequest      request  = c.getRequest();
         LuceneIndex[]      indices  = manager.getIndices( request.getIndexNames() );
-        manager=null;
+        List<String> invalidParameterNames = new LinkedList<String>();
         
         
         
@@ -65,10 +66,8 @@ public class SearchController extends Controller {
         }
         LuceneMultiSearcher searcher = new LuceneMultiSearcher( searchers, getSearcherIndexField() );
         c.setMultiSearcher( searcher );
-        searchers=null;
         
         
-
         /**
          * Prepare the sort by isolating invalid sort fields
          */
@@ -95,7 +94,7 @@ public class SearchController extends Controller {
 		        	for (int j = 0; j < indices.length; j++) {
 		        		TermEnum terms = readers[ j ].terms(new Term(sortField.getField(), ""));
 		        		if (terms.next()) {
-		        			if (!terms.term().field().equals(sortField.getField())) {
+		        			if (terms.term().field() != sortField.getField()) {
 		        				isValidSortField = false;
 		        				break;
 		        			}
@@ -119,7 +118,6 @@ public class SearchController extends Controller {
 	        c.setSort( new Sort( sortFields.toArray(new SortField[ sortFields.size() ]) ) );
         }
         
-
         /**
          * Apply defaults
          */
@@ -172,7 +170,7 @@ public class SearchController extends Controller {
                 query = c.getQueryParser().parse( searchTerms );
             }
         }
-        searchTerms=null;
+        
         
         Logger.getLogger(SearchController.class).info("Analyzer: " + c.getAnalyzer());
         Logger.getLogger(SearchController.class).info("Filter: " + c.getFilter());
@@ -183,7 +181,7 @@ public class SearchController extends Controller {
          */
         
         Hits hits = searcher.search( query, c.getFilter(), c.getSort() );    
-        searcher=null;
+        
         Logger.getLogger(SearchController.class).info("Search for " + query + " returned " + hits.length() + " results");
         
         
@@ -191,7 +189,7 @@ public class SearchController extends Controller {
         
         
         
-        
+        int maximumCorrectedTotalResults = -1;
         
         // Suggesting
         SuggestionController.doSuggest( c, query, response );
@@ -236,14 +234,14 @@ public class SearchController extends Controller {
         else {
             response.setTitle( c.getTitle() );
         }
-        query=null;
+        
         response.setId( request.getLocation() );
         response.setUpdated( Calendar.getInstance() );
         
         
         // link to OpenSearch Description
         Link descriptionLink = new Link();
-        descriptionLink.setHref( LuceneWebService.getOpenSearchDescriptionURI( request, request.getIndexNames() ).toString() );
+        descriptionLink.setHref( service.getOpenSearchDescriptionURI( request, request.getIndexNames() ).toString() );
         descriptionLink.setRel("search");
         descriptionLink.setType("application/opensearchdescription+xml");
         response.setLink( descriptionLink );
@@ -277,25 +275,24 @@ public class SearchController extends Controller {
             
             if (firstIndex != null && lastIndex != null) {
                 response.setStartIndex( firstIndex );
-                LuceneDocument document;LuceneIndex index = null;float score; 
-                Integer searcherIndex; OpenSearchResult result;Link serviceLink;
-                String documentURI;OpenSearchPerson author;Element div;Link alternateLink; 
+                
                 for (int number = firstIndex; number <= lastIndex; number++) {
-                     document = new LuceneDocument( hits.doc( number - 1 ) );
-                     score = hits.score( number - 1 );
-                     searcherIndex = extractSearcherIndex( document );
+                    LuceneDocument document = new LuceneDocument( hits.doc( number - 1 ) );
+                    float          score    = hits.score( number - 1 );
                     
+                    Integer searcherIndex = extractSearcherIndex( document );
                     
+                    LuceneIndex index = null;
                     if (searcherIndex != null) {
-                        
                         index = indices[ searcherIndex ];
                         document.setIndex( index );
                     }
                     
-                    searcherIndex=null;
-                    result = new OpenSearchResult();
+                    OpenSearchResult result = new OpenSearchResult();
                     result.setTitle( document.getTitle() );
-                    result.setId( LuceneWebService.getDocumentURI( request, index, document ).toString() );
+                    result.setId( service.getDocumentURI( request, index, document ).toString() );
+                    //result.setRights( document.getRights() );
+                    
                     result.setSummary(index.getSummary(document));
                     
                     try {
@@ -309,52 +306,45 @@ public class SearchController extends Controller {
                     result.setScore( score );
                     
                     
-                    serviceLink = new Link();
-                    serviceLink.setHref(LuceneWebService.getDocumentURI( request, index, document ).toString() );
+                    Link serviceLink = new Link();
+                    serviceLink.setHref(service.getDocumentURI( request, index, document ).toString() );
                     serviceLink.setRel("self");
                     result.addLink( serviceLink );
-                    serviceLink=null;
                     
-                    documentURI = index.getURI(document);
+                    
+                    String documentURI = index.getURI(document);
                     if (documentURI != null) { 
-                        alternateLink = new Link();
+                        Link alternateLink = new Link();
                         alternateLink.setHref(documentURI);
-                        documentURI=null;
                         alternateLink.setRel("alternate");
                         result.addLink( alternateLink );
-                        alternateLink=null;
-                    }index=null;
+                    }
                     
                     
                     
                     if (document.getAuthor() != null) {
-                        author = new OpenSearchPerson();
+                        OpenSearchPerson author = new OpenSearchPerson();
                         author.setRole( "author" );
                         author.setName( document.getAuthor() );
                         result.addPerson( author );
-                        author=null;
                     }
                                        
                     
                     // content
-                    div = domDocument.createElement("div");
+                    Element div = domDocument.createElement("div");
                     div.setAttribute( "xmlns", "http://www.w3.org/1999/xhtml" );
                     div.appendChild( XOXOController.asElement( c, document, domDocument ) );
-                    document=null;
                     result.setContent( div );
-                    div=null;
+                    
                     
                     response.addResult( result );
-                    result=null;
                 }
-                hits=null;response=null;indices=null;request=null;domDocument=null;
             }
         }
         
         
         
         OpenSearchView.process( c );
-        c=null;
     }
 
     

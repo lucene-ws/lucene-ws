@@ -22,7 +22,7 @@ public class TextContent extends Content {
     public TextContent (String text, String type) {
         this( new Text( text, type ) );
     }
-    @Override
+    
     public String getType () {
         return text.getType();
     }
@@ -30,7 +30,7 @@ public class TextContent extends Content {
     public Text getText () {
         return text;
     }
-    @Override
+    
     public Element asElement (Document document) {
         Element element = super.asElement( document );
         element.appendChild( document.createTextNode( getText().toString() ) );

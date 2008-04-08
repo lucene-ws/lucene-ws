@@ -21,7 +21,7 @@ public class DocumentsNotFoundException extends LuceneException {
     public String[] getDocumentIDs () {
         return ids;
     }
-    @Override
+    
     public String getMessage () {
         StringBuffer buffer = new StringBuffer();
         
@@ -50,7 +50,7 @@ public class DocumentsNotFoundException extends LuceneException {
         return String.valueOf( buffer );
     }
     
-    @Override
+    
     public int getStatus () {
         return HttpServletResponse.SC_NOT_FOUND;
     }

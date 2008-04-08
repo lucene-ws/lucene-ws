@@ -6,6 +6,7 @@ import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import net.lucenews.*;
 import net.lucenews.atom.*;
+import net.lucenews.controller.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.view.*;
@@ -60,7 +61,7 @@ public class IndexPropertiesController extends Controller {
                 AtomView.process( c, entry );
             }
             else {
-                response.setStatus( LuceneResponse.SC_NOT_MODIFIED );
+                response.setStatus( response.SC_NOT_MODIFIED );
             }
         }
         else {
@@ -113,13 +114,21 @@ public class IndexPropertiesController extends Controller {
         
         // For each index...
         Entry[] entries = request.getEntries();
-        String name; 
         for (int i = 0; i < entries.length; i++) {
             Entry entry = entries[ i ];
-            name = request.getIndexName();
+            
+            String name = entry.getTitle();
+            
+            if( !request.hasIndexName( name ) ) {
+                continue;
+            }
+            
             LuceneIndex index = manager.getIndex( name );
+            
             Properties properties = XOXOController.asProperties( c, entry );
+            
             index.setProperties( properties );
+            
             updated = true;
             
             if (i > 0) {
@@ -129,7 +138,7 @@ public class IndexPropertiesController extends Controller {
         }
         
         if (updated) {
-            response.addHeader( "Location", LuceneWebService.getIndexPropertiesURI( request, indexNamesBuffer.toString() ).toString() );
+            response.addHeader( "Location", service.getIndexPropertiesURI( request, indexNamesBuffer.toString() ).toString() );
         }
         
         XMLController.acknowledge( c );
@@ -157,22 +166,29 @@ public class IndexPropertiesController extends Controller {
     {
         LuceneWebService   service  = c.getService();
         LuceneIndexManager manager  = service.getIndexManager();
-        service=null;
         LuceneRequest      request  = c.getRequest();
         LuceneResponse     response = c.getResponse();
+        
         
         StringBuffer indexNamesBuffer = new StringBuffer();
         
         boolean created = false;
         
-                
+        
+        
         // For each index...
         Entry[] entries = request.getEntries();
-        String name;
         for (int i = 0; i < entries.length; i++) {
             Entry entry = entries[ i ];
-            name = request.getIndexName();
+            
+            String name = entry.getTitle();
+            
+            if ( !request.hasIndexName( name ) ) {
+                continue;
+            }
+            
             LuceneIndex index = manager.getIndex( name );
+            
             Properties properties = XOXOController.asProperties( c, entry );
             
             index.addProperties( properties );
@@ -183,12 +199,12 @@ public class IndexPropertiesController extends Controller {
                 indexNamesBuffer.append( "," );
             }
             indexNamesBuffer.append( index.getName() );
-        }manager=null;
+        }
         
         if (created) {
-            response.addHeader( "Location", LuceneWebService.getIndexPropertiesURI( request, indexNamesBuffer.toString() ).toString() );
+            response.addHeader( "Location", service.getIndexPropertiesURI( request, indexNamesBuffer.toString() ).toString() );
         }
-        request=null;response=null;
+        
         XMLController.acknowledge( c );
     }
     
@@ -208,16 +224,19 @@ public class IndexPropertiesController extends Controller {
         throws ParserConfigurationException, IOException
     {
         LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
         LuceneRequest      request  = c.getRequest();
-              
+        LuceneResponse     response = c.getResponse();
+        
+        
+        
         Entry entry = new Entry();
         
         entry.setTitle( "Properties of '" + index.getTitle() + "'" );
-        entry.setID( LuceneWebService.getIndexPropertiesURI( request, index ).toString() );
-        request=null;
+        entry.setID( c.getService().getIndexPropertiesURI( request, index ).toString() );
         entry.setUpdated( new Date( index.getPropertiesFile().lastModified() ) );
         entry.setContent( XOXOController.asContent( c, index.getProperties() ) );
-        index=null;
+        
         /*
         if ( index.hasAuthor() ) {
             entry.addAuthor( new Author( index.getAuthor() ) );
@@ -227,7 +246,7 @@ public class IndexPropertiesController extends Controller {
         if ( authorRequired ) {
             entry.addAuthor( new Author( service.getTitle() ) );
         }
-        service=null;
+        
         return entry;
     }
     

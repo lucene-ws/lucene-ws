@@ -8,7 +8,7 @@ public class InsufficientDataException extends LuceneException {
         super( message );
     }
     
-    @Override
+    
     public int getStatus () {
         return HttpServletResponse.SC_BAD_REQUEST;
     }

@@ -6,9 +6,11 @@ import java.io.*;
 import java.nio.charset.*;
 import javax.xml.parsers.*;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.*;
@@ -33,10 +35,12 @@ public class XMLView extends View {
     public static void process (LuceneContext c, Document document)
         throws ParserConfigurationException, TransformerException, IOException
     {
+        LuceneRequest  request  = c.getRequest();
         LuceneResponse response = c.getResponse();
+        
         TransformerFactory factory = TransformerFactory.newInstance();
         Transformer transformer = factory.newTransformer();
-        factory =null;
+        
         XMLController.tidy( document );
         
         transformer.transform(

@@ -11,7 +11,7 @@ public class Contributor extends Person {
     }
     
     
-    @Override
+    
     protected String getTagName () {
         return "contributor";
     }

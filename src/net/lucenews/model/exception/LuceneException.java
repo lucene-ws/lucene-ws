@@ -1,5 +1,7 @@
 package net.lucenews.model.exception;
 
+import javax.servlet.ServletException;
+
 public class LuceneException extends Exception {
     
     private int status;

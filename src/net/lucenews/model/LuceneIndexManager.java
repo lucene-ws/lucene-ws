@@ -3,6 +3,7 @@
  */
 
 package net.lucenews.model;
+
 import java.io.*;
 import java.util.*;
 import net.lucenews.*;
@@ -113,21 +114,20 @@ public class LuceneIndexManager implements LuceneIndexListener {
                 directoryNames = "/var/local/lucene/";
             }
         }
-        os=null;
+        
         if ( directoryNames == null ) directoryNames = "C:\\indices";
         
         // split the directory names
         String[] paths = directoryNames.split(";");
-        directoryNames=null;
+        
         List<File> directories = new LinkedList<File>();
-        String path;
         for ( int i = 0; i < paths.length; i++ ) {
-            path = ServletUtils.clean( paths[ i ] );
+            String path = ServletUtils.clean( paths[ i ] );
             if ( path != null ) {
                 directories.add( new File( path ) );
             }
         }
-        path=null;
+        
         return directories.toArray( new File[]{} );
     }
     

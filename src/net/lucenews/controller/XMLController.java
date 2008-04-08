@@ -41,7 +41,6 @@ public class XMLController extends Controller {
     public static Document newDocument () throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        factory=null;
         return builder.newDocument();
     }
     
@@ -62,7 +61,14 @@ public class XMLController extends Controller {
             TransformerException, ParserConfigurationException,
             TransformerException, IOException
     {
+        LuceneWebService   service  = c.getService();
+        LuceneIndexManager manager  = service.getIndexManager();
         LuceneRequest      request  = c.getRequest();
+        LuceneResponse     response = c.getResponse();
+        
+        
+        
+        
         Entry entry = new Entry();
         
         entry.setTitle( "OK" );
@@ -81,44 +87,36 @@ public class XMLController extends Controller {
      * @param document The DOM Document to be tidied.
      */
     public static void tidy (Document document) {
-        
         tidy( document, document.getDocumentElement(), "" );
-        document=null;
     }
     
     
     
     public static void tidy (Document document, NodeList nodeList, String prefix) {
         Node[] nodes = new Node[ nodeList.getLength() ];
-        
         for (int i = 0; i < nodes.length; i++) {
             nodes[ i ] = nodeList.item( i );
         }
-        Node node;Element parent;
+        
         for (int i = 0; i < nodes.length; i++) {
-            node = nodes[ i ];
+            Node node = nodes[ i ];
             
             switch (node.getNodeType()) {
                 case Node.ELEMENT_NODE:
                     tidy( document, (Element) node, prefix );
-                    node=null;
                     break;
             }
             
             if (i == ( nodes.length - 1 ) && node instanceof Element) {
-                parent = (Element) nodes[ 0 ].getParentNode();
+                Element parent = (Element) nodes[ 0 ].getParentNode();
                 parent.appendChild( document.createTextNode( "\n" + prefix.substring(0,prefix.length()-1) ) );
-                
             }
-            node =null;
-        }document=null;parent=null;prefix=null;
-        
+        }
     }
     
     
     
     public static void tidy (Document document, Element element, String prefix) {
-        
         Node parent = element.getParentNode();
         
         NodeList children = element.getChildNodes();
@@ -126,9 +124,8 @@ public class XMLController extends Controller {
         if (parent instanceof Element) {
             ( (Element) parent ).insertBefore( document.createTextNode( "\n" + prefix ), element );
         }
-        parent=null;element=null;
+        
         tidy( document, children, prefix + "\t" );
-        document=null;children=null;prefix=null;
     }
     
 }

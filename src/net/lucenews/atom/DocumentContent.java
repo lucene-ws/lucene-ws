@@ -25,11 +25,11 @@ public class DocumentContent extends Content {
     public InputStream getInputStream () {
         return new ByteArrayInputStream( bytes );
     }
-    @Override
+    
     public String toString () {
         return new String( bytes );
     }
-    @Override
+    
     public Element asElement (Document document) {
         Element element = super.asElement( document );
         element.appendChild( document.createTextNode( toString() ) );

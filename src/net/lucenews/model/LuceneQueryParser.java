@@ -1,4 +1,5 @@
 package net.lucenews.model;
+
 import org.apache.log4j.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.index.*;
@@ -161,7 +162,7 @@ public class LuceneQueryParser extends QueryParser {
         return query;
     }
     */
-    @Override
+    
     protected Query getFieldQuery (String field, String queryText) throws ParseException {
         if ( field.equals( getField() ) ) {
             Logger.getLogger(this.getClass()).debug("getFieldQuery(\""+field+"\",\""+queryText+"\")");
@@ -298,7 +299,7 @@ public class LuceneQueryParser extends QueryParser {
         }
     }
     */
-    @Override
+    
     protected Query getFieldQuery (String field, String queryText, int slop) throws ParseException {
         if ( field.equals( getField() ) ) {
             if ( getFields().length == 1 ) {
@@ -326,7 +327,7 @@ public class LuceneQueryParser extends QueryParser {
             return super.getFieldQuery( field, queryText, slop );
         }
     }
-    @Override
+    
     protected Query getFuzzyQuery (String field, String termStr, float minSimilarity) throws ParseException {
         if ( field.equals( getField() ) ) {
             if ( getFields().length == 1 ) {
@@ -354,7 +355,7 @@ public class LuceneQueryParser extends QueryParser {
             return super.getFuzzyQuery( field, termStr, minSimilarity );
         }
     }
-    @Override
+    
     protected Query getPrefixQuery (String field, String termStr) throws ParseException {
         if ( field.equals( getField() ) ) {
             if ( getFields().length == 1 ) {
@@ -382,7 +383,7 @@ public class LuceneQueryParser extends QueryParser {
             return super.getPrefixQuery( field, termStr );
         }
     }
-    @Override
+    
     protected Query getWildcardQuery (String field, String termStr) throws ParseException {
         if ( field.equals( getField() ) ) {
             if ( getFields().length == 1 ) {
@@ -410,7 +411,7 @@ public class LuceneQueryParser extends QueryParser {
             return super.getWildcardQuery( field, termStr );
         }
     }
-    @Override
+    
     protected Query getRangeQuery (String field, String part1, String part2, boolean inclusive)
         throws ParseException
     {

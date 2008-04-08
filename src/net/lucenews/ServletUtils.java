@@ -1,4 +1,5 @@
 package net.lucenews;
+
 import java.io.*;
 import java.lang.reflect.*;
 import java.text.*;
@@ -10,6 +11,7 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 import net.lucenews.atom.*;
+import net.lucenews.*;
 import net.lucenews.model.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
@@ -48,7 +50,7 @@ public class ServletUtils {
             if (searchTerms == null) { searchTerms = request.getCleanParameter("query");       }
             if (searchTerms == null) { searchTerms = request.getCleanParameter("q");           }
             query.setSearchTerms( searchTerms );
-            searchTerms=null;
+            
             
             /**
              * startIndex
@@ -60,7 +62,7 @@ public class ServletUtils {
             if (startIndex == null) { startIndex = request.getIntegerParameter("start");       }
             if (startIndex == null) { startIndex = request.getIntegerParameter("offset");      }
             query.setStartIndex( startIndex );
-            startIndex=null;
+            
             
             /**
              * startPage
@@ -70,7 +72,6 @@ public class ServletUtils {
             if (startPage == null) {
                 startPage = request.getIntegerParameter("startPage");
                 c.setStartPageParameter("startPage");
-                
             }
             if (startPage == null) {
                 startPage = request.getIntegerParameter("start_page");
@@ -84,7 +85,7 @@ public class ServletUtils {
             if (startPage == null) c.setStartPageParameter( null );
             
             query.setStartPage( startPage );
-            startPage=null;
+            
             
             /**
              * count
@@ -98,7 +99,7 @@ public class ServletUtils {
             if (count == null) { count = request.getIntegerParameter("entriesPerPage");   }
             if (count == null) { count = request.getIntegerParameter("entries_per_page"); }
             query.setCount( count );
-            count=null;
+            
             
             /**
              * totalResults
@@ -109,7 +110,7 @@ public class ServletUtils {
             if (totalResults == null) { totalResults = request.getIntegerParameter("total_results"); }
             if (totalResults == null) { totalResults = request.getIntegerParameter("total");         }
             query.setTotalResults( totalResults );
-            totalResults=null;
+            
             
             /**
              * language
@@ -120,7 +121,7 @@ public class ServletUtils {
             if (language == null) { language = request.getCleanParameter("lang");     }
             if (language == null) { language = request.getCleanParameter("locale");   } // This needs fixing
             query.setLanguage( language );
-            language=null;
+            
             
             /**
              * inputEncoding
@@ -131,7 +132,7 @@ public class ServletUtils {
             if (inputEncoding == null) { inputEncoding = request.getCleanParameter("input_encoding"); }
             if (inputEncoding == null) { inputEncoding = request.getCleanParameter("input");          }
             query.setInputEncoding( inputEncoding );
-            inputEncoding=null;
+            
             
             /**
              * outputEncoding
@@ -142,7 +143,7 @@ public class ServletUtils {
             if (outputEncoding == null) { outputEncoding = request.getCleanParameter("output_encoding"); }
             if (outputEncoding == null) { outputEncoding = request.getCleanParameter("output");          }
             query.setOutputEncoding( outputEncoding );
-            outputEncoding=null;
+            
             
             /**
              * role
@@ -152,7 +153,6 @@ public class ServletUtils {
             
             
             c.setOpenSearchQuery( query );
-            query=null;
         }
         
         
@@ -164,7 +164,6 @@ public class ServletUtils {
             if (analyzer == null) { analyzer = new StandardAnalyzer(); }
             
             c.setAnalyzer( analyzer );
-            analyzer=null;
         }
         
         
@@ -175,7 +174,6 @@ public class ServletUtils {
             if (analyzer == null) { analyzer = LuceneUtils.parseAnalyzer( request.getCleanParameter("filterAnalyzer") ); }
             
             c.setFilterAnalyzer( analyzer );
-            analyzer=null;
         }
         
         
@@ -186,7 +184,6 @@ public class ServletUtils {
             // defaultOperator
             if (defaultOperator == null) {
                 defaultOperator = LuceneUtils.parseOperator(request.getCleanParameter("defaultOperator"));
-                
             }
             
             // default_operator
@@ -213,7 +210,6 @@ public class ServletUtils {
             }
             
             c.setDefaultOperator( defaultOperator );
-            defaultOperator=null;
         }
         
         
@@ -232,12 +228,11 @@ public class ServletUtils {
             for (int i = 0; i < indices.length && defaultFields == null; i++) {
                 defaultFields = indices[ i ].getDefaultFieldNames();
             }
-            indices=null;
+            
             // service-specified default field
             if (defaultFields == null) { defaultFields = service.getDefaultFields(); }
             
             c.setDefaultFields( defaultFields );
-            defaultFields=null;
         }
         
         
@@ -277,8 +272,7 @@ public class ServletUtils {
             }
             
             c.setOpenSearchFormat( format );
-            format=null;
-        }   
+        }
         
         
         // locale
@@ -305,9 +299,8 @@ public class ServletUtils {
                     synonymExpander.setAnalyzer( c.getAnalyzer() );
                     synonymExpander.setSearcher( manager.getIndex( synonymsIndex ).getIndexSearcher() );
                     c.setSynonymExpander( synonymExpander );
-                    synonymExpander=null;
-                }synonymsIndex=null;
-            }suggestSynonyms=null;
+                }
+            }
         }
         
         
@@ -320,7 +313,7 @@ public class ServletUtils {
             }
             else {
                 c.isOptimizing( ServletUtils.parseBoolean( optimize ) );
-            }optimize=null;
+            }
         }
         
         
@@ -341,10 +334,9 @@ public class ServletUtils {
                     LuceneSpellChecker spellChecker = new LuceneSpellChecker( manager.getIndex( spellCheckIndex ).getLuceneDirectory() );
                     spellChecker.setMaximumSuggestions( 5 );
                     c.setSpellChecker( spellChecker );
-                    
                 }
-            }suggestSpelling=null;
-        }manager=null;
+            }
+        }
         
         
         // suggest similar
@@ -353,9 +345,8 @@ public class ServletUtils {
             if (suggestSimilar == null) { suggestSimilar = request.getBooleanParameter("similar");        }
             if (suggestSimilar == null) { suggestSimilar = service.getBooleanProperty("suggest.similar"); }
             c.suggestSimilar( suggestSimilar );
-            suggestSimilar=null;
         }
-        service=null;
+        
         
         // QueryParser
         if (c.getQueryParser() == null) {
@@ -366,7 +357,6 @@ public class ServletUtils {
                 queryParser.setFields( c.getDefaultFields() );
                 queryParser.setDefaultOperator( c.getDefaultOperator() );
                 c.setQueryParser( queryParser );
-                queryParser=null;fakeDefaultField=null;
             }
         }
         
@@ -405,7 +395,7 @@ public class ServletUtils {
                     c.setFilter( new QueryFilter( filterParser.parse( queryFilterString ) ) );
                 }
                 
-            }filterString =null;filterParser=null;
+            }
         }
         
         
@@ -417,12 +407,11 @@ public class ServletUtils {
             
             if (sortString != null) {
                 c.setSort( LuceneUtils.parseSort( sortString ) );
-            }sortString=null;
+            }
         }
         
-        request=null;
+        
         c.setQueryReconstructor( new QueryReconstructor() );
-        c=null;
     }
     
     
@@ -439,13 +428,12 @@ public class ServletUtils {
         List<String> tokenList = new ArrayList<String>();
         
         String[] tokens = source.split( delimiter );
-        String token;
         for ( int i = 0; i < tokens.length; i++ ) {
-            token = clean( tokens[ i ] );
+            String token = clean( tokens[ i ] );
             if ( token != null ) {
                 tokenList.add( token );
             }
-        }token=null;tokens=null;
+        }
         
         if ( tokenList.size() == 0 ) {
             return null;
@@ -453,7 +441,6 @@ public class ServletUtils {
         else {
             return tokenList.toArray( new String[]{} );
         }
-       
     }
     
     public static String[] split (String[] sources) {

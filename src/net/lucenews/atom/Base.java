@@ -119,7 +119,6 @@ public abstract class Base {
             
             int hours   = totalMinutes / 60;
             int minutes = totalMinutes - hours * 60;
-            totalMinutes=0;
             String h = Math.abs(hours) >= 10 ? String.valueOf( Math.abs( hours ) ) : "0" + Math.abs( hours );
             String m = minutes >= 10 ? String.valueOf( minutes ) : "0" + minutes;
             

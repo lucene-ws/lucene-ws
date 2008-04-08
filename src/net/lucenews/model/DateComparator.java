@@ -3,10 +3,14 @@ package net.lucenews.model;
 import net.lucenews.*;
 import net.lucenews.model.event.*;
 import net.lucenews.model.exception.*;
+
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;

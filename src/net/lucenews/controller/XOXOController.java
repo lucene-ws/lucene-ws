@@ -161,7 +161,6 @@ public class XOXOController {
                 Node node = nodes[ i ];
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element dl = (Element) ( (Element) node ).getElementsByTagName( "dl" ).item( 0 );
-                    
                     return dl;
                 }
             }
@@ -309,6 +308,7 @@ public class XOXOController {
                     if (element.getTagName().equals( "dt" )) {
                         if (state == 't') {
                             name = element.getFirstChild().getNodeValue();
+                            
                             indexed = false;
                             stored  = false;
                             tokenized = false;
@@ -322,22 +322,18 @@ public class XOXOController {
                                     
                                     if (_class.equals( "indexed" )) {
                                         indexed = true;
-                                        
                                     }
                                     
                                     if (_class.equals( "stored" )) {
                                         stored = true;
-                                        
                                     }
                                     
                                     if (_class.equals( "tokenized" )) {
                                         tokenized = true;
-                                        
                                     }
                                     
                                     if (_class.toLowerCase().equals( "termvectorstored" )) {
                                         termVectorStored = true;
-                                        
                                     }
                                 }
                             }

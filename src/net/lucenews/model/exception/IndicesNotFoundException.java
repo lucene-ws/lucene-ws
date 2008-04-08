@@ -22,7 +22,7 @@ public class IndicesNotFoundException extends LuceneException {
     public String[] getIndexNames () {
         return indexNames;
     }
-    @Override
+    
     public String getMessage () {
         String[] names = getIndexNames();
         
@@ -58,7 +58,7 @@ public class IndicesNotFoundException extends LuceneException {
         
         return String.valueOf( buffer );
     }
-    @Override
+    
     public int getStatus () {
         return HttpServletResponse.SC_NOT_FOUND;
     }

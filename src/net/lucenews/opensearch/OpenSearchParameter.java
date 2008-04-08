@@ -118,7 +118,7 @@ public class OpenSearchParameter {
         
         return parameter;
     }
-    @Override
+    
     public boolean equals (Object other) {
         if ( other == null ) {
             return false;

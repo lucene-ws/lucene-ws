@@ -43,7 +43,6 @@ public class HttpURI {
         }
         
         setUri(url.toString());
-        url=null;
     }
     
     public HttpURI (String uri) {
@@ -146,7 +145,6 @@ public class HttpURI {
         }
         
         setPathComponents( pathComponents );
-       
     }
     
     public List<String> getPathComponents () {
