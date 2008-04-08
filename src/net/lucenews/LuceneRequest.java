@@ -1,22 +1,34 @@
 package net.lucenews;
 
-import java.io.*;
-import java.net.*;
-import java.nio.charset.*;
-import java.util.*;
-import javax.servlet.http.*;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import net.lucenews.atom.*;
-import net.lucenews.controller.*;
-import net.lucenews.model.*;
-import net.lucenews.model.exception.*;
-import org.apache.log4j.*;
-import org.apache.lucene.analysis.*;
-import org.apache.lucene.queryParser.*;
-import org.apache.lucene.search.*;
-import org.w3c.dom.*;
-import org.xml.sax.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import net.lucenews.atom.AtomParseException;
+import net.lucenews.atom.Entry;
+import net.lucenews.atom.Feed;
+import net.lucenews.controller.DocumentController;
+import net.lucenews.model.LuceneDocument;
+import net.lucenews.model.exception.LuceneParseException;
+import net.lucenews.model.exception.MultipleValueException;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 
 
@@ -588,9 +600,13 @@ public class LuceneRequest extends HttpServletRequestWrapper {
             entries.addAll( feed.getEntries() );
         }
         
-        Entry entry = getEntry();
-        if (entry != null) {
-            entries.add( entry );
+        try {
+	        Entry entry = getEntry();
+	        if (entry != null) {
+	            entries.add( entry );
+	        }
+        } catch (AtomParseException e) {
+        	// Ignore this exception
         }
         
         return entries.toArray( new Entry[]{} );
