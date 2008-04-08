@@ -31,6 +31,7 @@ public class IntrospectionDocument {
         
         Element service = document.createElement( "service" );
         service.setAttribute( "xmlns", "http://www.w3.org/2007/app" );
+        service.setAttribute( "xmlns:atom", "http://www.w3.org/2005/Atom" );
         
         Iterator<Workspace> workspaces = getWorkspaces().iterator();
         while (workspaces.hasNext()) {
