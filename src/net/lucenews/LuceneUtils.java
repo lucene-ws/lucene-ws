@@ -3,7 +3,6 @@ package net.lucenews;
 import java.io.*;
 import java.util.*;
 import javax.xml.parsers.*; 
-import net.lucenews.*;
 import net.lucenews.atom.*;
 import net.lucenews.model.*;
 import net.lucenews.model.event.*;
@@ -14,11 +13,7 @@ import org.apache.lucene.analysis.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.queryParser.*;
 import org.apache.lucene.search.*;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
 
 
 public class LuceneUtils {
@@ -116,13 +111,15 @@ public class LuceneUtils {
         string = string.trim().toLowerCase();
         
         if ( string.equals("and") ) {
+            string =null;
             return QueryParser.AND_OPERATOR;
         }
         
         if ( string.equals("or") ) {
+            string = null;
             return QueryParser.OR_OPERATOR;
         }
-        
+        string =null;
         return null;
     }
     

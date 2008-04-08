@@ -76,11 +76,13 @@ public class LuceneContext {
     public Logger getLogger () {
         Thread thread = Thread.currentThread();
         StackTraceElement[] elements = thread.getStackTrace();
+        thread=null;
         StackTraceElement element = elements[ 3 ];
-        
+        elements=null;
         Class loggerClass = this.getClass();
         try {
             loggerClass = Class.forName( element.getClassName() );
+            element=null;
         }
         catch (ClassNotFoundException cnfe) {
         }

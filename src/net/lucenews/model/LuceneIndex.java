@@ -16,8 +16,6 @@ import org.apache.lucene.queryParser.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.*;
 
-
-
 /**
  * LuceneIndex is the class used to encapsulate the concept
  * of a Lucene index stored on a file system.
@@ -30,52 +28,28 @@ import org.apache.lucene.store.*;
  * @author  Adam Paynter
  * @version 0.2.0.01
  */
-
 public class LuceneIndex {
-    private static Map<File,LuceneIndex> managedIndices = new HashMap<File,LuceneIndex>();
-    
-    private Map<String,LuceneDocument> managedDocuments;
-    
+
+    private static Map<File, LuceneIndex> managedIndices = new HashMap<File, LuceneIndex>();
+    private Map<String, LuceneDocument> managedDocuments;
     private File directory;
-    
     private IndexReader reader;
-    private boolean     readerCheckedOut;
-    
     private IndexWriter writer;
-    private boolean     writerCheckedOut;
-    
     private IndexSearcher searcher;
-    
     private Properties properties;
     private long propertiesLastModified;
-    
-    private boolean refreshing;
     private long lastKnownVersion;
-    
     private static List<LuceneIndexListener> listeners = new LinkedList<LuceneIndexListener>();
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * Adds a Lucene index listener to the global list
      * 
      * @param listener The listener to be added
      */
-    
-    public static void addIndexListener (LuceneIndexListener listener) {
-        listeners.add( listener );
+    public static void addIndexListener(LuceneIndexListener listener) {
+        listeners.add(listener);
     }
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * Constructs a new index. The goal of this class is to guarantee
      * only one instance of the class exists for each, individual
@@ -89,19 +63,11 @@ public class LuceneIndex {
      * @param directory The directory in which the index resides
      * @throws IOException
      */
-    
-    protected LuceneIndex (File directory) throws IOException {
+    protected LuceneIndex(File directory) throws IOException {
         this.directory = directory;
-        managedDocuments = new HashMap<String,LuceneDocument>();
+        managedDocuments = new HashMap<String, LuceneDocument>();
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * Creates a Lucene index using the default analyzer. This involves
      * creating a directory if it does not already exist and placing
@@ -120,20 +86,11 @@ public class LuceneIndex {
      * @return           A <code>LuceneIndex</code> representing the created index
      * @throws           IndexAlreadyExistsException if an index already resides in the directory
      */
-    
-    public static LuceneIndex create (File directory)
-        throws IndexAlreadyExistsException, IOException
-    {
-        return create( directory, new StandardAnalyzer() );
+    public static LuceneIndex create(File directory)
+            throws IndexAlreadyExistsException, IOException {
+        return create(directory, new StandardAnalyzer());
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * Creates a Lucene index using the provided analyzer. This involves
      * creating a directory if it does not already exist and placing
@@ -208,27 +165,19 @@ public class LuceneIndex {
      * @return           a <code>LuceneIndex</code> corresponding to the given directory
      * @throws           IndexNotFoundException if no index resides in the given directory
      */
-    
-    public static LuceneIndex retrieve (File directory)
-        throws IndexNotFoundException, IOException
-    {
-        if (!IndexReader.indexExists( directory )) {
-            throw new IndexNotFoundException(String.valueOf( directory ));
+    public static LuceneIndex retrieve(File directory)
+            throws IndexNotFoundException, IOException {
+        if (!IndexReader.indexExists(directory)) {
+            throw new IndexNotFoundException(String.valueOf(directory));
         }
-        
-        if (!managedIndices.containsKey( directory )) {
-            managedIndices.put( directory, new LuceneIndex( directory ) );
+
+        if (!managedIndices.containsKey(directory)) {
+            managedIndices.put(directory, new LuceneIndex(directory));
         }
-        
-        return managedIndices.get( directory );
+
+        return managedIndices.get(directory);
     }
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * Deletes the index residing within the given directory on the
      * file system.
@@ -237,19 +186,11 @@ public class LuceneIndex {
      * @return          true if all files were successfully deleted, false otherwise
      * @see             #delete()
      */
-    
-    public static boolean delete (File directory)
-        throws IndexNotFoundException, IllegalActionException, IOException
-    {
-        return retrieve( directory ).delete();
+    public static boolean delete(File directory)
+            throws IndexNotFoundException, IllegalActionException, IOException {
+        return retrieve(directory).delete();
     }
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * Deletes the index from its directory on the file system.
      * Resources are first closed before attempting to procede 
@@ -262,80 +203,63 @@ public class LuceneIndex {
      * @return true if all files were deleted, false otherwise
      * @throws IOException if files could not be deleted.
      */
-    
-    public boolean delete ()
-        throws IllegalActionException, IOException
-    {
+    public boolean delete()
+            throws IllegalActionException, IOException {
         if (isReadOnly()) {
-            throw new IllegalActionException( "Index is read-only." );
+            throw new IllegalActionException("Index is read-only.");
         }
-        
+
         close();
-        
+
         IndexReader reader = getIndexReader();
-        
+
         boolean wasSuccess = true;
-        
+
         if (reader.directory() instanceof FSDirectory) {
             String[] fileNames = reader.directory().list();
-            for( int i = 0; i < fileNames.length; i++ ) {
-                File file = new File( getDirectory(), fileNames[ i ] );
-                
-                if( !file.equals(getPropertiesFile()) && !file.delete() ) {
+            for (int i = 0; i < fileNames.length; i++) {
+                File file = new File(getDirectory(), fileNames[i]);
+
+                if (!file.equals(getPropertiesFile()) && !file.delete()) {
                     wasSuccess = false;
                 }
             }
         }
-        
-        putIndexReader( reader );
-        
+
+        putIndexReader(reader);
+
         managedIndices.clear();
-        
-        LuceneIndexEvent event = new LuceneIndexEvent( this );
+
+        LuceneIndexEvent event = new LuceneIndexEvent(this);
         Iterator<LuceneIndexListener> iterator = listeners.iterator();
-        while( iterator.hasNext() ) {
-            iterator.next().indexDeleted( event );
+        while (iterator.hasNext()) {
+            iterator.next().indexDeleted(event);
         }
-        
+
         return wasSuccess;
     }
-    
-    
-    
-    
-    public boolean exists () {
-        return IndexReader.indexExists( getDirectory() );
+
+    public boolean exists() {
+        return IndexReader.indexExists(getDirectory());
     }
-    
-    
-    
-    
-    
+
     /**
      * Retrieves the directory within which the
      * index resides.
      * 
      * @return The index's directory
      */
-    
-    public File getDirectory () {
+    public File getDirectory() {
         return directory;
     }
-    
-    
-    
-    public org.apache.lucene.store.Directory getLuceneDirectory () throws IOException {
+
+    public org.apache.lucene.store.Directory getLuceneDirectory() throws IOException {
         IndexReader reader = getIndexReader();
         org.apache.lucene.store.Directory dir = reader.directory();
-        putIndexReader( reader );
+        putIndexReader(reader);
         return dir;
     }
-    
-    
-    
-    
-    
-    
+
     /**
      * The title of the index. Reflects the "index.title"
      * property. If property is not present, defaults to
@@ -363,14 +287,10 @@ public class LuceneIndex {
      * 
      * @return the name of the index
      */
-    
-    public String getName () {
+    public String getName() {
         return directory.getName();
     }
-    
-    
-    
-    
+
     /**
      * Retrieves an index reader for this index. The reader
      * returned is guaranteed to reflect the most recent
@@ -381,13 +301,10 @@ public class LuceneIndex {
      * @see    #putIndexReader(IndexReader)
      * @see    #putIndexReader(IndexReader,boolean)
      */
-    
-    public IndexReader getIndexReader () throws IOException {
-        return IndexReader.open( getDirectory() );
+    public IndexReader getIndexReader() throws IOException {
+        return IndexReader.open(getDirectory());
     }
-    
-    
-    
+
     /**
      * Puts back an <code>IndexReader</code> that was
      * presumably checked out by the {@link #getIndexReader}
@@ -400,13 +317,10 @@ public class LuceneIndex {
      * @see          #getIndexReader
      * @see          #putIndexReader(IndexReader,boolean)
      */
-    
-    public void putIndexReader (IndexReader reader) throws IOException {
-        putIndexReader( reader, reader.hasDeletions() );
+    public void putIndexReader(IndexReader reader) throws IOException {
+        putIndexReader(reader, reader.hasDeletions());
     }
-    
-    
-    
+
     /**
      * Puts back an <code>IndexReader</code> that was
      * presumably checked out by the {@link #getIndexReader}
@@ -418,18 +332,15 @@ public class LuceneIndex {
      * @throws         IOException if an exception was encountered while closing reader or refreshing data
      * @see            #getIndexReader
      */
-    
-    public void putIndexReader (IndexReader reader, boolean modified) throws IOException {
+    public void putIndexReader(IndexReader reader, boolean modified) throws IOException {
         reader.close();
         reader = null;
-        
+
         if (modified) {
             refresh();
         }
     }
-    
-    
-    
+
     /**
      * Retrieves an {@link org.apache.lucene.index.IndexWriter} object
      * suitable for performing writes to this index. Writer is constructed
@@ -443,24 +354,21 @@ public class LuceneIndex {
      * @see    #putIndexWriter(IndexWriter)
      * @see    #putIndexWriter(IndexWriter,boolean)
      */
-    
-    public IndexWriter getIndexWriter () throws IOException {
+    public IndexWriter getIndexWriter() throws IOException {
         guaranteeFreshData();
         if (writer == null) {
-            writer = new IndexWriter( getDirectory(), getAnalyzer(), false );
+            writer = new IndexWriter(getDirectory(), getAnalyzer(), false);
         }
         /**
         String writeLockTimeout = getProperty("indexwriter.writelocktimeout");
         if ( writeLockTimeout != null ) {
-            writer.setWriteLockTimeout( Long.valueOf(writeLockTimeout) );
+        writer.setWriteLockTimeout( Long.valueOf(writeLockTimeout) );
         }
         writer.setWriteLockTimeout( 10000 );
-        */
+         */
         return writer;
     }
-    
-    
-    
+
     /**
      * Puts back an <code>IndexWriter</code> object that was
      * presumably checked out by the {@link #getIndexWriter}
@@ -473,13 +381,10 @@ public class LuceneIndex {
      * @see          #getIndexWriter
      * @see          #putIndexWriter(IndexWriter,boolean)
      */
-    
-    public void putIndexWriter (IndexWriter writer) throws IOException {
-        putIndexWriter( writer, true );
+    public void putIndexWriter(IndexWriter writer) throws IOException {
+        putIndexWriter(writer, true);
     }
-    
-    
-    
+
     /**
      * Puts back an <code>IndexWriter</code> object that was
      * presumably checked out by the {@link #getIndexWriter}
@@ -492,15 +397,12 @@ public class LuceneIndex {
      * @see            #getIndexWriter
      * @see            #putIndexWriter(IndexWriter)
      */
-    
-    public void putIndexWriter (IndexWriter writer, boolean modified) throws IOException {
+    public void putIndexWriter(IndexWriter writer, boolean modified) throws IOException {
         if (modified) {
             refresh();
         }
     }
-    
-    
-    
+
     /**
      * Retrieves an {@link org.apache.lucene.search.IndexSearcher} object
      * capable of performing searches on this index. Data searched by 
@@ -509,17 +411,14 @@ public class LuceneIndex {
      * @throws IOException if the <code>IndexSearcher</code> could not be constructed
      * @see    #putIndexSearcher(IndexSearcher)
      */
-    
-    public IndexSearcher getIndexSearcher () throws IOException {
+    public IndexSearcher getIndexSearcher() throws IOException {
         guaranteeFreshData();
-        //if (searcher == null) {
-            searcher = new IndexSearcher( getDirectory().getAbsolutePath() );
-        //}
+        
+        searcher = new IndexSearcher(getDirectory().getAbsolutePath());
+        
         return searcher;
-    }
-    
-    
-    
+        }
+
     /**
      * Puts back an <code>IndexSearcher</code> object that was
      * presumably checked out by the {@link #getIndexSearcher}.
@@ -529,14 +428,10 @@ public class LuceneIndex {
      * @throws         IOException if any sort of implementation gets added (Lucene object always through IOException, ALWAYS!)
      * @see            #getIndexSearcher
      */
-    
-    public void putIndexSearcher (IndexSearcher searcher) throws IOException {
+    public void putIndexSearcher(IndexSearcher searcher) throws IOException {
         searcher = null;
     }
-    
-    
-    
-    
+
     /**
      * Determines whether the index possesses a document corresponding
      * to the given identifier. This is accomplished by enumerating through
@@ -550,9 +445,8 @@ public class LuceneIndex {
      * @throws           MultipleValueException if more than one document exists for the given identifier
      * @see              #getIdentifierFieldName
      */
-    
-    public boolean hasDocument (String identifier) throws IOException {
-        return hasDocument( identifier, false );
+    public boolean hasDocument(String identifier) throws IOException {
+        return hasDocument(identifier, false);
     }
 
     /**
@@ -569,37 +463,33 @@ public class LuceneIndex {
      * @throws           MultipleValueException if more than one document exists for the given identifier
      * @see              #getIdentifierFieldName
      */
-    
-    public boolean hasDocument (String identifier, boolean ignoreDuplicates) throws IOException {
-        Term term = new Term( getIdentifierFieldName(), identifier );
-        
+    public boolean hasDocument(String identifier, boolean ignoreDuplicates) throws IOException {
+        Term term = new Term(getIdentifierFieldName(), identifier);
+
         boolean _hasDocument = false;
-        
+
         IndexReader reader = getIndexReader();
-        TermDocs documents = reader.termDocs( term );
-        
+        TermDocs documents = reader.termDocs(term);
+
         while (documents.next()) {
-            LuceneDocument _document = asLuceneDocument( reader.document( documents.doc() ) );
-            
-            if ( isDocumentCorrectlyIdentified( _document, identifier ) ) {
-                if ( _hasDocument ) {
-                    if ( !ignoreDuplicates ) {
-                        throw new MultipleValueException( "Multiple documents exist for identifier '" + identifier + "'" );
+            LuceneDocument _document = asLuceneDocument(reader.document(documents.doc()));
+
+            if (isDocumentCorrectlyIdentified(_document, identifier)) {
+                if (_hasDocument) {
+                    if (!ignoreDuplicates) {
+                        throw new MultipleValueException("Multiple documents exist for identifier '" + identifier + "'");
                     }
-                }
-                else {
+                } else {
                     _hasDocument = true;
                 }
             }
         }
-        
-        putIndexReader( reader );
-        
+
+        putIndexReader(reader);
+
         return _hasDocument;
     }
-    
-    
-    
+
     /**
      * Gets the document corresponding to the given identifier.
      * That is, a document containing the [ {@link #getIdentifierFieldName()} ]
@@ -616,77 +506,69 @@ public class LuceneIndex {
      * @throws           MultipleValueException if more than one document exists for the given identifier
      * @see              #getDocuments(String...)
      */
-    
-    public LuceneDocument getDocument (String identifier)
-        throws DocumentNotFoundException, IOException
-    {
+    public LuceneDocument getDocument(String identifier)
+            throws DocumentNotFoundException, IOException {
         IndexReader reader = getIndexReader();
-        
+
         LuceneDocument document = null;
-        
-        if ( !hasIdentifierFieldName() ) {
-            throw new DocumentNotFoundException( identifier );
+
+        if (!hasIdentifierFieldName()) {
+            throw new DocumentNotFoundException(identifier);
         }
-        
-        Term term = new Term( getIdentifierFieldName(), identifier );
-        
-        TermDocs documents = reader.termDocs( term );
-        while ( documents.next() ) {
-            LuceneDocument _document = getDocument( documents.doc(), reader );
-            
-            if ( isDocumentCorrectlyIdentified( _document, identifier ) ) {
-                if ( document == null ) {
+
+        Term term = new Term(getIdentifierFieldName(), identifier);
+
+        TermDocs documents = reader.termDocs(term);
+        while (documents.next()) {
+            LuceneDocument _document = getDocument(documents.doc(), reader);
+
+            if (isDocumentCorrectlyIdentified(_document, identifier)) {
+                if (document == null) {
                     document = _document;
-                }
-                else {
-                    throw new MultipleValueException( "Multiple documents exist for identifier '" + identifier + "'" );
+                } else {
+                    throw new MultipleValueException("Multiple documents exist for identifier '" + identifier + "'");
                 }
             }
         }
-        
-        if ( document == null ) {
-            throw new DocumentNotFoundException( identifier );
+
+        if (document == null) {
+            throw new DocumentNotFoundException(identifier);
         }
-        
-        putIndexReader( reader );
-        
-        managedDocuments.put( identifier, document );
-        
-        document.setIndex( this );
-        
+
+        putIndexReader(reader);
+
+        managedDocuments.put(identifier, document);
+
+        document.setIndex(this);
+
         return document;
     }
-    
-    public LuceneDocument getDocument (int number)
-        throws DocumentNotFoundException, IOException
-    {
+
+    public LuceneDocument getDocument(int number)
+            throws DocumentNotFoundException, IOException {
         LuceneDocument document = null;
-        
+
         IndexReader reader = getIndexReader();
-        document = getDocument( number, reader );
-        putIndexReader( reader );
-        
+        document = getDocument(number, reader);
+        putIndexReader(reader);
+
         return document;
     }
-    
-    public LuceneDocument getDocument (int number, IndexReader reader)
-        throws DocumentNotFoundException, IOException
-    {
-        if ( reader.isDeleted( number ) ) {
+
+    public LuceneDocument getDocument(int number, IndexReader reader)
+            throws DocumentNotFoundException, IOException {
+        if (reader.isDeleted(number)) {
             throw new DocumentNotFoundException("Document number " + number + " cannot be found");
         }
-        
-        LuceneDocument document = asLuceneDocument( reader.document( number ) );
-        
-        document.setIndex( this );
-        document.setNumber( number );
-        
+
+        LuceneDocument document = asLuceneDocument(reader.document(number));
+
+        document.setIndex(this);
+        document.setNumber(number);
+
         return document;
     }
-    
-    
-    
-    
+
     /**
      * Gets documents corresponding to the given identifiers.
      * Iterates through the array, calling {@link #getDocument(String)}
@@ -699,24 +581,17 @@ public class LuceneIndex {
      * @throws            IOException if an exception was encountered while reading the index
      * @see               #getDocument(String)
      */
-    
-    public LuceneDocument[] getDocuments (String... identifiers)
-        throws DocumentsNotFoundException, IOException
-    {
-        LuceneDocument[] documents = new LuceneDocument[ identifiers.length ];
-        
-        for( int i = 0; i < documents.length; i++ ) {
-            documents[ i ] = getDocument( identifiers[ i ] );
+    public LuceneDocument[] getDocuments(String... identifiers)
+            throws DocumentsNotFoundException, IOException {
+        LuceneDocument[] documents = new LuceneDocument[identifiers.length];
+
+        for (int i = 0; i < documents.length; i++) {
+            documents[i] = getDocument(identifiers[i]);
         }
-        
+
         return documents;
     }
-    
-    
-    
-    
-    
-    
+
     /**
      * Retrieves a list of all documents within the index.
      * The list is not guaranteed to be returned in any
@@ -729,39 +604,30 @@ public class LuceneIndex {
      * @see    #getDocument(String)
      * @see    #getDocuments(String...)
      */
-    
-    public LuceneDocument[] getDocuments () throws IOException {
+    public LuceneDocument[] getDocuments() throws IOException {
         IndexReader reader = getIndexReader();
-        
-        List<LuceneDocument> documents = new ArrayList<LuceneDocument>( reader.numDocs() );
-        
+
+        List<LuceneDocument> documents = new ArrayList<LuceneDocument>(reader.numDocs());
+
         for (int i = 0; i < reader.maxDoc(); i++) {
             Document document = null;
-            
+
             try {
-                document = reader.document( i );
-            }
-            catch(IllegalArgumentException iae) {
+                document = reader.document(i);
+            } catch (IllegalArgumentException iae) {
                 document = null;
             }
-            
+
             if (document != null) {
-                documents.add( new LuceneDocument( document ) );
+                documents.add(new LuceneDocument(document));
             }
         }
-        
-        putIndexReader( reader );
-        
-        return documents.toArray( new LuceneDocument[]{} );
+
+        putIndexReader(reader);
+
+        return documents.toArray(new LuceneDocument[]{});
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * Adds the given document to the index.
      *
@@ -778,44 +644,36 @@ public class LuceneIndex {
      * @see            #updateDocument(LuceneDocument)
      * @see            #updateDocuments(LuceneDocument...)
      */
-    
-    public LuceneDocument addDocument (LuceneDocument document)
-        throws
+    public LuceneDocument addDocument(LuceneDocument document)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentAlreadyExistsException, InsufficientDataException, IOException
-    {
+            DocumentAlreadyExistsException, InsufficientDataException, IOException {
         if (isReadOnly()) {
-            throw new IllegalActionException( "Index is read-only." );
+            throw new IllegalActionException("Index is read-only.");
         }
-        
-        if (hasDocument( getIdentifier( document ) )) {
-            throw new DocumentAlreadyExistsException( getIdentifier( document ) );
+
+        if (hasDocument(getIdentifier(document))) {
+            throw new DocumentAlreadyExistsException(getIdentifier(document));
         }
-        
-        if (!hasValidIdentifier( document )) {
-            throw new InvalidIdentifierException( getIdentifier( document ) );
+
+        if (!hasValidIdentifier(document)) {
+            throw new InvalidIdentifierException(getIdentifier(document));
         }
-        
+
         try {
-            setLastModified( document, Calendar.getInstance(), false );
+            setLastModified(document, Calendar.getInstance(), false);
+        } catch (DocumentNotFoundException dnfe) {
         }
-        catch(DocumentNotFoundException dnfe) {
-        }
-        
-        Document _document = asDocument( document );
-        
+
+        Document _document = asDocument(document);
+
         IndexWriter writer = getIndexWriter();
-        writer.addDocument( _document );
-        putIndexWriter( writer );
-        
+        writer.addDocument(_document);
+        putIndexWriter(writer);
+
         return document;
     }
-    
-    
-    
-    
-    
-    
+
     /**
      * Adds documents to the index.
      * 
@@ -825,23 +683,17 @@ public class LuceneIndex {
      * @throws InsufficientDataException
      * @throws IOException
      */
-    
-    public LuceneDocument[] addDocuments (LuceneDocument... documents)
-        throws
+    public LuceneDocument[] addDocuments(LuceneDocument... documents)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentAlreadyExistsException, InsufficientDataException, IOException
-    {
-        LuceneDocument[] addedDocuments = new LuceneDocument[ documents.length ];
+            DocumentAlreadyExistsException, InsufficientDataException, IOException {
+        LuceneDocument[] addedDocuments = new LuceneDocument[documents.length];
         for (int i = 0; i < documents.length; i++) {
-            addedDocuments[ i ] = addDocument( documents[ i ] );
+            addedDocuments[i] = addDocument(documents[i]);
         }
         return addedDocuments;
     }
-    
-    
-    
-    
-    
+
     /**
      * Removes the document corresponding to the given identifier from the index.
      *
@@ -850,39 +702,34 @@ public class LuceneIndex {
      * @throws InsufficientDataException if the document could not be identified
      * @throws IOException
      */
-    
-    public LuceneDocument removeDocument (String identifier)
-        throws IllegalActionException, DocumentNotFoundException, IOException
-    {
+    public LuceneDocument removeDocument(String identifier)
+            throws IllegalActionException, DocumentNotFoundException, IOException {
         if (isReadOnly()) {
-            throw new IllegalActionException( "Index is read-only." );
+            throw new IllegalActionException("Index is read-only.");
         }
-        
-        if (!hasDocument( identifier )) {
-            throw new DocumentNotFoundException( identifier );
+
+        if (!hasDocument(identifier)) {
+            throw new DocumentNotFoundException(identifier);
         }
-        
+
         LuceneDocument document = null;
-        
-        Term term = new Term( getIdentifierFieldName(), identifier );
-        
+
+        Term term = new Term(getIdentifierFieldName(), identifier);
+
         IndexReader reader = getIndexReader();
-        
-        TermDocs documents = reader.termDocs( term );
+
+        TermDocs documents = reader.termDocs(term);
         while (documents.next()) {
-            document = new LuceneDocument( reader.document( documents.doc() ) );
-            reader.deleteDocument( documents.doc() );
+            document = new LuceneDocument(reader.document(documents.doc()));
+            reader.deleteDocument(documents.doc());
         }
         documents.close();
-        
-        putIndexReader( reader, true );
-        
+
+        putIndexReader(reader, true);
+
         return document;
     }
-    
-    
-    
-    
+
     /**
      * Removes documents from the index.
      * 
@@ -891,21 +738,15 @@ public class LuceneIndex {
      * @throws DocumentNotFoundException if documents could not be found
      * @throws IOException
      */
-    
-    public LuceneDocument[] removeDocuments (String... identifiers)
-        throws IllegalActionException, DocumentNotFoundException, IOException
-    {
-        LuceneDocument[] documents = new LuceneDocument[ identifiers.length ];
+    public LuceneDocument[] removeDocuments(String... identifiers)
+            throws IllegalActionException, DocumentNotFoundException, IOException {
+        LuceneDocument[] documents = new LuceneDocument[identifiers.length];
         for (int i = 0; i < identifiers.length; i++) {
-            documents[ i ] = removeDocument( identifiers[ i ] );
+            documents[i] = removeDocument(identifiers[i]);
         }
         return documents;
     }
-    
-    
-    
-    
-    
+
     /**
      * Removes the given document from the index. Note that it simply removes any documents
      * having the same identifier as the one passed to the method.
@@ -915,39 +756,27 @@ public class LuceneIndex {
      * @throws InsufficientDataException if the document could not be identified
      * @throws IOException
      */
-    
-    public LuceneDocument removeDocument (LuceneDocument document)
-        throws
+    public LuceneDocument removeDocument(LuceneDocument document)
+            throws
             IllegalActionException, DocumentNotFoundException,
-            InsufficientDataException, IOException
-    {
-        return removeDocument( getIdentifier( document ) );
+            InsufficientDataException, IOException {
+        return removeDocument(getIdentifier(document));
     }
-    
-    
-    
-    
+
     /**
      * Removes documents.
      */
-    
-    public LuceneDocument[] removeDocuments (LuceneDocument... documents)
-        throws
+    public LuceneDocument[] removeDocuments(LuceneDocument... documents)
+            throws
             IllegalActionException, DocumentNotFoundException,
-            InsufficientDataException, IOException
-    {
-        LuceneDocument[] removed = new LuceneDocument[ documents.length ];
+            InsufficientDataException, IOException {
+        LuceneDocument[] removed = new LuceneDocument[documents.length];
         for (int i = 0; i < documents.length; i++) {
-            removed[ i ] = removeDocument( documents[ i ] );
+            removed[i] = removeDocument(documents[i]);
         }
         return removed;
     }
-    
-    
-    
-    
-    
-    
+
     /**
      * Updates the document within the index.
      *
@@ -955,44 +784,30 @@ public class LuceneIndex {
      * @throws InsufficientDataException if the document could not be identified
      * @throws IOException
      */
-    
-    public void updateDocument (LuceneDocument document)
-        throws
+    public void updateDocument(LuceneDocument document)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentNotFoundException, InsufficientDataException, IOException
-    {
-        removeDocument( document );
-        
+            DocumentNotFoundException, InsufficientDataException, IOException {
+        removeDocument(document);
+
         try {
-            addDocument( document );
-        }
-        catch(DocumentAlreadyExistsException daee) {
+            addDocument(document);
+        } catch (DocumentAlreadyExistsException daee) {
         }
     }
-    
-    
-    
-    
+
     /**
      * Updates various documents.
      */
-    
-    public void updateDocuments (LuceneDocument... documents)
-        throws
+    public void updateDocuments(LuceneDocument... documents)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentsNotFoundException, InsufficientDataException, IOException
-    {
-        for( int i = 0; i < documents.length; i++ ) {
-            updateDocument( documents[ i ] );
+            DocumentsNotFoundException, InsufficientDataException, IOException {
+        for (int i = 0; i < documents.length; i++) {
+            updateDocument(documents[i]);
         }
     }
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * Determines whether or not an index is read only. In the
      * absence of an 'index.readonly' property, the index is assumed
@@ -1023,15 +838,11 @@ public class LuceneIndex {
      * @return the identifying field corresponding to the value
      * @throws IOException
      */
-    
-    public Field getIdentifierField (String value)
-        throws IOException
-    {
-        return new Field( getIdentifierFieldName(), value, Field.Store.YES, Field.Index.UN_TOKENIZED );
+    public Field getIdentifierField(String value)
+            throws IOException {
+        return new Field(getIdentifierFieldName(), value, Field.Store.YES, Field.Index.UN_TOKENIZED);
     }
-    
-    
-    
+
     /**
      * Retrieves the identifying field for the index.
      * 
@@ -1057,19 +868,14 @@ public class LuceneIndex {
      * 
      * @return true if the index has an identifying field, false otherwise
      */
-    
-    public boolean hasIdentifierFieldName () {
+    public boolean hasIdentifierFieldName() {
         try {
             return getIdentifierFieldName() != null;
-        }
-        catch(IOException ioe) {
+        } catch (IOException ioe) {
             return false;
         }
     }
-    
-    
-    
-    
+
     /**
      * Manipulates the given document to make it identifiable.
      * This involves removing any fields claiming to be identifying
@@ -1079,18 +885,12 @@ public class LuceneIndex {
      * @param identifier The identifier to associate with the document
      * @throws IOException
      */
-    
-    public void identifyDocument (LuceneDocument document, String identifier)
-        throws IOException
-    {
-        document.removeFields( getIdentifierFieldName() );
-        document.add( getIdentifierField( identifier ) );
+    public void identifyDocument(LuceneDocument document, String identifier)
+            throws IOException {
+        document.removeFields(getIdentifierFieldName());
+        document.add(getIdentifierField(identifier));
     }
-    
-    
-    
-    
-    
+
     /**
      * Determines whether or not a document is identified.
      * 
@@ -1098,31 +898,26 @@ public class LuceneIndex {
      * @return True if the document is identified, false otherwise
      * @throws IOException
      */
-    
-    public boolean isDocumentIdentified (LuceneDocument document)
-        throws IOException
-    {
-        String[] values = document.getValues( getIdentifierFieldName() );
-        
+    public boolean isDocumentIdentified(LuceneDocument document)
+            throws IOException {
+        String[] values = document.getValues(getIdentifierFieldName());
+
         if (values == null) {
             return false;
         }
-        
+
         switch (values.length) {
             case 0:
                 return false;
-            
+
             case 1:
                 return true;
-            
+
             default:
-                throw new MultipleValueException( "Document has many identifying fields" );
+                throw new MultipleValueException("Document has many identifying fields");
         }
     }
-    
-    
-    
-    
+
     /**
      * Determines whether or not a document possesses a valid
      * identifier. The identifier is checked against the regular
@@ -1172,25 +967,19 @@ public class LuceneIndex {
      * @return True if the document's identifier matches the given identifier
      * @throws IOException
      */
-    
-    public boolean isDocumentCorrectlyIdentified (LuceneDocument document, String identifier)
-        throws IOException
-    {
+    public boolean isDocumentCorrectlyIdentified(LuceneDocument document, String identifier)
+            throws IOException {
         try {
-            if ( isDocumentIdentified( document ) ) {
-                return getIdentifier( document ).equals( identifier );
+            if (isDocumentIdentified(document)) {
+                return getIdentifier(document).equals(identifier);
             }
-        }
-        catch (InsufficientDataException insufficientData) {
+        } catch (InsufficientDataException insufficientData) {
             return false;
         }
-        
+
         return false;
     }
-    
-    
-    
-    
+
     /**
      * Retrieves the identifier from a document.
      * 
@@ -1199,20 +988,15 @@ public class LuceneIndex {
      * @throws InsufficientDataException if no identifier was found
      * @throws IOException
      */
-    
-    public String getIdentifier (LuceneDocument document)
-        throws InsufficientDataException, IOException
-    {
-        if ( isDocumentIdentified( document ) ) {
-            return document.get( getIdentifierFieldName() );
+    public String getIdentifier(LuceneDocument document)
+            throws InsufficientDataException, IOException {
+        if (isDocumentIdentified(document)) {
+            return document.get(getIdentifierFieldName());
         }
-        
-        throw new InsufficientDataException( "Document is not identified." );
+
+        throw new InsufficientDataException("Document is not identified.");
     }
-    
-    
-    
-    
+
     /**
      * Retrieves a term reflecting a document's identifier.
      * 
@@ -1221,17 +1005,11 @@ public class LuceneIndex {
      * @throws InsufficientDataException
      * @throws IOException
      */
-    
-    public Term getIdentifierTerm (LuceneDocument document)
-        throws InsufficientDataException, IOException
-    {
-        return new Term( getIdentifierFieldName(), getIdentifier( document ) );
+    public Term getIdentifierTerm(LuceneDocument document)
+            throws InsufficientDataException, IOException {
+        return new Term(getIdentifierFieldName(), getIdentifier(document));
     }
-    
-    
-    
-    
-    
+
     /**
      * Retrieves an org.apache.lucene.document.Document object
      * corresponding to the given net.lucenews.model.LuceneDocument
@@ -1240,15 +1018,11 @@ public class LuceneIndex {
      * @param document A net.lucenews.model.LuceneDocument object
      * @return The corresponding org.apache.lucene.document.Document object
      */
-    
-    public Document asDocument (LuceneDocument document) {
+    public Document asDocument(LuceneDocument document) {
         Document _document = document.getDocument();
         return _document;
     }
-    
-    
-    
-    
+
     /**
      * Retrieves an net.lucenews.model.Document object
      * corresponding to the given org.apache.lucene.document.Document
@@ -1257,15 +1031,10 @@ public class LuceneIndex {
      * @param document An org.apache.lucene.document.Document object
      * @return The corresponding net.lucenews.model.LuceneDocument object
      */
-    
-    public LuceneDocument asLuceneDocument (Document document) {
-        return new LuceneDocument( document );
+    public LuceneDocument asLuceneDocument(Document document) {
+        return new LuceneDocument(document);
     }
-    
-    
-    
-    
-    
+
     /**
      * Retrieves the analyzer for the index.
      * 
@@ -1300,89 +1069,65 @@ public class LuceneIndex {
      *
      * @throws IOException if segments file cannot be read
      */
-    
-    public long getCurrentVersion ()
-        throws IOException
-    {
-        return IndexReader.getCurrentVersion( getDirectory() );
+    public long getCurrentVersion()
+            throws IOException {
+        return IndexReader.getCurrentVersion(getDirectory());
     }
-    
-    
-    
-    
-    
+
     /**
      * Retrieves the number of documents contained within the index.
      *
      * @return The number of documents within the index
      * @throws IOException
      */
-    
-    public int getDocumentCount ()
-        throws IOException
-    {
+    public int getDocumentCount()
+            throws IOException {
         int documentCount;
-        
+
         IndexReader reader = getIndexReader();
         documentCount = reader.numDocs();
-        putIndexReader( reader );
-        
+        putIndexReader(reader);
+
         return documentCount;
     }
-    
-    
-    
-    
-    
+
     /**
      * Returns a list of all unique field names that exist in the index.
      * 
      * @return A <tt>Collection&lt;String&gt;</tt> of unique field names
      * @throws IOException if there is a problem with accessing the index
      */
-    
-    public Collection<String> getFieldNames () throws IOException {
+    public Collection<String> getFieldNames() throws IOException {
         Collection<String> fieldNames = new TreeSet<String>();
-        
+
         IndexReader reader = getIndexReader();
-        
-        Iterator<?> indexFieldNames = reader.getFieldNames( IndexReader.FieldOption.ALL ).iterator();
+
+        Iterator<?> indexFieldNames = reader.getFieldNames(IndexReader.FieldOption.ALL).iterator();
         while (indexFieldNames.hasNext()) {
             Object indexFieldName = indexFieldNames.next();
             if (indexFieldName instanceof String) {
-                fieldNames.add( (String) indexFieldName );
+                fieldNames.add((String) indexFieldName);
             }
         }
-        
-        putIndexReader( reader );
-        
+
+        putIndexReader(reader);
+
         return fieldNames;
     }
-    
-    
-    
-    
-    
+
     /**
      * Invokes IndexWriter.optimize() method to optimize the
      * index.
      * 
      * @throws IOException
      */
-    
-    public void optimize ()
-        throws IOException
-    {
+    public void optimize()
+            throws IOException {
         IndexWriter writer = getIndexWriter();
         writer.optimize();
-        putIndexWriter( writer );
+        putIndexWriter(writer);
     }
-    
-    
-    
-    
-    
-    
+
     /**
      * Refreshes the index with current data.
      * Reader and writer are closed, priming
@@ -1392,66 +1137,55 @@ public class LuceneIndex {
      * 
      * @throws IOException
      */
-    
-    public void refresh ()
-        throws IOException
-    {
+    public void refresh()
+            throws IOException {
         close();
     }
-    
-    
-    
+
     /**
      * Closes all resources associated with the index.
      * 
      * @throws IOException
      */
-    
-    public void close ()
-        throws IOException
-    {
+    public void close()
+            throws IOException {
         IOException ioe = null;
-        
+
         // Reader
         if (reader != null) {
             try {
                 reader.close();
                 reader = null;
-            }
-            catch(IOException ioeReader) {
+            } catch (IOException ioeReader) {
                 ioe = ioeReader;
             }
         }
-        
+
         // Writer
         if (writer != null) {
             try {
                 writer.close();
                 writer = null;
-            }
-            catch(IOException ioeWriter) {
+            } catch (IOException ioeWriter) {
                 ioe = ioeWriter;
             }
         }
-        
+
         // Searcher
         if (searcher != null) {
             try {
                 searcher.close();
                 searcher = null;
-            }
-            catch(IOException ioeSearcher) {
+            } catch (IOException ioeSearcher) {
                 ioe = ioeSearcher;
             }
         }
-        
+
         if (ioe != null) {
             throw ioe;
         }
     }
-    
-    
-    
+
     /**
      * Guarantees that the data within the index remains current.
      * This will allow the index to remain synchronized even if other
@@ -1459,14 +1193,12 @@ public class LuceneIndex {
      * 
      * @throws IOException if segments file cannot be read
      */
-    
-    public void guaranteeFreshData () throws IOException {
+    public void guaranteeFreshData() throws IOException {
         if (lastKnownVersion < getCurrentVersion()) {
             refresh();
         }
     }
-        
-    
+
     /**
      * Retrieves the default fields associated with the index.
      * 
@@ -1526,17 +1258,14 @@ public class LuceneIndex {
      * @return The summary of the given document
      * @throws IOException
      */
-    
-    public String getSummary (LuceneDocument document) throws IOException {
+    public String getSummary(LuceneDocument document) throws IOException {
         String fieldName = getSummaryFieldName();
-        if ( fieldName != null ) {
-            return document.get( fieldName );
+        if (fieldName != null) {
+            return document.get(fieldName);
         }
         return null;
     }
-    
-    
-   
+
     /**
      * Retrieves the URI fieldname of a given document
      * @return
@@ -1558,16 +1287,14 @@ public class LuceneIndex {
      * @return The URI of the given document
      * @throws IOException
      */
-    
-    public String getURI (LuceneDocument document) throws IOException {
+    public String getURI(LuceneDocument document) throws IOException {
         String fieldName = getURIFieldName();
-        if ( fieldName != null ) {
-            return document.get( fieldName );
+        if (fieldName != null) {
+            return document.get(fieldName);
         }
         return null;
     }
-    
-    
+
     /**
      * Retrieves the title of the given document.
      * 
@@ -1603,103 +1330,81 @@ public class LuceneIndex {
      * 
      * @return The file in which index-related properties are stored.
      */
-    
-    public File getPropertiesFile () {
-        return new File( getDirectory(), "index.properties" );
+    public File getPropertiesFile() {
+        return new File(getDirectory(), "index.properties");
     }
-    
-    
-    
-    
+
     /**
      * Loads properties from properties file.
      * 
      * @throws IOException
      */
-    
-    public void loadProperties () throws IOException {
+    public void loadProperties() throws IOException {
         properties = new Properties();
-        
+
         File file = getPropertiesFile();
-        
+
         try {
-            java.io.InputStream in = new FileInputStream( file );
-            properties.load( in );
+            java.io.InputStream in = new FileInputStream(file);
+            properties.load(in);
             in.close();
-        }
-        catch(FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             storeProperties();
         }
-        
+
         propertiesLastModified = file.lastModified();
     }
-    
-    
-    
+
     /**
      * Stores current properties to properties file.
      * 
      * @throws IOException
      */
-    
-    public void storeProperties () throws IOException {
-        storeProperties( null );
+    public void storeProperties() throws IOException {
+        storeProperties(null);
     }
-    
-    
-    
+
     /**
      * Stores current properties to properties file
      * with the given comment.
      * 
      * @throws IOException
      */
-    
-    public void storeProperties (String comment) throws IOException {
+    public void storeProperties(String comment) throws IOException {
         if (properties == null) {
             return;
         }
-        
-        java.io.OutputStream out = new FileOutputStream( getPropertiesFile() );
-        properties.store( out, comment );
+
+        java.io.OutputStream out = new FileOutputStream(getPropertiesFile());
+        properties.store(out, comment);
         out.close();
     }
-    
-    
-    
-    
+
     /**
      * Gets the current properties of the index.
      * 
      * @return The current properties
      * @throws IOException
      */
-    
-    public Properties getProperties () throws IOException {
+    public Properties getProperties() throws IOException {
         guaranteeFreshProperties();
         return properties;
     }
-    
-    
-    
-    
+
     /**
      * Gets the property.
      * 
      * @return the property
      * @throws IOException
      */
-    
-    public String getProperty (String name) throws IOException {
+    public String getProperty(String name) throws IOException {
         Properties properties = getProperties();
         if (properties == null) {
             return null;
         }
-        return properties.getProperty( name );
+        return properties.getProperty(name);
     }
-    
-    
-    
+
     /**
      * Adds the given properties to the index's current set
      * of properties.
@@ -1707,30 +1412,26 @@ public class LuceneIndex {
      * @param properties the properties to add
      * @throws           IOException if an exception was encountered while retrieving or storing the properties
      */
-    
-    public void addProperties (Properties properties)
-        throws IllegalActionException, IOException
-    {
+    public void addProperties(Properties properties)
+            throws IllegalActionException, IOException {
         if (isReadOnly()) {
-            throw new IllegalActionException( "Index is read-only." );
+            throw new IllegalActionException("Index is read-only.");
         }
-        
+
         Properties currentProperties = getProperties();
-        
+
         Enumeration<?> names = properties.propertyNames();
         while (names.hasMoreElements()) {
             Object _name = names.nextElement();
             if (_name instanceof String) {
                 String name = (String) _name;
-                currentProperties.setProperty( name, properties.getProperty( name ) );
+                currentProperties.setProperty(name, properties.getProperty(name));
             }
         }
-        
-        setProperties( currentProperties );
+
+        setProperties(currentProperties);
     }
-    
-    
-    
+
     /**
      * Sets the current properties of the index and stores
      * them to the properties file.
@@ -1738,49 +1439,36 @@ public class LuceneIndex {
      * @param properties The new set of properties
      * @throws IOException
      */
-    
-    public void setProperties (Properties properties) throws IllegalActionException, IOException {
+    public void setProperties(Properties properties) throws IllegalActionException, IOException {
         if (isReadOnly()) {
-            throw new IllegalActionException( "Index is read-only." );
+            throw new IllegalActionException("Index is read-only.");
         }
-        
+
         this.properties = properties;
         storeProperties();
     }
-    
-    
-    
-    
-    
+
     /**
      * Guarantees the the properties are fresh.
      * 
      * @throws IOException
      */
-    
-    public void guaranteeFreshProperties () throws IOException {
+    public void guaranteeFreshProperties() throws IOException {
         File file = getPropertiesFile();
         if (properties == null || propertiesLastModified < file.lastModified()) {
             loadProperties();
         }
     }
-    
-    
-    
-    
+
     /**
      * Finalizes the object. Involves releasing all resources.
      * 
      * @throws Throwable
      */
-    
-    protected void finalize () throws Throwable {
+    protected void finalize() throws Throwable {
         close();
     }
-    
-    
-    
-    
+
     /**
      * Determines whether or not the index has
      * a field reflecting the last updated time
@@ -1788,19 +1476,14 @@ public class LuceneIndex {
      * 
      * @return True if such a field exists, false otherwise
      */
-    
-    public boolean hasLastModifiedFieldName () {
+    public boolean hasLastModifiedFieldName() {
         try {
             return getLastModifiedFieldName() != null;
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             return false;
         }
     }
-    
-    
-    
-    
+
     /**
      * Gets the field responsible for updated.
      * 
@@ -1825,23 +1508,16 @@ public class LuceneIndex {
      * @return True if such a field exists, false otherwise
      * @throws IOException
      */
-    
-    public boolean hasLastModified (LuceneDocument document) throws IOException {
+    public boolean hasLastModified(LuceneDocument document) throws IOException {
         try {
-            return getLastModified( document ) != null;
-        }
-        catch (InsufficientDataException ide) {
+            return getLastModified(document) != null;
+        } catch (InsufficientDataException ide) {
             return false;
-        }
-        catch (java.text.ParseException pe) {
+        } catch (java.text.ParseException pe) {
             return false;
         }
     }
-    
-    
-    
-    
-    
+
     /**
      * Determines the precision of the time stamps in terms of 
      * milliseconds.
@@ -1977,10 +1653,7 @@ public class LuceneIndex {
         }
         return calendar;
     }
-    
-    
-    
-    
+
     /**
      * Gets the last updated time of a given document. If the document
      * does not have such a value, it is assigned the given calendar object.
@@ -1990,48 +1663,39 @@ public class LuceneIndex {
      * @throws InsufficientDataException
      * @throws IOException
      */
-    
-    public Calendar getLastModified (LuceneDocument document, Calendar calendar)
-        throws
-            java.text.ParseException, InvalidIdentifierException, 
-            DocumentNotFoundException, InsufficientDataException, 
-            IOException
-    {
-        if ( !hasLastModified( document ) ) {
+    public Calendar getLastModified(LuceneDocument document, Calendar calendar)
+            throws
+            java.text.ParseException, InvalidIdentifierException,
+            DocumentNotFoundException, InsufficientDataException,
+            IOException {
+        if (!hasLastModified(document)) {
             try {
-                setLastModified( document, calendar );
-            }
-            catch (IllegalActionException iae) {
+                setLastModified(document, calendar);
+            } catch (IllegalActionException iae) {
             }
         }
-        
-        return getLastModified( document );
+
+        return getLastModified(document);
     }
-    
-    
+
     /**
      * Sets the updated field appropriately prior to adding document to index.
      */
-    
-    public void setLastModified (LuceneDocument document)
-        throws
+    public void setLastModified(LuceneDocument document)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentNotFoundException, InsufficientDataException, IOException
-    {
-        if ( !hasLastModifiedFieldName() ) {
+            DocumentNotFoundException, InsufficientDataException, IOException {
+        if (!hasLastModifiedFieldName()) {
             return;
         }
-        
-        if ( hasLastModified( document ) ) {
-            setLastModified( document, getTimestamp( document ), false );
-        }
-        else {
-            setLastModified( document, new Date(), false );
+
+        if (hasLastModified(document)) {
+            setLastModified(document, getTimestamp(document), false);
+        } else {
+            setLastModified(document, new Date(), false);
         }
     }
-    
-    
-    
+
     /**
      * Sets the document's updated time to the given Calendar's time.
      * Updates the document within the index.
@@ -2039,17 +1703,13 @@ public class LuceneIndex {
      * @param document the document whose updated time is to be updated
      * @param calendar the calendar representing the new value of the updated field
      */
-    
-    public void setLastModified (LuceneDocument document, Calendar calendar)
-        throws
+    public void setLastModified(LuceneDocument document, Calendar calendar)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentNotFoundException, InsufficientDataException, IOException
-    {
-        setLastModified( document, calendar.getTime().getTime() );
+            DocumentNotFoundException, InsufficientDataException, IOException {
+        setLastModified(document, calendar.getTime().getTime());
     }
-    
-    
-    
+
     /**
      * Sets the document's updated time to the given Calendar's time.
      * Updates the document within the index if update is specified.
@@ -2093,17 +1753,13 @@ public class LuceneIndex {
      * @param document the document whose updated time is to be updated
      * @param date     the date representing the new value of the updated field
      */
-    
-    public void setLastModified (LuceneDocument document, Date date)
-        throws
+    public void setLastModified(LuceneDocument document, Date date)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentNotFoundException, InsufficientDataException, IOException
-    {
-        setLastModified( document, date.getTime() );
+            DocumentNotFoundException, InsufficientDataException, IOException {
+        setLastModified(document, date.getTime());
     }
-    
-    
-    
+
     /**
      * Sets the document's updated time to the given date's time.
      * Updates the document within the index if update is specified.
@@ -2112,17 +1768,13 @@ public class LuceneIndex {
      * @param date     the date representing the new value of the updated field
      * @param update   whether or not this document should be updated within the index
      */
-    
-    public void setLastModified (LuceneDocument document, Date date, boolean update)
-        throws
+    public void setLastModified(LuceneDocument document, Date date, boolean update)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentNotFoundException, InsufficientDataException, IOException
-    {
-        setLastModified( document, date.getTime(), update );
+            DocumentNotFoundException, InsufficientDataException, IOException {
+        setLastModified(document, date.getTime(), update);
     }
-    
-    
-    
+
     /**
      * Sets the document's updated time to the given time stamp.
      * Updates the document within the index.
@@ -2130,17 +1782,13 @@ public class LuceneIndex {
      * @param document  the document whose updated time is to be updated
      * @param timestamp the time stamp representing the new value of the updated field
      */
-    
-    public void setLastModified (LuceneDocument document, long timestamp)
-        throws
+    public void setLastModified(LuceneDocument document, long timestamp)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentNotFoundException, InsufficientDataException, IOException
-    {
-        setLastModified( document, timestamp, true );
+            DocumentNotFoundException, InsufficientDataException, IOException {
+        setLastModified(document, timestamp, true);
     }
-    
-    
-    
+
     /**
      * Sets the document's updated time to the given time stamp.
      * Updates the document within the index if update is specified.
@@ -2149,26 +1797,21 @@ public class LuceneIndex {
      * @param timestamp the time stamp representing the new value of the updated field
      * @param update    whether or not this document should be updated within the index
      */
-    
-    public void setLastModified (LuceneDocument document, long timestamp, boolean update)
-        throws
+    public void setLastModified(LuceneDocument document, long timestamp, boolean update)
+            throws
             IllegalActionException, InvalidIdentifierException,
-            DocumentNotFoundException, InsufficientDataException, IOException
-    {
-        if ( hasLastModifiedFieldName() ) {
+            DocumentNotFoundException, InsufficientDataException, IOException {
+        if (hasLastModifiedFieldName()) {
             String field = getLastModifiedFieldName();
-            document.removeFields( field );
-            document.add( new Field( field, net.lucenews.NumberTools.longToString( timestamp ), Field.Store.YES, Field.Index.UN_TOKENIZED ) );
-            
+            document.removeFields(field);
+            document.add(new Field(field, net.lucenews.NumberTools.longToString(timestamp), Field.Store.YES, Field.Index.UN_TOKENIZED));
+
             if (update) {
-                updateDocument( document );
+                updateDocument(document);
             }
         }
     }
-    
-    
-    
-    
+
     /**
      * Retrieves the last time this index was updated.
      * 
@@ -2293,21 +1936,18 @@ public class LuceneIndex {
      * @param document the document containing the fields to be translated into properties
      * @return         a <tt>Properties</tt> object containing the name/value pairs found in the document's fields
      */
-    
-    public static Properties asProperties (LuceneDocument document) {
+    public static Properties asProperties(LuceneDocument document) {
         Properties properties = new Properties();
-        
+
         Iterator<Field> fields = document.getFields().iterator();
-        while ( fields.hasNext() ) {
+        while (fields.hasNext()) {
             Field field = fields.next();
-            properties.setProperty( field.name(), field.stringValue() );
+            properties.setProperty(field.name(), field.stringValue());
         }
-        
+
         return properties;
     }
-    
-    
-    
+
     /**
      * Parses the given pattern into a new string, replacing its fields with
      * those provided by the given document. For example:
@@ -2321,13 +1961,10 @@ public class LuceneIndex {
      *   would be parsed as:
      *     "A book entitled \"Example title\" by J.B. Earl"
      */
-    
-    public static String parse (String string, LuceneDocument document) {
-        return ServletUtils.parse( string, asProperties( document ) );
+    public static String parse(String string, LuceneDocument document) {
+        return ServletUtils.parse(string, asProperties(document));
     }
-    
-    
-    
+
     /**
      * Retrieves a hash code suitable for identifying this index
      * within hash-based implementations such as {@link java.util.HashMap}.

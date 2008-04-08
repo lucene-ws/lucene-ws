@@ -40,7 +40,7 @@ public class IndicesAlreadyExistException extends LuceneException {
     public String[] getIndexNames () {
         return indexNames;
     }
-    
+    @Override
     public String getMessage () {
         StringBuffer buffer = new StringBuffer();
         String[] names = getIndexNames();
@@ -78,7 +78,7 @@ public class IndicesAlreadyExistException extends LuceneException {
         return String.valueOf( buffer );
     }
     
-    
+    @Override
     public int getStatus () {
         return HttpServletResponse.SC_CONFLICT;
     }

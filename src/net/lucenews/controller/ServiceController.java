@@ -38,9 +38,8 @@ public class ServiceController extends Controller {
         Logger.getLogger(ServiceController.class).trace("doGet(LuceneContext)");
         
         LuceneWebService   service  = c.getService();
-        LuceneIndexManager manager  = service.getIndexManager();
         LuceneRequest      request  = c.getRequest();
-        LuceneResponse     response = c.getResponse();
+        
         
         AtomView.process( c, asIntrospectionDocument( c, service, request ) );
     }
@@ -116,11 +115,11 @@ public class ServiceController extends Controller {
             }
             indexNamesBuffer.append( index.getName() );
             
-            response.setStatus( response.SC_CREATED );
+            response.setStatus( LuceneResponse.SC_CREATED );
         }
         
         if (created) {
-            response.addHeader( "Location", service.getIndexURI( request, indexNamesBuffer.toString() ).toString() );
+            response.addHeader( "Location", LuceneWebService.getIndexURI( request, indexNamesBuffer.toString() ).toString() );
         }
         else {
             throw new InsufficientDataException( "No indices to be added" );
@@ -179,25 +178,26 @@ public class ServiceController extends Controller {
         List<LuceneIndex> indicesList = new ArrayList<LuceneIndex>( Arrays.asList( service.getIndexManager().getIndices() ) );
         Collections.sort( indicesList, new IndexComparator() );
         LuceneIndex[] indices = indicesList.toArray( new LuceneIndex[]{} );
-        
+        String title;String href;String accept = "application/atom+xml;type=entry";
+         AtomCollection coll;
         for (LuceneIndex index : indices) {
             // TODO: remove the adding of the empty path to make this work with Perl client!
-            String href = service.getIndexURI( request, index ).withPath("").toString();
-            
-            String title = index.getTitle();
+            href = LuceneWebService.getIndexURI( request, index ).withPath("").toString();
+            title = index.getTitle();
             if (title == null) {
                 title = index.getName();
             }
             
-            String accept = "application/atom+xml;type=entry";
             
-            AtomCollection coll = new AtomCollection( title, href, accept );
             
+            coll = new AtomCollection( title, href, accept );
+            title=null;href=null;
             w.addCollection( coll );
+            coll=null;
         }
-        
+        accept=null;
         d.addWorkspace( w );
-        
+        w=null;
         return d;
     }
     
@@ -219,7 +219,7 @@ public class ServiceController extends Controller {
         
         feed.setTitle( "Lucene Web Service" );
         //feed.setUpdated( service.getLastModified() );
-        feed.setID( service.getServiceURI( request ).toString() );
+        feed.setID( LuceneWebService.getServiceURI( request ).toString() );
         
         //Iterator<LuceneIndex> indices = service.getIndexManager().getIndices().iterator();
         //while( indices.hasNext() )
@@ -236,7 +236,7 @@ public class ServiceController extends Controller {
         }
         
         
-        feed.addLink( Link.Alternate( service.getServiceURI( request ).toString() ) );
+        feed.addLink( Link.Alternate( LuceneWebService.getServiceURI( request ).toString() ) );
         
         return feed;
     }
@@ -259,7 +259,7 @@ public class ServiceController extends Controller {
         Entry entry = new Entry();
         
         entry.setTitle( index.getTitle() );
-        entry.setID( service.getIndexURI( request, index ).toString() );
+        entry.setID( LuceneWebService.getIndexURI( request, index ).toString() );
         
         
         String summary = null;
@@ -288,7 +288,7 @@ public class ServiceController extends Controller {
             }
         }
         
-        entry.addLink( Link.Alternate( service.getIndexURI( request, index ).toString() ) );
+        entry.addLink( Link.Alternate( LuceneWebService.getIndexURI( request, index ).toString() ) );
         entry.setSummary( new net.lucenews.atom.Text( summary ) );
         
         return entry;

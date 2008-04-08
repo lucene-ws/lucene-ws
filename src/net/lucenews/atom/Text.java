@@ -41,7 +41,7 @@ public class Text
     public void setType (String type) {
         m_type = type;
     }
-    
+    @Override
     public String toString () {
         return getText();
     }

@@ -14,7 +14,7 @@ public class DocumentsAlreadyExistException extends LuceneException {
     }
     
     
-    
+    @Override
     public String getMessage () {
         StringBuffer buffer = new StringBuffer();
         
@@ -43,7 +43,7 @@ public class DocumentsAlreadyExistException extends LuceneException {
         return String.valueOf( buffer );
     }
     
-    
+    @Override
     public int getStatus () {
         return HttpServletResponse.SC_CONFLICT;
     }

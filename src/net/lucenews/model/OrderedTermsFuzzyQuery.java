@@ -2,11 +2,8 @@ package net.lucenews.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.*;
-
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.*;
 import org.apache.lucene.search.*;
@@ -44,7 +41,7 @@ public class OrderedTermsFuzzyQuery extends MultiTermQuery
     {
         return new FuzzyTermEnum(reader, getTerm());
     }
-    
+    @Override
     public String toString(String field)
     {
         return super.toString(field) + '~';

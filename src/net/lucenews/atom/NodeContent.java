@@ -46,19 +46,21 @@ public class NodeContent extends Content {
     public Node getNode () {
         return nodes[ 0 ];
     }
-    
+    @Override
     public Element asElement (Document document) {
         Element element = super.asElement( document );
-        
+        document=null;
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            for( int i = 0; i < nodes.length; i++ )
+            for( int i = 0; i < nodes.length; i++ ){
                 transformer.transform( new DOMSource(nodes[i]), new DOMResult(element) );
+            }transformer=null;
         }
         catch(Exception e) {
         }
         
         return element;
+       
     }
     
     public Node[] asNodes (Document document) {

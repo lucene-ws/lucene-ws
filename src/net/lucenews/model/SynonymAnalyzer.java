@@ -56,7 +56,7 @@ public class SynonymAnalyzer extends Analyzer {
     }
     
     
-    
+    @Override
     public int getPositionIncrementGap (String fieldName) {
         return getAnalyzer().getPositionIncrementGap( fieldName );
     }

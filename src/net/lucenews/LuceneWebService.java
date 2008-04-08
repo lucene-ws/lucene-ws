@@ -5,26 +5,21 @@
  */
 
 package net.lucenews;
-
 import java.util.*;
 import java.io.*;
-
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
-
 import net.lucenews.atom.*;
 import net.lucenews.controller.*;
 import net.lucenews.model.*;
 import net.lucenews.model.exception.*;
 import net.lucenews.opensearch.*;
 import net.lucenews.view.*;
-
 import org.apache.log4j.*;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.*;
 import org.w3c.dom.*;
@@ -92,8 +87,9 @@ public class LuceneWebService extends HttpServlet {
     /**
      * Initializes the service.
      */
-    
+    @Override
     public void init () {
+        
         manager = new LuceneIndexManager( this );
         
         
@@ -227,7 +223,7 @@ public class LuceneWebService extends HttpServlet {
                     doTrace( c );
                     break;
                     
-            }
+            }req=null;
         }
         catch (ServletException se) {
             throw se;
@@ -235,19 +231,19 @@ public class LuceneWebService extends HttpServlet {
         
         // ParseException: 400 Bad Request
         catch (ParseException pe) {
-            res.setStatus( res.SC_BAD_REQUEST );
+            res.setStatus( LuceneResponse.SC_BAD_REQUEST );
             ExceptionController.process( c, pe );
         }
         
         // AtomParseException: 400 Bad Request
         catch (AtomParseException ape) {
-            res.setStatus( res.SC_BAD_REQUEST );
+            res.setStatus( LuceneResponse.SC_BAD_REQUEST );
             ExceptionController.process( c, ape );
         }
         
         // SAXException: 400 Bad Request
         catch (SAXException saxe) {
-            res.setStatus( res.SC_BAD_REQUEST );
+            res.setStatus( LuceneResponse.SC_BAD_REQUEST );
             ExceptionController.process( c, saxe );
         }
         
@@ -257,18 +253,19 @@ public class LuceneWebService extends HttpServlet {
                 res.setStatus( le.getStatus() );
             }
             else {
-                res.setStatus( res.SC_INTERNAL_SERVER_ERROR );
+                res.setStatus( LuceneResponse.SC_INTERNAL_SERVER_ERROR );
             }
             ExceptionController.process( c, le );
         }
         
         // Exception: 500 Internal Server Error
         catch (Exception e) {
-            res.setStatus( res.SC_INTERNAL_SERVER_ERROR );
+            res.setStatus( LuceneResponse.SC_INTERNAL_SERVER_ERROR );
             ExceptionController.process( c, e );
         }
         
         c.getLogger().info("response: " + res.getStatus());
+        res=null;c=null;
     }   
     
     
@@ -346,13 +343,13 @@ public class LuceneWebService extends HttpServlet {
     {
         c.getLogger().trace( "doGet" );
         LuceneRequest request = c.getRequest();
-        
-        
+             
         c.getLogger().debug("request has " + request.getIndexNames().length + " index names");
         
         if ( request.getIndexNames().length == 1 ) {
             if (request.getIndexName().equals( "service.properties" )) {
                 ServicePropertiesController.doGet( c );
+                c=null;
                 return;
             }
         }
@@ -363,25 +360,33 @@ public class LuceneWebService extends HttpServlet {
             
             // OpenSearch Description
             if ( request.getDocumentID().equals("opensearchdescription.xml") || request.getDocumentID().equals("description.xml") ) {
+                request=null;
                 OpenSearchController.doGet( c );
+                c=null;
                 return;
             }
             
             // facets
             if ( request.getDocumentID().equals("facets") ) {
+                request=null;
                 FacetController.doGet( c );
+                c=null;
                 return;
             }
             
             // Index properties
             if ( request.getDocumentID().equals("index.properties") ) {
+                request=null;
                 IndexPropertiesController.doGet( c );
+                c=null;
                 return;
             }
             
             // Tag cloud
             if ( request.getDocumentID().equals("tagcloud") ) {
+                request=null;
                 IndexController.doTagCloud( c );
+                c=null;
                 return;
             }
             
@@ -392,17 +397,25 @@ public class LuceneWebService extends HttpServlet {
         
         if ( request.hasIndexNames() ) {
             if ( request.hasDocumentIDs() ) {
+                request=null;
                 DocumentController.doGet( c );
+                c=null;
             }
             else if ( c.getOpenSearchQuery() != null && c.getOpenSearchQuery().getSearchTerms() != null ) {
+                request=null;
                 SearchController.doGet( c );
+                c=null;
             }
             else {
+                request=null;
                 IndexController.doGet( c );
+                c=null;
             }
         }
         else {
+            request=null;
             ServiceController.doGet( c );
+            c=null;
         }
     }
     
@@ -676,11 +689,13 @@ public class LuceneWebService extends HttpServlet {
         properties = new Properties();
         
         Enumeration names = config.getInitParameterNames();
+        String name;
         while (names.hasMoreElements()) {
-            String name = (String) names.nextElement();
+            name = (String) names.nextElement();
             properties.setProperty( name, config.getInitParameter( name ) );
+            name=null;
         }
-        
+        names=null;
         usePropertiesFile = false;
         
         propertiesChanged();

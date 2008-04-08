@@ -11,13 +11,8 @@ import net.lucenews.*;
 public class Feed extends Base {
     
     private List<Entry> entries;
-    private String      icon;
-    private String      logo;
-    private String      rights;
     private Generator   generator;
-    private String      subtitle;
-    
-    
+        
     public Feed () {
         this( null, null, null );
     }

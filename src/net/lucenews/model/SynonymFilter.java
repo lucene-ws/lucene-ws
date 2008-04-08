@@ -77,7 +77,7 @@ public class SynonymFilter extends TokenFilter {
     }
     
     
-    
+    @Override
     public Token next () throws IOException {
         if (tokens.isEmpty()) {
             Token token = getTokenStream().next();

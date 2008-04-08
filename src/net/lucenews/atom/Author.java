@@ -13,7 +13,7 @@ public class Author extends Person {
     }
     
     
-    
+    @Override
     protected String getTagName () {
         return "author";
     }

@@ -123,7 +123,7 @@ public class Link {
     public void setLength (Integer length) {
         this.length = length;
     }
-    
+    @Override
     public Link clone () {
         Link link = new Link();
         link.setHref( getHref() );

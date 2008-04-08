@@ -226,7 +226,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
     /**
      * getRealPath
      */
-    
+    @Override
     @Deprecated
     public String getRealPath (String path) {
         return super.getRealPath( path );
@@ -239,6 +239,7 @@ public class LuceneRequest extends HttpServletRequestWrapper {
      */
     
     @Deprecated
+    @Override
     public boolean isRequestedSessionIdFromUrl () {
         return isRequestedSessionIdFromURL();
     }

@@ -27,17 +27,19 @@ public class IntrospectionDocument {
     public Document asDocument () throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
+        factory = null;
         Document document = builder.newDocument();
-        
+        builder=null;
         Element service = document.createElement( "service" );
         service.setAttribute( "xmlns", "http://www.w3.org/2007/app" );
-        
+        Workspace workspace;
         Iterator<Workspace> workspaces = getWorkspaces().iterator();
         while (workspaces.hasNext()) {
-            Workspace workspace = workspaces.next();
+            workspace = workspaces.next();
             service.appendChild( workspace.asElement( document ) );
+            workspace=null;
         }
-        
+        workspaces=null;
         document.appendChild( service );
         
         return document;
