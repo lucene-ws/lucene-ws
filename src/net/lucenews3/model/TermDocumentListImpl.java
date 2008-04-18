@@ -52,4 +52,10 @@ public class TermDocumentListImpl extends AbstractIteratorList<Document> impleme
 		return null;
 	}
 
+	@Override
+	public void add(org.apache.lucene.document.Document document) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -10,4 +10,7 @@ public interface Document extends NativeImplementationProvider<org.apache.lucene
 	
 	public void setBoost(float boost);
 	
+	@Override
+	public org.apache.lucene.document.Document asNative();
+	
 }

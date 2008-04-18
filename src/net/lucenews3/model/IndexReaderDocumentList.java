@@ -191,14 +191,19 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 
 	@Override
 	public DocumentList byTerm(Term term) {
-		// TODO Auto-generated method stub
-		return null;
+		return new TermDocumentList(reader, term, 1);
 	}
 
 	@Override
 	public Map<Term, DocumentList> byTerm() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void add(org.apache.lucene.document.Document document) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

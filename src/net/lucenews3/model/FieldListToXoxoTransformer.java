@@ -3,7 +3,6 @@ package net.lucenews3.model;
 import net.lucenews3.Transformer;
 import net.lucenews3.atom.dom4j.AbstractBuilder;
 
-import org.apache.lucene.document.Field;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;

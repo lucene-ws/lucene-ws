@@ -38,6 +38,7 @@ public class TermDocumentIterator implements Iterator<Document> {
 	 * @param toTerm (may be null to indicate no upper bound)
 	 */
 	public TermDocumentIterator(IndexReader indexReader, Term fromTerm, Term toTerm) {
+		this.indexReader = indexReader;
 		this.fromTerm = fromTerm;
 		this.toTerm = toTerm;
 	}
@@ -51,12 +52,21 @@ public class TermDocumentIterator implements Iterator<Document> {
 	@Override
 	public boolean hasNext() {
 		while (hasNext == null) {
+			if (termDocs == null) {
+				try {
+					termDocs = indexReader.termDocs(fromTerm);
+				} catch (IOException e) {
+					throw exceptionTranslator.translate(e);
+				}
+			}
+			
 			try {
 				hasNext = termDocs.next();
 			} catch (IOException e) {
 				throw exceptionTranslator.translate(e);
 			}
 		}
+		
 		return hasNext;
 	}
 

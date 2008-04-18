@@ -6,8 +6,7 @@ public class HttpDocumentIdentityParser implements DocumentIdentityParser<HttpSe
 
 	@Override
 	public DocumentIdentity parse(HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		return new DocumentIdentityImpl(request.getAttribute("documentId"));
 	}
 
 }

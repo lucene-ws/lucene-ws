@@ -3,9 +3,6 @@ package net.lucenews3.model;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
-
 public class FieldListImpl extends ArrayList<Field> implements FieldList {
 
 	private static final long serialVersionUID = -945660472095730009L;
@@ -22,8 +19,8 @@ public class FieldListImpl extends ArrayList<Field> implements FieldList {
 		super(initialCapacity);
 	}
 
-	public boolean add(Fieldable fieldable) {
-		Field field = new Field(fieldable.name(), fieldable.stringValue(), fieldable.isStored() ? Field.Store.YES : Field.Store.NO, fieldable.isTokenized() ? Field.Index.TOKENIZED : Field.Index.UN_TOKENIZED);
+	public boolean add(org.apache.lucene.document.Fieldable fieldable) {
+		org.apache.lucene.document.Field field = new org.apache.lucene.document.Field(fieldable.name(), fieldable.stringValue(), fieldable.isStored() ? org.apache.lucene.document.Field.Store.YES : org.apache.lucene.document.Field.Store.NO, fieldable.isTokenized() ? org.apache.lucene.document.Field.Index.TOKENIZED : org.apache.lucene.document.Field.Index.UN_TOKENIZED);
 		return add(field);
 	}
 

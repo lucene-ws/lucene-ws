@@ -6,6 +6,7 @@ import net.lucenews3.atom.dom4j.AbstractBuilder;
 import net.lucenews3.atom.dom4j.LinkBuilder;
 import net.lucenews3.http.Url;
 import net.lucenews3.model.Document;
+import net.lucenews3.model.Field;
 import net.lucenews3.model.FieldList;
 import net.lucenews3.model.FieldListToXoxoTransformer;
 import net.lucenews3.model.Index;
@@ -14,7 +15,6 @@ import net.lucenews3.model.Result;
 import net.lucenews3.model.SearchContext;
 import net.lucenews3.model.SearchRequest;
 
-import org.apache.lucene.document.Field;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;

@@ -2,7 +2,6 @@ package net.lucenews3.model;
 
 import java.util.AbstractList;
 
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 
 public class NativeDocumentFieldList extends AbstractList<Field> implements FieldList {

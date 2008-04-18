@@ -20,10 +20,12 @@ public class TermDocumentList extends AbstractIteratorList<Document> implements 
 		this.size = size;
 	}
 
+	/**
 	@Override
 	public int size() {
 		return size;
 	}
+	*/
 
 	@Override
 	public Map<Term, DocumentList> byTerm() {
@@ -58,7 +60,13 @@ public class TermDocumentList extends AbstractIteratorList<Document> implements 
 	@Override
 	public Iterator<Document> iterator() {
 		// TODO Auto-generated method stub
-		return null;
+		return new TermDocumentIterator(indexReader, term);
+	}
+
+	@Override
+	public void add(org.apache.lucene.document.Document document) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

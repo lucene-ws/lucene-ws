@@ -9,6 +9,8 @@ import org.apache.lucene.search.Query;
 
 public interface DocumentList extends List<Document> {
 	
+	public void add(org.apache.lucene.document.Document document);
+	
 	public Map<Term, DocumentList> byTerm();
 	
 	public DocumentList byTerm(Term term);
