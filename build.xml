@@ -93,6 +93,11 @@
 			a generic target name across all Spring sample apps that may be used
 			for autobuilds testing.
 		-->
+		
+		<retroweaver
+			inputjar="${weblib.dir}/${application.name}.jar"
+			outputjar="${weblib.dir}/${application.name}_java_1_4.jar"
+			target="1.4" />
 	</target>
 
 
@@ -100,17 +105,15 @@
 		<mkdir dir="${dist.dir}" />
 		<war warfile="${war.file}" basedir="${war.dir}" webxml="${war.dir}/WEB-INF/web.xml">
 			<classes dir="${build.dir}" />
-			<!--
-			<if name="include.dependencies" value="true">
-				<equals arg1="${include.dependencies}" arg2="true"/>
-				<then>
-					<lib dir="${weblib.dir}">
-						<include name="*.jar"/>
-					</lib>
-				</then>
-			</if>
-			-->
+			<lib dir="${lib.dir}">
+				<include name="*.jar"/>
+			</lib>
 		</war>
+		
+		<retroweaver
+			inputjar="${war.file}"
+			outputjar="${dist.dir}/${application.name}_java_1_4.war"
+			target="1.4" />
 	</target>
 
 	<target name="deploy" depends="war" description="Deploy application to Apache Tomcat">
@@ -251,5 +254,12 @@
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="lib.class.path" />
 	
 	<typedef name="selectChannelConnector" classname="org.mortbay.jetty.nio.SelectChannelConnector" classpathref="jetty.plugin.classpath" loaderref="jetty.loader" />
+	
+	<taskdef name="retroweaver" classname="net.sourceforge.retroweaver.ant.RetroWeaverTask">
+		<classpath>
+			<fileset dir="lib" includes="**/*" />
+			<pathelement location="lib/retroweaver-2.0.5.jar" />
+		</classpath>
+	</taskdef>
 
 </project>
