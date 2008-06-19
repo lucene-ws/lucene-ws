@@ -181,6 +181,8 @@ public class OpenSearchText {
                 catch (TransformerException te) {
                     throw new OpenSearchException(te.getMessage());
                 }
+            } else if (getType().equals("text")) {
+            	element.appendChild(document.createTextNode(content_string));
             }
             
             
