@@ -40,11 +40,11 @@ public class SortParserImpl implements SortParser<String> {
 	 */
 	@Override
 	public Sort parse(String string) {
-		final String[] sortFieldStrings = string.split(sortFieldDelimiter);
-		final SortField[] sortFields = new SortField[sortFieldStrings.length];
+		String[] sortFieldStrings = string.split(sortFieldDelimiter);
+		SortField[] sortFields = new SortField[sortFieldStrings.length];
 		for (int i = 0; i < sortFields.length; i++) {
-			final String sortFieldString = sortFieldStrings[i];
-			final SortField sortField = sortFieldParser.parse(sortFieldString);
+			String sortFieldString = sortFieldStrings[i];
+			SortField sortField = sortFieldParser.parse(sortFieldString);
 			sortFields[i] = sortField;
 		}
 		return new Sort(sortFields);

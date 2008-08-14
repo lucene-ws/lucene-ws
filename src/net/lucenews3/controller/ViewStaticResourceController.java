@@ -53,26 +53,26 @@ public class ViewStaticResourceController implements HttpController {
 		
 		final File resourceFile = file;
 		
-		return new ModelAndView(new View(){
-
-			@Override
-			public String getContentType() {
-				return null;
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void render(Map model, HttpServletRequest request,
-					HttpServletResponse response) throws Exception {
-				final InputStream inputStream = new FileInputStream(resourceFile);
-				final OutputStream outputStream = response.getOutputStream();
-				
-				byte[] buffer = new byte[512];
-				int count = 0;
-				while ((count = inputStream.read(buffer)) > 0) {
-					outputStream.write(buffer, 0, count);
+		return new ModelAndView(
+			new View() {
+				@Override
+				public String getContentType() {
+					return null;
 				}
-			}});
+	
+				@Override
+				public void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+					final InputStream inputStream = new FileInputStream(resourceFile);
+					final OutputStream outputStream = response.getOutputStream();
+					
+					byte[] buffer = new byte[512];
+					int count = 0;
+					while ((count = inputStream.read(buffer)) > 0) {
+						outputStream.write(buffer, 0, count);
+					}
+				}
+			}
+		);
 	}
 	
 }

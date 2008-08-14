@@ -76,13 +76,13 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 				}
 			} else {
 				// Search children first
-				final File[] childFiles = directory.listFiles();
+				File[] childFiles = directory.listFiles();
 				for (File childFile : childFiles) {
 					search(childFile);
 				}
 				
 				// Search parent afterward
-				final File parentFile = directory.getParentFile();
+				File parentFile = directory.getParentFile();
 				search(parentFile);
 			}
 		}
@@ -118,7 +118,7 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 	}
 	
 	public Index buildIndex(File directory) throws IOException {
-		final IndexImpl index = new IndexImpl();
+		IndexImpl index = new IndexImpl();
 		
 		index.setDirectory(FSDirectory.getDirectory(directory));
 		index.setMetaData(buildIndexMetaData(directory));
@@ -127,21 +127,21 @@ public class IndexDiscoverer implements Runnable, InitializingBean {
 	}
 	
 	public IndexMetaData buildIndexMetaData(File directory) throws IOException {
-		final IndexMetaDataImpl metaData = new IndexMetaDataImpl();
+		IndexMetaDataImpl metaData = new IndexMetaDataImpl();
 		metaData.setName(directory.getCanonicalPath());
 		
 		final IndexReader reader = IndexReader.open(directory);
 		try {
-			final int documentCount = reader.numDocs();
+			int documentCount = reader.numDocs();
 			System.err.println(directory + ": document count = " + documentCount);
-			final TermEnum terms = reader.terms();
-			final List<String> fieldNames = new ArrayList<String>();
+			TermEnum terms = reader.terms();
+			List<String> fieldNames = new ArrayList<String>();
 			String primaryFieldName = null;
 			String currentFieldName = null;
 			int currentFieldCount = 0;
 			while (terms.next()) {
-				final Term term = terms.term();
-				final String fieldName = term.field();
+				Term term = terms.term();
+				String fieldName = term.field();
 				
 				if (currentFieldName == null) {
 					currentFieldName = fieldName;

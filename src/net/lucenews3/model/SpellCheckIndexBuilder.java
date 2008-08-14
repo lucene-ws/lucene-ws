@@ -19,7 +19,6 @@ public class SpellCheckIndexBuilder extends AbstractIndexBuilder {
 	
 	@Override
 	public int buildIndex() throws Exception {
-		
 		if (dictionary != null) {
 			spellChecker.indexDictionary(dictionary);
 		} else if (dictionaries != null) {

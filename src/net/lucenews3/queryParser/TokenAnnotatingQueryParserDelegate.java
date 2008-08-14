@@ -23,11 +23,13 @@ public class TokenAnnotatingQueryParserDelegate extends QueryParserDelegateAdapt
 	@Override
 	public Query parse(QueryParserInternals parser, String queryText) throws ParseException {
 		Token token = parser.getToken(0);
+		
 		if (token == null) {
 			token = buildToken(queryText);
 		} else if (token.image == null || token.image.trim().equals("")) {
 			buildToken(queryText, token);
 		}
+		
 		return annotate(super.parse(parser, queryText), token);
 	}
 	
@@ -38,15 +40,13 @@ public class TokenAnnotatingQueryParserDelegate extends QueryParserDelegateAdapt
 	}
 
 	@Override
-	public Query getBooleanQuery(QueryParserInternals parser,
-			Vector<BooleanClause> clauses, boolean disableCoord)
-			throws ParseException {
+	public Query getBooleanQuery(QueryParserInternals parser, Vector<BooleanClause> clauses, boolean disableCoord) throws ParseException {
 		Token token = parser.getToken(0);
 		return annotate(target.getBooleanQuery(parser, clauses, disableCoord), token);
 	}
 	
 	public Token buildToken(String text) {
-		final Token token = new Token();
+		Token token = new Token();
 		buildToken(text, token);
 		return token;
 	}
@@ -65,7 +65,7 @@ public class TokenAnnotatingQueryParserDelegate extends QueryParserDelegateAdapt
 	 * @param string
 	 * @return
 	 */
-	public Query annotate(final Query query, final Token token) {
+	public Query annotate(Query query, Token token) {
 		return annotator.annotate(query, token);
 	}
 	

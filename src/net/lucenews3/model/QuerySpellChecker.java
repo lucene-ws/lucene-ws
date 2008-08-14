@@ -73,7 +73,7 @@ public class QuerySpellChecker {
 	}
 	
 	public List<Query> suggestSimilar(BooleanQuery query) {
-		final List<Query> results = new ArrayList<Query>();
+		List<Query> results = new ArrayList<Query>();
 		suggestSimilar(query, results);
 		return results;
 	}
@@ -87,8 +87,8 @@ public class QuerySpellChecker {
 	 */
 	@SuppressWarnings("unchecked")
 	public void suggestSimilar(BooleanQuery query, Collection<Query> suggestedQueries) {
-		final BooleanClause[] clauses = query.getClauses();
-		final List<Query>[] suggestedClauseQueries = new List[clauses.length];
+		BooleanClause[] clauses = query.getClauses();
+		List<Query>[] suggestedClauseQueries = new List[clauses.length];
 		
 		for (int i = 0; i < clauses.length; i++) {
 			suggestedClauseQueries[i] = suggestSimilar(clauses[i].getQuery());
@@ -105,7 +105,7 @@ public class QuerySpellChecker {
 	}
 	
 	public List<Query> suggestSimilar(TermQuery query) {
-		final List<Query> results = new ArrayList<Query>();
+		List<Query> results = new ArrayList<Query>();
 		suggestSimilar(query, results);
 		return results;
 	}

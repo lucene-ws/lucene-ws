@@ -37,16 +37,16 @@ public class HttpFilterParser implements FilterParser<HttpServletRequest> {
 
 	@Override
 	public Filter parse(HttpServletRequest request) {
-		final Filter result;
+		Filter filter;
 		
 		String string = request.getParameter(parameterName);
 		if (string == null) {
-			result = null;
+			filter = null;
 		} else {
-			result = stringParser.parse(string);
+			filter = stringParser.parse(string);
 		}
 		
-		return result;
+		return filter;
 	}
 
 }

@@ -45,8 +45,8 @@ public class QuerySuggester {
 		
 		List<Query>[] suggestedQueriesByIndex = (List<Query>[]) new List[clauses.length];
 		for (int i = 0; i < clauses.length; i++) {
-			final BooleanClause clause = clauses[i];
-			final List<Query> suggestedQueries = suggest(clause.getQuery());
+			BooleanClause clause = clauses[i];
+			List<Query> suggestedQueries = suggest(clause.getQuery());
 			suggestedQueriesByIndex[i] = suggestedQueries;
 		}
 		

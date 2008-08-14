@@ -21,8 +21,7 @@ import org.apache.lucene.search.Query;
  * to its parent.
  *
  */
-public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryParser
-		implements QueryParser<String>, QueryParserInternals {
+public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryParser implements QueryParser<String>, QueryParserInternals {
 
 	private QueryParserDelegate delegate;
 	private ExceptionTranslator exceptionTranslator;
@@ -89,12 +88,12 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 	}
 
 	protected boolean isCalledFromDelegate(int depth) {
-		final Thread thread = Thread.currentThread();
-		final StackTraceElement[] elements = thread.getStackTrace();
+		Thread thread = Thread.currentThread();
+		StackTraceElement[] elements = thread.getStackTrace();
 		for (int i = depth + 3; i < elements.length; i++) {
-			final StackTraceElement element = elements[i];
+			StackTraceElement element = elements[i];
 			
-			final Class<?> c;
+			Class<?> c;
 			try {
 				c = Class.forName(element.getClassName());
 			} catch (ClassNotFoundException e) {
@@ -115,131 +114,123 @@ public class DelegatingQueryParser extends org.apache.lucene.queryParser.QueryPa
 
 	@Override
 	public Query parse(String queryText) {
-		final Query result;
+		Query query;
 		
 		try {
 			if (isCalledFromDelegate()) {
-				result = super.parse(queryText);
+				query = super.parse(queryText);
 			} else {
-				result = delegate.parse(this, queryText);
+				query = delegate.parse(this, queryText);
 			}
 		} catch (ParseException e) {
 			throw exceptionTranslator.translate(e);
 		}
 		
-		return result;
+		return query;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query getBooleanQuery(Vector clauses)
-			throws ParseException {
-		final Query result;
+	public Query getBooleanQuery(Vector clauses) throws ParseException {
+		Query query;
 		
 		if (delegate == null || isCalledFromDelegate()) {
-			result = super.getBooleanQuery(clauses);
+			query = super.getBooleanQuery(clauses);
 		} else {
-			result = delegate.getBooleanQuery(this, clauses);
+			query = delegate.getBooleanQuery(this, clauses);
 		}
 		
-		return result;
+		return query;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query getBooleanQuery(Vector clauses, boolean disableCoord)
-			throws ParseException {
-		final Query result;
+	public Query getBooleanQuery(Vector clauses, boolean disableCoord) throws ParseException {
+		Query query;
 		
 		if (delegate == null || isCalledFromDelegate()) {
-			result = super.getBooleanQuery(clauses, disableCoord);
+			query = super.getBooleanQuery(clauses, disableCoord);
 		} else {
-			result = delegate.getBooleanQuery(this, clauses, disableCoord);
+			query = delegate.getBooleanQuery(this, clauses, disableCoord);
 		}
 		
-		return result;
+		return query;
 	}
 	
 	@Override
-	public Query getFieldQuery(String field, String queryText)
-			throws ParseException {
-		final Query result;
+	public Query getFieldQuery(String field, String queryText) throws ParseException {
+		Query query;
 		
 		if (delegate == null || isCalledFromDelegate()) {
-			result = super.getFieldQuery(field, queryText);
+			query = super.getFieldQuery(field, queryText);
 		} else {
-			result = delegate.getFieldQuery(this, field, queryText);
+			query = delegate.getFieldQuery(this, field, queryText);
 		}
 		
-		return result;
+		return query;
 	}
 	
 	@Override
-	public Query getFieldQuery(String field, String queryText, int slop)
-			throws ParseException {
-		final Query result;
+	public Query getFieldQuery(String field, String queryText, int slop) throws ParseException {
+		Query query;
 		
 		if (delegate == null || isCalledFromDelegate()) {
-			result = super.getFieldQuery(field, queryText, slop);
+			query = super.getFieldQuery(field, queryText, slop);
 		} else {
-			result = delegate.getFieldQuery(this, field, queryText, slop);
+			query = delegate.getFieldQuery(this, field, queryText, slop);
 		}
 		
-		return result;
+		return query;
 	}
 
-	public Query getFuzzyTerm(String field, String termStr, float minSimilarity)
-			throws ParseException {
-		final Query result;
+	public Query getFuzzyTerm(String field, String termStr, float minSimilarity) throws ParseException {
+		Query query;
 		
 		if (delegate == null || isCalledFromDelegate()) {
-			result = super.getFuzzyQuery(field, termStr, minSimilarity);
+			query = super.getFuzzyQuery(field, termStr, minSimilarity);
 		} else {
-			result = delegate.getFuzzyTerm(this, field, termStr, minSimilarity);
+			query = delegate.getFuzzyTerm(this, field, termStr, minSimilarity);
 		}
 		
-		return result;
+		return query;
 	}
 
-	public Query getPrefixQuery(String field, String termStr)
-			throws ParseException {
-		final Query result;
+	public Query getPrefixQuery(String field, String termStr) throws ParseException {
+		Query query;
 		
 		if (delegate == null || isCalledFromDelegate()) {
-			result = super.getPrefixQuery(field, termStr);
+			query = super.getPrefixQuery(field, termStr);
 		} else {
-			result = delegate.getPrefixQuery(this, field, termStr);
+			query = delegate.getPrefixQuery(this, field, termStr);
 		}
 		
-		return result;
+		return query;
 	}
 
 	@Override
-	public Query getRangeQuery(String field, String part1, String part2, boolean inclusive)
-			throws ParseException {
-		final Query result;
+	public Query getRangeQuery(String field, String part1, String part2, boolean inclusive) throws ParseException {
+		Query query;
 		
 		if (delegate == null || isCalledFromDelegate()) {
-			result = super.getRangeQuery(field, part1, part2, inclusive);
+			query = super.getRangeQuery(field, part1, part2, inclusive);
 		} else {
-			result = delegate.getRangeQuery(this, field, part1, part2, inclusive);
+			query = delegate.getRangeQuery(this, field, part1, part2, inclusive);
 		}
 		
-		return result;
+		return query;
 	}
 
 	@Override
-	public Query getWildcardQuery(String field, String termStr)
-			throws ParseException {
-		final Query result;
+	public Query getWildcardQuery(String field, String termStr) throws ParseException {
+		Query query;
 		
 		if (delegate == null || isCalledFromDelegate()) {
-			result = super.getWildcardQuery(field, termStr);
+			query = super.getWildcardQuery(field, termStr);
 		} else {
-			result = delegate.getWildcardQuery(this, field, termStr);
+			query = delegate.getWildcardQuery(this, field, termStr);
 		}
 		
-		return result;
+		return query;
 	}
 
 }

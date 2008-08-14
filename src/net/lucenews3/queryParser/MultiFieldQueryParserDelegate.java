@@ -28,23 +28,22 @@ public class MultiFieldQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query getFieldQuery(QueryParserInternals parser, String field,
-			String queryText, int slop) throws ParseException {
-		final Query result;
+	public Query getFieldQuery(QueryParserInternals parser, String field, String queryText, int slop) throws ParseException {
+		Query query;
 		
 		if (isImplicitField()) {
-			final BooleanQuery booleanQuery = new BooleanQuery();
+			BooleanQuery booleanQuery = new BooleanQuery();
 			
 			for (String defaultField : defaultFields) {
 				booleanQuery.add(super.getFieldQuery(parser, defaultField, queryText, slop), BooleanClause.Occur.SHOULD);
 			}
 			
-			result = booleanQuery;
+			query = booleanQuery;
 		} else {
-			result = super.getFieldQuery(parser, field, queryText, slop);
+			query = super.getFieldQuery(parser, field, queryText, slop);
 		}
 		
-		return result;
+		return query;
 	}
 	
 	public boolean isImplicitField() {

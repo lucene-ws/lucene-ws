@@ -78,17 +78,17 @@ public class TokenSourceQueryAnnotator {
 	 * @return
 	 */
 	public Query annotate(final Query query, final Token token) {
-		final Query result;
+		Query result;
 		
 		if (query instanceof TokenSource) {
-			final TokenSource tokenSource = (TokenSource) query;
+			TokenSource tokenSource = (TokenSource) query;
 			tokenSource.setToken(token);
 			result = query;
 		} else {
-			final Class<? extends Query> queryClass = query.getClass();
-			final Class<? extends Token> tokenClass = token.getClass();
+			Class<? extends Query> queryClass = query.getClass();
+			Class<? extends Token> tokenClass = token.getClass();
 			
-			final Method instantiator;
+			Method instantiator;
 			if (instantiatorsByClass.containsKey(queryClass)) {
 				instantiator = instantiatorsByClass.get(queryClass);
 			} else {
@@ -122,8 +122,8 @@ public class TokenSourceQueryAnnotator {
 	
 	@SuppressWarnings("unchecked")
 	public Class<? extends Query> buildWrapperClass(Class<? extends Query> queryClass, Class<? extends Token> tokenClass) {
-		final String className = buildWrapperClassName(queryClass, tokenClass);
-		final byte[] classBytes = buildWrapperClassBytes(queryClass, tokenClass);
+		String className = buildWrapperClassName(queryClass, tokenClass);
+		byte[] classBytes = buildWrapperClassBytes(queryClass, tokenClass);
 		return (Class<? extends Query>) classLoader.defineClass(className, classBytes);
 	}
 	
@@ -138,8 +138,8 @@ public class TokenSourceQueryAnnotator {
 	 */
 	@SuppressWarnings("unchecked")
 	public byte[] buildWrapperClassBytes(Class<? extends Query> queryClass, Class<? extends Token> tokenClass) {
-		final Type queryType = Type.getType(queryClass);
-		final Type tokenType = Type.getType(tokenClass);
+		Type queryType = Type.getType(queryClass);
+		Type tokenType = Type.getType(tokenClass);
 		
 		ClassWriter cw = new ClassWriter(0);
 		

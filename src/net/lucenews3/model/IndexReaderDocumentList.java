@@ -152,7 +152,7 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 	 * @return a <code>DocumentList</code> which has been filtered by the given criteria
 	 */
 	public DocumentList filteredBy(Filter filter) {
-		final IndexReaderDocumentList result = new IndexReaderDocumentList(this);
+		IndexReaderDocumentList result = new IndexReaderDocumentList(this);
 		result.filter = filterMerger.merge(result.filter, filter);
 		return result;
 	}
@@ -171,7 +171,7 @@ public class IndexReaderDocumentList extends AbstractList<Document> implements D
 
 	@Override
 	public ResultList searchBy(SearchRequest searchRequest) {
-		final QueryResultList result = new QueryResultList();
+		QueryResultList result = new QueryResultList();
 		result.setSearchRequest(searchRequest);
 		if (this.searcher == null) {
 			result.setSearcher(new IndexSearcher(reader));

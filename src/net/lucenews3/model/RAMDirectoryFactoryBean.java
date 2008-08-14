@@ -38,19 +38,19 @@ public class RAMDirectoryFactoryBean implements FactoryBean {
 
 	@Override
 	public RAMDirectory getObject() throws Exception {
-		final RAMDirectory result;
+		RAMDirectory ramDirectory;
 		
 		if (directory != null) {
-			result = new RAMDirectory(directory);
+			ramDirectory = new RAMDirectory(directory);
 		} else if (file != null) {
-			result = new RAMDirectory(file);
+			ramDirectory = new RAMDirectory(file);
 		} else if (path != null) {
-			result = new RAMDirectory(path);
+			ramDirectory = new RAMDirectory(path);
 		} else {
-			result = new RAMDirectory();
+			ramDirectory = new RAMDirectory();
 		}
 		
-		return result;
+		return ramDirectory;
 	}
 
 	@Override

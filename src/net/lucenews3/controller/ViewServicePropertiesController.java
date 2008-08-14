@@ -10,9 +10,9 @@ public class ViewServicePropertiesController<I, O> implements Controller<I, O> {
 	
 	@Override
 	public ModelAndView handleRequest(I input, O output) throws Exception {
-		final ModelAndView result = new ModelAndView("serviceProperties/view");
-		result.addObject("properties", service.getProperties());
-		return result;
+		ModelAndView model = new ModelAndView("serviceProperties/view");
+		model.addObject("properties", service.getProperties());
+		return model;
 	}
 
 	public Service getService() {

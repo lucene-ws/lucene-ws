@@ -8,20 +8,20 @@ public class QueryMergerImpl implements QueryMerger {
 
 	@Override
 	public Query merge(Query base, Query delta) {
-		final Query result;
+		Query query;
 		
 		if (delta == null) {
-			result = null;
+			query = null;
 		} else if (base == null) {
-			result = delta;
+			query = delta;
 		} else {
-			final BooleanQuery booleanQuery = new BooleanQuery();
+			BooleanQuery booleanQuery = new BooleanQuery();
 			booleanQuery.add(base, BooleanClause.Occur.MUST);
 			booleanQuery.add(delta, BooleanClause.Occur.MUST);
-			result = booleanQuery;
+			query = booleanQuery;
 		}
 		
-		return result;
+		return query;
 	}
 
 }

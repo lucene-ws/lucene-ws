@@ -33,41 +33,41 @@ public class ViewDocumentController<I, O> implements Controller<I, O> {
 	}
 	
 	public ModelAndView handleRequest(I input, O output) throws Exception {
-		final IndexIdentity indexIdentity = indexIdentityParser.parse(input);
-		final Index index = indexesByIdentity.get(indexIdentity);
-		final DocumentIdentity documentIdentity = documentIdentityParser.parse(input);
+		IndexIdentity indexIdentity = indexIdentityParser.parse(input);
+		Index index = indexesByIdentity.get(indexIdentity);
+		DocumentIdentity documentIdentity = documentIdentityParser.parse(input);
 		
-		final IndexMetaData indexMetaData = index.getMetaData();
-		final String primaryFieldName = indexMetaData.getPrimaryField();
-		final Term primaryTerm = new Term(primaryFieldName, documentIdentity.toString());
-		final DocumentList documents = index.getDocuments().byTerm(primaryTerm);
+		IndexMetaData indexMetaData = index.getMetaData();
+		String primaryFieldName = indexMetaData.getPrimaryField();
+		Term primaryTerm = new Term(primaryFieldName, documentIdentity.toString());
+		DocumentList documents = index.getDocuments().byTerm(primaryTerm);
 		
 		if (documents.isEmpty()) {
 			throw new RuntimeException("Document \"" + documentIdentity + "\" not found");
 		} else if (documents.size() > 1) {
 			throw new RuntimeException("Multiple documents for \"" + documentIdentity + "\"");
 		}
-		final Document document = documents.get(0);
+		Document document = documents.get(0);
 		
-		final org.dom4j.Document xmlDocument = DocumentHelper.createDocument();
+		org.dom4j.Document xmlDocument = DocumentHelper.createDocument();
 		
-		final Element entry = DocumentHelper.createElement(QName.get("entry", atomNamespace));
+		Element entry = DocumentHelper.createElement(QName.get("entry", atomNamespace));
 		xmlDocument.add(entry);
 		
-		final Element content = DocumentHelper.createElement(QName.get("content", xhtmlNamespace));
+		Element content = DocumentHelper.createElement(QName.get("content", xhtmlNamespace));
 		entry.add(content);
 		
-		final Element div = DocumentHelper.createElement(QName.get("div", xhtmlNamespace));
+		Element div = DocumentHelper.createElement(QName.get("div", xhtmlNamespace));
 		content.add(div);
 		
-		final Element dl = xoxoTransformer.transform(document.getFields());
+		Element dl = xoxoTransformer.transform(document.getFields());
 		div.add(dl);
 		
-		final ModelAndView result = new ModelAndView("document/view");
-		result.addObject("indexIdentity", indexIdentity);
-		result.addObject("index", index);
-		result.addObject("entry", xmlDocument);
-		return result;
+		ModelAndView model = new ModelAndView("document/view");
+		model.addObject("indexIdentity", indexIdentity);
+		model.addObject("index", index);
+		model.addObject("entry", xmlDocument);
+		return model;
 	}
 
 	public IndexIdentityParser<I> getIndexIdentityParser() {

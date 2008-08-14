@@ -20,17 +20,17 @@ public class SortMergerImpl implements SortMerger {
 		} else if (base == null) {
 			result = delta;
 		} else {
-			final List<SortField> mergedSortFields = new ArrayList<SortField>();
+			List<SortField> mergedSortFields = new ArrayList<SortField>();
 			
 			// Establish which sort fields are mentioned in the delta.
-			final Set<Object> deltaSortFieldKeys = new HashSet<Object>();
+			Set<Object> deltaSortFieldKeys = new HashSet<Object>();
 			for (SortField deltaSortField : delta.getSort()) {
 				deltaSortFieldKeys.add(getKey(deltaSortField));
 			}
 			
 			// Add the base fields which are not mentioned in the delta
 			for (SortField baseSortField : base.getSort()) {
-				final Object baseSortFieldKey = getKey(baseSortField);
+				Object baseSortFieldKey = getKey(baseSortField);
 				if (!deltaSortFieldKeys.contains(baseSortFieldKey)) {
 					mergedSortFields.add(baseSortField);
 				}
@@ -55,19 +55,19 @@ public class SortMergerImpl implements SortMerger {
 	 * @return
 	 */
 	protected Object getKey(SortField field) {
-		final Object result;
+		Object key;
 		
 		switch (field.getType()) {
 		case SortField.SCORE:
 		case SortField.DOC:
-			result = field.getType();
+			key = field.getType();
 			break;
 		default:
-			result = field.getField();
+			key = field.getField();
 			break;
 		}
 		
-		return result;
+		return key;
 	}
 
 }

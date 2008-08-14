@@ -17,17 +17,17 @@ public class UpdateDocumentController<I, O> implements Controller<I, O> {
 	private DocumentIdentityParser<I> documentIdentityParser;
 	
 	public ModelAndView handleRequest(I input, O output) throws Exception {
-		final IndexIdentity indexIdentity = indexIdentityParser.parse(input);
-		final Index index = indexesByIdentity.get(indexIdentity);
-		final DocumentIdentity documentIdentity = documentIdentityParser.parse(input);
+		IndexIdentity indexIdentity = indexIdentityParser.parse(input);
+		Index index = indexesByIdentity.get(indexIdentity);
+		DocumentIdentity documentIdentity = documentIdentityParser.parse(input);
 		
 		// TODO Update the document
 		
-		ModelAndView result = new ModelAndView("document/update");
-		result.addObject("indexIdentity", indexIdentity);
-		result.addObject("index", index);
-		result.addObject("documentIdentity", documentIdentity);
-		return result;
+		ModelAndView model = new ModelAndView("document/update");
+		model.addObject("indexIdentity", indexIdentity);
+		model.addObject("index", index);
+		model.addObject("documentIdentity", documentIdentity);
+		return model;
 	}
 
 	public IndexIdentityParser<I> getIndexIdentityParser() {
@@ -50,8 +50,7 @@ public class UpdateDocumentController<I, O> implements Controller<I, O> {
 		return documentIdentityParser;
 	}
 
-	public void setDocumentIdentityParser(
-			DocumentIdentityParser<I> documentIdentityParser) {
+	public void setDocumentIdentityParser(DocumentIdentityParser<I> documentIdentityParser) {
 		this.documentIdentityParser = documentIdentityParser;
 	}
 

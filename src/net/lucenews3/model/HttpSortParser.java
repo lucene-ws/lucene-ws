@@ -38,16 +38,16 @@ public class HttpSortParser implements SortParser<HttpServletRequest> {
 
 	@Override
 	public Sort parse(HttpServletRequest request) {
-		final Sort result;
+		Sort sort;
 		
-		final String string = request.getParameter(parameterName);
+		String string = request.getParameter(parameterName);
 		if (string == null) {
-			result = null;
+			sort = null;
 		} else {
-			result = stringParser.parse(string);
+			sort = stringParser.parse(string);
 		}
 		
-		return result;
+		return sort;
 	}
 
 }

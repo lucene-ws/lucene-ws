@@ -52,8 +52,7 @@ public class LoggingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query getBooleanQuery(QueryParserInternals parser,
-			Vector<BooleanClause> clauses) throws ParseException {
+	public Query getBooleanQuery(QueryParserInternals parser, Vector<BooleanClause> clauses) throws ParseException {
 		Query result;
 		beforeCall(parser, clauses);
 		result = super.getBooleanQuery(parser, clauses);
@@ -62,9 +61,7 @@ public class LoggingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query getBooleanQuery(QueryParserInternals parser,
-			Vector<BooleanClause> clauses, boolean disableCoord)
-			throws ParseException {
+	public Query getBooleanQuery(QueryParserInternals parser, Vector<BooleanClause> clauses, boolean disableCoord) throws ParseException {
 		Query result;
 		beforeCall(parser, clauses, disableCoord);
 		result = super.getBooleanQuery(parser, clauses, disableCoord);
@@ -73,8 +70,7 @@ public class LoggingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query getFieldQuery(QueryParserInternals parser, String field,
-			String queryText) throws ParseException {
+	public Query getFieldQuery(QueryParserInternals parser, String field, String queryText) throws ParseException {
 		Query result;
 		beforeCall(parser, field, queryText);
 		result = super.getFieldQuery(parser, field, queryText);
@@ -83,8 +79,7 @@ public class LoggingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query getFieldQuery(QueryParserInternals parser, String field,
-			String queryText, int slop) throws ParseException {
+	public Query getFieldQuery(QueryParserInternals parser, String field, String queryText, int slop) throws ParseException {
 		Query result;
 		beforeCall(parser, field, queryText, slop);
 		result = super.getFieldQuery(parser, field, queryText, slop);
@@ -93,8 +88,7 @@ public class LoggingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query getFuzzyTerm(QueryParserInternals parser, String field, String termStr,
-			float minSimilarity) throws ParseException {
+	public Query getFuzzyTerm(QueryParserInternals parser, String field, String termStr, float minSimilarity) throws ParseException {
 		Query result;
 		beforeCall(parser, field, termStr, minSimilarity);
 		result = super.getFuzzyTerm(parser, field, termStr, minSimilarity);
@@ -103,8 +97,7 @@ public class LoggingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query getPrefixQuery(QueryParserInternals parser, String field, String termStr)
-			throws ParseException {
+	public Query getPrefixQuery(QueryParserInternals parser, String field, String termStr) throws ParseException {
 		Query result;
 		beforeCall(parser, field, termStr);
 		result = super.getPrefixQuery(parser, field, termStr);
@@ -113,8 +106,7 @@ public class LoggingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query getRangeQuery(QueryParserInternals parser, String field, String part1,
-			String part2, boolean inclusive) throws ParseException {
+	public Query getRangeQuery(QueryParserInternals parser, String field, String part1, String part2, boolean inclusive) throws ParseException {
 		Query result;
 		beforeCall(parser, field, part1, part2, inclusive);
 		result = super.getRangeQuery(parser, field, part1, part2, inclusive);
@@ -123,8 +115,7 @@ public class LoggingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query getWildcardQuery(QueryParserInternals parser, String field,
-			String termStr) throws ParseException {
+	public Query getWildcardQuery(QueryParserInternals parser, String field, String termStr) throws ParseException {
 		Query result;
 		beforeCall(parser, field, termStr);
 		result = super.getWildcardQuery(parser, field, termStr);
@@ -133,8 +124,7 @@ public class LoggingQueryParserDelegate extends QueryParserDelegateAdaptor {
 	}
 
 	@Override
-	public Query parse(QueryParserInternals parser, String queryText)
-			throws ParseException {
+	public Query parse(QueryParserInternals parser, String queryText) throws ParseException {
 		Query result;
 		beforeCall(parser, queryText);
 		result = super.parse(parser, queryText);

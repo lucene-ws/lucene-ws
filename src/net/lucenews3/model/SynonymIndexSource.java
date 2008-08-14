@@ -77,9 +77,9 @@ public class SynonymIndexSource implements SynonymSource {
 	public Collection<String> getSynonyms(String word) {
 		Collection<String> results;
 		
-		final Term term = new Term(wordFieldName, word);
-		final TermQuery query = new TermQuery(term);
-		final Hits hits;
+		Term term = new Term(wordFieldName, word);
+		TermQuery query = new TermQuery(term);
+		Hits hits;
 		
 		try {
 			hits = searcher.search(query);
@@ -112,7 +112,7 @@ public class SynonymIndexSource implements SynonymSource {
 	 * @return
 	 */
 	public List<String> getSynonyms(Hits hits, int length) {
-		final List<String> results = new ArrayList<String>(length);
+		List<String> synonyms = new ArrayList<String>(length);
 		
 		for (int i = 0; i < length; i++) {
 			final Document document;
@@ -123,10 +123,10 @@ public class SynonymIndexSource implements SynonymSource {
 				throw exceptionTranslator.translate(e);
 			}
 			
-			results.addAll(getSynonyms(document));
+			synonyms.addAll(getSynonyms(document));
 		}
 		
-		return results;
+		return synonyms;
 	}
 	
 	/**

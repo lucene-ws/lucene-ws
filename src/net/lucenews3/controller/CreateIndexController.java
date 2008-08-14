@@ -19,17 +19,17 @@ public class CreateIndexController<I, O> implements Controller<I, O> {
 	
 	@Override
 	public ModelAndView handleRequest(I input, O output) throws Exception {
-		final IndexIdentity indexIdentity = indexIdentityParser.parse(input);
-		final IndexMetaData indexMetaData = indexMetaDataParser.parse(input);
-		final Index index = new IndexImpl(indexMetaData);
+		IndexIdentity indexIdentity = indexIdentityParser.parse(input);
+		IndexMetaData indexMetaData = indexMetaDataParser.parse(input);
+		Index index = new IndexImpl(indexMetaData);
 		
 		indexesByIdentity.put(indexIdentity, index);
 		
-		final ModelAndView result = new ModelAndView("index/create");
-		result.addObject("indexIdentity", indexIdentity);
-		result.addObject("indexMetaData", indexMetaData);
-		result.addObject("index", index);
-		return result;
+		ModelAndView model = new ModelAndView("index/create");
+		model.addObject("indexIdentity", indexIdentity);
+		model.addObject("indexMetaData", indexMetaData);
+		model.addObject("index", index);
+		return model;
 	}
 
 	public IndexIdentityParser<I> getIndexIdentityParser() {

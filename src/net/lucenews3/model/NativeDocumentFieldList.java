@@ -26,7 +26,7 @@ public class NativeDocumentFieldList extends AbstractList<Field> implements Fiel
 	
 	@Override
 	public Field get(int index) {
-		return (Field) nativeDocument.getFields().get(index);
+		return new NativeField((org.apache.lucene.document.Field) nativeDocument.getFields().get(index));
 	}
 
 	@Override

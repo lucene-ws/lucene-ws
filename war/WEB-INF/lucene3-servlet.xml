@@ -141,8 +141,7 @@
 		<property name="exceptionTranslator" ref="exceptionTranslator" />
 	</bean>
 
-	<bean id="indexRepository"
-		class="net.lucenews3.model.IndexRepositoryImpl">
+	<bean id="indexRepository" class="net.lucenews3.model.IndexRepositoryImpl">
 		<constructor-arg>
 			<map>
 				<entry value-ref="christmasCarolIndex">

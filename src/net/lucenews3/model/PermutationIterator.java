@@ -113,7 +113,7 @@ public class PermutationIterator<T> implements Iterator<List<T>> {
 			moveNext(index + 1);
 			result = true;
 		} else {
-			final Iterator<T> iterator = iterators[index];
+			Iterator<T> iterator = iterators[index];
 			
 			if (iterator.hasNext()) {
 				currentPermutation.set(index, iterator.next());

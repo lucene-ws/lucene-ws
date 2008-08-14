@@ -6,25 +6,21 @@ public class LocaleStringParser implements LocaleParser<String> {
 
 	@Override
 	public Locale parse(String input) {
-		final Locale result;
-		
-		final String[] tokens = input.split("_");
+		String[] tokens = input.split("_");
 		
 		switch (tokens.length) {
 		case 1:
-			result = new Locale(tokens[0]);
-			break;
+			return new Locale(tokens[0]);
+			
 		case 2:
-			result = new Locale(tokens[0], tokens[1]);
-			break;
+			return new Locale(tokens[0], tokens[1]);
+			
 		case 3:
-			result = new Locale(tokens[0], tokens[1], tokens[2]);
-			break;
+			return new Locale(tokens[0], tokens[1], tokens[2]);
+			
 		default:
 			throw new IllegalArgumentException();
 		}
-		
-		return result;
 	}
 
 }

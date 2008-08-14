@@ -32,11 +32,11 @@ public class ViewServiceController<I, O> implements Controller<I, O> {
 	
 	@Override
 	public ModelAndView handleRequest(I input, O output) throws Exception {
-		final Url baseUrl = baseUrlParser.parse(input);
+		Url baseUrl = baseUrlParser.parse(input);
 		
-		final Service service = new ServiceImpl();
-		final WorkspaceList workspaces = service.getWorkspaces();
-		final Workspace workspace = new WorkspaceImpl();
+		Service service = new ServiceImpl();
+		WorkspaceList workspaces = service.getWorkspaces();
+		Workspace workspace = new WorkspaceImpl();
 		workspaces.add(workspace);
 		
 		workspace.setTitle("Lucene Web Service");
@@ -44,10 +44,10 @@ public class ViewServiceController<I, O> implements Controller<I, O> {
 		final CollectionList collections = workspace.getCollections();
 		
 		for (IndexIdentity indexIdentity : indexesByIdentity.keySet()) {
-			final Collection collection = new CollectionImpl();
+			Collection collection = new CollectionImpl();
 			collection.setTitle(indexIdentity.toString());
 			
-			final Url collectionUrl = baseUrl.clone();
+			Url collectionUrl = baseUrl.clone();
 			collectionUrl.getPath().add(indexIdentity.toString());
 			collection.setHref(collectionUrl.toString());
 			collections.add(collection);
@@ -61,15 +61,15 @@ public class ViewServiceController<I, O> implements Controller<I, O> {
 		stylesheetUrl.getPath().add("static");
 		stylesheetUrl.getPath().add("introspection.xslt");
 		data.put("href", stylesheetUrl.toString());
-		final org.dom4j.ProcessingInstruction pi = DocumentHelper.createProcessingInstruction("xml-stylesheet", data);
-		final org.dom4j.Element element = serviceBuilder.build(service);
+		org.dom4j.ProcessingInstruction pi = DocumentHelper.createProcessingInstruction("xml-stylesheet", data);
+		org.dom4j.Element element = serviceBuilder.build(service);
 		document.add(pi);
 		document.add(element);
 		
-		final ModelAndView result = new ModelAndView("service/view");
-		result.addObject("service", service);
-		result.addObject("document", document);
-		return result;
+		ModelAndView model = new ModelAndView("service/view");
+		model.addObject("service", service);
+		model.addObject("document", document);
+		return model;
 	}
 
 	public ServiceBuilder getServiceBuilder() {

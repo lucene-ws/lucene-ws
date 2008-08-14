@@ -16,7 +16,7 @@ public class LocaleStringParserTest {
 	}
 	
 	protected void test(String... tokens) {
-		final Locale expectedLocale;
+		Locale expectedLocale;
 		
 		switch (tokens.length) {
 		case 1:
@@ -36,9 +36,9 @@ public class LocaleStringParserTest {
 	}
 	
 	protected void test(Locale expectedLocale) {
-		final String localeString = expectedLocale.toString();
+		String localeString = expectedLocale.toString();
 		
-		final Locale actualLocale = parser.parse(localeString);
+		Locale actualLocale = parser.parse(localeString);
 		
 		Assert.assertEquals(expectedLocale, actualLocale);
 	}

@@ -22,13 +22,13 @@ public class SortComparatorSourceParserImpl implements SortComparatorSourceParse
 	
 	@Override
 	public SortComparatorSource parse(String string) {
-		SortComparatorSource result;
+		SortComparatorSource sortComparatorSource;
 		
 		Matcher matcher = objectStringPattern.matcher(string);
 		if (matcher.matches()) {
 			String className = matcher.group(1);
 			try {
-				result = classParser.parse(className).newInstance();
+				sortComparatorSource = classParser.parse(className).newInstance();
 			} catch (InstantiationException e) {
 				throw exceptionTranslator.translate(e);
 			} catch (IllegalAccessException e) {
@@ -38,7 +38,7 @@ public class SortComparatorSourceParserImpl implements SortComparatorSourceParse
 			throw new RuntimeException("Cannot parse \"" + string + "\" into a SortComparatorSource");
 		}
 		
-		return result;
+		return sortComparatorSource;
 	}
 	
 }

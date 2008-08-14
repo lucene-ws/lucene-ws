@@ -35,11 +35,11 @@ public class QuerySpellCheckExpander {
 	}
 	
 	public List<Query> getQuerySuggestions(TermQuery query) throws IOException {
-		final List<Query> results = new ArrayList<Query>();
+		List<Query> results = new ArrayList<Query>();
 		
-		final Term term = query.getTerm();
-		final String word = term.text();
-		final String[] suggestions = spellChecker.suggestSimilar(word, suggestionCount);
+		Term term = query.getTerm();
+		String word = term.text();
+		String[] suggestions = spellChecker.suggestSimilar(word, suggestionCount);
 		
 		for (String suggestion : suggestions) {
 			TermQuery suggestionQuery = new TermQuery(new Term(term.field(), suggestion));

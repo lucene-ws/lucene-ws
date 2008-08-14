@@ -32,14 +32,14 @@ public class QuerySynonymExpander {
 	public Collection<Query> getQuerySynonyms(TermQuery query) {
 		Collection<Query> results;
 		
-		final Term term = query.getTerm();
-		final String word = term.text();
-		final Collection<String> synonyms = synonymSource.getSynonyms(word);
+		Term term = query.getTerm();
+		String word = term.text();
+		Collection<String> synonyms = synonymSource.getSynonyms(word);
 		results = new ArrayList<Query>(synonyms.size());
 		
 		for (String synonym : synonyms) {
-			final Term synonymTerm = new Term(term.field(), synonym);
-			final TermQuery synonymQuery = new TermQuery(synonymTerm);
+			Term synonymTerm = new Term(term.field(), synonym);
+			TermQuery synonymQuery = new TermQuery(synonymTerm);
 			results.add(synonymQuery);
 		}
 		
@@ -51,7 +51,7 @@ public class QuerySynonymExpander {
 	}
 	
 	public Query expandQuery(TermQuery query) throws IOException {
-		final Term term = query.getTerm();
+		Term term = query.getTerm();
 		
 		String word = term.text();
 		Collection<String> synonyms = synonymSource.getSynonyms(word);
@@ -60,8 +60,8 @@ public class QuerySynonymExpander {
 		expanded.add(query, BooleanClause.Occur.SHOULD);
 		
 		for (String synonym : synonyms) {
-			final Term synonymTerm = new Term(term.field(), synonym);
-			final TermQuery synonymQuery = new TermQuery(synonymTerm);
+			Term synonymTerm = new Term(term.field(), synonym);
+			TermQuery synonymQuery = new TermQuery(synonymTerm);
 			expanded.add(synonymQuery, BooleanClause.Occur.SHOULD);
 		}
 		
