@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry>
+	<title>New Document</title>
+	<summary>Cool!</summary>
+	<badger>
+		<badger>
+			<mushroom>
+				<snake />
+			</mushroom>
+		</badger>
+	</badger>
+	<content type="xhtml">
+		<div xmlns="http://www.w3.org/1999/xhtml">
+			<dl class="xoxo">
+				<dt class="stored indexed">id</dt>
+				<dd>1</dd>
+				<dt class="stored indexed tokenized">text</dt>
+				<dd>Test Document 1</dd>
+			</dl>
+		</div>
+	</content>
+</entry>

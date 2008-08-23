@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+	<bean id="service" class="net.lucenews3.DefaultService">
+	</bean>
+
+
+
+	<!-- Controllers -->
+
+	<bean id="controller" abstract="true">
+		<property name="service" ref="service" />
+	</bean>
+
+	<bean id="indexSearchController" class="net.lucenews3.IndexSearchController" parent="controller">
+	</bean>
+
+
+
+	<!-- Handler mappings -->
+	<bean id="serviceHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<!--
+		<property name="getHandlerMapping"    ref="" />
+		<property name="postHandlerMapping"   ref="" />
+		<property name="putHandlerMapping"    ref="" />
+		<property name="deleteHandlerMapping" ref="" />
+		-->
+	</bean>
+
+	<bean id="servicePropertiesHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<!--
+		<property name="getHandlerMapping"    ref="" />
+		<property name="postHandlerMapping"   ref="" />
+		<property name="putHandlerMapping"    ref="" />
+		<property name="deleteHandlerMapping" ref="" />
+		-->
+	</bean>
+
+	<bean id="indexHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<!--
+		<property name="getHandlerMapping"    ref="" />
+		<property name="postHandlerMapping"   ref="" />
+		<property name="putHandlerMapping"    ref="" />
+		<property name="deleteHandlerMapping" ref="" />
+		-->
+	</bean>
+
+	<bean id="indexPropertiesHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<!--
+		<property name="getHandlerMapping"    ref="" />
+		<property name="postHandlerMapping"   ref="" />
+		<property name="putHandlerMapping"    ref="" />
+		<property name="deleteHandlerMapping" ref="" />
+		-->
+	</bean>
+
+	<bean id="documentHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<!--
+		<property name="getHandlerMapping"    ref="" />
+		<property name="postHandlerMapping"   ref="" />
+		<property name="putHandlerMapping"    ref="" />
+		<property name="deleteHandlerMapping" ref="" />
+		-->
+	</bean>
+
+	<bean id="handlerMapping" class="net.lucenews3.ResourceHandlerMapping">
+		<property name="serviceHandlerMapping"           ref="serviceHandlerMapping" />
+		<property name="servicePropertiesHandlerMapping" ref="servicePropertiesHandlerMapping" />
+		<property name="indexHandlerMapping"             ref="indexHandlerMapping" />
+		<property name="indexPropertiesHandlerMapping"   ref="indexPropertiesHandlerMapping" />
+		<property name="documentHandlerMapping"          ref="documentHandlerMapping" />
+	</bean>
+
+
+
+	<!-- Views -->
+
+	<bean id="view" abstract="true">
+	</bean>
+
+	<bean id="introspectionView" class="net.lucenews3.APPIntrospectionView" parent="view">
+	</bean>
+
+	<bean id="openSearchResponseView" class="net.lucenews3.OpenSearchResponseView" parent="view">
+	</bean>
+
+	<bean id="viewResolver" class="net.lucenews3.DefaultViewResolver">
+	</bean>
+
+</beans>
