@@ -29,6 +29,11 @@
 	<target name="run" depends="war">
 		<jetty tempDirectory="jetty-temp">
 			<webApp name="lucenews" warfile="${war.file}" contextpath="/lucene" />
+			<!--
+			<connectors>
+				<selectChannelConnector port="8090" />
+			</connectors>
+			-->
 		</jetty>
 	</target>
 
