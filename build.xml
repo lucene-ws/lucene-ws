@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="run">
+
+	<property name="war.file" value="lucene.war" />
+
+	<path id="classpath">
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="compile">
+		<javac srcdir="src" destdir="bin">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="war" depends="compile">
+		<war warfile="${war.file}" basedir="war" webxml="war/WEB-INF/web.xml">
+			<classes dir="bin" />
+			<lib dir="lib">
+				<include name="*.jar"/>
+			</lib>
+		</war>
+	</target>
+
+	<target name="run" depends="war">
+		<jetty tempDirectory="jetty-temp">
+			<webApp name="lucenews" warfile="${war.file}" contextpath="/lucene" />
+		</jetty>
+	</target>
+
+	<path id="jetty.plugin.classpath">
+		<fileset dir="lib" includes="*.jar" />
+	</path>
+
+	<taskdef classpathref="jetty.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader">
+	</taskdef>
+
+</project>
