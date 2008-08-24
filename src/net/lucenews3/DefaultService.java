@@ -1,6 +1,8 @@
 package net.lucenews3;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLInputFactory;
@@ -15,6 +17,12 @@ public class DefaultService implements Service {
 
 	public DefaultService() {
 		this.xmlInputFactory = XMLInputFactory.newInstance();
+		this.indexRepository = new DefaultIndexRepository();
+	}
+
+	@Override
+	public List<Index> getIndexes() {
+		return new ArrayList<Index>();
 	}
 
 	@Override

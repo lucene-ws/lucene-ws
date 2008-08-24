@@ -1,12 +1,15 @@
 package net.lucenews3;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.lucene.document.Document;
 
 public interface Service {
+
+	public List<Index> getIndexes();
 
 	public Index getIndex(HttpServletRequest request);
 

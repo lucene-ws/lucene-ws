@@ -31,8 +31,29 @@ public class OpenSearchResponseView extends XMLStreamView {
 		xml.writeStartDocument();
 		
 		xml.writeStartElement("feed");
-		xml.writeAttribute("xmlns", "http://www.w3.org/2005/Atom");
-		// TODO xml.writeAttribute("", "xmlns:opensearch", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeDefaultNamespace("http://www.w3.org/2005/Atom");
+		xml.writeNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
+		
+		xml.writeStartElement("opensearch", "totalResults", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeCharacters(String.valueOf(results.size()));
+		xml.writeEndElement();
+		
+		xml.writeStartElement("opensearch", "startIndex", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeCharacters(String.valueOf(1));
+		xml.writeEndElement();
+		
+		xml.writeStartElement("opensearch", "itemsPerPage", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeCharacters(String.valueOf(10));
+		xml.writeEndElement();
+		
+		xml.writeEmptyElement("opensearch", "Query", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeAttribute("role", "request");
+		xml.writeAttribute("searchTerms", "kfjas;fdsadf");
+		
+		xml.writeEmptyElement("link");
+		xml.writeAttribute("rel", "first");
+		xml.writeAttribute("href", "http://...");
+		xml.writeAttribute("type", "application/atom+xml");
 		
 		for (Result result : results) {
 			Document document = result.getDocument();
@@ -73,7 +94,27 @@ public class OpenSearchResponseView extends XMLStreamView {
 			xml.writeStartElement("dl");
 			for (Field field : (List<Field>) document.getFields()) {
 				xml.writeStartElement("dt");
-				xml.writeAttribute("class", ""); // TODO
+				
+				String className;
+				if (field.isStored()) {
+					if (field.isTokenized()) {
+						className = "stored indexed tokenized";
+					} else if (field.isIndexed()) {
+						className = "stored indexed";
+					} else {
+						className = "stored";
+					}
+				} else {
+					if (field.isTokenized()) {
+						className = "indexed tokenized";
+					} else if (field.isIndexed()) {
+						className = "indexed";
+					} else {
+						className = "";
+					}
+				}
+				
+				xml.writeAttribute("class", className);
 				xml.writeCharacters(field.name());
 				xml.writeEndElement();
 				

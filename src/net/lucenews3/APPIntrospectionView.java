@@ -9,18 +9,19 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class APPIntrospectionView extends XMLStreamView {
 
-	private String appNamespaceURI;
+	public APPIntrospectionView() {
+		setContentType("application/atomserv+xml");
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res, XMLStreamWriter xml) throws Exception {
-		// TODO Auto-generated method stub
 		List<Index> indexes = (List<Index>) model.get("indexes");
 		
 		xml.writeStartDocument();
-		
 		xml.writeStartElement("service");
-		xml.writeAttribute("xmlns", appNamespaceURI);
+		xml.writeDefaultNamespace("http://www.w3.org/2007/app");
+		xml.writeNamespace("atom", "http://www.w3.org/2005/Atom");
 		
 		xml.writeStartElement("workspace");
 		
@@ -32,14 +33,11 @@ public class APPIntrospectionView extends XMLStreamView {
 			xml.writeStartElement("member-type");
 			xml.writeCharacters("entry");
 			xml.writeEndElement(); // member-type
-			
 			xml.writeEndElement(); // collection
 		}
 		
 		xml.writeEndElement(); // workspace
-		
 		xml.writeEndElement(); // service
-		
 		xml.writeEndDocument();
 	}
 

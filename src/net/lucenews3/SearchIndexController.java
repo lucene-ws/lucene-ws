@@ -3,11 +3,10 @@ package net.lucenews3;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.springframework.web.servlet.ModelAndView;
 
-public class IndexSearchController extends ControllerSupport {
+public class SearchIndexController extends ControllerSupport {
 
 	private String queryParameterName;
 

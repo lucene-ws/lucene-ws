@@ -13,15 +13,30 @@
 		<property name="service" ref="service" />
 	</bean>
 
-	<bean id="indexSearchController" class="net.lucenews3.IndexSearchController" parent="controller">
+	<bean id="getServiceController" class="net.lucenews3.GetServiceController" parent="controller">
+	</bean>
+
+	<bean id="searchIndexController" class="net.lucenews3.SearchIndexController" parent="controller">
 	</bean>
 
 
 
 	<!-- Handler mappings -->
+	<bean id="handlerMapping" class="net.lucenews3.ResourceHandlerMapping">
+		<property name="serviceHandlerMapping"           ref="serviceHandlerMapping" />
+		<property name="servicePropertiesHandlerMapping" ref="servicePropertiesHandlerMapping" />
+		<property name="indexHandlerMapping"             ref="indexHandlerMapping" />
+		<property name="indexPropertiesHandlerMapping"   ref="indexPropertiesHandlerMapping" />
+		<property name="documentHandlerMapping"          ref="documentHandlerMapping" />
+	</bean>
+
 	<bean id="serviceHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<property name="getHandlerMapping">
+			<bean class="net.lucenews3.ControllerHandlerMapping">
+				<property name="controller" ref="getServiceController" />
+			</bean>
+		</property>
 		<!--
-		<property name="getHandlerMapping"    ref="" />
 		<property name="postHandlerMapping"   ref="" />
 		<property name="putHandlerMapping"    ref="" />
 		<property name="deleteHandlerMapping" ref="" />
@@ -38,8 +53,12 @@
 	</bean>
 
 	<bean id="indexHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<property name="getHandlerMapping">
+			<bean class="net.lucenews3.ControllerHandlerMapping">
+				<property name="controller" ref="searchIndexController" />
+			</bean>
+		</property>
 		<!--
-		<property name="getHandlerMapping"    ref="" />
 		<property name="postHandlerMapping"   ref="" />
 		<property name="putHandlerMapping"    ref="" />
 		<property name="deleteHandlerMapping" ref="" />
@@ -64,14 +83,6 @@
 		-->
 	</bean>
 
-	<bean id="handlerMapping" class="net.lucenews3.ResourceHandlerMapping">
-		<property name="serviceHandlerMapping"           ref="serviceHandlerMapping" />
-		<property name="servicePropertiesHandlerMapping" ref="servicePropertiesHandlerMapping" />
-		<property name="indexHandlerMapping"             ref="indexHandlerMapping" />
-		<property name="indexPropertiesHandlerMapping"   ref="indexPropertiesHandlerMapping" />
-		<property name="documentHandlerMapping"          ref="documentHandlerMapping" />
-	</bean>
-
 
 
 	<!-- Views -->
@@ -86,6 +97,12 @@
 	</bean>
 
 	<bean id="viewResolver" class="net.lucenews3.DefaultViewResolver">
+		<property name="viewsByName">
+			<map>
+				<entry key="service/get" value-ref="introspectionView" />
+				<entry key="search/results" value-ref="openSearchResponseView" />
+			</map>
+		</property>
 	</bean>
 
 </beans>

@@ -1,21 +1,30 @@
 package net.lucenews3;
 
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
 public class DefaultViewResolver implements ViewResolver {
 
-	private APPIntrospectionView introspectionView;
+	private Map<String, View> viewsByName;
 
 	@Override
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
-		// TODO Auto-generated method stub
-		if (viewName.equals("service/view")) {
-			return introspectionView;
+		if (viewsByName.containsKey(viewName)) {
+			return viewsByName.get(viewName);
+		} else {
+			return null;
 		}
-		return null;
+	}
+
+	public synchronized Map<String, View> getViewsByName() {
+		return viewsByName;
+	}
+
+	public synchronized void setViewsByName(Map<String, View> viewsByName) {
+		this.viewsByName = viewsByName;
 	}
 
 }
