@@ -3,6 +3,11 @@
 <beans>
 
 	<bean id="service" class="net.lucenews3.DefaultService">
+		<property name="indexRepository" ref="indexRepository" />
+	</bean>
+
+	<bean id="indexRepository" class="net.lucenews3.FileSystemIndexRepository">
+		<property name="directory" value="/home/adam/indexes" />
 	</bean>
 
 
@@ -16,7 +21,13 @@
 	<bean id="getServiceController" class="net.lucenews3.GetServiceController" parent="controller">
 	</bean>
 
+	<bean id="getServicePropertiesController" class="net.lucenews3.GetServicePropertiesController" parent="controller">
+	</bean>
+
 	<bean id="searchIndexController" class="net.lucenews3.SearchIndexController" parent="controller">
+	</bean>
+
+	<bean id="getDocumentController" class="net.lucenews3.GetDocumentController" parent="controller">
 	</bean>
 
 
@@ -44,8 +55,12 @@
 	</bean>
 
 	<bean id="servicePropertiesHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<property name="getHandlerMapping">
+			<bean class="net.lucenews3.ControllerHandlerMapping">
+				<property name="controller" ref="getServicePropertiesController" />
+			</bean>
+		</property>
 		<!--
-		<property name="getHandlerMapping"    ref="" />
 		<property name="postHandlerMapping"   ref="" />
 		<property name="putHandlerMapping"    ref="" />
 		<property name="deleteHandlerMapping" ref="" />
@@ -75,8 +90,12 @@
 	</bean>
 
 	<bean id="documentHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<property name="getHandlerMapping">
+			<bean class="net.lucenews3.ControllerHandlerMapping">
+				<property name="controller" ref="getDocumentController" />
+			</bean>
+		</property>
 		<!--
-		<property name="getHandlerMapping"    ref="" />
 		<property name="postHandlerMapping"   ref="" />
 		<property name="putHandlerMapping"    ref="" />
 		<property name="deleteHandlerMapping" ref="" />
@@ -90,10 +109,19 @@
 	<bean id="view" abstract="true">
 	</bean>
 
+	<bean id="xmlView" abstract="true" parent="view" />
+
 	<bean id="introspectionView" class="net.lucenews3.APPIntrospectionView" parent="view">
+		<property name="service" ref="service" />
 	</bean>
 
 	<bean id="openSearchResponseView" class="net.lucenews3.OpenSearchResponseView" parent="view">
+	</bean>
+
+	<bean id="documentView" class="net.lucenews3.DocumentXMLView" parent="view">
+	</bean>
+
+	<bean id="propertiesView" class="net.lucenews3.PropertiesXMLView" parent="xmlView">
 	</bean>
 
 	<bean id="viewResolver" class="net.lucenews3.DefaultViewResolver">
@@ -101,6 +129,8 @@
 			<map>
 				<entry key="service/get" value-ref="introspectionView" />
 				<entry key="search/results" value-ref="openSearchResponseView" />
+				<entry key="document/get" value-ref="documentView" />
+				<entry key="serviceProperties/get" value-ref="propertiesView" />
 			</map>
 		</property>
 	</bean>

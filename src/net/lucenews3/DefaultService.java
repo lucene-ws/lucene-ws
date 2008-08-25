@@ -1,7 +1,6 @@
 package net.lucenews3;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,16 +16,15 @@ public class DefaultService implements Service {
 
 	public DefaultService() {
 		this.xmlInputFactory = XMLInputFactory.newInstance();
-		this.indexRepository = new DefaultIndexRepository();
 	}
 
 	@Override
-	public List<Index> getIndexes() {
-		return new ArrayList<Index>();
+	public List<Index> getIndexes() throws IOException {
+		return indexRepository.getIndexes();
 	}
 
 	@Override
-	public Index getIndex(HttpServletRequest req) {
+	public Index getIndex(HttpServletRequest req) throws NoSuchIndexException, IOException {
 		return indexRepository.getIndex((String) req.getAttribute("index"));
 	}
 
@@ -59,6 +57,11 @@ public class DefaultService implements Service {
 
 	@Override
 	public String getIndexURI(HttpServletRequest request, Index index) {
+		return request.getServletPath() + index.getName();
+	}
+
+	@Override
+	public String getIndexName(Index index) {
 		// TODO Auto-generated method stub
 		return null;
 	}

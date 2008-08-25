@@ -8,5 +8,8 @@
 	<classpathentry kind="lib" path="lib/spring-2.5.5.jar"/>
 	<classpathentry kind="lib" path="lib/spring-web-2.5.5.jar"/>
 	<classpathentry kind="lib" path="lib/spring-webmvc-2.5.5.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/httpunit.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

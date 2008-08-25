@@ -1,5 +1,6 @@
 package net.lucenews3;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +35,8 @@ public class DocumentInsertionController extends ControllerSupport {
 		return model;
 	}
 
-	protected void addDocument(Index index, Document document, HttpServletRequest request, HttpServletResponse response) {
-		index.addDocument(document);
+	protected void addDocument(Index index, Document document, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		index.insertDocument(document);
 		response.addHeader("Location", service.getDocumentURI(request, index, document));
 	}
 }

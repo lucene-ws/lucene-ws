@@ -11,6 +11,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.search.Hits;
 
 public class OpenSearchResponseView extends XMLStreamView {
 
@@ -26,16 +27,17 @@ public class OpenSearchResponseView extends XMLStreamView {
 	@Override
 	protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res, XMLStreamWriter xml) throws Exception {
 		// TODO Auto-generated method stub
-		Results results = (Results) model.get("results");
+		Hits hits = (Hits) model.get("hits");
 		
 		xml.writeStartDocument();
 		
 		xml.writeStartElement("feed");
 		xml.writeDefaultNamespace("http://www.w3.org/2005/Atom");
 		xml.writeNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
 		
 		xml.writeStartElement("opensearch", "totalResults", "http://a9.com/-/spec/opensearch/1.1/");
-		xml.writeCharacters(String.valueOf(results.size()));
+		xml.writeCharacters(String.valueOf(hits.length()));
 		xml.writeEndElement();
 		
 		xml.writeStartElement("opensearch", "startIndex", "http://a9.com/-/spec/opensearch/1.1/");
@@ -55,13 +57,13 @@ public class OpenSearchResponseView extends XMLStreamView {
 		xml.writeAttribute("href", "http://...");
 		xml.writeAttribute("type", "application/atom+xml");
 		
-		for (Result result : results) {
-			Document document = result.getDocument();
+		for (int n = 0; n < hits.length(); n++) {
+			Document document = hits.doc(n);
 			
 			xml.writeStartElement("entry");
 			
 			xml.writeStartElement("title");
-			xml.writeCharacters(result.getTitle());
+			xml.writeCharacters("TODO: title"); // TODO
 			xml.writeEndElement();
 			
 			xml.writeStartElement("link");
@@ -81,8 +83,8 @@ public class OpenSearchResponseView extends XMLStreamView {
 			xml.writeEndElement();
 			
 			// TODO xml.writeStartElement("http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance");
-			xml.writeStartElement("relevance");
-			xml.writeCharacters(String.valueOf(result.getRelevance()));
+			xml.writeStartElement("relevance", "score", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
+			xml.writeCharacters(String.valueOf(hits.score(n)));
 			xml.writeEndElement();
 			
 			xml.writeStartElement("content");

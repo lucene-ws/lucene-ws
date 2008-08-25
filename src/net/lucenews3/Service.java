@@ -9,9 +9,11 @@ import org.apache.lucene.document.Document;
 
 public interface Service {
 
-	public List<Index> getIndexes();
+	public List<Index> getIndexes() throws IOException;
 
-	public Index getIndex(HttpServletRequest request);
+	public String getIndexName(Index index);
+
+	public Index getIndex(HttpServletRequest request) throws NoSuchIndexException, IOException;
 
 	public DocumentIterator getDocumentIterator(HttpServletRequest request) throws IOException;
 

@@ -1,8 +1,13 @@
 package net.lucenews3;
 
-public interface IndexRepository extends Iterable<Index> {
+import java.io.IOException;
+import java.util.List;
 
-	public Index getIndex(String key) throws NoSuchIndexException;
+public interface IndexRepository {
+
+	public List<Index> getIndexes() throws IOException;
+
+	public Index getIndex(String key) throws NoSuchIndexException, IOException;
 
 	public void putIndex(String key, Index index);
 
