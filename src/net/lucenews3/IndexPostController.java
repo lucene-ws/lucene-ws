@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.lucene.document.Document;
 import org.springframework.web.servlet.ModelAndView;
 
-public class DocumentInsertionController extends ControllerSupport {
+public class IndexPostController extends ControllerSupport {
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		ModelAndView model = new ModelAndView("document/add");
+		ModelAndView model = new ModelAndView("index/post");
 		Index index = service.getIndex(request);
 		
 		DocumentIterator iterator = service.getDocumentIterator(request);

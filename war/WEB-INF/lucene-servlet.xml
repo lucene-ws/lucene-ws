@@ -27,6 +27,9 @@
 	<bean id="searchIndexController" class="net.lucenews3.SearchIndexController" parent="controller">
 	</bean>
 
+	<bean id="indexPostController" class="net.lucenews3.IndexPostController" parent="controller">
+	</bean>
+
 	<bean id="getDocumentController" class="net.lucenews3.GetDocumentController" parent="controller">
 	</bean>
 
@@ -73,8 +76,12 @@
 				<property name="controller" ref="searchIndexController" />
 			</bean>
 		</property>
+		<property name="postHandlerMapping">
+			<bean class="net.lucenews3.ControllerHandlerMapping">
+				<property name="controller" ref="indexPostController" />
+			</bean>
+		</property>
 		<!--
-		<property name="postHandlerMapping"   ref="" />
 		<property name="putHandlerMapping"    ref="" />
 		<property name="deleteHandlerMapping" ref="" />
 		-->
