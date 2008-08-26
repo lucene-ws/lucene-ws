@@ -8,7 +8,7 @@ import net.lucenews3.Index;
 
 import org.springframework.web.servlet.ModelAndView;
 
-public class DocumentViewController extends ControllerSupport {
+public class DocumentGetController extends ControllerSupport {
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {

@@ -14,7 +14,7 @@ import net.lucenews3.Index;
 import org.apache.lucene.document.Document;
 import org.springframework.web.servlet.ModelAndView;
 
-public class IndexPostController extends ControllerSupport {
+public class DocumentCreateController extends ControllerSupport {
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

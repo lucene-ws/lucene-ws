@@ -16,7 +16,7 @@ import net.lucenews3.XMLStreamUtility;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
-public class ServicePostController extends ControllerSupport {
+public class IndexCreateController extends ControllerSupport {
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

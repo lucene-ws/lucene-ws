@@ -18,22 +18,22 @@
 		<property name="service" ref="service" />
 	</bean>
 
-	<bean id="getServiceController" class="net.lucenews3.controller.GetServiceController" parent="controller">
+	<bean id="getServiceController" class="net.lucenews3.controller.ServiceGetController" parent="controller">
 	</bean>
 
-	<bean id="servicePostController" class="net.lucenews3.controller.ServicePostController" parent="controller">
+	<bean id="createIndexController" class="net.lucenews3.controller.IndexCreateController" parent="controller">
 	</bean>
 
-	<bean id="getServicePropertiesController" class="net.lucenews3.controller.GetServicePropertiesController" parent="controller">
+	<bean id="getServicePropertiesController" class="net.lucenews3.controller.ServicePropertiesGetController" parent="controller">
 	</bean>
 
-	<bean id="searchIndexController" class="net.lucenews3.controller.SearchIndexController" parent="controller">
+	<bean id="searchIndexController" class="net.lucenews3.controller.IndexSearchController" parent="controller">
 	</bean>
 
-	<bean id="indexPostController" class="net.lucenews3.controller.IndexPostController" parent="controller">
+	<bean id="createDocumentController" class="net.lucenews3.controller.DocumentCreateController" parent="controller">
 	</bean>
 
-	<bean id="getDocumentController" class="net.lucenews3.controller.GetDocumentController" parent="controller">
+	<bean id="getDocumentController" class="net.lucenews3.controller.DocumentGetController" parent="controller">
 	</bean>
 
 
@@ -55,7 +55,7 @@
 		</property>
 		<property name="postHandlerMapping">
 			<bean class="net.lucenews3.ControllerHandlerMapping">
-				<property name="controller" ref="servicePostController" />
+				<property name="controller" ref="createIndexController" />
 			</bean>
 		</property>
 		<!--
@@ -85,7 +85,7 @@
 		</property>
 		<property name="postHandlerMapping">
 			<bean class="net.lucenews3.ControllerHandlerMapping">
-				<property name="controller" ref="indexPostController" />
+				<property name="controller" ref="createDocumentController" />
 			</bean>
 		</property>
 		<!--

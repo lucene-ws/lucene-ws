@@ -9,7 +9,7 @@ import net.lucenews3.ControllerSupport;
 
 import org.springframework.web.servlet.ModelAndView;
 
-public class GetServicePropertiesController extends ControllerSupport {
+public class ServicePropertiesGetController extends ControllerSupport {
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

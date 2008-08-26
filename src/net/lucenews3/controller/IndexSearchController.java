@@ -13,7 +13,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.springframework.web.servlet.ModelAndView;
 
-public class SearchIndexController extends ControllerSupport {
+public class IndexSearchController extends ControllerSupport {
 
 	private String queryParameterName;
 
