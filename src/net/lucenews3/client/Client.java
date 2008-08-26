@@ -32,9 +32,10 @@ public class Client {
 
 	public static void main(String... args) throws Exception {
 		Client client = new Client("http://localhost:8080/lucene");
-		Document document = new Document();
-		document.add(new Field("name", "stan", Field.Store.YES, Field.Index.TOKENIZED));
-		client.insertDocument("test", document);
+		client.createIndex("donkey");
+		//Document document = new Document();
+		//document.add(new Field("name", "stan", Field.Store.YES, Field.Index.TOKENIZED));
+		//client.insertDocument("test", document);
 	}
 
 	public Client(String url) {
@@ -47,12 +48,15 @@ public class Client {
 		return "http://localhost:8080/lucene/" + index;
 	}
 
-	public void createIndex(String name) throws XMLStreamException {
+	public void createIndex(String name) throws XMLStreamException, HttpException, IOException {
 		createIndex(name, (Properties) null);
 	}
 
-	public void createIndex(String name, Properties properties) throws XMLStreamException {
-		XMLStreamWriter xml = null;
+	public void createIndex(String name, Properties properties) throws XMLStreamException, HttpException, IOException {
+		PostMethod postMethod = new PostMethod("http://localhost:8080/lucene/");
+		
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		XMLStreamWriter xml = XMLOutputFactory.newInstance().createXMLStreamWriter(buffer);
 		xml.writeStartDocument();
 		xml.writeStartElement("entry");
 		xml.writeDefaultNamespace("http://www.w3.org/2005/Atom");
@@ -96,6 +100,12 @@ public class Client {
 		xml.writeEndElement(); // entry
 		xml.writeEndDocument();
 		
+		byte[] content = buffer.toByteArray();
+		postMethod.setRequestEntity(new ByteArrayRequestEntity(content));
+		httpClient.executeMethod(postMethod);
+		
+		System.out.println(postMethod.getStatusLine());
+		System.out.println(postMethod.getResponseBodyAsString());
 		XMLStreamReader xmlr = null;
 	}
 

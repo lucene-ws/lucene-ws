@@ -18,19 +18,22 @@
 		<property name="service" ref="service" />
 	</bean>
 
-	<bean id="getServiceController" class="net.lucenews3.GetServiceController" parent="controller">
+	<bean id="getServiceController" class="net.lucenews3.controller.GetServiceController" parent="controller">
 	</bean>
 
-	<bean id="getServicePropertiesController" class="net.lucenews3.GetServicePropertiesController" parent="controller">
+	<bean id="servicePostController" class="net.lucenews3.controller.ServicePostController" parent="controller">
 	</bean>
 
-	<bean id="searchIndexController" class="net.lucenews3.SearchIndexController" parent="controller">
+	<bean id="getServicePropertiesController" class="net.lucenews3.controller.GetServicePropertiesController" parent="controller">
 	</bean>
 
-	<bean id="indexPostController" class="net.lucenews3.IndexPostController" parent="controller">
+	<bean id="searchIndexController" class="net.lucenews3.controller.SearchIndexController" parent="controller">
 	</bean>
 
-	<bean id="getDocumentController" class="net.lucenews3.GetDocumentController" parent="controller">
+	<bean id="indexPostController" class="net.lucenews3.controller.IndexPostController" parent="controller">
+	</bean>
+
+	<bean id="getDocumentController" class="net.lucenews3.controller.GetDocumentController" parent="controller">
 	</bean>
 
 
@@ -50,8 +53,12 @@
 				<property name="controller" ref="getServiceController" />
 			</bean>
 		</property>
+		<property name="postHandlerMapping">
+			<bean class="net.lucenews3.ControllerHandlerMapping">
+				<property name="controller" ref="servicePostController" />
+			</bean>
+		</property>
 		<!--
-		<property name="postHandlerMapping"   ref="" />
 		<property name="putHandlerMapping"    ref="" />
 		<property name="deleteHandlerMapping" ref="" />
 		-->

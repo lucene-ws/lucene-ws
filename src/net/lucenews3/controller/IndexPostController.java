@@ -1,4 +1,4 @@
-package net.lucenews3;
+package net.lucenews3.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,6 +6,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.lucenews3.ControllerSupport;
+import net.lucenews3.DocumentIterator;
+import net.lucenews3.Index;
 
 import org.apache.lucene.document.Document;
 import org.springframework.web.servlet.ModelAndView;

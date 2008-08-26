@@ -66,4 +66,10 @@ public class DefaultService implements Service {
 		return null;
 	}
 
+	@Override
+	public void createIndex(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

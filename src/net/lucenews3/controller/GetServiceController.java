@@ -1,7 +1,9 @@
-package net.lucenews3;
+package net.lucenews3.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.lucenews3.ControllerSupport;
 
 import org.springframework.web.servlet.ModelAndView;
 
