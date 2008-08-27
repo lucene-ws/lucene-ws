@@ -21,6 +21,6 @@ public interface Service {
 
 	public String getDocumentURI(HttpServletRequest request, Index index, Document document);
 
-	public void createIndex(String name);
+	public void createIndex(String name) throws IOException;
 
 }

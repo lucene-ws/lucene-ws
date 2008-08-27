@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
 
 public class FileSystemIndexRepository implements IndexRepository {
@@ -71,6 +74,22 @@ public class FileSystemIndexRepository implements IndexRepository {
 	public void putIndex(String key, Index index) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void createIndex(String name) throws IOException {
+		createIndex(name, (Properties) null);
+	}
+
+	@Override
+	public void createIndex(String name, Properties properties) throws IOException {
+		File indexDirectory = new File(directory, name);
+		if (indexDirectory.exists()) {
+			
+		} else {
+			indexDirectory.mkdir();
+			new IndexWriter(indexDirectory, new StandardAnalyzer(), true).close();
+		}
 	}
 
 }

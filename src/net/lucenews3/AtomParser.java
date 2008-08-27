@@ -1,33 +1,39 @@
 package net.lucenews3;
 
-import static javax.xml.stream.XMLStreamReader.*;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-public class FeedParser {
+public class AtomParser {
 
-	private XMLStreamReader xml;
+	protected final XMLStreamReader xml;
 	protected String entryTitle;
+	protected String xoxoClass;
+	protected String xoxoTerm;
+	protected String xoxoDefinition;
+
+	public AtomParser(XMLStreamReader xml) {
+		this.xml = xml;
+	}
 
 	public void parse() throws XMLStreamException {
 		if (xml.nextTag() == START_ELEMENT) {
-			QName name = xml.getName();
-			if ("feed".equals(name.getLocalPart())) {
+			String localName = xml.getLocalName();
+			if ("feed".equals(localName)) {
 				parseFeed();
-			} else if ("entry".equals(name.getLocalPart())) {
+			} else if ("entry".equals(localName)) {
 				parseEntry();
 			} else {
-				throw new XMLStreamException("Unknown element: " + name, xml.getLocation());
+				throw new XMLStreamException("Unknown element: " + xml.getName(), xml.getLocation());
 			}
 		}
 	}
 
 	public void parseFeed() throws XMLStreamException {
 		while (xml.nextTag() == START_ELEMENT) {
-			QName name = xml.getName();
-			if ("entry".equals(name.getLocalPart())) {
+			String localName = xml.getLocalName();
+			if ("entry".equals(localName)) {
 				parseEntry();
 			} else {
 				XMLStreamUtility.endElement(xml);
@@ -47,10 +53,10 @@ public class FeedParser {
 	 * @throws XMLStreamException
 	 */
 	protected void parseEntryChild() throws XMLStreamException {
-		QName name = xml.getName();
-		if ("title".equals(name.getLocalPart())) {
+		String localName = xml.getLocalName();
+		if ("title".equals(localName)) {
 			parseEntryTitle();
-		} else if ("content".equals(name.getLocalPart())) {
+		} else if ("content".equals(localName)) {
 			parseEntryContent();
 		} else {
 			XMLStreamUtility.endElement(xml);
@@ -78,8 +84,8 @@ public class FeedParser {
 		} else {
 			if ("xhtml".equals(type)) {
 				while (xml.nextTag() == START_ELEMENT) {
-					QName name = xml.getName();
-					if ("div".equals(name.getLocalPart())) {
+					String localName = xml.getLocalName();
+					if ("div".equals(localName)) {
 						parseEntryXHTMLContent();
 					} else {
 						XMLStreamUtility.endElement(xml);
@@ -100,8 +106,8 @@ public class FeedParser {
 	 */
 	protected void parseEntryXHTMLContent() throws XMLStreamException {
 		while (xml.nextTag() == START_ELEMENT) {
-			QName name = xml.getName();
-			if ("dl".equals(name.getLocalPart())) {
+			String localName = xml.getLocalName();
+			if ("dl".equals(localName)) {
 				parseXOXOList();
 			} else {
 				XMLStreamUtility.endElement(xml);
@@ -109,17 +115,25 @@ public class FeedParser {
 		}
 	}
 
-	protected String xoxoClass;
-	protected String xoxoTerm;
-	protected String xoxoDefinition;
-
 	protected void parseXOXOList() throws XMLStreamException {
+		String previousLocalName = null;
 		while (xml.nextTag() == START_ELEMENT) {
-			QName name = xml.getName();
-			if ("dt".equals(name.getLocalPart())) {
-				
-			} else if ("dd".equals(name.getLocalPart())) {
-				
+			String localName = xml.getLocalName();
+			if ("dt".equals(localName)) {
+				if (previousLocalName == null || previousLocalName.equals("dd")) {
+					parseXOXOTerm();
+				} else {
+					throw new XMLStreamException("XOXO list out of order", xml.getLocation());
+				}
+				previousLocalName = localName;
+			} else if ("dd".equals(localName)) {
+				if (previousLocalName == null || previousLocalName.equals("dd")) {
+					throw new XMLStreamException("XOXO list out of order", xml.getLocation());
+				} else {
+					parseXOXODefinition();
+					parseXOXOTermDefinition();
+				}
+				previousLocalName = localName;
 			} else {
 				XMLStreamUtility.endElement(xml);
 			}
@@ -143,7 +157,10 @@ public class FeedParser {
 	}
 
 	protected void parseXOXODefinition() throws XMLStreamException {
-		
+		xoxoDefinition = xml.getElementText();
 	}
 
+	protected void parseXOXOTermDefinition() throws XMLStreamException {
+		
+	}
 }

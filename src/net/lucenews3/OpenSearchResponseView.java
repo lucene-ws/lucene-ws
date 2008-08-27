@@ -28,6 +28,7 @@ public class OpenSearchResponseView extends XMLStreamView {
 	protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res, XMLStreamWriter xml) throws Exception {
 		// TODO Auto-generated method stub
 		Hits hits = (Hits) model.get("hits");
+		int totalResults = hits.length();
 		
 		xml.writeStartDocument();
 		
@@ -37,7 +38,7 @@ public class OpenSearchResponseView extends XMLStreamView {
 		xml.writeNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
 		
 		xml.writeStartElement("opensearch", "totalResults", "http://a9.com/-/spec/opensearch/1.1/");
-		xml.writeCharacters(String.valueOf(hits.length()));
+		xml.writeCharacters(String.valueOf(totalResults));
 		xml.writeEndElement();
 		
 		xml.writeStartElement("opensearch", "startIndex", "http://a9.com/-/spec/opensearch/1.1/");

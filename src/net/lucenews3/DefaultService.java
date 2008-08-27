@@ -67,9 +67,9 @@ public class DefaultService implements Service {
 	}
 
 	@Override
-	public void createIndex(String name) {
+	public void createIndex(String name) throws IOException {
 		// TODO Auto-generated method stub
-		
+		indexRepository.createIndex(name);
 	}
 
 }

@@ -24,6 +24,9 @@
 	<bean id="createIndexController" class="net.lucenews3.controller.IndexCreateController" parent="controller">
 	</bean>
 
+	<bean id="getIndexPropertiesController" class="net.lucenews3.controller.IndexPropertiesGetController" parent="controller">
+	</bean>
+
 	<bean id="getServicePropertiesController" class="net.lucenews3.controller.ServicePropertiesGetController" parent="controller">
 	</bean>
 
@@ -95,8 +98,12 @@
 	</bean>
 
 	<bean id="indexPropertiesHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<property name="getHandlerMapping">
+			<bean class="net.lucenews3.ControllerHandlerMapping">
+				<property name="controller" ref="getIndexPropertiesController" />
+			</bean>
+		</property>
 		<!--
-		<property name="getHandlerMapping"    ref="" />
 		<property name="postHandlerMapping"   ref="" />
 		<property name="putHandlerMapping"    ref="" />
 		<property name="deleteHandlerMapping" ref="" />
@@ -145,6 +152,7 @@
 				<entry key="search/results" value-ref="openSearchResponseView" />
 				<entry key="document/get" value-ref="documentView" />
 				<entry key="serviceProperties/get" value-ref="propertiesView" />
+				<entry key="indexProperties/get" value-ref="propertiesView" />
 			</map>
 		</property>
 	</bean>

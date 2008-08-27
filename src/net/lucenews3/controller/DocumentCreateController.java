@@ -40,6 +40,7 @@ public class DocumentCreateController extends ControllerSupport {
 	}
 
 	protected void addDocument(Index index, Document document, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		System.out.println("Inserting document " + document);
 		index.insertDocument(document);
 		response.addHeader("Location", service.getDocumentURI(request, index, document));
 	}

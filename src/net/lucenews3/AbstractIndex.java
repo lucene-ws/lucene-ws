@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -29,6 +31,7 @@ public abstract class AbstractIndex implements Index {
 
 	public AbstractIndex() {
 		this.logger = Logger.getLogger(getClass());
+		this.identityField = DEFAULT_PRIMARY_FIELD_NAME;
 	}
 
 	public String getName() {
@@ -152,10 +155,10 @@ public abstract class AbstractIndex implements Index {
 	@Override
 	public String getIdentity(Document document) throws IllegalArgumentException, IOException {
 		String[] identities = document.getValues(identityField);
-		if (identities.length == 1) {
-			return identities[0];
-		} else if (identities.length == 0) {
+		if (identities == null || identities.length == 0) {
 			throw new IllegalArgumentException("Document not identified. Please ensure field with name \"" + identityField + "\" exists");
+		} else if (identities.length == 1) {
+			return identities[0];
 		} else if (identities.length > 0) {
 			throw new IllegalArgumentException("Document ambiguously identified. Please ensure only field with name \"" + identityField + "\" exists");
 		} else {
@@ -346,4 +349,24 @@ public abstract class AbstractIndex implements Index {
 		}
 	}
 
+	@Override
+	public Properties getProperties() {
+		Properties properties = new Properties();
+		if (identityField != null) {
+			properties.put("document.identifier", identityField);
+		}
+		return properties;
+	}
+
+	@Override
+	public void setProperties(Properties properties) {
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			Object key = entry.getKey();
+			Object value = entry.getValue();
+			
+			if (key.equals("document.identifier")) {
+				identityField = value.toString();
+			}
+		}
+	}
 }

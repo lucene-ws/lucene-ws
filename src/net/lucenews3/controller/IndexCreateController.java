@@ -42,6 +42,8 @@ public class IndexCreateController extends ControllerSupport {
 			}
 		}
 		
+		service.createIndex(indexName);
+		
 		final String nname = indexName;
 		
 		System.out.println("Creating index \"" + indexName + "\"");

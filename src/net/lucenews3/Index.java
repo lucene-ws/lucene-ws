@@ -2,6 +2,7 @@ package net.lucenews3;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -50,5 +51,9 @@ public interface Index {
 	public Map<Document, String> updateDocuments(Iterable<Document> documents) throws IOException;
 
 	public void updateDocuments(Iterable<Document> documents, Map<Document, String> identitiesByDocument) throws IOException;
+
+	public Properties getProperties();
+
+	public void setProperties(Properties properties);
 
 }

@@ -32,7 +32,12 @@ public class Client {
 
 	public static void main(String... args) throws Exception {
 		Client client = new Client("http://localhost:8080/lucene");
-		client.createIndex("donkey");
+		//client.createIndex("donkey");
+		
+		Document document = new Document();
+		document.add(new Field("id", "1", Field.Store.YES, Field.Index.UN_TOKENIZED));
+		document.add(new Field("name", "John", Field.Store.YES, Field.Index.TOKENIZED));
+		client.createDocument("donkey", document);
 		//Document document = new Document();
 		//document.add(new Field("name", "stan", Field.Store.YES, Field.Index.TOKENIZED));
 		//client.insertDocument("test", document);
@@ -197,7 +202,7 @@ public class Client {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void insertDocument(String index, Document document) throws XMLStreamException, HttpException, IOException {
+	public void createDocument(String index, Document document) throws XMLStreamException, HttpException, IOException {
 		PostMethod postMethod = new PostMethod(getIndexURI(index));
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		XMLStreamWriter xml = xmlOutputFactory.createXMLStreamWriter(buffer);
