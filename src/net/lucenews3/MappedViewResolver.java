@@ -1,14 +1,23 @@
 package net.lucenews3;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
-public class DefaultViewResolver implements ViewResolver {
+public class MappedViewResolver implements ViewResolver {
 
 	private Map<String, View> viewsByName;
+
+	public MappedViewResolver() {
+		this(new HashMap<String, View>());
+	}
+
+	public MappedViewResolver(Map<String, View> viewsByName) {
+		this.viewsByName = viewsByName;
+	}
 
 	@Override
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
@@ -19,11 +28,11 @@ public class DefaultViewResolver implements ViewResolver {
 		}
 	}
 
-	public synchronized Map<String, View> getViewsByName() {
+	public Map<String, View> getViewsByName() {
 		return viewsByName;
 	}
 
-	public synchronized void setViewsByName(Map<String, View> viewsByName) {
+	public void setViewsByName(Map<String, View> viewsByName) {
 		this.viewsByName = viewsByName;
 	}
 

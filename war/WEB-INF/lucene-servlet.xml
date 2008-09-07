@@ -2,12 +2,23 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans>
 
+	<bean class="org.springframework.web.context.support.ServletContextPropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>WEB-INF/lucene-servlet.properties</value>
+				<value>WEB-INF/lucene-servlet-local.properties</value>
+			</list>
+		</property>
+		<property name="contextOverride" value="true" /> <!-- Servlet context properties take precedence -->
+	</bean>
+
 	<bean id="service" class="net.lucenews3.DefaultService">
 		<property name="indexRepository" ref="indexRepository" />
+		<property name="indexAttributeName" value="${indexAttributeName}" />
 	</bean>
 
 	<bean id="indexRepository" class="net.lucenews3.FileSystemIndexRepository">
-		<property name="directory" value="/home/adam/indexes" />
+		<property name="directory" value="${indexesDirectory}" />
 	</bean>
 
 
@@ -18,37 +29,32 @@
 		<property name="service" ref="service" />
 	</bean>
 
-	<bean id="getServiceController" class="net.lucenews3.controller.ServiceGetController" parent="controller">
-	</bean>
+	<bean id="getServiceController" class="net.lucenews3.controller.ServiceGetController" parent="controller" />
 
-	<bean id="createIndexController" class="net.lucenews3.controller.IndexCreateController" parent="controller">
-	</bean>
+	<bean id="createIndexController" class="net.lucenews3.controller.IndexCreateController" parent="controller" />
 
-	<bean id="getIndexPropertiesController" class="net.lucenews3.controller.IndexPropertiesGetController" parent="controller">
-	</bean>
+	<bean id="getIndexPropertiesController" class="net.lucenews3.controller.IndexPropertiesGetController" parent="controller" />
 
-	<bean id="getServicePropertiesController" class="net.lucenews3.controller.ServicePropertiesGetController" parent="controller">
-	</bean>
+	<bean id="getServicePropertiesController" class="net.lucenews3.controller.ServicePropertiesGetController" parent="controller" />
 
 	<bean id="searchIndexController" class="net.lucenews3.controller.IndexSearchController" parent="controller">
+		<property name="searchTermsParameterName" value="${searchTermsParameterName}" />
+		<property name="countParameterName"       value="${countParameterName}" />
+		<property name="startIndexParameterName"  value="${startIndexParameterName}" />
+		<property name="startPageParameterName"   value="${startIndexParameterName}" />
 	</bean>
 
-	<bean id="createDocumentController" class="net.lucenews3.controller.DocumentCreateController" parent="controller">
-	</bean>
+	<bean id="createDocumentController" class="net.lucenews3.controller.DocumentCreateController" parent="controller" />
 
 	<bean id="getDocumentController" class="net.lucenews3.controller.DocumentGetController" parent="controller">
+		<property name="documentAttributeName" value="${documentAttributeName}" />
 	</bean>
+	
+	<bean id="openSearchDescriptionController" class="net.lucenews3.controller.OpenSearchDescriptionController" parent="controller" />
 
 
 
 	<!-- Handler mappings -->
-	<bean id="handlerMapping" class="net.lucenews3.ResourceHandlerMapping">
-		<property name="serviceHandlerMapping"           ref="serviceHandlerMapping" />
-		<property name="servicePropertiesHandlerMapping" ref="servicePropertiesHandlerMapping" />
-		<property name="indexHandlerMapping"             ref="indexHandlerMapping" />
-		<property name="indexPropertiesHandlerMapping"   ref="indexPropertiesHandlerMapping" />
-		<property name="documentHandlerMapping"          ref="documentHandlerMapping" />
-	</bean>
 
 	<bean id="serviceHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
 		<property name="getHandlerMapping">
@@ -123,15 +129,32 @@
 		-->
 	</bean>
 
-
-
-	<bean class="net.lucenews3.DefaultHandlerExceptionResolver">
+	<bean id="openSearchDescriptionHandlerMapping" class="net.lucenews3.RequestMethodHandlerMapping">
+		<property name="getHandlerMapping">
+			<bean class="net.lucenews3.ControllerHandlerMapping">
+				<property name="controller" ref="openSearchDescriptionController" />
+			</bean>
+		</property>
 	</bean>
+
+	<bean id="handlerMapping" class="net.lucenews3.ResourceHandlerMapping">
+		<property name="serviceHandlerMapping"               ref="serviceHandlerMapping" />
+		<property name="servicePropertiesHandlerMapping"     ref="servicePropertiesHandlerMapping" />
+		<property name="indexHandlerMapping"                 ref="indexHandlerMapping" />
+		<property name="indexPropertiesHandlerMapping"       ref="indexPropertiesHandlerMapping" />
+		<property name="documentHandlerMapping"              ref="documentHandlerMapping" />
+		<property name="openSearchDescriptionHandlerMapping" ref="openSearchDescriptionHandlerMapping" />
+		<property name="indexAttributeName"                  value="${indexAttributeName}" />
+		<property name="documentAttributeName"               value="${documentAttributeName}" />
+	</bean>
+
+
+
+	<bean class="net.lucenews3.DefaultHandlerExceptionResolver" />
 
 	<!-- Views -->
 
-	<bean id="view" abstract="true">
-	</bean>
+	<bean id="view" abstract="true" />
 
 	<bean id="xmlView" abstract="true" parent="view" />
 
@@ -139,27 +162,32 @@
 		<property name="service" ref="service" />
 	</bean>
 
-	<bean id="openSearchResponseView" class="net.lucenews3.OpenSearchResponseView" parent="view">
+	<bean id="openSearchDescriptionView" class="net.lucenews3.OpenSearchDescriptionView" parent="view">
+		<property name="searchTermsParameterName" value="${searchTermsParameterName}" />
+		<property name="countParameterName"       value="${countParameterName}" />
+		<property name="startIndexParameterName"  value="${startIndexParameterName}" />
+		<property name="startPageParameterName"   value="${startPageParameterName}" />
+		<property name="service" ref="service" />
 	</bean>
 
-	<bean id="documentView" class="net.lucenews3.DocumentXMLView" parent="view">
-	</bean>
+	<bean id="openSearchResponseView" class="net.lucenews3.OpenSearchResponseView" parent="view" />
 
-	<bean id="propertiesView" class="net.lucenews3.PropertiesXMLView" parent="xmlView">
-	</bean>
+	<bean id="documentView" class="net.lucenews3.DocumentXMLView" parent="view" />
 
-	<bean id="exceptionView" class="net.lucenews3.ExceptionView" parent="xmlView">
-	</bean>
+	<bean id="propertiesView" class="net.lucenews3.PropertiesXMLView" parent="xmlView" />
 
-	<bean id="viewResolver" class="net.lucenews3.DefaultViewResolver">
+	<bean id="exceptionView" class="net.lucenews3.ExceptionView" parent="xmlView" />
+
+	<bean id="viewResolver" class="net.lucenews3.MappedViewResolver">
 		<property name="viewsByName">
 			<map>
-				<entry key="service/get" value-ref="introspectionView" />
-				<entry key="search/results" value-ref="openSearchResponseView" />
-				<entry key="document/get" value-ref="documentView" />
-				<entry key="serviceProperties/get" value-ref="propertiesView" />
-				<entry key="indexProperties/get" value-ref="propertiesView" />
-				<entry key="error" value-ref="exceptionView" />
+				<entry key="service/get"            value-ref="introspectionView" />
+				<entry key="search/results"         value-ref="openSearchResponseView" />
+				<entry key="document/get"           value-ref="documentView" />
+				<entry key="serviceProperties/get"  value-ref="propertiesView" />
+				<entry key="indexProperties/get"    value-ref="propertiesView" />
+				<entry key="error"                  value-ref="exceptionView" />
+				<entry key="openSearch/description" value-ref="openSearchDescriptionView" />
 			</map>
 		</property>
 	</bean>

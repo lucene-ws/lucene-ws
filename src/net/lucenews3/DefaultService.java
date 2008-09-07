@@ -13,11 +13,15 @@ import org.apache.lucene.document.Document;
 
 public class DefaultService implements Service {
 
+	public static final String DEFAULT_INDEX_ATTRIBUTE_NAME = "index";
+
 	private IndexRepository indexRepository;
 	private XMLInputFactory xmlInputFactory;
+	private String indexAttributeName;
 
 	public DefaultService() {
 		this.xmlInputFactory = XMLInputFactory.newInstance();
+		this.indexAttributeName = DEFAULT_INDEX_ATTRIBUTE_NAME;
 	}
 
 	@Override
@@ -26,8 +30,8 @@ public class DefaultService implements Service {
 	}
 
 	@Override
-	public Index getIndex(HttpServletRequest req) throws NoSuchIndexException, IOException {
-		return indexRepository.getIndex((String) req.getAttribute("index"));
+	public Index getIndex(HttpServletRequest request) throws NoSuchIndexException, IOException {
+		return indexRepository.getIndex((String) request.getAttribute(indexAttributeName));
 	}
 
 	public IndexRepository getIndexRepository() {
@@ -59,7 +63,7 @@ public class DefaultService implements Service {
 
 	@Override
 	public URI getIndexURI(HttpServletRequest request, Index index) throws URISyntaxException {
-		return new URI(request.getServletPath() + index.getName());
+		return new URI(request.getContextPath() + "/" + index.getName());
 	}
 
 	@Override
@@ -72,6 +76,14 @@ public class DefaultService implements Service {
 	public void createIndex(String name) throws IOException {
 		// TODO Auto-generated method stub
 		indexRepository.createIndex(name);
+	}
+
+	public String getIndexAttributeName() {
+		return indexAttributeName;
+	}
+
+	public void setIndexAttributeName(String indexAttributeName) {
+		this.indexAttributeName = indexAttributeName;
 	}
 
 }

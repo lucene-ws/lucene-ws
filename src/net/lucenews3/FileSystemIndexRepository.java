@@ -56,7 +56,9 @@ public class FileSystemIndexRepository implements IndexRepository {
 			} else {
 				File indexDirectory = new File(directory, name);
 				if (IndexReader.indexExists(indexDirectory)) {
-					return new DirectoryIndex(FSDirectory.getDirectory(indexDirectory));
+					DirectoryIndex index = new DirectoryIndex(FSDirectory.getDirectory(indexDirectory));
+					index.setName(key);
+					return index;
 				} else {
 					throw new NoSuchIndexException();
 				}

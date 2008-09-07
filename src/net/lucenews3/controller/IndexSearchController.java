@@ -15,21 +15,36 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class IndexSearchController extends ControllerSupport {
 
-	private String queryParameterName;
+	public static final String DEFAULT_SEARCH_TERMS_PARAMETER_NAME = "searchTerms";
+	public static final String DEFAULT_COUNT_PARAMETER_NAME        = "count";
+	public static final String DEFAULT_START_INDEX_PARAMETER_NAME  = "startIndex";
+	public static final String DEFAULT_START_PAGE_PARAMETER_NAME   = "startPage";
+
+	private String searchTermsParameterName;
+	private String countParameterName;
+	private String startIndexParameterName;
+	private String startPageParameterName;
+
+	public IndexSearchController() {
+		this.searchTermsParameterName = DEFAULT_SEARCH_TERMS_PARAMETER_NAME;
+		this.countParameterName       = DEFAULT_COUNT_PARAMETER_NAME;
+		this.startIndexParameterName  = DEFAULT_START_INDEX_PARAMETER_NAME;
+		this.startPageParameterName   = DEFAULT_START_PAGE_PARAMETER_NAME;
+	}
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView model = new ModelAndView("search/results");
 		Index index = service.getIndex(request);
 		
-		String queryString = request.getParameter(queryParameterName);
+		String searchTerms = request.getParameter(searchTermsParameterName);
 		
 		Query query;
-		if (queryString == null) {
+		if (searchTerms == null) {
 			query = null;
 		} else {
 			QueryParser parser = index.getQueryParser();
-			query = parser.parse(queryString);
+			query = parser.parse(searchTerms);
 		}
 		
 		Searcher searcher = index.getSearcher();
@@ -37,6 +52,38 @@ public class IndexSearchController extends ControllerSupport {
 		model.addObject("hits", hits);
 		
 		return model;
+	}
+
+	public String getSearchTermsParameterName() {
+		return searchTermsParameterName;
+	}
+
+	public void setSearchTermsParameterName(String searchTermsParameterName) {
+		this.searchTermsParameterName = searchTermsParameterName;
+	}
+
+	public String getCountParameterName() {
+		return countParameterName;
+	}
+
+	public void setCountParameterName(String countParameterName) {
+		this.countParameterName = countParameterName;
+	}
+
+	public String getStartIndexParameterName() {
+		return startIndexParameterName;
+	}
+
+	public void setStartIndexParameterName(String startIndexParameterName) {
+		this.startIndexParameterName = startIndexParameterName;
+	}
+
+	public String getStartPageParameterName() {
+		return startPageParameterName;
+	}
+
+	public void setStartPageParameterName(String startPageParameterName) {
+		this.startPageParameterName = startPageParameterName;
 	}
 
 }

@@ -15,7 +15,11 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Sort;
 
 public abstract class AbstractIndex implements Index {
 
@@ -53,6 +57,11 @@ public abstract class AbstractIndex implements Index {
 
 	@Override
 	public abstract IndexWriter getWriter() throws IOException;
+
+	@Override
+	public Results search(Query query, Filter filter, Sort sort) throws IOException {
+		return new DefaultResults(getSearcher().search(query, filter, sort), this);
+	}
 
 	public Analyzer getAnalyzer() throws IOException {
 		return analyzer;

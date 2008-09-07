@@ -8,7 +8,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Sort;
 
 public interface Index {
 
@@ -23,6 +26,8 @@ public interface Index {
 	public Searcher getSearcher() throws IOException;
 
 	public QueryParser getQueryParser();
+
+	public Results search(Query query, Filter filter, Sort sort) throws IOException;
 
 	public String getIdentity(Document document) throws IOException;
 

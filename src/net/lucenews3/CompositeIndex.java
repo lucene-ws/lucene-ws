@@ -7,9 +7,12 @@ import java.util.List;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Sort;
 
 public class CompositeIndex extends AbstractIndex {
 
@@ -46,6 +49,12 @@ public class CompositeIndex extends AbstractIndex {
 	@Override
 	public IndexWriter getWriter() throws IOException {
 		throw new UnsupportedOperationException("Cannot write to a composite index");
+	}
+
+	@Override
+	public Results search(Query query, Filter filter, Sort sort) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

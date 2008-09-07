@@ -5,6 +5,19 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+/**
+ * A class responsible for parsing incoming Atom constructs to the web service.
+ * This particular parser is very forgiving, ignoring namespaces and not enforcing many 
+ * of the Atom format's rules. A different Atom parsing class has been implemented
+ * to strictly follow the Atom format when testing the Atom constructs produced by the
+ * web service.
+ * 
+ * This parser also parses the XOXO term/definition lists commonly used in
+ * the Lucene Web Service API. Subclasses can override {@link #parseXOXOTermDefinition()}
+ * and take advantage of the protected {@link #xoxoClass}, {@link #xoxoDefinition} and
+ * {@link #xoxoTerm} fields which are populated as the parser progresses.
+ * 
+ */
 public class AtomParser {
 
 	protected final XMLStreamReader xml;

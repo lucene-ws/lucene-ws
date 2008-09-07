@@ -1,57 +1,54 @@
 package net.lucenews3;
 
-import java.util.HashMap;
+import java.net.URI;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
 import net.lucenews3.view.XMLStreamView;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.search.Hits;
 
 public class OpenSearchResponseView extends XMLStreamView {
 
-	@SuppressWarnings("unchecked")
-	public static void main(String... args) throws Exception {
-		OpenSearchResponseView view = new OpenSearchResponseView();
-		Map model = new HashMap();
-		model.put("results", new DefaultResults(null));
-		view.renderMergedOutputModel(model, null, null, XMLOutputFactory.newInstance().createXMLStreamWriter(System.out));
-	}
+	private String atomNamespaceURI = "http://www.w3.org/2005/Atom";
+	private String openSearchNamespaceURI = "http://a9.com/-/spec/opensearch/1.1/";
+	private String openSearchRelevanceNamespaceURI = "http://a9.com/-/opensearch/extensions/relevance/1.0/";
+	private String xhtmlNamespaceURI = "http://www.w3.org/1999/xhtml";
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res, XMLStreamWriter xml) throws Exception {
+	protected void renderMergedOutputModel(Map model, HttpServletRequest request, HttpServletResponse response, XMLStreamWriter xml) throws Exception {
 		// TODO Auto-generated method stub
-		Hits hits = (Hits) model.get("hits");
-		int totalResults = hits.length();
+		Service service = getService();
+		Results results = (Results) model.get("results");
+		int totalResults = (Integer) model.get("totalResults");
 		
 		xml.writeStartDocument();
 		
 		xml.writeStartElement("feed");
-		xml.writeDefaultNamespace("http://www.w3.org/2005/Atom");
-		xml.writeNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
-		xml.writeNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
+		xml.writeDefaultNamespace(atomNamespaceURI);
+		xml.writeNamespace("opensearch", openSearchNamespaceURI);
+		xml.writeNamespace("relevance", openSearchRelevanceNamespaceURI);
 		
-		xml.writeStartElement("opensearch", "totalResults", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeStartElement("opensearch", "totalResults", openSearchNamespaceURI);
 		xml.writeCharacters(String.valueOf(totalResults));
 		xml.writeEndElement();
 		
-		xml.writeStartElement("opensearch", "startIndex", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeStartElement("opensearch", "startIndex", openSearchNamespaceURI);
 		xml.writeCharacters(String.valueOf(1));
 		xml.writeEndElement();
 		
-		xml.writeStartElement("opensearch", "itemsPerPage", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeStartElement("opensearch", "itemsPerPage", openSearchNamespaceURI);
 		xml.writeCharacters(String.valueOf(10));
 		xml.writeEndElement();
 		
-		xml.writeEmptyElement("opensearch", "Query", "http://a9.com/-/spec/opensearch/1.1/");
+		xml.writeEmptyElement("opensearch", "Query", openSearchNamespaceURI);
 		xml.writeAttribute("role", "request");
 		xml.writeAttribute("searchTerms", "kfjas;fdsadf");
 		
@@ -60,8 +57,13 @@ public class OpenSearchResponseView extends XMLStreamView {
 		xml.writeAttribute("href", "http://...");
 		xml.writeAttribute("type", "application/atom+xml");
 		
-		for (int n = 0; n < hits.length(); n++) {
-			Document document = hits.doc(n);
+		for (Result result : results) {
+			Document document = result.getDocument();
+			DocumentMetaData documentMetaData = result.getDocumentMetaData();
+			Index index = documentMetaData.getIndex();
+			Date lastUpdated = documentMetaData.getLastUpdated();
+			
+			URI documentURI = service.getDocumentURI(request, index, document);
 			
 			xml.writeStartElement("entry");
 			
@@ -70,15 +72,15 @@ public class OpenSearchResponseView extends XMLStreamView {
 			xml.writeEndElement();
 			
 			xml.writeStartElement("link");
-			xml.writeCharacters(""); // TODO
+			xml.writeCharacters(documentURI.toString());
 			xml.writeEndElement();
 			
 			xml.writeStartElement("updated");
-			xml.writeCharacters(""); // TODO
+			xml.writeCharacters(String.valueOf(lastUpdated)); // TODO
 			xml.writeEndElement();
 			
 			xml.writeStartElement("id");
-			xml.writeCharacters(""); // TODO
+			xml.writeCharacters(documentURI.toString()); // TODO
 			xml.writeEndElement();
 			
 			xml.writeStartElement("summary");
@@ -86,15 +88,15 @@ public class OpenSearchResponseView extends XMLStreamView {
 			xml.writeEndElement();
 			
 			// TODO xml.writeStartElement("http://a9.com/-/spec/opensearch/1.1/", "opensearch:relevance");
-			xml.writeStartElement("relevance", "score", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
-			xml.writeCharacters(String.valueOf(hits.score(n)));
+			xml.writeStartElement("relevance", "score", openSearchRelevanceNamespaceURI);
+			xml.writeCharacters(String.valueOf(result.getScore()));
 			xml.writeEndElement();
 			
 			xml.writeStartElement("content");
 			xml.writeAttribute("type", "xhtml");
 			
 			xml.writeStartElement("div");
-			xml.writeAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+			xml.writeAttribute("xmlns", xhtmlNamespaceURI);
 			
 			xml.writeStartElement("dl");
 			for (Field field : (List<Field>) document.getFields()) {

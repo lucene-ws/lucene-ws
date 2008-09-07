@@ -4,8 +4,11 @@ import java.io.IOException;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.Directory;
 
 public class DirectoryIndex extends AbstractIndex {
@@ -35,6 +38,12 @@ public class DirectoryIndex extends AbstractIndex {
 	@Override
 	public IndexWriter getWriter() throws IOException {
 		return new IndexWriter(directory, getAnalyzer());
+	}
+
+	@Override
+	public Results search(Query query, Filter filter, Sort sort) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -6,14 +6,16 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 
-public class ResourceHandlerMapping implements HandlerMapping {
+public class ResourceHandlerMapping implements HandlerMapping, Ordered {
 
+	public static final String DEFAULT_INDEX_ATTRIBUTE_NAME    = "index";
+	public static final String DEFAULT_DOCUMENT_ATTRIBUTE_NAME = "document";
+	
 	private Logger logger;
 	private HandlerMapping serviceHandlerMapping;
 	private HandlerMapping servicePropertiesHandlerMapping;
@@ -21,17 +23,24 @@ public class ResourceHandlerMapping implements HandlerMapping {
 	private HandlerMapping indexPropertiesHandlerMapping;
 	private HandlerMapping openSearchDescriptionHandlerMapping;
 	private HandlerMapping documentHandlerMapping;
+	private String indexAttributeName;
+	private String documentAttributeName;
 
 	public ResourceHandlerMapping() {
-		BasicConfigurator.configure();
 		this.logger = Logger.getLogger(getClass());
-		this.logger.setLevel(Level.ALL); // FIXME
 		this.serviceHandlerMapping               = new NullHandlerMapping();
 		this.servicePropertiesHandlerMapping     = new NullHandlerMapping();
 		this.indexHandlerMapping                 = new NullHandlerMapping();
 		this.indexPropertiesHandlerMapping       = new NullHandlerMapping();
 		this.openSearchDescriptionHandlerMapping = new NullHandlerMapping();
 		this.documentHandlerMapping              = new NullHandlerMapping();
+		this.indexAttributeName    = DEFAULT_INDEX_ATTRIBUTE_NAME;
+		this.documentAttributeName = DEFAULT_DOCUMENT_ATTRIBUTE_NAME;
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 	/**
@@ -63,11 +72,11 @@ public class ResourceHandlerMapping implements HandlerMapping {
 	 * Delegates handler mapping onto one of the sub-mappings according
 	 * to which type of resource was requested (i.e. - service, index, document, etc...)
 	 * 
-	 * @param req
+	 * @param request
 	 */
 	@Override
-	public HandlerExecutionChain getHandler(HttpServletRequest req) throws Exception {
-		Iterable<String> path = getPath(req);
+	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		Iterable<String> path = getPath(request);
 		Iterator<String> i = path.iterator();
 		
 		if (logger.isDebugEnabled()) {
@@ -83,9 +92,9 @@ public class ResourceHandlerMapping implements HandlerMapping {
 			
 			if (token0.equals("service.properties")) {
 				logger.debug("Requested service properties");
-				return servicePropertiesHandlerMapping.getHandler(req);
+				return servicePropertiesHandlerMapping.getHandler(request);
 			} else {
-				req.setAttribute("index", token0);
+				request.setAttribute(indexAttributeName, token0);
 				
 				if (logger.isDebugEnabled()) {
 					logger.debug("Requested index: \"" + token0 + "\"");
@@ -100,12 +109,12 @@ public class ResourceHandlerMapping implements HandlerMapping {
 					
 					if (token1.equals("index.properties")) {
 						logger.debug("Requested index properties");
-						return indexPropertiesHandlerMapping.getHandler(req);
+						return indexPropertiesHandlerMapping.getHandler(request);
 					} else if (token1.equals("opensearchdescription.xml")) {
 						logger.debug("Requested OpenSearch description");
-						return openSearchDescriptionHandlerMapping.getHandler(req);
+						return openSearchDescriptionHandlerMapping.getHandler(request);
 					} else {
-						req.setAttribute("document", token1);
+						request.setAttribute(documentAttributeName, token1);
 						
 						if (logger.isDebugEnabled()) {
 							logger.debug("Requested document: \"" + token1 + "\"");
@@ -113,23 +122,23 @@ public class ResourceHandlerMapping implements HandlerMapping {
 						
 						if (i.hasNext()) {
 							String version = i.next();
-							req.setAttribute("version", version);
+							request.setAttribute("version", version);
 						}
 						
 						if (logger.isDebugEnabled()) {
 							logger.debug("Requested document, handler mapping: " + documentHandlerMapping);
 						}
 						
-						return documentHandlerMapping.getHandler(req);
+						return documentHandlerMapping.getHandler(request);
 					}
 				} else {
 					logger.debug("Requested index");
-					return indexHandlerMapping.getHandler(req);
+					return indexHandlerMapping.getHandler(request);
 				}
 			}
 		} else {
 			logger.debug("Requested service");
-			return serviceHandlerMapping.getHandler(req);
+			return serviceHandlerMapping.getHandler(request);
 		}
 	}
 
@@ -179,6 +188,22 @@ public class ResourceHandlerMapping implements HandlerMapping {
 
 	public void setDocumentHandlerMapping(HandlerMapping documentHandlerMapping) {
 		this.documentHandlerMapping = documentHandlerMapping;
+	}
+
+	public String getIndexAttributeName() {
+		return indexAttributeName;
+	}
+
+	public void setIndexAttributeName(String indexAttributeName) {
+		this.indexAttributeName = indexAttributeName;
+	}
+
+	public String getDocumentAttributeName() {
+		return documentAttributeName;
+	}
+
+	public void setDocumentAttributeName(String documentAttributeName) {
+		this.documentAttributeName = documentAttributeName;
 	}
 
 }
