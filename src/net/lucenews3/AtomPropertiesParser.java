@@ -1,5 +1,7 @@
 package net.lucenews3;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.xml.stream.XMLStreamException;
@@ -7,22 +9,42 @@ import javax.xml.stream.XMLStreamReader;
 
 public class AtomPropertiesParser extends AtomParser {
 
-	protected Properties properties;
+	protected List<Properties> propertiesList;
+	protected Properties currentProperties;
 
 	public AtomPropertiesParser(XMLStreamReader xml) {
 		super(xml);
 	}
 
 	@Override
+	public void parseFeed() throws XMLStreamException {
+		propertiesList = new ArrayList<Properties>();
+		super.parseFeed();
+	}
+
+	@Override
 	public void parseEntry() throws XMLStreamException {
-		properties = new Properties();
+		currentProperties = new Properties();
 		super.parseEntry();
-		// TODO export properties
+		
+		if (propertiesList == null) {
+			propertiesList = new SingleElementList<Properties>(currentProperties);
+		} else {
+			propertiesList.add(currentProperties);
+		}
 	}
 
 	@Override
 	protected void parseXOXOTermDefinition() throws XMLStreamException {
-		properties.put(xoxoTerm, xoxoDefinition);
+		currentProperties.put(xoxoTerm, xoxoDefinition);
+	}
+
+	public List<Properties> getPropertiesList() {
+		return propertiesList;
+	}
+
+	public Properties getProperties() {
+		return propertiesList.get(0);
 	}
 
 }

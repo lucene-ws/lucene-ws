@@ -125,6 +125,9 @@
 
 
 
+	<bean class="net.lucenews3.DefaultHandlerExceptionResolver">
+	</bean>
+
 	<!-- Views -->
 
 	<bean id="view" abstract="true">
@@ -145,6 +148,9 @@
 	<bean id="propertiesView" class="net.lucenews3.PropertiesXMLView" parent="xmlView">
 	</bean>
 
+	<bean id="exceptionView" class="net.lucenews3.ExceptionView" parent="xmlView">
+	</bean>
+
 	<bean id="viewResolver" class="net.lucenews3.DefaultViewResolver">
 		<property name="viewsByName">
 			<map>
@@ -153,6 +159,7 @@
 				<entry key="document/get" value-ref="documentView" />
 				<entry key="serviceProperties/get" value-ref="propertiesView" />
 				<entry key="indexProperties/get" value-ref="propertiesView" />
+				<entry key="error" value-ref="exceptionView" />
 			</map>
 		</property>
 	</bean>

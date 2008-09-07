@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.lucenews3.view.XMLStreamView;
+
 public class APPIntrospectionView extends XMLStreamView {
 
 	private Service service;
@@ -37,7 +39,7 @@ public class APPIntrospectionView extends XMLStreamView {
 		
 		for (Index index : indexes) {
 			xml.writeStartElement("collection");
-			xml.writeAttribute("href", service.getIndexURI(request, index));
+			xml.writeAttribute("href", service.getIndexURI(request, index).toString());
 			String displayName = index.getDisplayName();
 			if (displayName == null) {
 				// Ignore

@@ -6,15 +6,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.lucenews3.view.XMLStreamView;
+
 public class ExceptionView extends XMLStreamView {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res, XMLStreamWriter xml) throws Exception {
+	protected void renderMergedOutputModel(Map model, HttpServletRequest request, HttpServletResponse response, XMLStreamWriter xml) throws Exception {
 		Exception ex = (Exception) model.get("exception");
 		
 		xml.writeStartDocument();
 		xml.writeStartElement("entry");
+		xml.writeDefaultNamespace("http://www.w3.org/2005/Atom");
 		
 		xml.writeStartElement("title");
 		xml.writeCharacters(ex.getClass().getCanonicalName());
@@ -45,7 +48,9 @@ public class ExceptionView extends XMLStreamView {
 		
 		xml.writeStartElement("content");
 		xml.writeAttribute("type", "xhtml");
+		
 		xml.writeStartElement("div");
+		xml.writeDefaultNamespace("http://www.w3.org/1999/xhtml");
 		
 		xml.writeStartElement("ol");
 		

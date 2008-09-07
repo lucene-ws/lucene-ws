@@ -113,7 +113,7 @@ public abstract class AbstractIndex implements Index {
 	 * @return
 	 * @throws IOException
 	 */
-	public String putDocument(Document document) throws IOException {
+	public DocumentMetaData putDocument(Document document) throws IOException {
 		IndexReader reader = getReader();
 		try {
 			try {
@@ -167,8 +167,11 @@ public abstract class AbstractIndex implements Index {
 	}
 
 	@Override
-	public String insertDocument(Document document) throws IOException {
+	public DocumentMetaData insertDocument(Document document) throws IOException {
+		DefaultDocumentMetaData metaData = new DefaultDocumentMetaData(document);
+		
 		String identity = getIdentity(document);
+		metaData.setIdentity(identity);
 		
 		if (containsDocument(identity)) {
 			throw new RuntimeException("Cannot insert document \"" + identity + "\", it already exists"); // TODO Choose a more appropriate exception class
@@ -181,11 +184,14 @@ public abstract class AbstractIndex implements Index {
 			}
 		}
 		
-		return identity;
+		return metaData;
 	}
 
-	protected String insertDocument(IndexReader reader, Document document) throws IOException {
+	protected DocumentMetaData insertDocument(IndexReader reader, Document document) throws IOException {
+		DefaultDocumentMetaData metaData = new DefaultDocumentMetaData(document);
+		
 		String identity = getIdentity(document);
+		metaData.setIdentity(identity);
 		
 		if (containsDocument(reader, identity)) {
 			throw new RuntimeException("Cannot insert document \"" + identity + "\", it already exists"); // TODO Choose a more appropriate exception class
@@ -198,11 +204,14 @@ public abstract class AbstractIndex implements Index {
 			}
 		}
 		
-		return identity;
+		return metaData;
 	}
 
-	protected String insertDocument(IndexReader reader, IndexWriter writer, Document document) throws IOException {
+	protected DocumentMetaData insertDocument(IndexReader reader, IndexWriter writer, Document document) throws IOException {
+		DefaultDocumentMetaData metaData = new DefaultDocumentMetaData(document);
+		
 		String identity = getIdentity(document);
+		metaData.setIdentity(identity);
 		
 		if (containsDocument(reader, identity)) {
 			throw new RuntimeException("Cannot insert document \"" + identity + "\", it already exists"); // TODO Choose a more appropriate exception class
@@ -210,23 +219,23 @@ public abstract class AbstractIndex implements Index {
 			writer.addDocument(document);
 		}
 		
-		return identity;
+		return metaData;
 	}
 
-	public Map<Document, String> insertDocuments(Iterable<Document> documents) throws IOException {
-		Map<Document, String> identitiesByDocument = new IdentityHashMap<Document, String>();
+	public Map<Document, DocumentMetaData> insertDocuments(Iterable<Document> documents) throws IOException {
+		Map<Document, DocumentMetaData> identitiesByDocument = new IdentityHashMap<Document, DocumentMetaData>();
 		insertDocuments(documents, identitiesByDocument);
 		return identitiesByDocument;
 	}
 
-	public void insertDocuments(Iterable<Document> documents, Map<Document, String> identitiesByDocument) throws IOException {
+	public void insertDocuments(Iterable<Document> documents, Map<Document, DocumentMetaData> metaDataByDocument) throws IOException {
 		IndexReader reader = getReader();
 		try {
 			IndexWriter writer = getWriter();
 			try {
 				for (Document document : documents) {
-					String identity = insertDocument(reader, writer, document);
-					identitiesByDocument.put(document, identity);
+					DocumentMetaData metaData = insertDocument(reader, writer, document);
+					metaDataByDocument.put(document, metaData);
 				}
 			} finally {
 				writer.close();
@@ -237,8 +246,11 @@ public abstract class AbstractIndex implements Index {
 	}
 
 	@Override
-	public String updateDocument(Document document) throws IOException {
+	public DocumentMetaData updateDocument(Document document) throws IOException {
+		DefaultDocumentMetaData metaData = new DefaultDocumentMetaData(document);
+		
 		String identity = getIdentity(document);
+		metaData.setIdentity(identity);
 		
 		if (removeDocument(identity) == 0) {
 			throw new RuntimeException("Cannot update document \"" + identity + "\", it doesn't already exist"); // TODO Choose a more appropriate exception class
@@ -251,11 +263,14 @@ public abstract class AbstractIndex implements Index {
 			writer.close();
 		}
 		
-		return identity;
+		return metaData;
 	}
 
-	protected String updateDocument(IndexReader reader, Document document) throws IOException {
+	protected DocumentMetaData updateDocument(IndexReader reader, Document document) throws IOException {
+		DefaultDocumentMetaData metaData = new DefaultDocumentMetaData(document);
+		
 		String identity = getIdentity(document);
+		metaData.setIdentity(identity);
 		
 		if (removeDocument(reader, identity) == 0) {
 			throw new RuntimeException("Cannot update document \"" + identity + "\", it doesn't already exist"); // TODO Choose a more appropriate exception class
@@ -268,11 +283,14 @@ public abstract class AbstractIndex implements Index {
 			writer.close();
 		}
 		
-		return identity;
+		return metaData;
 	}
 
-	protected String updateDocument(IndexReader reader, IndexWriter writer, Document document) throws IOException {
+	protected DocumentMetaData updateDocument(IndexReader reader, IndexWriter writer, Document document) throws IOException {
+		DefaultDocumentMetaData metaData = new DefaultDocumentMetaData();
+		
 		String identity = getIdentity(document);
+		metaData.setIdentity(identity);
 		
 		if (removeDocument(reader, identity) == 0) {
 			throw new RuntimeException("Cannot update document \"" + identity + "\", it doesn't already exist"); // TODO Choose a more appropriate exception class
@@ -280,7 +298,7 @@ public abstract class AbstractIndex implements Index {
 		
 		writer.addDocument(document);
 		
-		return identity;
+		return metaData;
 	}
 
 	/**
@@ -290,20 +308,20 @@ public abstract class AbstractIndex implements Index {
 	 * @return
 	 * @throws IOException
 	 */
-	public Map<Document, String> updateDocuments(Iterable<Document> documents) throws IOException {
-		Map<Document, String> identitiesByDocument = new IdentityHashMap<Document, String>();
-		updateDocuments(documents, identitiesByDocument);
-		return identitiesByDocument;
+	public Map<Document, DocumentMetaData> updateDocuments(Iterable<Document> documents) throws IOException {
+		Map<Document, DocumentMetaData> metaDataByDocument = new IdentityHashMap<Document, DocumentMetaData>();
+		updateDocuments(documents, metaDataByDocument);
+		return metaDataByDocument;
 	}
 
-	public void updateDocuments(Iterable<Document> documents, Map<Document, String> identitiesByDocument) throws IOException {
+	public void updateDocuments(Iterable<Document> documents, Map<Document, DocumentMetaData> metaDataByDocument) throws IOException {
 		IndexReader reader = getReader();
 		try {
 			IndexWriter writer = getWriter();
 			try {
 				for (Document document : documents) {
-					String identity = updateDocument(reader, writer, document);
-					identitiesByDocument.put(document, identity);
+					DocumentMetaData metaData = updateDocument(reader, writer, document);
+					metaDataByDocument.put(document, metaData);
 				}
 			} finally {
 				writer.close();

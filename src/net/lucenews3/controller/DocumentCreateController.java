@@ -1,6 +1,7 @@
 package net.lucenews3.controller;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,22 +27,23 @@ public class DocumentCreateController extends ControllerSupport {
 			List<Document> documents = new ArrayList<Document>();
 			while (iterator.hasNext()) {
 				Document document = iterator.next();
-				addDocument(index, document, request, response);
+				insertDocument(index, document, request, response);
 				documents.add(document);
 			}
 			model.addObject("documents", documents);
 		} else {
 			Document document = iterator.next();
-			addDocument(index, document, request, response);
+			insertDocument(index, document, request, response);
 			model.addObject("document", document);
 		}
 		
 		return model;
 	}
 
-	protected void addDocument(Index index, Document document, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	protected void insertDocument(Index index, Document document, HttpServletRequest request, HttpServletResponse response) throws IOException, URISyntaxException {
 		System.out.println("Inserting document " + document);
 		index.insertDocument(document);
-		response.addHeader("Location", service.getDocumentURI(request, index, document));
+		response.addHeader("Location", service.getDocumentURI(request, index, document).toString());
 	}
+
 }

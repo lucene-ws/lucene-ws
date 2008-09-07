@@ -9,6 +9,7 @@ public class AtomParser {
 
 	protected final XMLStreamReader xml;
 	protected String entryTitle;
+	protected String entrySummary;
 	protected String xoxoClass;
 	protected String xoxoTerm;
 	protected String xoxoDefinition;
@@ -56,6 +57,8 @@ public class AtomParser {
 		String localName = xml.getLocalName();
 		if ("title".equals(localName)) {
 			parseEntryTitle();
+		} else if ("summary".equals(localName)) {
+			parseEntrySummary();
 		} else if ("content".equals(localName)) {
 			parseEntryContent();
 		} else {
@@ -64,6 +67,10 @@ public class AtomParser {
 	}
 
 	protected void parseEntryTitle() throws XMLStreamException {
+		entryTitle = xml.getElementText();
+	}
+
+	protected void parseEntrySummary() throws XMLStreamException {
 		entryTitle = xml.getElementText();
 	}
 
@@ -109,6 +116,8 @@ public class AtomParser {
 			String localName = xml.getLocalName();
 			if ("dl".equals(localName)) {
 				parseXOXOList();
+			} else if ("ol".equals(localName)) {
+				parseOrderedList();
 			} else {
 				XMLStreamUtility.endElement(xml);
 			}
@@ -163,4 +172,31 @@ public class AtomParser {
 	protected void parseXOXOTermDefinition() throws XMLStreamException {
 		
 	}
+
+	/**
+	 * Cursor expected to be sitting immediately after encountering the start element of
+	 * &lt;ol&gt;.
+	 * 
+	 * @throws XMLStreamException
+	 */
+	protected void parseOrderedList() throws XMLStreamException {
+		while (xml.nextTag() == START_ELEMENT) {
+			String localName = xml.getLocalName();
+			if ("li".equals(localName)) {
+				parseListItem();
+			} else {
+				XMLStreamUtility.endElement(xml);
+			}
+		}
+	}
+
+	/**
+	 * Cursor expected to be immediately after the start of an &lt;li&gt; element.
+	 * 
+	 * @throws XMLStreamException
+	 */
+	protected void parseListItem() throws XMLStreamException {
+		XMLStreamUtility.endElement(xml);
+	}
+
 }

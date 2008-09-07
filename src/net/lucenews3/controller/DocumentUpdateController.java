@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.lucenews3.ControllerSupport;
 import net.lucenews3.DocumentIterator;
+import net.lucenews3.DocumentMetaData;
 import net.lucenews3.Index;
 
 import org.apache.lucene.document.Document;
@@ -23,17 +24,15 @@ public class DocumentUpdateController extends ControllerSupport {
 		DocumentIterator iterator = service.getDocumentIterator(request);
 		
 		if (iterator.isCollection()) {
-			List<Document> documents = new ArrayList<Document>();
+			List<DocumentMetaData> documents = new ArrayList<DocumentMetaData>();
 			while (iterator.hasNext()) {
 				Document document = iterator.next();
-				index.updateDocument(document);
-				documents.add(document);
+				documents.add(index.updateDocument(document));
 			}
 			model.addObject("documents", documents);
 		} else {
 			Document document = iterator.next();
-			index.updateDocument(document);
-			model.addObject("document", document);
+			model.addObject("document", index.updateDocument(document));
 		}
 		
 		return model;

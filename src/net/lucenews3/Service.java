@@ -1,6 +1,8 @@
 package net.lucenews3;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,9 +19,9 @@ public interface Service {
 
 	public DocumentIterator getDocumentIterator(HttpServletRequest request) throws IOException;
 
-	public String getIndexURI(HttpServletRequest request, Index index);
+	public URI getIndexURI(HttpServletRequest request, Index index) throws URISyntaxException;
 
-	public String getDocumentURI(HttpServletRequest request, Index index, Document document);
+	public URI getDocumentURI(HttpServletRequest request, Index index, Document document) throws URISyntaxException;
 
 	public void createIndex(String name) throws IOException;
 

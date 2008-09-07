@@ -1,6 +1,8 @@
 package net.lucenews3;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,14 +52,14 @@ public class DefaultService implements Service {
 	}
 
 	@Override
-	public String getDocumentURI(HttpServletRequest request, Index index, Document document) {
+	public URI getDocumentURI(HttpServletRequest request, Index index, Document document) throws URISyntaxException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getIndexURI(HttpServletRequest request, Index index) {
-		return request.getServletPath() + index.getName();
+	public URI getIndexURI(HttpServletRequest request, Index index) throws URISyntaxException {
+		return new URI(request.getServletPath() + index.getName());
 	}
 
 	@Override

@@ -7,6 +7,9 @@ import org.springframework.web.servlet.HandlerMapping;
 
 public class RequestMethodHandlerMapping implements HandlerMapping {
 
+	public static final String DEFAULT_METHOD_OVERRIDE_HEADER_NAME = "X-HTTP-Method-Override";
+
+	private String methodOverrideHeaderName;
 	private HandlerMapping deleteHandlerMapping;
 	private HandlerMapping getHandlerMapping;
 	private HandlerMapping headHandlerMapping;
@@ -15,6 +18,7 @@ public class RequestMethodHandlerMapping implements HandlerMapping {
 	private HandlerMapping traceHandlerMapping;
 
 	public RequestMethodHandlerMapping() {
+		this.methodOverrideHeaderName = DEFAULT_METHOD_OVERRIDE_HEADER_NAME;
 		this.deleteHandlerMapping = new NullHandlerMapping();
 		this.getHandlerMapping    = new NullHandlerMapping();
 		this.headHandlerMapping   = new NullHandlerMapping();
@@ -29,14 +33,14 @@ public class RequestMethodHandlerMapping implements HandlerMapping {
 	 * the given request's method, but sub-classes are free to override
 	 * this behavior.
 	 * 
-	 * @param req
+	 * @param request
 	 * @return
 	 * @throws Exception
 	 */
-	protected String getMethod(HttpServletRequest req) throws Exception {
-		String method = req.getHeader("X-HTTP-Method-Override");
+	protected String getMethod(HttpServletRequest request) throws Exception {
+		String method = request.getHeader(methodOverrideHeaderName);
 		if (method == null) {
-			return req.getMethod();
+			return request.getMethod();
 		} else {
 			return method;
 		}
@@ -47,30 +51,38 @@ public class RequestMethodHandlerMapping implements HandlerMapping {
 	 * based upon the given request's method, as determined by
 	 * {@link #getMethod(HttpServletRequest)}.
 	 * 
-	 * @param req
+	 * @param request
 	 * @return
 	 * @throws Exception
 	 * @see {@link #getMethod(HttpServletRequest)}
 	 */
 	@Override
-	public HandlerExecutionChain getHandler(HttpServletRequest req) throws Exception {
-		String method = getMethod(req);
+	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		String method = getMethod(request);
 		
-		if (method.equalsIgnoreCase("get")) {
-			return getHandlerMapping.getHandler(req);
-		} else if (method.equalsIgnoreCase("post")) {
-			return postHandlerMapping.getHandler(req);
-		} else if (method.equalsIgnoreCase("put")) {
-			return putHandlerMapping.getHandler(req);
-		} else if (method.equalsIgnoreCase("delete")) {
-			return deleteHandlerMapping.getHandler(req);
-		} else if (method.equalsIgnoreCase("head")) {
-			return headHandlerMapping.getHandler(req);
-		} else if (method.equalsIgnoreCase("trace")) {
-			return traceHandlerMapping.getHandler(req);
+		if (method.equalsIgnoreCase("GET")) {
+			return getHandlerMapping.getHandler(request);
+		} else if (method.equalsIgnoreCase("POST")) {
+			return postHandlerMapping.getHandler(request);
+		} else if (method.equalsIgnoreCase("PUT")) {
+			return putHandlerMapping.getHandler(request);
+		} else if (method.equalsIgnoreCase("DELETE")) {
+			return deleteHandlerMapping.getHandler(request);
+		} else if (method.equalsIgnoreCase("HEAD")) {
+			return headHandlerMapping.getHandler(request);
+		} else if (method.equalsIgnoreCase("TRACE")) {
+			return traceHandlerMapping.getHandler(request);
 		} else {
 			return null;
 		}
+	}
+
+	public String getMethodOverrideHeaderName() {
+		return methodOverrideHeaderName;
+	}
+
+	public void setMethodOverrideHeaderName(String methodOverrideHeaderName) {
+		this.methodOverrideHeaderName = methodOverrideHeaderName;
 	}
 
 	public HandlerMapping getDeleteHandlerMapping() {

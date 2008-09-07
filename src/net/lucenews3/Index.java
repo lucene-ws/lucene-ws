@@ -40,17 +40,17 @@ public interface Index {
 	 */
 	public void getDocuments(Iterable<String> identities, Map<String, Document> documentsByIdentity) throws IOException;
 
-	public String insertDocument(Document document) throws IOException;
+	public DocumentMetaData insertDocument(Document document) throws IOException;
 
-	public Map<Document, String> insertDocuments(Iterable<Document> documents) throws IOException;
+	public Map<Document, DocumentMetaData> insertDocuments(Iterable<Document> documents) throws IOException;
 
-	public void insertDocuments(Iterable<Document> documents, Map<Document, String> identitiesByDocument) throws IOException;
+	public void insertDocuments(Iterable<Document> documents, Map<Document, DocumentMetaData> metaDataByDocument) throws IOException;
 
-	public String updateDocument(Document document) throws IOException;
+	public DocumentMetaData updateDocument(Document document) throws IOException;
 
-	public Map<Document, String> updateDocuments(Iterable<Document> documents) throws IOException;
+	public Map<Document, DocumentMetaData> updateDocuments(Iterable<Document> documents) throws IOException;
 
-	public void updateDocuments(Iterable<Document> documents, Map<Document, String> identitiesByDocument) throws IOException;
+	public void updateDocuments(Iterable<Document> documents, Map<Document, DocumentMetaData> metaDataByDocument) throws IOException;
 
 	public Properties getProperties();
 

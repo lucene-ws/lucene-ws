@@ -3,36 +3,23 @@ package net.lucenews3;
 import static javax.xml.stream.XMLStreamReader.*;
 
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+/**
+ * Decorates an instance of XMLStreamWriter, issuing additional events as necessary
+ * to write a more visually appealing XML document. Indentations and end-of-line sequences
+ * are inserted between nested elements.
+ *
+ */
 public class PrettyXMLStreamWriter implements XMLStreamWriter {
 
 	private final XMLStreamWriter target;
 	private int lastEventType;
 	private int depth;
-	private String tab = "\t";
+	private String indentation = "\t";
 	private String endOfLine = "\n";
 
-	public static void main(String[] args) throws Exception {
-		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(System.out);
-		
-		PrettyXMLStreamWriter xml = new PrettyXMLStreamWriter(writer);
-		
-		xml.writeStartDocument();
-		xml.writeStartElement("feed");
-		xml.writeStartElement("entry");
-		xml.writeStartElement("dog");
-		xml.writeAttribute("sound", "woof");
-		xml.writeCharacters("Aloha!");
-		xml.writeEndElement();
-		xml.writeEndElement();
-		xml.writeEndElement();
-		xml.writeEndDocument();
-		xml.flush();
-	}
-	
 	public PrettyXMLStreamWriter(XMLStreamWriter target) {
 		this.target = target;
 	}
@@ -143,7 +130,7 @@ public class PrettyXMLStreamWriter implements XMLStreamWriter {
 		case END_ELEMENT:
 			target.writeCharacters(endOfLine);
 			for (int i = 0; i < depth; i++) {
-				target.writeCharacters(tab);
+				target.writeCharacters(indentation);
 			}
 			break;
 		}
@@ -194,7 +181,7 @@ public class PrettyXMLStreamWriter implements XMLStreamWriter {
 		case END_ELEMENT:
 			target.writeCharacters(endOfLine);
 			for (int i = 0; i < depth; i++) {
-				target.writeCharacters(tab);
+				target.writeCharacters(indentation);
 			}
 			break;
 		case START_DOCUMENT:
