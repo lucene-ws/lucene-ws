@@ -1,4 +1,4 @@
-package net.lucenews3;
+package net.lucenews3.view;
 
 import java.util.List;
 import java.util.Map;
@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.lucenews3.view.XMLStreamView;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;

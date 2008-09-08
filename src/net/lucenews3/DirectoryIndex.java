@@ -1,6 +1,7 @@
 package net.lucenews3;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -44,6 +45,11 @@ public class DirectoryIndex extends AbstractIndex {
 	public Results search(Query query, Filter filter, Sort sort) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Date getLastUpdated() throws IOException {
+		return new Date(IndexReader.lastModified(directory));
 	}
 
 }

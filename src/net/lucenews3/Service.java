@@ -21,7 +21,7 @@ public interface Service {
 
 	public URI getIndexURI(HttpServletRequest request, Index index) throws URISyntaxException;
 
-	public URI getDocumentURI(HttpServletRequest request, Index index, Document document) throws URISyntaxException;
+	public URI getDocumentURI(HttpServletRequest request, Index index, Document document) throws URISyntaxException, IOException;
 
 	public void createIndex(String name) throws IOException;
 

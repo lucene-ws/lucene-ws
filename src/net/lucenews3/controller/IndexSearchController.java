@@ -4,7 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.lucenews3.ControllerSupport;
+import net.lucenews3.DefaultResults;
 import net.lucenews3.Index;
+import net.lucenews3.Results;
 
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
@@ -47,9 +49,13 @@ public class IndexSearchController extends ControllerSupport {
 			query = parser.parse(searchTerms);
 		}
 		
+		
 		Searcher searcher = index.getSearcher();
 		Hits hits = searcher.search(query == null ? new MatchAllDocsQuery() : query);
 		model.addObject("hits", hits);
+		
+		Results results = new DefaultResults(hits, index, searchTerms);
+		model.addObject("results", results);
 		
 		return model;
 	}

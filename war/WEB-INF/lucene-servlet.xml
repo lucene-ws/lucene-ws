@@ -158,7 +158,7 @@
 
 	<bean id="xmlView" abstract="true" parent="view" />
 
-	<bean id="introspectionView" class="net.lucenews3.APPIntrospectionView" parent="view">
+	<bean id="introspectionView" class="net.lucenews3.view.APPIntrospectionView" parent="view">
 		<property name="service" ref="service" />
 	</bean>
 
@@ -170,15 +170,17 @@
 		<property name="service" ref="service" />
 	</bean>
 
-	<bean id="openSearchResponseView" class="net.lucenews3.OpenSearchResponseView" parent="view" />
+	<bean id="openSearchResponseView" class="net.lucenews3.view.OpenSearchResponseView" parent="view">
+		<property name="service" ref="service" />
+	</bean>
 
-	<bean id="documentView" class="net.lucenews3.DocumentXMLView" parent="view" />
+	<bean id="documentView" class="net.lucenews3.view.DocumentXMLView" parent="view" />
 
-	<bean id="propertiesView" class="net.lucenews3.PropertiesXMLView" parent="xmlView" />
+	<bean id="propertiesView" class="net.lucenews3.view.PropertiesXMLView" parent="xmlView" />
 
-	<bean id="exceptionView" class="net.lucenews3.ExceptionView" parent="xmlView" />
+	<bean id="exceptionView" class="net.lucenews3.view.ExceptionView" parent="xmlView" />
 
-	<bean id="viewResolver" class="net.lucenews3.MappedViewResolver">
+	<bean id="viewResolver" class="net.lucenews3.view.MappedViewResolver">
 		<property name="viewsByName">
 			<map>
 				<entry key="service/get"            value-ref="introspectionView" />

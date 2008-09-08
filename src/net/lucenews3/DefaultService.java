@@ -56,9 +56,9 @@ public class DefaultService implements Service {
 	}
 
 	@Override
-	public URI getDocumentURI(HttpServletRequest request, Index index, Document document) throws URISyntaxException {
+	public URI getDocumentURI(HttpServletRequest request, Index index, Document document) throws URISyntaxException, IOException {
 		// TODO Auto-generated method stub
-		return null;
+		return new URI(getIndexURI(request, index).toString() + "/" + index.getIdentity(document));
 	}
 
 	@Override

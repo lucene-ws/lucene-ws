@@ -8,10 +8,12 @@ public class DefaultResults extends AbstractList<Result> implements Results {
 
 	private Hits hits;
 	private Index index;
+	private String searchTerms;
 
-	public DefaultResults(Hits hits, Index index) {
+	public DefaultResults(Hits hits, Index index, String searchTerms) {
 		this.hits = hits;
 		this.index = index;
+		this.searchTerms = searchTerms;
 	}
 
 	@Override
@@ -22,6 +24,11 @@ public class DefaultResults extends AbstractList<Result> implements Results {
 	@Override
 	public int size() {
 		return hits.length();
+	}
+
+	@Override
+	public String getSearchTerms() {
+		return searchTerms;
 	}
 
 }

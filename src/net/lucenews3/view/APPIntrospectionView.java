@@ -1,4 +1,4 @@
-package net.lucenews3;
+package net.lucenews3.view;
 
 import java.util.List;
 import java.util.Map;
@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.lucenews3.Index;
+import net.lucenews3.Service;
 import net.lucenews3.view.XMLStreamView;
 
 public class APPIntrospectionView extends XMLStreamView {

@@ -1,6 +1,7 @@
 package net.lucenews3;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
@@ -60,5 +61,7 @@ public interface Index {
 	public Properties getProperties();
 
 	public void setProperties(Properties properties);
+
+	public Date getLastUpdated() throws IOException;
 
 }

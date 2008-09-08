@@ -1,9 +1,11 @@
-package net.lucenews3;
+package net.lucenews3.view;
 
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.lucenews3.Results;
 
 import org.springframework.web.servlet.view.AbstractView;
 

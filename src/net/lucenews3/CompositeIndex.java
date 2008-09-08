@@ -2,6 +2,7 @@ package net.lucenews3;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.lucene.index.IndexReader;
@@ -55,6 +56,20 @@ public class CompositeIndex extends AbstractIndex {
 	public Results search(Query query, Filter filter, Sort sort) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Date getLastUpdated() throws IOException {
+		Date lastUpdated = null;
+		
+		for (Index index : indexes) {
+			Date indexLastUpdated = index.getLastUpdated();
+			if (lastUpdated == null || indexLastUpdated.compareTo(lastUpdated) > 0) {
+				lastUpdated = indexLastUpdated;
+			}
+		}
+		
+		return lastUpdated;
 	}
 
 }

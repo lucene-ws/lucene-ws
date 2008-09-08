@@ -1,6 +1,7 @@
 package net.lucenews3;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -16,7 +18,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
@@ -36,6 +37,8 @@ public abstract class AbstractIndex implements Index {
 	public AbstractIndex() {
 		this.logger = Logger.getLogger(getClass());
 		this.identityField = DEFAULT_PRIMARY_FIELD_NAME;
+		this.defaultFieldName = "default";
+		this.analyzer = new StandardAnalyzer();
 	}
 
 	public String getName() {
@@ -59,8 +62,11 @@ public abstract class AbstractIndex implements Index {
 	public abstract IndexWriter getWriter() throws IOException;
 
 	@Override
+	public abstract Date getLastUpdated() throws IOException;
+
+	@Override
 	public Results search(Query query, Filter filter, Sort sort) throws IOException {
-		return new DefaultResults(getSearcher().search(query, filter, sort), this);
+		return new DefaultResults(getSearcher().search(query, filter, sort), this, null);
 	}
 
 	public Analyzer getAnalyzer() throws IOException {

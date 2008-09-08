@@ -1,4 +1,4 @@
-package net.lucenews3;
+package net.lucenews3.view;
 
 import java.util.HashMap;
 import java.util.Locale;

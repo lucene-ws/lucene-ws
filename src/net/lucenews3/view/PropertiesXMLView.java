@@ -1,4 +1,4 @@
-package net.lucenews3;
+package net.lucenews3.view;
 
 import java.util.Map;
 import java.util.Properties;
@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.lucenews3.view.XMLStreamView;
 
 import org.springframework.util.Assert;
 
