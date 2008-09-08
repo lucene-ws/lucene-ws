@@ -21,6 +21,8 @@
 		<property name="directory" value="${indexesDirectory}" />
 	</bean>
 
+	<bean id="atomDateFormat" class="net.lucenews3.AtomDateFormat" factory-method="getInstance" />
+
 
 
 	<!-- Controllers -->
@@ -172,6 +174,7 @@
 
 	<bean id="openSearchResponseView" class="net.lucenews3.view.OpenSearchResponseView" parent="view">
 		<property name="service" ref="service" />
+		<property name="atomDateFormat" ref="atomDateFormat" />
 	</bean>
 
 	<bean id="documentView" class="net.lucenews3.view.DocumentXMLView" parent="view" />

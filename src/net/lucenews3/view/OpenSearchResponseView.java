@@ -167,4 +167,12 @@ public class OpenSearchResponseView extends XMLStreamView {
 		xml.writeEndElement(); // entry
 	}
 
+	public DateFormat getAtomDateFormat() {
+		return atomDateFormat;
+	}
+
+	public void setAtomDateFormat(DateFormat atomDateFormat) {
+		this.atomDateFormat = atomDateFormat;
+	}
+
 }
