@@ -16,7 +16,19 @@ public class DirectoryIndex extends AbstractIndex {
 
 	private Directory directory;
 
+	public DirectoryIndex() {
+		
+	}
+
 	public DirectoryIndex(Directory directory) {
+		this.directory = directory;
+	}
+
+	public Directory getDirectory() {
+		return directory;
+	}
+
+	public void setDirectory(Directory directory) {
 		this.directory = directory;
 	}
 
