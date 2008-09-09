@@ -17,15 +17,31 @@ public class FSDirectoryBean implements FactoryBean {
 		// TODO Auto-generated method stub
 		if (file == null) {
 			if (path == null) {
-				
+				if (lockFactory == null) {
+					
+				} else {
+					
+				}
 			} else {
-				
+				if (lockFactory == null) {
+					return FSDirectory.getDirectory(path);
+				} else {
+					return FSDirectory.getDirectory(path, lockFactory);
+				}
 			}
 		} else {
 			if (path == null) {
-				
+				if (lockFactory == null) {
+					return FSDirectory.getDirectory(file);
+				} else {
+					return FSDirectory.getDirectory(file, lockFactory);
+				}
 			} else {
-				
+				if (lockFactory == null) {
+					
+				} else {
+					
+				}
 			}
 		}
 		return null;
